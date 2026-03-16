@@ -43,6 +43,47 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
 });
 
 /**
+ * PATCH /api/user/profile
+ * Update display_name only
+ */
+export const PATCH = withUser(async (req: NextRequest, { user, supabase }) => {
+  try {
+    const body = await req.json();
+    const { display_name } = body;
+
+    if (display_name === undefined) {
+      return NextResponse.json(
+        { data: null, error: { message: 'display_name is required', code: 'VALIDATION_ERROR' } },
+        { status: 400 }
+      );
+    }
+
+    const trimmed = typeof display_name === 'string' ? display_name.trim() : null;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ display_name: trimmed || null, updated_at: new Date().toISOString() })
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('[Profile API] PATCH error:', error);
+      return NextResponse.json(
+        { data: null, error: { message: 'Failed to update profile', code: 'UPDATE_FAILED' } },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ data: { display_name: trimmed }, error: null });
+  } catch (error: any) {
+    console.error('[Profile API] PATCH unexpected error:', error);
+    return NextResponse.json(
+      { data: null, error: { message: error.message || 'Internal server error', code: 'INTERNAL_ERROR' } },
+      { status: 500 }
+    );
+  }
+});
+
+/**
  * PUT /api/user/profile
  * Update user profile
  */
