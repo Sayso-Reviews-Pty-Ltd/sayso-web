@@ -464,8 +464,6 @@ export default function OwnerBusinessDashboard() {
                     aria-labelledby="business-heading"
                   >
                     <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-lg relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg"></div>
 
                     <div className="relative z-10 p-4 sm:p-6">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">

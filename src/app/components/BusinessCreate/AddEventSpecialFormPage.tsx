@@ -512,9 +512,8 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
   };
 
   if (authLoading) return (
-    <div className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist">
-      <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
-      <div className="mx-auto max-w-[920px] px-4 pt-10 pb-16 relative z-10 animate-pulse">
+    <div className="min-h-dvh bg-off-white font-urbanist">
+      <div className="mx-auto max-w-[920px] px-4 pt-10 pb-16 animate-pulse">
         {/* Breadcrumb skeleton */}
         <div className="flex items-center gap-2 mb-8">
           <div className="h-4 w-24 rounded-md bg-charcoal/8" />
@@ -574,13 +573,8 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
       <>
         <style dangerouslySetInnerHTML={{ __html: authStyles }} />
         <style dangerouslySetInnerHTML={{ __html: animations }} />
-        <div className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
-          {/* Background Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
-          
-          <div className="mx-auto max-w-[920px] px-4 pt-16 pb-16 relative z-10">
+        <div className="min-h-dvh bg-off-white font-urbanist" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
+          <div className="mx-auto max-w-[920px] px-4 pt-16 pb-16">
             <div className="rounded-[12px] border border-coral/20 bg-coral/5 p-6">
               <h1 className="text-2xl font-semibold text-charcoal mb-3" style={fontStyle}>Special creation is restricted</h1>
               <p className="text-charcoal/80 mb-5" style={fontStyle}>
@@ -602,22 +596,10 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
       <style dangerouslySetInnerHTML={{ __html: authStyles }} />
       <style dangerouslySetInnerHTML={{ __html: animations }} />
       <div
-        className="min-h-dvh min-h-[100dvh] bg-gradient-to-b from-off-white/0 via-off-white/50 to-off-white relative overflow-hidden font-urbanist"
+        className="min-h-dvh bg-off-white font-urbanist"
         style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}
       >
-         {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
-            
-        <div className="min-h-[100dvh] bg-gradient-to-b from-off-white/0 via-off-white/50 to-off-white">
-          <section className="relative overflow-hidden">
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
-            
-            <div className="container mx-auto max-w-[1300px] px-4 sm:px-6 relative z-10">
+            <div className="container mx-auto max-w-[1300px] px-4 sm:px-6">
               <nav className="pb-1" aria-label="Breadcrumb">
                 <ol className="flex items-center gap-2 text-sm sm:text-base">
                   <li>
@@ -651,8 +633,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
                 )}
                 <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div className={`${sectionClassName} animate-fade-in-up animate-delay-100`}>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg pointer-events-none" />
                     <div className="relative z-10">
                       <h3 className="font-urbanist text-base font-semibold text-charcoal mb-6 flex items-center gap-3" style={fontStyle}>
                         <span className={ICON_CHIP_CLASS}>
@@ -716,8 +696,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
 
                   {(isEventForm || businesses.length > 0) ? (
                     <div className={`${sectionClassName} animate-fade-in-up animate-delay-200`}>
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg pointer-events-none" />
                       <div className="relative z-10 space-y-6">
                         <h3 className="font-urbanist text-base font-semibold text-charcoal flex items-center gap-3" style={fontStyle}>
                           <span className={ICON_CHIP_CLASS}>
@@ -850,8 +828,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
 
                   {(isEventForm || businesses.length > 0) ? (
                     <div className={`${sectionClassName} animate-fade-in-up animate-delay-300`}>
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg pointer-events-none" />
                       <div className="relative z-10 space-y-6">
                         <h3 className="font-urbanist text-base font-semibold text-charcoal flex items-center gap-3" style={fontStyle}>
                           <span className={ICON_CHIP_CLASS}>
@@ -1003,8 +979,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
                 </form>
               </div>
             </div>
-          </section>
-        </div>
       </div>
     </>
   );
