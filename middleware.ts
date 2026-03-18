@@ -1,5 +1,5 @@
 /**
- * Next.js 16 Proxy (formerly Middleware)
+ * Next.js Middleware
  *
  * Consolidates request handling into a single entrypoint:
  * - API CORS handling
@@ -16,7 +16,7 @@ function applyApiCorsHeaders(response: NextResponse) {
   return response;
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === '/api' || pathname.startsWith('/api/')) {
