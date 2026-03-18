@@ -177,7 +177,7 @@ export default function BusinessRow({
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
-                    className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
                   >
                     <BusinessCard business={business} index={index} />
                   </div>
@@ -195,7 +195,7 @@ export default function BusinessRow({
                   <m.div
                     key={business.id}
                     variants={itemVariants}
-                    className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
                   >
                     <BusinessCard business={business} index={index} />
                   </m.div>
@@ -207,7 +207,7 @@ export default function BusinessRow({
               {businesses.map((business, index) => (
                 <div
                   key={business.id}
-                  className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                  className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
                 >
                   <BusinessCard business={business} index={index} />
                 </div>
