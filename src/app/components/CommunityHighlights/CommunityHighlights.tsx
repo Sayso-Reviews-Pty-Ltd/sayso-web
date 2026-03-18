@@ -209,7 +209,7 @@ export default function CommunityHighlights({
                 return (
                   <div
                     key={reviewer.id}
-                    className=" snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
+                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
                   >
                     <ReviewerCard
                       reviewer={reviewer}
@@ -441,7 +441,7 @@ export default function CommunityHighlights({
                       {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
                         <div
                           key={business.id}
-                          className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
                         >
                           <BusinessOfTheMonthCard
                             business={business}
@@ -462,7 +462,7 @@ export default function CommunityHighlights({
                         <m.div
                           key={business.id}
                           variants={itemVariants}
-                          className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
                         >
                           <BusinessOfTheMonthCard
                             business={business}
@@ -475,7 +475,7 @@ export default function CommunityHighlights({
                 ) : (
                   <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
                     {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
-                      <div key={business.id} className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width">
+                      <div key={business.id} className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width">
                         <BusinessOfTheMonthCard
                           business={business}
                           index={index}
