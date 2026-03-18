@@ -158,7 +158,7 @@ function normalizeRole(value: string | null | undefined): NormalizedRole | null 
   return null;
 }
 
-export async function proxy(request: NextRequest) {
+export async function handleRequest(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const requestId = Math.random().toString(36).substring(7); // For tracing requests
 

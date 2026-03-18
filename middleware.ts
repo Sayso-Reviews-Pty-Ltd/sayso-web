@@ -6,7 +6,7 @@
  * - Authentication, email verification, and onboarding routing
  */
 
-import { proxy as handleRequest } from './src/proxy';
+import { handleRequest } from './src/middleware-handler';
 import { NextResponse, type NextRequest } from 'next/server';
 
 function applyApiCorsHeaders(response: NextResponse) {
