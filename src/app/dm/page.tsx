@@ -65,7 +65,7 @@ export default function DMPage() {
       <style dangerouslySetInnerHTML={{ __html: animations }} />
       <div className="min-h-[100dvh] bg-off-white">
       <m.div
-        className="mx-auto w-full max-w-[2000px] px-2 relative pb-1 hidden sm:block"
+        className="mx-auto w-full max-w-[2000px] px-2 relative pb-1"
         {...getChoreoItemMotion({ order: 0, intent: 'inline', enabled: choreoEnabled })}
       >
         <nav className="pb-1" aria-label="Breadcrumb">
