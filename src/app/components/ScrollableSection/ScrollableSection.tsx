@@ -38,7 +38,6 @@ export default function ScrollableSection({
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [showSwipeHint, setShowSwipeHint] = useState(true);
   const previousScrollLeftRef = useRef(0);
 
   const syncMobileSnapTargets = () => {
@@ -72,7 +71,6 @@ export default function ScrollableSection({
     setShowRightArrow(scrollLeft < maxScrollLeft - 10);
     setShowLeftArrow(scrollLeft > 10);
 
-    if (scrollLeft > 5) setShowSwipeHint(false);
     previousScrollLeftRef.current = scrollLeft;
   };
 
@@ -202,27 +200,6 @@ export default function ScrollableSection({
 
       `}</style>
 
-      {shouldEnableMobilePeek && canScrollRight && (
-        <div
-          className="pointer-events-none absolute right-2.5 top-1/2 z-30 -translate-y-1/2 sm:hidden"
-          style={{
-            opacity: showSwipeHint ? 1 : 0,
-            transition: 'opacity 300ms ease-out',
-          }}
-          aria-hidden="true"
-        >
-          <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full border border-charcoal/10 bg-off-white/85 px-1.5">
-            <svg
-              className="h-3.5 w-3.5 text-charcoal/70"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </span>
-        </div>
-      )}
 
       {showArrows && (
         <>
