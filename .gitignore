@@ -148,8 +148,6 @@ businesses.csv
 businesses_mapping_report.txt
 docs/data/
 
-# External verification tokens
-public/google01a88f23a79c8d23.html
 
 # Bundle analyzer
 .next/analyze/
