@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import path from "path";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -17,6 +18,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const nextConfig: NextConfig = {
+  // Explicitly set the file tracing root so Vercel can find middleware.js.nft.json
+  outputFileTracingRoot: path.join(__dirname),
+
   // Enhanced Image optimization for maximum performance
   images: {
     // WebP first for fast encoding; AVIF second for clients that support it
@@ -122,8 +126,10 @@ const nextConfig: NextConfig = {
     return config;
   },
   
-  // Turbopack configuration (for Next.js 16+) - empty config to silence warning
-  turbopack: {},
+  // Turbopack configuration (for Next.js 16+)
+  turbopack: {
+    root: path.join(__dirname),
+  },
   
   // Headers for security and static asset caching
   async headers() {
