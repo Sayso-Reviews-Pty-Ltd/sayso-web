@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -8,7 +8,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useToast } from "../../contexts/ToastContext";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import { getBrowserSupabase } from "../../lib/supabase/client";
 import { usePasswordStrength, validatePassword } from "./Register/usePasswordStrength";
 import { AuthPageView } from "./AuthPageView";
 
@@ -22,7 +21,6 @@ interface AuthPageProps {
 export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
   const prefersReduced = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const supabase = getBrowserSupabase();
   const searchParams = useSearchParams();
 
   const { register, login, isLoading: authLoading, error: authError } = useAuth();
@@ -30,6 +28,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
 
   const [accountType, setAccountType] = useState<AccountType>("personal");
   const [authMode, setAuthMode] = useState<AuthMode>(defaultAuthMode);
+
 
   const [personalUsername, setPersonalUsername] = useState("");
   const [businessUsername, setBusinessUsername] = useState("");
@@ -47,7 +46,10 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
 
   const [mounted, setMounted] = useState(false);
   const [existingAccountError, setExistingAccountError] = useState(false);
-  const [existingAccountLabel, setExistingAccountLabel] = useState("Personal");
+
+  type UsernameAvailability = 'idle' | 'checking' | 'available' | 'taken';
+  const [usernameAvailability, setUsernameAvailability] = useState<UsernameAvailability>('idle');
+  const usernameCheckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isLoading = authLoading;
   const isRegisterMode = authMode === "register";
@@ -67,7 +69,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     if (message) {
       // Decode the message and show as toast
       const decodedMessage = decodeURIComponent(message.replace(/\+/g, " "));
-      showToast(decodedMessage, "sage", 4000);
+      showToast(decodedMessage, "sage", 8000);
       
       // Clean the URL
       if (typeof window !== "undefined") {
@@ -97,8 +99,35 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
   }, [authMode]);
 
   useEffect(() => {
-    resetFormState();
+    // Switching account types: preserve email/password/consent — only reset username + errors
+    setPersonalUsername("");
+    setBusinessUsername("");
+    setError("");
+    setExistingAccountError(false);
+    setUsernameTouched(false);
+    setUsernameAvailability('idle');
+    if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
   }, [accountType]);
+
+  const scheduleUsernameCheck = useCallback((value: string) => {
+    if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(value)) {
+      setUsernameAvailability('idle');
+      return;
+    }
+    setUsernameAvailability('checking');
+    usernameCheckTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/username/check?username=${encodeURIComponent(value)}`);
+        if (!res.ok) { setUsernameAvailability('idle'); return; }
+        const data = await res.json();
+        setUsernameAvailability(data.available ? 'available' : 'taken');
+      } catch {
+        setUsernameAvailability('idle');
+      }
+    }, 500);
+  }, []);
 
   const resetFormState = () => {
     setPersonalUsername("");
@@ -108,10 +137,11 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     setConsent(false);
     setError("");
     setExistingAccountError(false);
-    setExistingAccountLabel("Personal");
     setUsernameTouched(false);
     setEmailTouched(false);
     setPasswordTouched(false);
+    setUsernameAvailability('idle');
+    if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
   };
 
   const validateUsername = (value: string) => /^[a-zA-Z0-9_]{3,20}$/.test(value);
@@ -126,6 +156,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     if (!validateUsername(usernameValue)) {
       return "Username can only contain letters, numbers, and underscores";
     }
+    if (usernameAvailability === 'taken') return "Username is already taken";
     return "";
   };
 
@@ -153,6 +184,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
           !email ||
           !password ||
           !validateEmail(email) ||
+          usernameAvailability !== 'available' ||
           (isBusiness
             ? !businessUsername ||
               !validateUsername(businessUsername)
@@ -161,24 +193,6 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
           !password ||
           !validateEmail(email))
     : true;
-
-  const checkEmailExists = async (
-    normalizedEmail: string
-  ): Promise<{ exists: boolean; role?: "user" | "business_owner" | "admin" } | null> => {
-    try {
-      const { data, error: emailError } = await supabase
-        .from("profiles")
-        .select("user_id, role")
-        .eq("email", normalizedEmail)
-        .limit(1);
-
-      if (emailError) return null;
-      const exists = (data?.length || 0) > 0;
-      return { exists, role: data?.[0]?.role };
-    } catch {
-      return null;
-    }
-  };
 
   const handleLogin = async () => {
     if (!email?.trim() || !password?.trim()) {
@@ -274,37 +288,14 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const emailCheck = await checkEmailExists(normalizedEmail);
-
-    if (emailCheck === null) {
-      const msg =
-        "We couldn't confirm whether this email already exists. Please try again or log in.";
-      setError(msg);
-      showToast(msg, "error", 4000);
-      return;
-    }
-
-    if (emailCheck.exists) {
-      const accountLabel =
-        emailCheck.role === "business_owner"
-          ? "Business"
-          : emailCheck.role === "admin"
-            ? "Admin"
-            : "Personal";
-      setExistingAccountLabel(accountLabel);
-      setExistingAccountError(true);
-      const msg = `Email already registered for a ${accountLabel} account. Log in or use a different email.`;
-      setError(msg);
-      showToast(msg, "error", 4000);
-      return;
-    }
-
     const desiredRole = isBusiness ? "business_owner" : "user";
     const success = await register(
       normalizedEmail,
       password,
       usernameValue.trim(),
-      desiredRole
+      desiredRole,
+      undefined,
+      consent
     );
 
     if (success) {
@@ -336,9 +327,8 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
         lower.includes("user_exists")
       ) {
         setExistingAccountError(true);
-        const msg = "Email already exists. Please log in.";
-        setError(msg);
-        showToast(msg, "error", 4000);
+        setError(authError);
+        showToast(authError, "error", 4000);
       } else if (
         lower.includes("invalid email") ||
         (lower.includes("email address") && lower.includes("invalid"))
@@ -435,7 +425,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       accountType={accountType}
       authMode={authMode}
       existingAccountError={existingAccountError}
-      existingAccountLabel={existingAccountLabel}
+      usernameChecking={usernameAvailability === 'checking'}
       motionVariants={motionVariants}
       error={error}
       isOnline={isOnline}
@@ -463,10 +453,12 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       onPersonalUsernameChange={(value) => {
         setPersonalUsername(value);
         if (!usernameTouched) setUsernameTouched(true);
+        scheduleUsernameCheck(value);
       }}
       onBusinessUsernameChange={(value) => {
         setBusinessUsername(value);
         if (!usernameTouched) setUsernameTouched(true);
+        scheduleUsernameCheck(value);
       }}
       onUsernameBlur={() => setUsernameTouched(true)}
       onEmailChange={(value) => {

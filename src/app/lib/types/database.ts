@@ -73,6 +73,7 @@ export interface SignUpData {
   username: string;
   accountType?: 'user' | 'business_owner';
   displayName?: string;
+  consentGiven?: boolean;
 }
 
 export interface SignInData {

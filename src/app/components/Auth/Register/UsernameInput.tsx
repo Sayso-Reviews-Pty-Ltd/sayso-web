@@ -12,6 +12,7 @@ interface UsernameInputProps {
   error?: string;
   touched: boolean;
   disabled?: boolean;
+  checking?: boolean;
 }
 
 export function UsernameInput({
@@ -21,7 +22,8 @@ export function UsernameInput({
   onBlur,
   error,
   touched,
-  disabled = false
+  disabled = false,
+  checking = false,
 }: UsernameInputProps) {
   const generatedId = useId().replace(/:/g, "");
   const inputId = id ?? `auth-username-${generatedId}`;
@@ -76,10 +78,10 @@ export function UsernameInput({
           {error}
         </p>
       </AutoDismissFeedback>
-      <AutoDismissFeedback type="success" message={isValid ? "Username looks good." : null} resetKey={focusKey}>
+      <AutoDismissFeedback type="success" message={checking ? "checking" : isValid ? "Username looks good." : null} resetKey={focusKey}>
         <p id={successId} className="auth-field-feedback auth-field-feedback-success" role="status">
           <CheckCircle className="w-3 h-3" aria-hidden="true" />
-          Username looks good.
+          {checking ? "Checking availability…" : "Username looks good."}
         </p>
       </AutoDismissFeedback>
     </div>

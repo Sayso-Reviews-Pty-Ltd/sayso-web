@@ -34,7 +34,7 @@ type AuthPageViewProps = {
   accountType: AccountType;
   authMode: AuthMode;
   existingAccountError: boolean;
-  existingAccountLabel: string;
+  usernameChecking: boolean;
   motionVariants: MotionVariants;
   error: string;
   isOnline: boolean;
@@ -77,7 +77,7 @@ export function AuthPageView({
   accountType,
   authMode,
   existingAccountError,
-  existingAccountLabel,
+  usernameChecking,
   motionVariants,
   error,
   isOnline,
@@ -242,7 +242,7 @@ export function AuthPageView({
                         className="text-blue-700 mb-6"
                         style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
                       >
-                        Email already registered for a {existingAccountLabel} account. Log in or use a different email.
+                        {error || "Email already registered. Log in or use a different email."}
                       </p>
 
                       <div className="space-y-3">
@@ -307,6 +307,7 @@ export function AuthPageView({
                                   error={usernameError}
                                   touched={usernameTouched}
                                   disabled={isFormDisabled}
+                                  checking={usernameChecking}
                                 />
                                 <p
                                   className="text-xs text-white/80 mt-1"
@@ -323,6 +324,7 @@ export function AuthPageView({
                                 error={usernameError}
                                 touched={usernameTouched}
                                 disabled={isFormDisabled}
+                                checking={usernameChecking}
                               />
                             )}
                           </>

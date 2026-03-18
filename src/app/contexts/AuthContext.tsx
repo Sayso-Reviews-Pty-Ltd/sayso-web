@@ -19,7 +19,8 @@ interface AuthContextType {
     password: string,
     username: string,
     accountType?: 'user' | 'business_owner',
-    displayName?: string
+    displayName?: string,
+    consentGiven?: boolean
   ) => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<AuthUser>) => Promise<void>;
@@ -368,7 +369,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       password: string,
       username: string,
       accountType: 'user' | 'business_owner' = 'user',
-      displayName?: string
+      displayName?: string,
+      consentGiven?: boolean
     ): Promise<boolean> => {
       setIsLoading(true);
       setError(null);
@@ -379,7 +381,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           password,
           username,
           accountType,
-          displayName
+          displayName,
+          consentGiven
         });
         if (authError) {
           const rawMessage = authError?.message || '';

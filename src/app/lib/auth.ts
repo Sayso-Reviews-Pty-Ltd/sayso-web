@@ -31,18 +31,27 @@ export class AuthService {
     password,
     username,
     accountType = 'user',
-    displayName
+    displayName,
+    consentGiven,
   }: SignUpData): Promise<{ user: AuthUser | null; session: Session | null; error: AuthError | null }> {
     const supabase = this.getClient();
     try {
       // Basic validation
+      if (consentGiven === false) {
+        return {
+          user: null,
+          session: null,
+          error: { message: 'You must accept the Terms of Use and Privacy Policy to register.', code: 'consent_required' }
+        };
+      }
+
       if (!email?.trim() || !password?.trim()) {
         return {
           user: null,
           session: null,
           error: { message: 'Email and password are required' }
         };
-        
+
       }
 
       if (!username?.trim()) {
