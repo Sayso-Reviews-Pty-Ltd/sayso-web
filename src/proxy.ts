@@ -540,7 +540,6 @@ export async function proxy(request: NextRequest) {
       edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_public' });
       return response;
     }
-    const isGuestHomePath = pathname === '/home' || pathname === '/home/';
     if (isGuestHomePath) {
       edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_entry_onboarding' });
       return redirectWithGuard(request, new URL('/onboarding', request.url));
