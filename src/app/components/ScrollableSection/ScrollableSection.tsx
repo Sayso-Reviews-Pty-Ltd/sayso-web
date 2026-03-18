@@ -39,6 +39,7 @@ export default function ScrollableSection({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const previousScrollLeftRef = useRef(0);
 
   const syncMobileSnapTargets = () => {
@@ -72,7 +73,16 @@ export default function ScrollableSection({
     setShowRightArrow(scrollLeft < maxScrollLeft - 10);
     setShowLeftArrow(scrollLeft > 10);
 
-    if (scrollLeft > 5) setShowSwipeHint(false);
+    const delta = scrollLeft - previousScrollLeftRef.current;
+    // Requested behavior:
+    // - hide while user scrolls/swipes left
+    // - show while user scrolls/swipes right
+    // For horizontal containers, swipe-left usually increases scrollLeft.
+    if (delta > 0.5) {
+      setShowSwipeHint(false);
+    } else if (delta < -0.5) {
+      setShowSwipeHint(true);
+    }
     previousScrollLeftRef.current = scrollLeft;
   };
 
@@ -133,6 +143,30 @@ export default function ScrollableSection({
     };
   }, [children, className, shouldEnableMobilePeek]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(max-width: 767px)");
+
+    const updateViewport = () => {
+      setIsMobileViewport(mql.matches);
+    };
+
+    updateViewport();
+    if ("addEventListener" in mql) {
+      mql.addEventListener("change", updateViewport);
+      return () => mql.removeEventListener("change", updateViewport);
+    }
+
+    (mql as unknown as { addListener?: (listener: () => void) => void }).addListener?.(
+      updateViewport
+    );
+    return () => {
+      (mql as unknown as { removeListener?: (listener: () => void) => void }).removeListener?.(
+        updateViewport
+      );
+    };
+  }, []);
+
   const scrollRight = () => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
@@ -190,7 +224,7 @@ export default function ScrollableSection({
       <style jsx>{`
         @media (max-width: 639px) {
           .scrollable-mobile-center :global(.snap-start[data-mobile-snap-target="true"]) {
-            scroll-snap-align: start !important;
+            scroll-snap-align: center !important;
             scroll-snap-stop: always !important;
           }
 
@@ -200,25 +234,89 @@ export default function ScrollableSection({
           }
         }
 
+        @keyframes mobile-scroll-indicator-pulse {
+          0% {
+            opacity: 0.6;
+            transform: translate3d(0, 0, 0);
+          }
+          50% {
+            opacity: 1;
+            transform: translate3d(4px, 0, 0);
+          }
+          100% {
+            opacity: 0.6;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        @keyframes mobile-scroll-indicator-pulse-left {
+          0% {
+            opacity: 0.6;
+            transform: translate3d(0, 0, 0);
+          }
+          50% {
+            opacity: 1;
+            transform: translate3d(-4px, 0, 0);
+          }
+          100% {
+            opacity: 0.6;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        .mobile-scroll-indicator {
+          animation: mobile-scroll-indicator-pulse 1000ms ease-in-out infinite;
+        }
+
+        .mobile-scroll-indicator-left {
+          animation: mobile-scroll-indicator-pulse-left 1000ms ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .mobile-scroll-indicator,
+          .mobile-scroll-indicator-left {
+            animation: none;
+          }
+        }
       `}</style>
 
-      {shouldEnableMobilePeek && canScrollRight && (
-        <div
-          className="pointer-events-none absolute right-2.5 top-1/2 z-30 -translate-y-1/2 sm:hidden"
-          style={{
-            opacity: showSwipeHint ? 1 : 0,
-            transition: 'opacity 300ms ease-out',
-          }}
-          aria-hidden="true"
-        >
+      {shouldEnableMobilePeek && isMobileViewport && canScrollLeft && (
+        <div className="pointer-events-none absolute left-2.5 top-1/2 z-30 -translate-y-1/2 md:hidden">
           <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full border border-charcoal/10 bg-off-white/85 px-1.5">
             <svg
-              className="h-3.5 w-3.5 text-charcoal/70"
+              className="mobile-scroll-indicator-left h-3.5 w-3.5 text-charcoal/70"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 5l-7 7 7 7"
+              />
+            </svg>
+          </span>
+        </div>
+      )}
+
+      {shouldEnableMobilePeek && isMobileViewport && canScrollRight && showSwipeHint && (
+        <div className="pointer-events-none absolute right-2.5 top-1/2 z-30 -translate-y-1/2 md:hidden">
+          <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full border border-charcoal/10 bg-off-white/85 px-1.5">
+            <svg
+              className="mobile-scroll-indicator h-3.5 w-3.5 text-charcoal/70"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </span>
         </div>
