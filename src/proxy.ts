@@ -534,12 +534,14 @@ export async function proxy(request: NextRequest) {
       edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_mode_explicit' });
       return response;
     }
-    const isGuestEntryPath = pathname === '/' || pathname === '/home' || pathname === '/home/';
-    if (isGuestEntryPath) {
-      if (pathname === '/' && isCrawlerRequest(request)) {
-        edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_bot_allowed' });
-        return response;
-      }
+    // Root is always publicly accessible — it renders the home page and must be
+    // crawlable by Googlebot, the Google Inspection Tool, and all other bots.
+    if (pathname === '/') {
+      edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_public' });
+      return response;
+    }
+    const isGuestHomePath = pathname === '/home' || pathname === '/home/';
+    if (isGuestHomePath) {
       edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_entry_onboarding' });
       return redirectWithGuard(request, new URL('/onboarding', request.url));
     }
