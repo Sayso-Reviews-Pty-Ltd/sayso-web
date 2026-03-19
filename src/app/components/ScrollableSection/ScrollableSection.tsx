@@ -221,7 +221,7 @@ export default function ScrollableSection({
       container.scrollTo({ left: next ? next.offsetLeft : container.scrollLeft + container.clientWidth, behavior: 'smooth' });
     } else {
       const cardWidth = container.clientWidth * 0.25;
-      const gap = 12; // gap-3 on larger screens
+      const gap = 12; // gap-3 on sm+
       container.scrollLeft += cardWidth + gap;
     }
   };
@@ -240,7 +240,7 @@ export default function ScrollableSection({
       container.scrollTo({ left: prev ? prev.offsetLeft : 0, behavior: 'smooth' });
     } else {
       const cardWidth = container.clientWidth * 0.25;
-      const gap = 12; // gap-3 on larger screens
+      const gap = 12; // gap-3 on sm+
       container.scrollLeft -= cardWidth + gap;
     }
   };
@@ -249,7 +249,7 @@ export default function ScrollableSection({
     <div className="relative">
       <div
         ref={scrollRef}
-        className={`horizontal-scroll scrollbar-hide scrollable-mobile-center flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory sm:snap-mandatory ${className}`}
+        className={`horizontal-scroll scrollbar-hide scrollable-mobile-center flex gap-2 sm:gap-3 overflow-x-auto pb-2 snap-x snap-mandatory sm:snap-mandatory ${className}`}
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',

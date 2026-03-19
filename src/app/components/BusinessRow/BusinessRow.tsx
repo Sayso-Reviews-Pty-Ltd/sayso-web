@@ -179,7 +179,7 @@ export default function BusinessRow({
           `}} />
           {isDesktop ? (
             disableAnimations ? (
-              <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
@@ -195,7 +195,7 @@ export default function BusinessRow({
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
-                className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
+                className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
               >
                 {businesses.map((business, index) => (
                   <m.div
@@ -209,7 +209,7 @@ export default function BusinessRow({
               </m.div>
             )
           ) : (
-            <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+            <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
               {businesses.map((business, index) => (
                 <div
                   key={business.id}
