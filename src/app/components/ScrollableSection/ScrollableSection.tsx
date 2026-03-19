@@ -218,7 +218,12 @@ export default function ScrollableSection({
       );
       const currentScroll = container.scrollLeft;
       const next = snapTargets.find((el) => el.offsetLeft > currentScroll + 5);
-      container.scrollTo({ left: next ? next.offsetLeft : container.scrollLeft + container.clientWidth, behavior: 'smooth' });
+      if (next) {
+        const centeredLeft = next.offsetLeft - (container.clientWidth - next.offsetWidth) / 2;
+        container.scrollTo({ left: Math.max(0, centeredLeft), behavior: 'smooth' });
+      } else {
+        container.scrollTo({ left: container.scrollLeft + container.clientWidth, behavior: 'smooth' });
+      }
     } else {
       const cardWidth = container.clientWidth * 0.25;
       const gap = 12; // gap-3 on sm+
@@ -237,7 +242,12 @@ export default function ScrollableSection({
       );
       const currentScroll = container.scrollLeft;
       const prev = [...snapTargets].reverse().find((el) => el.offsetLeft < currentScroll - 5);
-      container.scrollTo({ left: prev ? prev.offsetLeft : 0, behavior: 'smooth' });
+      if (prev) {
+        const centeredLeft = prev.offsetLeft - (container.clientWidth - prev.offsetWidth) / 2;
+        container.scrollTo({ left: Math.max(0, centeredLeft), behavior: 'smooth' });
+      } else {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      }
     } else {
       const cardWidth = container.clientWidth * 0.25;
       const gap = 12; // gap-3 on sm+
@@ -270,18 +280,13 @@ export default function ScrollableSection({
       <style jsx>{`
         @media (max-width: 639px) {
           .scrollable-mobile-center :global(.snap-start[data-mobile-snap-target="true"]) {
-            scroll-snap-align: start !important;
+            scroll-snap-align: center !important;
             scroll-snap-stop: always !important;
           }
 
           .scrollable-mobile-center :global(.snap-start:not([data-mobile-snap-target="true"])) {
             scroll-snap-align: none !important;
             scroll-snap-stop: normal !important;
-          }
-
-          /* RTL: flip snap alignment so cards anchor to the inline-end edge */
-          [dir="rtl"] .scrollable-mobile-center :global(.snap-start[data-mobile-snap-target="true"]) {
-            scroll-snap-align: end !important;
           }
 
           /* Scroll-driven scale+opacity: inline styles are set via rAF on each scroll frame.
