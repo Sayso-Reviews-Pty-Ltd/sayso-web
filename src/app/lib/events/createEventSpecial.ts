@@ -105,7 +105,7 @@ async function hasBusinessOwnerRole(supabase: any, userId: string): Promise<bool
 
   const role = profile?.role;
   const accountRole = profile?.account_role;
-  return role === 'business_owner' || role === 'both' || accountRole === 'business_owner';
+  return role === 'business_owner' || accountRole === 'business_owner';
 }
 
 async function isRateLimited(supabase: any, userId: string): Promise<boolean> {

@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../contexts/AuthContext";
 import Wordmark from "../components/Logo/Wordmark";
@@ -94,21 +94,12 @@ function Sidebar({
 }
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
   const { user, isLoading, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const role = user?.profile?.account_role || user?.profile?.role || null;
   const isAdmin = role === "admin";
-  const isBusiness = role === "business_owner";
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (!user) { router.replace("/login"); return; }
-    if (!user.email_verified) { router.replace("/verify-email"); return; }
-    if (!isAdmin) router.replace(isBusiness ? "/my-businesses" : "/home");
-  }, [isLoading, isAdmin, isBusiness, router, user]);
 
   // Close mobile nav on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);

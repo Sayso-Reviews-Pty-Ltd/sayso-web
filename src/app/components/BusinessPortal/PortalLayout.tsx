@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { X } from "@/app/lib/icons";
 import { useAuth } from "../../contexts/AuthContext";
 import PortalSidebar from "./PortalSidebar";
@@ -56,32 +56,14 @@ function PortalMainContentSkeleton() {
 }
 
 export default function PortalLayout({ children }: PortalLayoutProps) {
-  const router = useRouter();
   const pathname = usePathname();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const role = user?.profile?.account_role || user?.profile?.role || null;
-  const hasResolvedRole = Boolean(role);
   const isBusinessOwner = role === "business_owner";
   const isAdmin = role === "admin";
   const hasPortalAccess = Boolean(user && user.email_verified && (isBusinessOwner || isAdmin));
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
-    if (!user.email_verified) {
-      router.replace("/verify-email");
-      return;
-    }
-    if (!hasResolvedRole) return;
-    if (!isBusinessOwner && !isAdmin) {
-      router.replace("/home");
-    }
-  }, [hasResolvedRole, isAdmin, isBusinessOwner, isLoading, router, user]);
 
   useEffect(() => {
     setMobileOpen(false);

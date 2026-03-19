@@ -8,10 +8,12 @@
 import { useEffect } from 'react';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { swrConfig } from '../lib/swrConfig';
-import { businessUpdateEvents, notifyBusinessDeleted } from '../lib/utils/businessUpdateEvents';
+import { businessUpdateEvents } from '../lib/utils/businessUpdateEvents';
+import { authenticatedFetch } from '../lib/api/authenticatedFetch';
+import { swrKeys } from '../lib/swrKeys';
 
 async function fetchBusiness([, businessId]: [string, string]): Promise<any> {
-  const response = await fetch(`/api/businesses/${businessId}`);
+  const response = await authenticatedFetch(`/api/businesses/${businessId}`);
 
   if (!response.ok) {
     const err: any = new Error(`Failed to fetch business: ${response.status}`);
@@ -22,12 +24,20 @@ async function fetchBusiness([, businessId]: [string, string]): Promise<any> {
   return response.json();
 }
 
-export function useBusinessDetail(businessId: string | null | undefined) {
-  const swrKey = businessId ? (['/api/businesses/detail', businessId] as [string, string]) : null;
+interface UseBusinessDetailOptions {
+  fallbackBusiness?: any | null;
+}
+
+export function useBusinessDetail(
+  businessId: string | null | undefined,
+  options: UseBusinessDetailOptions = {},
+) {
+  const swrKey = swrKeys.businessDetail(businessId);
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchBusiness, {
     ...swrConfig,
     dedupingInterval: 30_000,
+    fallbackData: options.fallbackBusiness ?? undefined,
   });
 
   // Visibility-based refetch
@@ -73,5 +83,5 @@ export function useBusinessDetail(businessId: string | null | undefined) {
  * Globally invalidate a business's cached data.
  */
 export function invalidateBusinessDetail(businessId: string) {
-  globalMutate(['/api/businesses/detail', businessId]);
+  globalMutate(swrKeys.businessDetail(businessId));
 }

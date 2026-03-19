@@ -9,6 +9,13 @@ import { Business } from '../components/BusinessCard/BusinessCard';
 import { type UserPreferences } from './useUserPreferences';
 import { businessUpdateEvents } from '../lib/utils/businessUpdateEvents';
 import { swrConfig } from '../lib/swrConfig';
+import {
+  buildForYouQueryParams,
+  buildForYouRequestContract,
+  type ForYouRequestContract,
+  swrKeys,
+} from '../lib/swrKeys';
+import { authenticatedFetch } from '../lib/api/authenticatedFetch';
 
 const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: unknown[]) => {
@@ -64,7 +71,7 @@ function buildBusinessesParams(options: UseBusinessesOptions): URLSearchParams {
 async function fetchBusinessesData(url: string, cache?: RequestCache): Promise<Business[]> {
   const fetchOptions: RequestInit = {};
   if (cache) fetchOptions.cache = cache;
-  const response = await fetch(url, fetchOptions);
+  const response = await authenticatedFetch(url, fetchOptions);
   if (!response.ok) {
     const contentType = response.headers.get('content-type') || '';
     const rawText = await response.text();
@@ -226,28 +233,8 @@ export function useBusinesses(options: UseBusinessesOptions = {}): UseBusinesses
 export { useTrendingBusinesses } from './useTrendingBusinesses';
 
 async function fetchForYouData([, requestKey]: [string, string]): Promise<Business[]> {
-  const parsed = JSON.parse(requestKey) as {
-    limit: number;
-    interestIds: string[];
-    subInterestIds: string[];
-    dealbreakerIds: string[];
-    preferredPriceRanges: string[];
-    latitude: number | null;
-    longitude: number | null;
-    requireCoordinates: boolean;
-  };
-  const params = new URLSearchParams();
-  params.set('limit', parsed.limit.toString());
-  params.set('feed_strategy', 'mixed');
-  if (parsed.interestIds.length > 0) params.set('interest_ids', parsed.interestIds.join(','));
-  if (parsed.subInterestIds.length > 0) params.set('sub_interest_ids', parsed.subInterestIds.join(','));
-  if (parsed.dealbreakerIds.length > 0) params.set('dealbreakers', parsed.dealbreakerIds.join(','));
-  if (parsed.preferredPriceRanges.length > 0) params.set('preferred_price_ranges', parsed.preferredPriceRanges.join(','));
-  if (parsed.requireCoordinates) params.set('require_coordinates', 'true');
-  if (parsed.latitude && parsed.longitude) {
-    params.set('lat', parsed.latitude.toString());
-    params.set('lng', parsed.longitude.toString());
-  }
+  const parsed = JSON.parse(requestKey) as ForYouRequestContract;
+  const params = buildForYouQueryParams(parsed);
   devLog('[useForYouBusinesses] Fetching with V2 recommender:', {
     interestIds: parsed.interestIds.length,
     subInterestIds: parsed.subInterestIds.length,
@@ -255,7 +242,7 @@ async function fetchForYouData([, requestKey]: [string, string]): Promise<Busine
     preferredPriceRanges: parsed.preferredPriceRanges.length,
     requireCoordinates: parsed.requireCoordinates,
   });
-  const response = await fetch(`/api/businesses?${params.toString()}`);
+  const response = await authenticatedFetch(`/api/businesses?${params.toString()}`);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const message = data?.error ?? (response.status === 404 ? 'For You feed unavailable' : response.statusText);
@@ -320,9 +307,9 @@ export function useForYouBusinesses(
     return undefined;
   }, [dealbreakerIds]);
 
-  const requestKey = useMemo(
+  const requestContract = useMemo(
     () =>
-      JSON.stringify({
+      buildForYouRequestContract({
         limit,
         interestIds: interestIds ?? [],
         subInterestIds: subInterestIds ?? [],
@@ -346,12 +333,13 @@ export function useForYouBusinesses(
 
   const swrKey = (extraOptions.skip || shouldWaitForPreferences)
     ? null
-    : (['for-you', requestKey] as [string, string]);
+    : swrKeys.forYou(requestContract);
 
   const fallbackBusinesses = extraOptions.initialBusinesses ?? [];
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchForYouData, {
     ...swrConfig,
     keepPreviousData: true,
+    fallbackData: fallbackBusinesses,
   });
 
   useEffect(() => {

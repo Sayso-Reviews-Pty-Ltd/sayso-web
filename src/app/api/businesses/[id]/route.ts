@@ -4,6 +4,7 @@ import { invalidateBusinessCache, fetchBusinessOptimized } from '../../../lib/ut
 import { notifyBusinessUpdated } from '../../../lib/utils/businessUpdateEvents';
 import { getInterestIdForSubcategory } from '../../../lib/onboarding/subcategoryMapping';
 import { isAdmin } from '../../../lib/admin';
+import { applyPrivateCachePolicy } from '../../../lib/cachePolicy';
 
 /**
  * GET /api/businesses/[id]
@@ -18,20 +19,20 @@ export async function GET(
     
     if (!businessIdentifier || businessIdentifier.trim() === '') {
       console.error('[API] Invalid business identifier:', businessIdentifier);
-      return NextResponse.json(
+      return applyPrivateCachePolicy(NextResponse.json(
         { error: 'Business ID or slug is required' },
         { status: 400 }
-      );
+      ));
     }
     
     // Use optimized query function that handles both slug and ID lookups
     const business = await fetchBusinessOptimized(businessIdentifier, req, false);
     
     if (!business) {
-      return NextResponse.json(
+      return applyPrivateCachePolicy(NextResponse.json(
         { error: 'Business not found' },
         { status: 404 }
-      );
+      ));
     }
 
     // Hide non-active businesses from public access (pending/rejected must not leak)
@@ -49,10 +50,10 @@ export async function GET(
         // No auth or auth error — treat as anonymous
       }
       if (!isOwnerOrAdmin) {
-        return NextResponse.json(
+        return applyPrivateCachePolicy(NextResponse.json(
           { error: 'Business not found' },
           { status: 404 }
-        );
+        ));
       }
     }
 
@@ -73,7 +74,7 @@ export async function GET(
       interestId: resolvedInterestId,
     };
 
-    return NextResponse.json(payload);
+    return applyPrivateCachePolicy(NextResponse.json(payload), { noStore: false, maxAge: 60 });
   } catch (error: any) {
     console.error('[API] Error in GET business:', {
       message: error?.message,
@@ -84,19 +85,19 @@ export async function GET(
     
     // Return appropriate error status based on error type
     if (error?.message?.includes('not found') || error?.message?.includes('does not exist')) {
-      return NextResponse.json(
+      return applyPrivateCachePolicy(NextResponse.json(
         { error: 'Business not found' },
         { status: 404 }
-      );
+      ));
     }
     
-    return NextResponse.json(
+    return applyPrivateCachePolicy(NextResponse.json(
       { 
         error: 'Failed to fetch business',
         details: error?.message || 'Internal server error',
       },
       { status: 500 }
-    );
+    ));
   }
 }
 

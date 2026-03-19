@@ -69,6 +69,7 @@ type ForYouClientProps = {
   initialBusinesses: Business[];
   initialPreferences: UserPreferences;
   initialPreferencesLoaded: boolean;
+  initialOnboardingEmpty?: boolean;
   initialError?: string | null;
 };
 
@@ -76,6 +77,7 @@ export default function ForYouClient({
   initialBusinesses,
   initialPreferences,
   initialPreferencesLoaded,
+  initialOnboardingEmpty = false,
   initialError = null,
 }: ForYouClientProps) {
   usePredefinedPageTitle('forYou');
@@ -107,7 +109,9 @@ export default function ForYouClient({
   const resultsContainerRef = useRef<HTMLDivElement>(null);
   const previousPageRef = useRef(currentPage);
   const hasClientLoadingCycleRef = useRef(false);
-  const [hasClientFetchSettled, setHasClientFetchSettled] = useState(hasInitialBusinesses);
+  const [hasClientFetchSettled, setHasClientFetchSettled] = useState(
+    hasInitialBusinesses || initialOnboardingEmpty,
+  );
   const showDebugInfo = process.env.NODE_ENV !== "production";
 
   // Debounce search query for real-time filtering (300ms delay)
@@ -166,6 +170,7 @@ export default function ForYouClient({
 
   // ✅ Use useForYouBusinesses for progressive fallback strategy
   // When searching, use activeInterestIds; otherwise use preferences
+  const shouldSkipForYouFetch = initialOnboardingEmpty && !isSearchActive && !hasUserInitiatedFilters;
   const {
     businesses,
     loading,
@@ -184,6 +189,7 @@ export default function ForYouClient({
     longitude: userLocation?.lng ?? null,
     searchQuery: debouncedSearchQuery.trim().length > 0 ? debouncedSearchQuery : null,
     sort: sortStrategy,
+      skip: shouldSkipForYouFetch,
       initialBusinesses,
       skipInitialFetch: hasInitialBusinesses,
       preferences,
@@ -192,6 +198,11 @@ export default function ForYouClient({
   );
 
   useEffect(() => {
+    if (shouldSkipForYouFetch) {
+      if (!hasClientFetchSettled) setHasClientFetchSettled(true);
+      return;
+    }
+
     if (hasInitialBusinesses) {
       if (!hasClientFetchSettled) {
         setHasClientFetchSettled(true);
@@ -214,7 +225,7 @@ export default function ForYouClient({
     if (hasClientLoadingCycleRef.current && !loading && !hasClientFetchSettled) {
       setHasClientFetchSettled(true);
     }
-  }, [businesses.length, hasClientFetchSettled, hasInitialBusinesses, loading]);
+  }, [businesses.length, hasClientFetchSettled, hasInitialBusinesses, loading, shouldSkipForYouFetch]);
 
   // Visibility-based refresh when tab becomes visible
   useEffect(() => {
@@ -262,6 +273,11 @@ export default function ForYouClient({
   const totalCount = useMemo(() => {
     return activeBusinesses.length;
   }, [activeBusinesses.length]);
+  const showOnboardingEmptyState =
+    initialOnboardingEmpty &&
+    !isSearchActive &&
+    !isFiltered &&
+    totalCount === 0;
 
   useEffect(() => {
     if (!showDebugInfo) return;
@@ -708,13 +724,30 @@ export default function ForYouClient({
                   /* Default empty state for filters/personalization */
                   <div className="bg-white border border-sage/20 rounded-3xl shadow-md px-6 py-16 text-center space-y-3">
                     <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                      {isFiltered ? 'No businesses match your filters' : 'Curated from your interests'}
+                      {showOnboardingEmptyState
+                        ? 'Pick your interests to personalize For You'
+                        : isFiltered
+                          ? 'No businesses match your filters'
+                          : 'Curated from your interests'}
                     </h2>
                     <p className="text-body-sm text-charcoal/60 max-w-[70ch] mx-auto" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
-                      {isFiltered
-                        ? 'Try adjusting your filters or check back soon as new businesses join the community.'
-                        : 'No matches in your selected categories yet. Adjust your interests or check back as more businesses join.'}
+                      {showOnboardingEmptyState
+                        ? 'We need a few preferences before we can curate recommendations for you.'
+                        : isFiltered
+                          ? 'Try adjusting your filters or check back soon as new businesses join the community.'
+                          : 'No matches in your selected categories yet. Adjust your interests or check back as more businesses join.'}
                     </p>
+                    {showOnboardingEmptyState ? (
+                      <div className="pt-2">
+                        <Link
+                          href="/interests"
+                          className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
+                          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                        >
+                          Select interests
+                        </Link>
+                      </div>
+                    ) : null}
                   </div>
                 )
               ) : (

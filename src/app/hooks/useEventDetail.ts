@@ -9,6 +9,8 @@ import { useEffect } from 'react';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { swrConfig } from '../lib/swrConfig';
 import type { Event } from '../lib/types/Event';
+import { authenticatedFetch } from '../lib/api/authenticatedFetch';
+import { swrKeys } from '../lib/swrKeys';
 
 interface EventDetailData {
   event: Event | null;
@@ -18,7 +20,7 @@ interface EventDetailData {
 }
 
 async function fetchEventDetail([, eventId]: [string, string]): Promise<EventDetailData> {
-  const response = await fetch(`/api/events-and-specials/${eventId}`);
+  const response = await authenticatedFetch(`/api/events-and-specials/${eventId}`);
 
   if (!response.ok) {
     const err: any = new Error(`Failed to fetch event: ${response.status}`);
@@ -41,12 +43,20 @@ async function fetchEventDetail([, eventId]: [string, string]): Promise<EventDet
   };
 }
 
-export function useEventDetail(eventId: string | null | undefined) {
-  const swrKey = eventId ? (['/api/events-and-specials', eventId] as [string, string]) : null;
+interface UseEventDetailOptions {
+  fallbackEventDetail?: EventDetailData | null;
+}
+
+export function useEventDetail(
+  eventId: string | null | undefined,
+  options: UseEventDetailOptions = {},
+) {
+  const swrKey = swrKeys.eventDetail(eventId);
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchEventDetail, {
     ...swrConfig,
     dedupingInterval: 60_000,
+    fallbackData: options.fallbackEventDetail ?? undefined,
   });
 
   useEffect(() => {
@@ -74,5 +84,5 @@ export function useEventDetail(eventId: string | null | undefined) {
 }
 
 export function invalidateEventDetail(eventId: string) {
-  globalMutate(['/api/events-and-specials', eventId]);
+  globalMutate(swrKeys.eventDetail(eventId));
 }

@@ -109,7 +109,8 @@ export const useHeaderState = ({
   const isBusinessAccountUser =
     !forcePersonalMode && !isAdminUser && userCurrentRole === "business_owner";
   const shouldUseBusinessNotifications = false;
-  const hasMultipleRoles = user?.profile?.role === "both";
+  // Schema source-of-truth: profiles.role is one of user|business_owner|admin.
+  const hasMultipleRoles = false;
   const isGuest = !authLoading && !user;
   // ============================================================================
   // BUSINESS ACCESS CHECK
@@ -494,4 +495,3 @@ export const useHeaderState = ({
     fontStyle: HEADER_FONT_STYLE,
   };
 };
-

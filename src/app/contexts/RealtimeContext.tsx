@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import { BadgeNotification } from '../components/Realtime/RealtimeIndicators';
 import { useRealtimeBadges } from '../hooks/useRealtime';
 import { useAuth } from './AuthContext';
+import { AuthLifecycleEventType, subscribeAuthLifecycleEvent } from '../lib/authLifecycle';
 
 interface RealtimeContextType {
   showBadgeNotification: (badge: BadgeData) => void;
@@ -56,6 +57,23 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const handleClose = useCallback(() => {
     setCurrentBadge(null);
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = subscribeAuthLifecycleEvent((detail) => {
+      if (
+        detail.type !== AuthLifecycleEventType.SESSION_INVALIDATED &&
+        detail.type !== AuthLifecycleEventType.SIGNED_OUT
+      ) {
+        return;
+      }
+
+      setCurrentBadge(null);
+      setBadgeQueue([]);
+      clearNewBadges();
+    });
+
+    return () => unsubscribe();
+  }, [clearNewBadges]);
 
   return (
     <RealtimeContext.Provider

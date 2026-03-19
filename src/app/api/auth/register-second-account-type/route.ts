@@ -3,9 +3,9 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 /**
- * Endpoint to add a second account type to an existing email.
- * Instead of creating a duplicate auth user, this updates the profile to role='both'
- * and allows the user to switch between modes.
+ * Endpoint kept for backward compatibility.
+ * Current schema does not support multi-role profiles ("both"), so this route
+ * intentionally returns 410.
  * 
  * POST /api/auth/register-second-account-type
  * Body: { accountType: 'user' | 'business_owner' }

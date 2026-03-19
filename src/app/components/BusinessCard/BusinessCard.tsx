@@ -199,8 +199,11 @@ function BusinessCard({
 
   // Check if user is a business account
   const isBusinessAccount = useMemo(() => {
-    return user?.profile?.role === 'business_owner' || user?.profile?.role === 'both';
-  }, [user?.profile?.role]);
+    return (
+      user?.profile?.account_role === 'business_owner' ||
+      user?.profile?.role === 'business_owner'
+    );
+  }, [user?.profile?.account_role, user?.profile?.role]);
 
   // Determine if actions should be shown
   const showActions = useMemo(() => {

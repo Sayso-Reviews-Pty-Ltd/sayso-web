@@ -6,12 +6,10 @@ import { useAuth } from "../../contexts/AuthContext";
 export function RoleSwitcher() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Check if user has multiple roles
-  const userRole = user?.profile?.role;
-  const hasMultipleRoles = userRole === 'both';
+  // Schema source-of-truth: profiles.role does not support "both".
+  const hasMultipleRoles = false;
   const currentRole = user?.profile?.account_role;
-  
+
   if (!hasMultipleRoles || !user) return null;
 
   const handleSwitchRole = async (newRole: 'user' | 'business_owner') => {
@@ -74,4 +72,3 @@ export function RoleSwitcher() {
     </div>
   );
 }
-

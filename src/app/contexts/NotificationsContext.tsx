@@ -7,6 +7,9 @@ import { formatTimeAgo } from "../utils/formatTimeAgo";
 import { getBrowserSupabase } from "../lib/supabase/client";
 import { swrConfig } from "../lib/swrConfig";
 import { fireBadgeCelebration } from "../lib/celebration/badgeCelebration";
+import { AuthLifecycleEventType, subscribeAuthLifecycleEvent } from "../lib/authLifecycle";
+import { authenticatedFetch } from "../lib/api/authenticatedFetch";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -77,7 +80,7 @@ const PERSONAL_NOTIFICATIONS_ENDPOINT = '/api/notifications/user';
 const BUSINESS_NOTIFICATIONS_ENDPOINT = '/api/notifications/business';
 
 async function fetchNotificationsFromApi(url: string): Promise<DatabaseNotification[]> {
-  const res = await fetch(url);
+  const res = await authenticatedFetch(url);
   if (!res.ok) {
     const err: any = new Error(`HTTP ${res.status}`);
     err.status = res.status;
@@ -157,6 +160,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
   // ── Toast queue (realtime-only — not persisted in SWR cache) ────────────────
   const [toastQueue, setToastQueue] = useState<ToastNotificationData[]>([]);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   const dismissToast = useCallback((id: string) => {
     setToastQueue(prev => prev.filter(n => n.id !== id));
@@ -218,11 +222,36 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
           setRealtimeFailed(true);
         }
       });
+    channelRef.current = channel;
 
     return () => {
+      channelRef.current = null;
       supabase.removeChannel(channel);
     };
   }, [userId, authLoading, mutate]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeAuthLifecycleEvent((detail) => {
+      if (
+        detail.type !== AuthLifecycleEventType.SESSION_INVALIDATED &&
+        detail.type !== AuthLifecycleEventType.SIGNED_OUT
+      ) {
+        return;
+      }
+
+      const supabase = supabaseRef.current;
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      setToastQueue([]);
+      setRealtimeFailed(false);
+      void mutate([], { revalidate: false });
+    });
+
+    return () => unsubscribe();
+  }, [mutate]);
 
   // ── Mutations ────────────────────────────────────────────────────────────────
 
@@ -230,7 +259,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     // Optimistic update in SWR cache
     mutate(prev => (prev ?? []).map(n => n.id === id ? { ...n, read: true } : n), { revalidate: false });
     try {
-      const res = await fetch(`/api/notifications/${id}`, { method: 'PATCH' });
+      const res = await authenticatedFetch(`/api/notifications/${id}`, { method: 'PATCH' });
       if (!res.ok) {
         // Revert
         mutate(prev => (prev ?? []).map(n => n.id === id ? { ...n, read: false } : n), { revalidate: false });
@@ -244,7 +273,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     const previousCache = rawNotifications ?? [];
     mutate(prev => (prev ?? []).map(n => ({ ...n, read: true })), { revalidate: false });
     try {
-      const res = await fetch('/api/notifications/read-all', { method: 'PATCH' });
+      const res = await authenticatedFetch('/api/notifications/read-all', { method: 'PATCH' });
       if (!res.ok) {
         mutate(previousCache, { revalidate: false });
       }
@@ -258,7 +287,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     const previousCache = rawNotifications ?? [];
     mutate(prev => (prev ?? []).filter(n => n.id !== id), { revalidate: false });
     try {
-      const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+      const res = await authenticatedFetch(`/api/notifications/${id}`, { method: 'DELETE' });
       if (!res.ok) {
         mutate(previousCache, { revalidate: false });
       }

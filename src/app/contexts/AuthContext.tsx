@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { getBrowserSupabase } from '../lib/supabase/client';
 import { AuthService } from '../lib/auth';
 import type { AuthUser } from '../lib/types/database';
+import type { AuthSnapshot, AuthSnapshotStatus } from '../lib/authSnapshot';
+import { buildClientAuthSnapshot, UNKNOWN_AUTH_SNAPSHOT } from '../lib/authSnapshot';
+import { AuthLifecycleEventType, emitAuthLifecycleEvent, subscribeAuthLifecycleEvent } from '../lib/authLifecycle';
 
 function isSchemaCacheError(error: { message?: string } | null | undefined): boolean {
   const message = error?.message?.toLowerCase() || '';
@@ -13,6 +16,7 @@ function isSchemaCacheError(error: { message?: string } | null | undefined): boo
 
 interface AuthContextType {
   user: AuthUser | null;
+  snapshotStatus: AuthSnapshotStatus;
   login: (email: string, password: string, desiredRole?: 'user' | 'business_owner') => Promise<AuthUser | null>;
   register: (
     email: string,
@@ -39,6 +43,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /** Safe default when used outside AuthProvider (e.g. SSR or before mount). Guests see this until provider runs. */
 const DEFAULT_AUTH_CONTEXT: AuthContextType = {
   user: null,
+  snapshotStatus: "unknown",
   isLoading: false,
   error: null,
   login: async () => null,
@@ -51,11 +56,14 @@ const DEFAULT_AUTH_CONTEXT: AuthContextType = {
 
 interface AuthProviderProps {
   children: ReactNode;
+  initialSnapshot?: AuthSnapshot;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT }: AuthProviderProps) {
+  const initialUser = initialSnapshot.status === "authenticated" ? initialSnapshot.user : null;
+  const [user, setUser] = useState<AuthUser | null>(initialUser);
+  const [snapshotStatus, setSnapshotStatus] = useState<AuthSnapshotStatus>(initialSnapshot.status);
+  const [isLoading, setIsLoading] = useState(initialSnapshot.status === "unknown");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = getBrowserSupabase();
@@ -63,6 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Deduplicate concurrent getCurrentUser calls: reuse the same in-flight promise
   const fetchingUserRef = useRef<Promise<AuthUser | null> | null>(null);
   const initCompleteRef = useRef(false);
+  const forcedMiddlewareRecheckRef = useRef(false);
 
   const deduplicatedGetCurrentUser = useCallback((): Promise<AuthUser | null> => {
     if (fetchingUserRef.current) {
@@ -87,7 +96,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const initializeAuth = async () => {
       console.log('[AuthContext] Initializing auth...');
-      setIsLoading(true);
+      if (initialSnapshot.status === "unknown") {
+        setIsLoading(true);
+      }
 
       const attemptInit = async (attempt: number): Promise<void> => {
         if (!isMounted) return;
@@ -106,7 +117,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             has_profile: !!currentUser.profile,
           } : null);
 
-          setUser(currentUser);
+          const snapshot = buildClientAuthSnapshot(currentUser);
+          setUser(snapshot.user);
+          setSnapshotStatus(snapshot.status);
           setIsLoading(false);
           initCompleteRef.current = true;
           console.log('[AuthContext] Auth initialization complete');
@@ -130,6 +143,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           if (isMounted) {
             setIsLoading(false);
+            setSnapshotStatus("guest");
             initCompleteRef.current = true;
           }
         }
@@ -167,7 +181,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (authChangeTimer) clearTimeout(authChangeTimer);
         console.log('AuthContext: User signed out');
         setUser(null);
+        setSnapshotStatus("guest");
         setIsLoading(false);
+        emitAuthLifecycleEvent(AuthLifecycleEventType.SIGNED_OUT, event);
         return;
       }
 
@@ -179,12 +195,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         try {
           const currentUser = await deduplicatedGetCurrentUser();
-          if (isMounted && currentUser) {
-            console.log('AuthContext: User state updated', {
-              email: currentUser.email,
-              email_verified: currentUser.email_verified,
-            });
-            setUser(currentUser);
+          if (isMounted) {
+            if (currentUser) {
+              console.log('AuthContext: User state updated', {
+                email: currentUser.email,
+                email_verified: currentUser.email_verified,
+              });
+              setUser(currentUser);
+              setSnapshotStatus("authenticated");
+              if (event === "TOKEN_REFRESHED") {
+                emitAuthLifecycleEvent(AuthLifecycleEventType.SESSION_REFRESHED, "supabase_token_refreshed");
+              }
+            } else {
+              setUser(null);
+              setSnapshotStatus("guest");
+            }
             setIsLoading(false);
           }
         } catch (error) {
@@ -202,7 +227,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (authEvent.type === 'SIGNED_IN' || authEvent.type === 'SIGNED_OUT') {
             console.log('AuthContext: Auth state changed in another tab, refreshing...');
             deduplicatedGetCurrentUser().then(u => {
-              if (isMounted) setUser(u);
+              if (!isMounted) return;
+              setUser(u);
+              setSnapshotStatus(u ? "authenticated" : "guest");
+              if (!u && typeof window !== "undefined" && !forcedMiddlewareRecheckRef.current) {
+                forcedMiddlewareRecheckRef.current = true;
+                window.location.assign(window.location.href);
+              }
             }).catch(err => {
               console.warn('AuthContext: Error refreshing after storage event:', err);
             });
@@ -214,13 +245,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
     window.addEventListener('storage', handleStorageChange);
 
+    const unsubscribeLifecycle = subscribeAuthLifecycleEvent((detail) => {
+      if (detail.type === AuthLifecycleEventType.SESSION_INVALIDATED) {
+        void supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+        setUser(null);
+        setSnapshotStatus("guest");
+        setIsLoading(false);
+        // Force a single hard navigation so middleware can re-evaluate protected routing.
+        if (typeof window !== "undefined" && !forcedMiddlewareRecheckRef.current) {
+          forcedMiddlewareRecheckRef.current = true;
+          window.location.assign(window.location.href);
+        }
+      }
+      if (detail.type === AuthLifecycleEventType.SIGNED_OUT) {
+        setUser(null);
+        setSnapshotStatus("guest");
+      }
+    });
+
     return () => {
       isMounted = false;
       subscription.unsubscribe();
       if (authChangeTimer) clearTimeout(authChangeTimer);
       window.removeEventListener('storage', handleStorageChange);
+      unsubscribeLifecycle();
     };
-  }, [supabase, deduplicatedGetCurrentUser]);
+  }, [supabase, deduplicatedGetCurrentUser, initialSnapshot.status]);
 
   const login = async (email: string, password: string, desiredRole?: 'user' | 'business_owner'): Promise<AuthUser | null> => {
     setIsLoading(true);
@@ -241,9 +291,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Check if user has the desired role
         if (desiredRole && authUser.profile) {
-          const userRole = profileRole;
+          const userRole = profileAccountRole || profileRole;
           const hasDesiredRole =
-            userRole === 'admin' || userRole === 'both' || userRole === desiredRole;
+            userRole === 'admin' || userRole === desiredRole;
 
           if (!hasDesiredRole) {
             const accountTypeName = desiredRole === 'user' ? 'Personal' : 'Business';
@@ -262,6 +312,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         setUser(authUser);
+        setSnapshotStatus("authenticated");
         let activeUser = authUser;
 
         // Optionally switch role if user selected a different mode and they have access
@@ -270,7 +321,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             profileRole === 'admin' ||
             profileAccountRole === 'admin';
           const hasDesiredRole =
-            profileRole === 'both' || profileRole === desiredRole;
+            profileRole === desiredRole;
           const needsSwitch =
             !isAdminAccount && profileAccountRole !== desiredRole;
 
@@ -291,6 +342,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                   }
                 };
                 setUser(activeUser);
+                setSnapshotStatus("authenticated");
               }
             } catch (switchError) {
               console.warn('AuthContext: Failed to switch role after login', switchError);
@@ -364,7 +416,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-    const register = async (
+  const register = async (
       email: string,
       password: string,
       username: string,
@@ -418,6 +470,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             session_data: session
           });
           setUser(authUser);
+          setSnapshotStatus("authenticated");
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('pendingVerificationEmail', authUser.email);
             sessionStorage.setItem('pendingVerificationAccountType', accountType);
@@ -440,6 +493,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
     // Optimistic local clear keeps admin sign-out visually instant.
     setUser(null);
+    setSnapshotStatus("guest");
+    emitAuthLifecycleEvent(AuthLifecycleEventType.SIGNED_OUT, "logout");
 
     try {
       const { error: signOutError } = await AuthService.signOut();
@@ -608,6 +663,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const currentUser = await AuthService.getCurrentUser();
       if (currentUser) {
         setUser(currentUser);
+        setSnapshotStatus("authenticated");
+      } else {
+        setSnapshotStatus("guest");
       }
     } catch (error: unknown) {
       console.warn('AuthContext: Error refreshing user:', error);
@@ -683,6 +741,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Memoize context value to prevent unnecessary re-renders
   const value: AuthContextType = useMemo(() => ({
     user,
+    snapshotStatus,
     login,
     register,
     logout,
@@ -691,7 +750,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     resendVerificationEmail,
     isLoading,
     error
-  }), [user, isLoading, error, refreshUser]);
+  }), [user, snapshotStatus, isLoading, error, refreshUser]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -708,4 +767,3 @@ export function useAuth(): AuthContextType {
   }
   return context;
 }
-

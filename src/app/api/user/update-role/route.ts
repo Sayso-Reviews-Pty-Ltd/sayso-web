@@ -26,11 +26,9 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
       );
     }
 
-    const nextRole = existingProfile.role === 'both' ? 'both' : role;
-
     const { data: profile, error: updateError } = await supabase
       .from('profiles')
-      .update({ role: nextRole, account_role: role, updated_at: new Date().toISOString() })
+      .update({ role, account_role: role, updated_at: new Date().toISOString() })
       .eq('user_id', user.id)
       .select()
       .single();

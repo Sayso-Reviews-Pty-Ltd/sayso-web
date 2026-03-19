@@ -5,6 +5,7 @@ import {
   updateLastActive,
 } from '@/app/lib/services/userService';
 import type { ApiResponse, UpdatePreferencesPayload, PrivacySettings } from '@/app/lib/types/user';
+import { applyPrivateCachePolicy } from '@/app/lib/cachePolicy';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,10 +17,10 @@ export const dynamic = 'force-dynamic';
 export const GET = withOptionalUser(async (_req: NextRequest, { user, supabase }) => {
   try {
     if (!user) {
-      return NextResponse.json(
+      return applyPrivateCachePolicy(NextResponse.json(
         { interests: [], subcategories: [], dealbreakers: [] },
         { status: 200 }
-      );
+      ));
     }
 
     const [interestsResult, subcategoriesResult, dealbreakersResult] = await Promise.all([
@@ -44,17 +45,17 @@ export const GET = withOptionalUser(async (_req: NextRequest, { user, supabase }
     const subcategoryDetails = subcategoryIds.map(id => ({ id, name: id }));
     const dealbreakersDetails = dealbreakersIds.map(id => ({ id, name: id }));
 
-    return NextResponse.json({
+    return applyPrivateCachePolicy(NextResponse.json({
       interests: interestDetails,
       subcategories: subcategoryDetails,
       dealbreakers: dealbreakersDetails,
-    });
+    }));
   } catch (error: any) {
     console.error('[Preferences API] Unexpected error:', error);
-    return NextResponse.json(
+    return applyPrivateCachePolicy(NextResponse.json(
       { interests: [], subcategories: [], dealbreakers: [] },
       { status: 200 }
-    );
+    ));
   }
 });
 
@@ -92,7 +93,7 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
 
       if (privacyError) {
         console.error('[Preferences API] Error updating privacy settings:', privacyError);
-        return NextResponse.json(
+        return applyPrivateCachePolicy(NextResponse.json(
           {
             data: null,
             error: {
@@ -101,7 +102,7 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
             },
           },
           { status: 500 }
-        );
+        ));
       }
     }
 
@@ -204,7 +205,7 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
 
     const updatedProfile = await getUserProfile(supabase, userId);
 
-    return NextResponse.json({
+    return applyPrivateCachePolicy(NextResponse.json({
       data: {
         interests: interestsResult.data || [],
         subcategories: subcategoriesResult.data || [],
@@ -212,10 +213,10 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
         privacy_settings: updatedProfile?.privacy_settings || currentPrivacySettings,
       },
       error: null,
-    });
+    }));
   } catch (error: any) {
     console.error('[Preferences API] Error:', error);
-    return NextResponse.json(
+    return applyPrivateCachePolicy(NextResponse.json(
       {
         data: null,
         error: {
@@ -224,7 +225,6 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
         },
       },
       { status: 500 }
-    );
+    ));
   }
 });
-

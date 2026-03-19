@@ -174,7 +174,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
   const isSpecialForm = type === "special";
   const canCreateSpecialByRole =
     user?.profile?.role === "business_owner" ||
-    user?.profile?.role === "both" ||
     user?.profile?.account_role === "business_owner";
 
   useEffect(() => {

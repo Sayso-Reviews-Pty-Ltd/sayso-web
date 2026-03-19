@@ -29,6 +29,7 @@ import { generateOrganizationSchema, generateWebSiteSchema, generateSiteNavigati
 import ScrollToTopButton from "./components/Navigation/ScrollToTopButton";
 import BreadcrumbTitleSync from "./components/Navigation/BreadcrumbTitleSync";
 import SWRProvider from "./components/Providers/SWRProvider";
+import { getServerAuthSnapshot } from "./lib/serverAuthSnapshot";
 
 // Lazy load non-critical components for faster initial load
 const WebVitals = dynamicImport(() => import("./components/Performance/WebVitals"));
@@ -142,11 +143,12 @@ export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialAuthSnapshot = await getServerAuthSnapshot();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   return (
     <html
@@ -242,7 +244,7 @@ export default function RootLayout({
         />
         <SWRProvider>
         <ToastProvider>
-          <AuthProvider>
+          <AuthProvider initialSnapshot={initialAuthSnapshot}>
             <OnboardingProvider>
               <SavedItemsProvider>
                 <NotificationsProvider>
