@@ -39,6 +39,47 @@ export default function ScrollableSection({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const previousScrollLeftRef = useRef(0);
+  const cardEdgeObserverRef = useRef<IntersectionObserver | null>(null);
+
+  // Rebuilds the IntersectionObserver that drives the edge fade+scale animation.
+  // Must be called AFTER syncMobileSnapTargets so data-mobile-snap-target attrs are current.
+  const syncCardEdgeObserver = () => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    cardEdgeObserverRef.current?.disconnect();
+
+    // Only active on mobile peek rows — desktop cards are always fully visible.
+    if (!shouldEnableMobilePeek || window.innerWidth >= 640) {
+      container.querySelectorAll<HTMLElement>('[data-card-edge]').forEach((el) => {
+        el.removeAttribute('data-card-edge');
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          if (entry.intersectionRatio >= 0.85) {
+            el.removeAttribute('data-card-edge');
+          } else {
+            el.setAttribute('data-card-edge', 'true');
+          }
+        }
+      },
+      {
+        root: container,
+        threshold: [0, 0.5, 0.85, 1],
+      }
+    );
+
+    container
+      .querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
+      .forEach((el) => observer.observe(el));
+
+    cardEdgeObserverRef.current = observer;
+  };
 
   const syncMobileSnapTargets = () => {
     const container = scrollRef.current;
@@ -58,6 +99,8 @@ export default function ScrollableSection({
         target.setAttribute("data-mobile-snap-target", "true");
       }
     }
+
+    syncCardEdgeObserver();
   };
 
   const checkScrollPosition = () => {
@@ -92,16 +135,27 @@ export default function ScrollableSection({
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize);
 
-    const observer = new ResizeObserver(() => {
+    const resizeObserver = new ResizeObserver(() => {
       syncMobileSnapTargets();
       checkScrollPosition();
     });
-    observer.observe(scrollElement);
+    resizeObserver.observe(scrollElement);
+
+    // Catch cards added asynchronously (Framer Motion stagger, dynamic imports, async data).
+    // Observe childList only — NOT attributes, to avoid an infinite loop caused by
+    // syncMobileSnapTargets itself setting data-mobile-snap-target.
+    const mutationObserver = new MutationObserver(() => {
+      syncMobileSnapTargets();
+      checkScrollPosition();
+    });
+    mutationObserver.observe(scrollElement, { childList: true, subtree: true });
 
     return () => {
       scrollElement.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
-      observer.disconnect();
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      cardEdgeObserverRef.current?.disconnect();
     };
   }, []);
 
@@ -134,36 +188,38 @@ export default function ScrollableSection({
   const scrollRight = () => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
-    // On mobile: scroll by 1 full card (100vw minus padding), on larger screens: scroll by 1 card (25% width)
-    // Note: Default visible card count is DEFAULT_VISIBLE_CARD_COUNT (4 cards)
     const isMobile = window.innerWidth < 640; // sm breakpoint
     if (isMobile) {
-      // On mobile, scroll by one full viewport width (one card at a time)
-      const scrollAmount = container.clientWidth;
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      // Scroll to the next snap target's exact offsetLeft so mandatory snap doesn't jank back.
+      const snapTargets = Array.from(
+        container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
+      );
+      const currentScroll = container.scrollLeft;
+      const next = snapTargets.find((el) => el.offsetLeft > currentScroll + 5);
+      container.scrollTo({ left: next ? next.offsetLeft : container.scrollLeft + container.clientWidth, behavior: 'smooth' });
     } else {
       const cardWidth = container.clientWidth * 0.25;
       const gap = 12; // gap-3 on larger screens
-    const scrollAmount = cardWidth + gap;
-    container.scrollLeft += scrollAmount;
+      container.scrollLeft += cardWidth + gap;
     }
   };
 
   const scrollLeft = () => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
-    // On mobile: scroll by 1 full card (100vw minus padding), on larger screens: scroll by 1 card (25% width)
-    // Note: Default visible card count is DEFAULT_VISIBLE_CARD_COUNT (4 cards)
     const isMobile = window.innerWidth < 640; // sm breakpoint
     if (isMobile) {
-      // On mobile, scroll by one full viewport width (one card at a time)
-      const scrollAmount = container.clientWidth;
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      // Scroll to the previous snap target's exact offsetLeft.
+      const snapTargets = Array.from(
+        container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
+      );
+      const currentScroll = container.scrollLeft;
+      const prev = [...snapTargets].reverse().find((el) => el.offsetLeft < currentScroll - 5);
+      container.scrollTo({ left: prev ? prev.offsetLeft : 0, behavior: 'smooth' });
     } else {
       const cardWidth = container.clientWidth * 0.25;
       const gap = 12; // gap-3 on larger screens
-    const scrollAmount = cardWidth + gap;
-    container.scrollLeft -= scrollAmount;
+      container.scrollLeft -= cardWidth + gap;
     }
   };
 
@@ -183,6 +239,10 @@ export default function ScrollableSection({
         } as React.CSSProperties}
       >
         {children}
+        {/* Trailing spacer: closes the right-edge gap on the last card so it doesn't peek into the next section */}
+        {shouldEnableMobilePeek && (
+          <div className="flex-shrink-0 w-4 sm:hidden" aria-hidden="true" />
+        )}
       </div>
 
       <style jsx>{`
@@ -196,8 +256,33 @@ export default function ScrollableSection({
             scroll-snap-align: none !important;
             scroll-snap-stop: normal !important;
           }
-        }
 
+          /* RTL: flip snap alignment so cards anchor to the inline-end edge */
+          [dir="rtl"] .scrollable-mobile-center :global(.snap-start[data-mobile-snap-target="true"]) {
+            scroll-snap-align: end !important;
+          }
+
+          /* Edge fade+scale: cards partially off-screen dim and shrink slightly */
+          .scrollable-mobile-center :global([data-mobile-snap-target="true"]) {
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity  0.22s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform, opacity;
+          }
+          .scrollable-mobile-center :global([data-mobile-snap-target="true"][data-card-edge="true"]) {
+            transform: scale(0.93);
+            opacity: 0.6;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .scrollable-mobile-center :global([data-mobile-snap-target="true"]) {
+              transition: none;
+            }
+            .scrollable-mobile-center :global([data-mobile-snap-target="true"][data-card-edge="true"]) {
+              transform: none;
+              opacity: 0.75;
+            }
+          }
+        }
       `}</style>
 
 

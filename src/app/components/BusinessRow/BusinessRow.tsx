@@ -11,6 +11,11 @@ import LocationPromptBanner from "../Location/LocationPromptBanner";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 
+// Width of each card on mobile when peek is active.
+// 56px = section px-2 padding (8px × 2 = 16px) + ~40px visual peek allowance so the next card bleeds in.
+// If the outer padding of the section changes, update this value to maintain the peek effect.
+const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-56px)]';
+
 // Animation variants for staggered card appearance (matching badge page)
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -47,6 +52,7 @@ export default function BusinessRow({
 }) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
+  const isSingleCard = businesses.length === 1;
   const hasCoordinateBusinesses = useMemo(
     () =>
       businesses.some(
@@ -177,7 +183,7 @@ export default function BusinessRow({
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
-                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </div>
@@ -195,7 +201,7 @@ export default function BusinessRow({
                   <m.div
                     key={business.id}
                     variants={itemVariants}
-                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </m.div>
@@ -207,7 +213,7 @@ export default function BusinessRow({
               {businesses.map((business, index) => (
                 <div
                   key={business.id}
-                  className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width"
+                  className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
                 >
                   <BusinessCard business={business} index={index} />
                 </div>
