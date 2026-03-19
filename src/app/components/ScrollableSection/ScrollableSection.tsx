@@ -39,46 +39,60 @@ export default function ScrollableSection({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const previousScrollLeftRef = useRef(0);
-  const cardEdgeObserverRef = useRef<IntersectionObserver | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Rebuilds the IntersectionObserver that drives the edge fade+scale animation.
-  // Must be called AFTER syncMobileSnapTargets so data-mobile-snap-target attrs are current.
-  const syncCardEdgeObserver = () => {
+  // Continuously interpolates scale and opacity for every snap-target card based on
+  // its distance from the scroll-container's center. Called via rAF on every scroll
+  // frame so the effect is driven purely by position — no CSS transition lag.
+  const updateCardScaleOpacity = () => {
     const container = scrollRef.current;
-    if (!container) return;
 
-    cardEdgeObserverRef.current?.disconnect();
-
-    // Only active on mobile peek rows — desktop cards are always fully visible.
-    if (!shouldEnableMobilePeek || window.innerWidth >= 640) {
-      container.querySelectorAll<HTMLElement>('[data-card-edge]').forEach((el) => {
-        el.removeAttribute('data-card-edge');
-      });
+    // Off-mobile or non-peek rows: clear any previously applied styles.
+    if (!container || !shouldEnableMobilePeek || window.innerWidth >= 640) {
+      if (container) {
+        container
+          .querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
+          .forEach((el) => {
+            el.style.transform = '';
+            el.style.opacity = '';
+          });
+      }
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const el = entry.target as HTMLElement;
-          if (entry.intersectionRatio >= 0.85) {
-            el.removeAttribute('data-card-edge');
-          } else {
-            el.setAttribute('data-card-edge', 'true');
-          }
-        }
-      },
-      {
-        root: container,
-        threshold: [0, 0.5, 0.85, 1],
-      }
+    const snapTargets = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
     );
+    if (snapTargets.length === 0) return;
 
-    container
-      .querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
-      .forEach((el) => observer.observe(el));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    // Cards whose center is beyond this distance clamp to minimum scale/opacity.
+    const maxDistance = container.clientWidth * 0.55;
 
-    cardEdgeObserverRef.current = observer;
+    for (const el of snapTargets) {
+      const cardCenter = el.offsetLeft + el.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - containerCenter);
+      const progress = Math.max(0, 1 - distance / maxDistance); // 0 = edge, 1 = centered
+
+      if (reducedMotion) {
+        el.style.transform = '';
+        el.style.opacity = progress > 0.5 ? '1' : '0.75';
+      } else {
+        el.style.transform = `scale(${(0.92 + progress * 0.08).toFixed(3)})`;
+        el.style.opacity = (0.70 + progress * 0.30).toFixed(3);
+      }
+    }
+  };
+
+  const scheduleCardScaleUpdate = () => {
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    animationFrameRef.current = requestAnimationFrame(() => {
+      animationFrameRef.current = null;
+      updateCardScaleOpacity();
+    });
   };
 
   const syncMobileSnapTargets = () => {
@@ -100,7 +114,7 @@ export default function ScrollableSection({
       }
     }
 
-    syncCardEdgeObserver();
+    scheduleCardScaleUpdate();
   };
 
   const checkScrollPosition = () => {
@@ -126,10 +140,15 @@ export default function ScrollableSection({
 
     checkScrollPosition();
 
-    const handleScroll = () => checkScrollPosition();
+    const handleScroll = () => {
+      checkScrollPosition();
+      scheduleCardScaleUpdate();
+    };
     const handleResize = () => {
       syncMobileSnapTargets();
       checkScrollPosition();
+      // Immediately reset or recalculate styles — don't wait for next scroll.
+      updateCardScaleOpacity();
     };
 
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
@@ -155,7 +174,7 @@ export default function ScrollableSection({
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
-      cardEdgeObserverRef.current?.disconnect();
+      if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
     };
   }, []);
 
@@ -168,14 +187,17 @@ export default function ScrollableSection({
     const rafId = window.requestAnimationFrame(() => {
       syncMobileSnapTargets();
       checkScrollPosition();
+      updateCardScaleOpacity();
     });
     const timeoutId = window.setTimeout(() => {
       syncMobileSnapTargets();
       checkScrollPosition();
+      updateCardScaleOpacity();
     }, 120);
     const lateTimeoutId = window.setTimeout(() => {
       syncMobileSnapTargets();
       checkScrollPosition();
+      updateCardScaleOpacity();
     }, 360);
 
     return () => {
@@ -262,25 +284,10 @@ export default function ScrollableSection({
             scroll-snap-align: end !important;
           }
 
-          /* Edge fade+scale: cards partially off-screen dim and shrink slightly */
+          /* Scroll-driven scale+opacity: inline styles are set via rAF on each scroll frame.
+             will-change promotes cards to their own compositor layer for 60fps updates. */
           .scrollable-mobile-center :global([data-mobile-snap-target="true"]) {
-            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-                        opacity  0.22s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform, opacity;
-          }
-          .scrollable-mobile-center :global([data-mobile-snap-target="true"][data-card-edge="true"]) {
-            transform: scale(0.93);
-            opacity: 0.6;
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            .scrollable-mobile-center :global([data-mobile-snap-target="true"]) {
-              transition: none;
-            }
-            .scrollable-mobile-center :global([data-mobile-snap-target="true"][data-card-edge="true"]) {
-              transform: none;
-              opacity: 0.75;
-            }
           }
         }
       `}</style>
