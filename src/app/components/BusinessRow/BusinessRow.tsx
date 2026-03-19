@@ -11,10 +11,14 @@ import LocationPromptBanner from "../Location/LocationPromptBanner";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 
-// Width of each card on mobile when peek is active.
-// 56px = section px-2 padding (8px × 2 = 16px) + ~40px visual peek allowance so the next card bleeds in.
-// If the outer padding of the section changes, update this value to maintain the peek effect.
-const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-56px)]';
+// Mobile snap-center geometry:
+// - Card width is container-relative so outer page padding does not break centering.
+// - Formula: card = container - 40px, leaving 20px breathing room on each side when centered.
+const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100%-40px)]';
+const MOBILE_EDGE_CENTER_OFFSET = 'pl-5 sm:pl-0';
+// ScrollableSection adds gap-2 between the card wrapper and trailing spacer (8px on mobile),
+// so a 12px spacer produces the same 20px edge-centering offset on the right side.
+const MOBILE_TRAILING_SPACER_CLASS = 'w-3';
 
 // Animation variants for staggered card appearance (matching badge page)
 const containerVariants = {
@@ -167,7 +171,11 @@ export default function BusinessRow({
           </button>
         </div>
 
-        <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
+        <ScrollableSection
+          enableMobilePeek
+          hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
+          mobileTrailingSpacerClassName={MOBILE_TRAILING_SPACER_CLASS}
+        >
           {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
           <style dangerouslySetInnerHTML={{ __html: `
             @media (max-width: 639px) {
@@ -179,7 +187,7 @@ export default function BusinessRow({
           `}} />
           {isDesktop ? (
             disableAnimations ? (
-              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className={`flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 ${MOBILE_EDGE_CENTER_OFFSET}`}>
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
@@ -195,7 +203,7 @@ export default function BusinessRow({
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
-                className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
+                className={`flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 ${MOBILE_EDGE_CENTER_OFFSET}`}
               >
                 {businesses.map((business, index) => (
                   <m.div
@@ -209,7 +217,7 @@ export default function BusinessRow({
               </m.div>
             )
           ) : (
-            <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+            <div className={`flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 ${MOBILE_EDGE_CENTER_OFFSET}`}>
               {businesses.map((business, index) => (
                 <div
                   key={business.id}

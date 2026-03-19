@@ -14,6 +14,7 @@ interface ScrollableSectionProps {
   arrowColor?: string;
   enableMobilePeek?: boolean;
   hideArrowsOnDesktop?: boolean;
+  mobileTrailingSpacerClassName?: string;
 }
 
 export default function ScrollableSection({
@@ -23,6 +24,7 @@ export default function ScrollableSection({
   arrowColor = "text-charcoal/60",
   enableMobilePeek = false,
   hideArrowsOnDesktop = false,
+  mobileTrailingSpacerClassName = "w-4",
 }: ScrollableSectionProps) {
   const pathname = usePathname();
   const isHomeRoute = pathname === "/" || pathname.startsWith("/home");
@@ -40,6 +42,59 @@ export default function ScrollableSection({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const previousScrollLeftRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
+  const settleSnapTimeoutRef = useRef<number | null>(null);
+  const isPointerDownRef = useRef(false);
+
+  const getMobileSnapTargets = (container: HTMLDivElement) =>
+    Array.from(
+      container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
+    );
+
+  const getNearestSnapTargetIndex = (
+    container: HTMLDivElement,
+    snapTargets: HTMLElement[]
+  ) => {
+    if (snapTargets.length === 0) return -1;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    for (let index = 0; index < snapTargets.length; index += 1) {
+      const target = snapTargets[index];
+      const targetCenter = target.offsetLeft + target.offsetWidth / 2;
+      const distance = Math.abs(targetCenter - containerCenter);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    }
+
+    return nearestIndex;
+  };
+
+  const centerSnapTarget = (
+    container: HTMLDivElement,
+    target: HTMLElement,
+    behavior: ScrollBehavior
+  ) => {
+    const maxScrollLeft = Math.max(0, container.scrollWidth - container.clientWidth);
+    const centeredLeft = target.offsetLeft - (container.clientWidth - target.offsetWidth) / 2;
+    const clampedLeft = Math.min(maxScrollLeft, Math.max(0, centeredLeft));
+    if (Math.abs(container.scrollLeft - clampedLeft) <= 1) return;
+    container.scrollTo({ left: clampedLeft, behavior });
+  };
+
+  const snapToNearestTarget = (behavior: ScrollBehavior = "auto") => {
+    const container = scrollRef.current;
+    if (!container || !shouldEnableMobilePeek || window.innerWidth >= 640) return;
+
+    const snapTargets = getMobileSnapTargets(container);
+    if (snapTargets.length === 0) return;
+
+    const nearestIndex = getNearestSnapTargetIndex(container, snapTargets);
+    if (nearestIndex < 0) return;
+    centerSnapTarget(container, snapTargets[nearestIndex], behavior);
+  };
 
   // Continuously interpolates scale and opacity for every snap-target card based on
   // its distance from the scroll-container's center. Called via rAF on every scroll
@@ -143,15 +198,51 @@ export default function ScrollableSection({
     const handleScroll = () => {
       checkScrollPosition();
       scheduleCardScaleUpdate();
+      if (!isPointerDownRef.current && shouldEnableMobilePeek && window.innerWidth < 640) {
+        if (settleSnapTimeoutRef.current !== null) {
+          window.clearTimeout(settleSnapTimeoutRef.current);
+        }
+        settleSnapTimeoutRef.current = window.setTimeout(() => {
+          snapToNearestTarget("auto");
+        }, 90);
+      }
+    };
+    const handlePointerDown = () => {
+      isPointerDownRef.current = true;
+      if (settleSnapTimeoutRef.current !== null) {
+        window.clearTimeout(settleSnapTimeoutRef.current);
+        settleSnapTimeoutRef.current = null;
+      }
+    };
+    const handlePointerUp = () => {
+      isPointerDownRef.current = false;
+      if (shouldEnableMobilePeek && window.innerWidth < 640) {
+        window.setTimeout(() => {
+          snapToNearestTarget("smooth");
+        }, 40);
+      }
+    };
+    const handleScrollEnd = () => {
+      if (!isPointerDownRef.current) {
+        snapToNearestTarget("auto");
+      }
     };
     const handleResize = () => {
       syncMobileSnapTargets();
       checkScrollPosition();
       // Immediately reset or recalculate styles — don't wait for next scroll.
       updateCardScaleOpacity();
+      snapToNearestTarget("auto");
     };
 
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+    scrollElement.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("pointerup", handlePointerUp, { passive: true });
+    window.addEventListener("pointercancel", handlePointerUp, { passive: true });
+    scrollElement.addEventListener("touchstart", handlePointerDown, { passive: true });
+    scrollElement.addEventListener("touchend", handlePointerUp, { passive: true });
+    scrollElement.addEventListener("touchcancel", handlePointerUp, { passive: true });
+    scrollElement.addEventListener("scrollend", handleScrollEnd as EventListener);
     window.addEventListener('resize', handleResize);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -171,12 +262,22 @@ export default function ScrollableSection({
 
     return () => {
       scrollElement.removeEventListener('scroll', handleScroll);
+      scrollElement.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+      scrollElement.removeEventListener("touchstart", handlePointerDown);
+      scrollElement.removeEventListener("touchend", handlePointerUp);
+      scrollElement.removeEventListener("touchcancel", handlePointerUp);
+      scrollElement.removeEventListener("scrollend", handleScrollEnd as EventListener);
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
+      if (settleSnapTimeoutRef.current !== null) {
+        window.clearTimeout(settleSnapTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [shouldEnableMobilePeek]);
 
   // Rows often populate asynchronously (fetch + dynamic imports).
   // Re-measure after children settle so mobile hint visibility is accurate.
@@ -212,17 +313,16 @@ export default function ScrollableSection({
     const container = scrollRef.current;
     const isMobile = window.innerWidth < 640; // sm breakpoint
     if (isMobile) {
-      // Scroll to the next snap target's exact offsetLeft so mandatory snap doesn't jank back.
-      const snapTargets = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
-      );
-      const currentScroll = container.scrollLeft;
-      const next = snapTargets.find((el) => el.offsetLeft > currentScroll + 5);
-      if (next) {
-        const centeredLeft = next.offsetLeft - (container.clientWidth - next.offsetWidth) / 2;
-        container.scrollTo({ left: Math.max(0, centeredLeft), behavior: 'smooth' });
+      // Determine nearest card first, then move one card forward.
+      const snapTargets = getMobileSnapTargets(container);
+      if (snapTargets.length === 0) return;
+      const currentIndex = getNearestSnapTargetIndex(container, snapTargets);
+      const nextIndex = Math.min(currentIndex + 1, snapTargets.length - 1);
+      const next = snapTargets[nextIndex];
+      if (next && nextIndex !== currentIndex) {
+        centerSnapTarget(container, next, "smooth");
       } else {
-        container.scrollTo({ left: container.scrollLeft + container.clientWidth, behavior: 'smooth' });
+        container.scrollTo({ left: container.scrollLeft + container.clientWidth, behavior: "smooth" });
       }
     } else {
       const cardWidth = container.clientWidth * 0.25;
@@ -236,17 +336,16 @@ export default function ScrollableSection({
     const container = scrollRef.current;
     const isMobile = window.innerWidth < 640; // sm breakpoint
     if (isMobile) {
-      // Scroll to the previous snap target's exact offsetLeft.
-      const snapTargets = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]')
-      );
-      const currentScroll = container.scrollLeft;
-      const prev = [...snapTargets].reverse().find((el) => el.offsetLeft < currentScroll - 5);
-      if (prev) {
-        const centeredLeft = prev.offsetLeft - (container.clientWidth - prev.offsetWidth) / 2;
-        container.scrollTo({ left: Math.max(0, centeredLeft), behavior: 'smooth' });
+      // Determine nearest card first, then move one card backward.
+      const snapTargets = getMobileSnapTargets(container);
+      if (snapTargets.length === 0) return;
+      const currentIndex = getNearestSnapTargetIndex(container, snapTargets);
+      const prevIndex = Math.max(currentIndex - 1, 0);
+      const prev = snapTargets[prevIndex];
+      if (prev && prevIndex !== currentIndex) {
+        centerSnapTarget(container, prev, "smooth");
       } else {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
+        container.scrollTo({ left: 0, behavior: "smooth" });
       }
     } else {
       const cardWidth = container.clientWidth * 0.25;
@@ -273,7 +372,7 @@ export default function ScrollableSection({
         {children}
         {/* Trailing spacer: closes the right-edge gap on the last card so it doesn't peek into the next section */}
         {shouldEnableMobilePeek && (
-          <div className="flex-shrink-0 w-4 sm:hidden" aria-hidden="true" />
+          <div className={`flex-shrink-0 ${mobileTrailingSpacerClassName} sm:hidden`} aria-hidden="true" />
         )}
       </div>
 
