@@ -534,11 +534,15 @@ export async function handleRequest(request: NextRequest) {
       edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_mode_explicit' });
       return response;
     }
-    // Root is always publicly accessible — it renders the home page and must be
-    // crawlable by Googlebot, the Google Inspection Tool, and all other bots.
     if (pathname === '/') {
-      edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_public' });
-      return response;
+      // Keep root crawlable for bots (Googlebot, Bing, etc.) so SEO is unaffected.
+      if (isCrawlerRequest(request)) {
+        edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_crawler' });
+        return response;
+      }
+      // Real unauthenticated visitors → onboarding as the landing page.
+      edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_root_onboarding' });
+      return redirectWithGuard(request, new URL('/onboarding', request.url));
     }
     if (isGuestHomePath) {
       edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_entry_onboarding' });
@@ -721,8 +725,10 @@ export async function handleRequest(request: NextRequest) {
   // Only middleware decides where / goes. One redirect, then return.
   // ============================================
   if (pathname === '/') {
-    const to = !user ? '/home' : (isAdminAccount ? '/admin' : isBusinessAccount ? '/my-businesses' : '/home');
-    edgeLog('REDIRECT', pathname, { hasUser: !!user, isBusiness: isBusinessAccount, to });
+    // Unauthenticated users are already redirected to /onboarding above.
+    // This branch only runs for authenticated users.
+    const to = isAdminAccount ? '/admin' : isBusinessAccount ? '/my-businesses' : '/home';
+    edgeLog('REDIRECT', pathname, { hasUser: true, isBusiness: isBusinessAccount, to });
     return redirectWithGuard(request, new URL(to, request.url));
   }
 
