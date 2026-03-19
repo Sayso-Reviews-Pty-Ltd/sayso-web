@@ -9,6 +9,9 @@ import type { AuthSnapshot, AuthSnapshotStatus } from '../lib/authSnapshot';
 import { buildClientAuthSnapshot, UNKNOWN_AUTH_SNAPSHOT } from '../lib/authSnapshot';
 import { AuthLifecycleEventType, emitAuthLifecycleEvent, subscribeAuthLifecycleEvent } from '../lib/authLifecycle';
 
+const AUTH_DEBOUNCE_MS = 300;
+const LOCALSTORAGE_CLEANUP_DELAY_MS = 100;
+
 function isSchemaCacheError(error: { message?: string } | null | undefined): boolean {
   const message = error?.message?.toLowerCase() || '';
   return message.includes('schema cache') && message.includes('onboarding_completed_at');
@@ -134,7 +137,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
               errorMessage.toLowerCase().includes('connection');
 
             if (isNetworkError) {
-              const delay = RETRY_DELAY_MS * attempt;
+              const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
               console.log(`[AuthContext] Network error, retrying in ${delay}ms...`);
               await new Promise(resolve => setTimeout(resolve, delay));
               return attemptInit(attempt + 1);
@@ -170,7 +173,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
             timestamp: Date.now(),
             user_id: session?.user?.id
           }));
-          setTimeout(() => localStorage.removeItem('auth_state_changed'), 100);
+          setTimeout(() => localStorage.removeItem('auth_state_changed'), LOCALSTORAGE_CLEANUP_DELAY_MS);
         } catch {
           // Ignore localStorage errors (private browsing, etc.)
         }
@@ -183,6 +186,8 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
         setUser(null);
         setSnapshotStatus("guest");
         setIsLoading(false);
+        // Reset so the next sign-in cycle can trigger a middleware recheck if needed.
+        forcedMiddlewareRecheckRef.current = false;
         emitAuthLifecycleEvent(AuthLifecycleEventType.SIGNED_OUT, event);
         return;
       }
@@ -216,7 +221,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
           console.warn('AuthContext: Error getting user from auth event:', error);
           if (isMounted) setIsLoading(false);
         }
-      }, 300);
+      }, AUTH_DEBOUNCE_MS);
     });
 
     // Cross-tab sync via storage events
@@ -260,6 +265,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       if (detail.type === AuthLifecycleEventType.SIGNED_OUT) {
         setUser(null);
         setSnapshotStatus("guest");
+        // Lifecycle: ref is set on SESSION_INVALIDATED to trigger a single hard navigation.
+        // Reset here so the next sign-in cycle can trigger a recheck again if needed.
+        forcedMiddlewareRecheckRef.current = false;
       }
     });
 
@@ -272,7 +280,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
     };
   }, [supabase, deduplicatedGetCurrentUser, initialSnapshot.status]);
 
-  const login = async (email: string, password: string, desiredRole?: 'user' | 'business_owner'): Promise<AuthUser | null> => {
+  const login = useCallback(async (email: string, password: string, desiredRole?: 'user' | 'business_owner'): Promise<AuthUser | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -286,23 +294,20 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       }
 
       if (authUser) {
-        const profileRole = String(authUser.profile?.role ?? '');
-        const profileAccountRole = String(authUser.profile?.account_role ?? '');
+        const profileRole = authUser.profile?.role ?? null;
+        const profileAccountRole = authUser.profile?.account_role ?? null;
 
         // Check if user has the desired role
         if (desiredRole && authUser.profile) {
-          const userRole = profileAccountRole || profileRole;
+          const userRole = profileAccountRole ?? profileRole;
           const hasDesiredRole =
             userRole === 'admin' || userRole === desiredRole;
 
           if (!hasDesiredRole) {
             const accountTypeName = desiredRole === 'user' ? 'Personal' : 'Business';
-            const existingTypeName =
-              userRole === 'admin'
-                ? 'Admin'
-                : userRole === 'user'
-                  ? 'Personal'
-                  : 'Business';
+            // Inside !hasDesiredRole, 'admin' is already excluded by narrowing
+            // (admin satisfies hasDesiredRole). Map the remaining roles.
+            const existingTypeName = userRole === 'user' ? 'Personal' : 'Business';
             setError(`This email only has a ${existingTypeName} account. Please select ${existingTypeName} to log in, or register a new ${accountTypeName} account.`);
             setIsLoading(false);
             // Sign out since login was incorrect
@@ -364,9 +369,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
 
         // Step 2: Determine account type
         const userCurrentRole =
-          String(activeUser.profile?.account_role || activeUser.profile?.role || 'user');
+          activeUser.profile?.account_role ?? activeUser.profile?.role ?? 'user';
         const isAdminAccount =
-          userCurrentRole === 'admin' || String(activeUser.profile?.role ?? '') === 'admin';
+          userCurrentRole === 'admin' || activeUser.profile?.role === 'admin';
         const isBusinessAccount = !isAdminAccount && userCurrentRole === 'business_owner';
 
         // Step 3: Route based on account type and onboarding status
@@ -414,9 +419,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       setIsLoading(false);
       return null;
     }
-  };
+  }, [router, supabase, deduplicatedGetCurrentUser]);
 
-  const register = async (
+  const register = useCallback(async (
       email: string,
       password: string,
       username: string,
@@ -486,9 +491,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
         setIsLoading(false);
         return false;
       }
-    };
+    }, [router, supabase]);
 
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     setError(null);
     // Optimistic local clear keeps admin sign-out visually instant.
@@ -517,9 +522,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router, supabase]);
 
-  const updateUser = async (userData?: Partial<AuthUser>): Promise<void> => {
+  const updateUser = useCallback(async (userData?: Partial<AuthUser>): Promise<void> => {
     if (!user) return;
     
     // Early guard: prevent crashes if called without arguments or with undefined
@@ -532,7 +537,14 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       // Update user profile in Supabase if profile data is being updated
       if (userData?.profile) {
         // Prepare profile updates - only update fields that exist in the profiles table
-        const profileUpdates: Record<string, any> = {
+        interface ProfileUpdateFields {
+          updated_at: string;
+          onboarding_step?: string;
+          avatar_url?: string | null;
+          username?: string | null;
+          display_name?: string | null;
+        }
+        const profileUpdates: ProfileUpdateFields = {
           updated_at: new Date().toISOString()
         };
 
@@ -607,7 +619,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       if (fetchError && isSchemaCacheError(fetchError)) {
         ({ data: freshProfile, error: fetchError } = await supabase
           .from('profiles')
-          .select('user_id, onboarding_step, onboarding_complete, interests_count, last_interests_updated, created_at, updated_at, avatar_url, username, display_name, is_top_reviewer, reviews_count, badges_count, subcategories_count, dealbreakers_count')
+          .select('user_id, onboarding_step, onboarding_complete, onboarding_completed_at, interests_count, last_interests_updated, created_at, updated_at, avatar_url, username, display_name, is_top_reviewer, reviews_count, badges_count, subcategories_count, dealbreakers_count')
           .eq('user_id', user.id)
           .single());
       }
@@ -633,7 +645,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
         const updatedUser = {
           ...user,
           ...userData,
-          profile: transformedProfile || (userData.profile ? { ...user.profile, ...userData.profile } : user.profile)
+          profile: transformedProfile ?? user.profile
         };
         console.log('Updated user state with fresh profile data:', {
           username: updatedUser.profile?.username,
@@ -654,7 +666,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
       setError('Failed to update user data');
       setIsLoading(false);
     }
-  };
+  }, [user, supabase]);
 
   const refreshUser = useCallback(async (): Promise<void> => {
     if (!user) return;
@@ -673,7 +685,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
     }
   }, [user]);
 
-  const resendVerificationEmail = async (
+  const resendVerificationEmail = useCallback(async (
     email: string
   ): Promise<{ success: boolean; errorCode?: string; errorMessage?: string }> => {
     // Don't set global isLoading - callers manage their own loading state (isResending).
@@ -736,7 +748,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
         errorMessage: message,
       };
     }
-  };
+  }, [user]);
 
   // Memoize context value to prevent unnecessary re-renders
   const value: AuthContextType = useMemo(() => ({
@@ -750,7 +762,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
     resendVerificationEmail,
     isLoading,
     error
-  }), [user, snapshotStatus, isLoading, error, refreshUser]);
+  }), [user, snapshotStatus, isLoading, error, login, register, logout, updateUser, refreshUser, resendVerificationEmail]);
 
   return (
     <AuthContext.Provider value={value}>

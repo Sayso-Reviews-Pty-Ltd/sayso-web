@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { AuthUser, Profile } from "./types/database";
-import { buildAuthenticatedSnapshot, buildGuestSnapshot, type AuthSnapshot } from "./authSnapshot";
+import { buildAuthenticatedSnapshot, buildGuestSnapshot, UNKNOWN_AUTH_SNAPSHOT, type AuthSnapshot } from "./authSnapshot";
 
 const EMPTY_PROFILE: Profile = {
   id: "",
@@ -80,9 +80,16 @@ function toAuthUser(
 export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
   try {
     const cookieStore = await cookies();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error(
+        'Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set.'
+      );
+    }
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
@@ -99,11 +106,20 @@ export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
       error: userError,
     } = await supabase.auth.getUser();
 
-    if (userError || !user) {
+    if (userError) {
+      // AuthSessionMissingError means no session exists — clean guest state.
+      if (userError.name === "AuthSessionMissingError") {
+        return buildGuestSnapshot("server");
+      }
+      console.error("[serverAuthSnapshot] getUser error:", userError);
+      return UNKNOWN_AUTH_SNAPSHOT;
+    }
+
+    if (!user) {
       return buildGuestSnapshot("server");
     }
 
-    const { data: profileRow } = await supabase
+    const { data: profileRow, error: profileError } = await supabase
       .from("profiles")
       .select(
         "role, account_role, onboarding_completed_at, onboarding_step, interests_count, subcategories_count, dealbreakers_count, created_at, updated_at",
@@ -111,9 +127,15 @@ export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
       .eq("user_id", user.id)
       .maybeSingle();
 
+    if (profileError) {
+      console.error("[serverAuthSnapshot] profiles query error:", profileError);
+      return UNKNOWN_AUTH_SNAPSHOT;
+    }
+
     const profile = profileFromRow(user.id, profileRow);
     return buildAuthenticatedSnapshot(toAuthUser(user, profile), "server");
-  } catch {
-    return buildGuestSnapshot("server");
+  } catch (err) {
+    console.error("[serverAuthSnapshot] unexpected error:", err);
+    return UNKNOWN_AUTH_SNAPSHOT;
   }
 }

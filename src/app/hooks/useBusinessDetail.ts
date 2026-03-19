@@ -34,20 +34,30 @@ export function useBusinessDetail(
 ) {
   const swrKey = swrKeys.businessDetail(businessId);
 
+  const AUTH_DEDUP_INTERVAL_MS = 30_000;
+  const VISIBILITY_REFETCH_DEBOUNCE_MS = 1_000;
+
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchBusiness, {
     ...swrConfig,
-    dedupingInterval: 30_000,
+    dedupingInterval: AUTH_DEDUP_INTERVAL_MS,
     fallbackData: options.fallbackBusiness ?? undefined,
   });
 
-  // Visibility-based refetch
+  // Visibility-based refetch — debounced to prevent request spam on rapid tab switching
   useEffect(() => {
     if (!swrKey) return;
+    let visibilityTimer: ReturnType<typeof setTimeout> | null = null;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === 'visible') {
+        if (visibilityTimer) clearTimeout(visibilityTimer);
+        visibilityTimer = setTimeout(() => mutate(), VISIBILITY_REFETCH_DEBOUNCE_MS);
+      }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      if (visibilityTimer) clearTimeout(visibilityTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [swrKey, mutate]);
 
   // Invalidate on businessUpdateEvents

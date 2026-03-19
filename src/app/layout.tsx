@@ -139,9 +139,9 @@ export const metadata: Metadata = {
 };
 
 export const runtime = "nodejs";
-// Force dynamic rendering at layout level to avoid static prerender conflicts in client-search pages.
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+
+/** Cache key prefix used by the legacy service worker — must match the SW registration script. */
+const SW_CACHE_KEY_PREFIX = "klio-" as const;
 
 export default async function RootLayout({
   children,
@@ -163,7 +163,6 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Sayso" />
         {/* Theme color - matches navbar background for browser UI */}
         {/* Locked to light mode: brand controls color, not OS */}
-        <meta name="theme-color" content="#722F37" />
         <meta name="theme-color" content="#722F37" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#722F37" media="(prefers-color-scheme: dark)" />
         <meta name="msapplication-TileColor" content="#722F37" />
@@ -174,14 +173,9 @@ export default async function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="apple-mobile-web-app-orientation" content="portrait" />
 
-        {/* Enhanced mobile experience meta tags */}
         <meta name="mobile-web-app-title" content="Sayso" />
         <meta name="application-name" content="Sayso" />
-        <meta name="apple-touch-fullscreen" content="yes" />
         <meta name="full-screen" content="yes" />
-        <meta name="browsermode" content="application" />
-        <meta name="nightmode" content="enable/disable" />
-        <meta name="layoutmode" content="fitscreen/standard" />
 
         {/* PWA install prompt disabled: no manifest link */}
         <link rel="icon" href="/favicon.png" type="image/png" />
@@ -231,7 +225,7 @@ export default async function RootLayout({
                       return caches.keys().then(function (keys) {
                         return Promise.all(
                           keys
-                            .filter(function (key) { return key.indexOf('klio-') === 0; })
+                            .filter(function (key) { return key.indexOf('${SW_CACHE_KEY_PREFIX}') === 0; })
                             .map(function (key) { return caches.delete(key); })
                         );
                       });

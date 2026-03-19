@@ -7,6 +7,10 @@ import { buildForYouQueryParams, buildForYouRequestContract } from "../lib/swrKe
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+const PREFERENCES_TIMEOUT_MS = 5_000;
+const BUSINESSES_TIMEOUT_MS = 3_000;
+const VALUE_FOR_MONEY_DEALBREAKER_ID = "value-for-money";
+
 const EMPTY_PREFERENCES: UserPreferences = {
   interests: [],
   subcategories: [],
@@ -80,7 +84,7 @@ async function fetchPreferences(baseUrl: string, cookieHeader: string): Promise<
     }>(`${baseUrl}/api/user/preferences`, {
       cookieHeader,
       // If this times out, we can still render and let /api/businesses resolve prefs server-side.
-      timeoutMs: 5000,
+      timeoutMs: PREFERENCES_TIMEOUT_MS,
     });
 
     if (!res.ok) {
@@ -119,7 +123,7 @@ export default async function ForYouPage() {
     subInterestIds: preferencesResult.preferences?.subcategories?.map((s) => s.id).filter(Boolean) ?? [],
     dealbreakerIds: preferencesResult.preferences?.dealbreakers?.map((d) => d.id).filter(Boolean) ?? [],
     preferredPriceRanges:
-      (preferencesResult.preferences?.dealbreakers?.map((d) => d.id).includes("value-for-money") ?? false)
+      (preferencesResult.preferences?.dealbreakers?.map((d) => d.id).includes(VALUE_FOR_MONEY_DEALBREAKER_ID) ?? false)
         ? ["$", "$$"]
         : [],
   });
@@ -136,8 +140,7 @@ export default async function ForYouPage() {
         data?: Business[];
       }>(`${baseUrl}/api/businesses?${params.toString()}`, {
         cookieHeader,
-        // Stabilize SSR: 8s+ renders are common; short timeouts caused empty sections (TimeoutError).
-        timeoutMs: 18000,
+        timeoutMs: BUSINESSES_TIMEOUT_MS,
       });
 
       if (!res.ok) {
