@@ -36,6 +36,8 @@ export default function ScrollableSection({
     .join(" ");
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const leadingSpacerRef = useRef<HTMLDivElement>(null);
+  const trailingSpacerRef = useRef<HTMLDivElement>(null);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -65,9 +67,43 @@ export default function ScrollableSection({
     }
   };
 
+  // Computes and imperatively sets the leading and trailing spacer widths so
+  // the first and last cards can physically scroll to the container's center.
+  // With snap-center, a card whose center aligns with the container center gets
+  // progress=1.0 in the scale/opacity loop — this makes that true for ALL cards
+  // including the first and last.
+  //
+  // Formula: sideSpace = (containerWidth - cardWidth) / 2 - gap
+  // The gap accounts for the flex gap between the spacer and its adjacent card.
+  const computeScrollGeometry = () => {
+    const container = scrollRef.current;
+    const leading = leadingSpacerRef.current;
+    const trailing = trailingSpacerRef.current;
+
+    if (!container || !shouldEnableMobilePeek || window.innerWidth >= 640) {
+      if (leading) leading.style.width = "0px";
+      if (trailing) trailing.style.width = "0px";
+      return;
+    }
+
+    const firstTarget = container.querySelector<HTMLElement>('[data-mobile-snap-target="true"]');
+    if (!firstTarget) return;
+
+    const gap = 8; // gap-2 = 8px on mobile
+    const sideSpace = Math.max(
+      0,
+      Math.round((container.clientWidth - firstTarget.offsetWidth) / 2) - gap
+    );
+
+    if (leading) leading.style.width = `${sideSpace}px`;
+    if (trailing) trailing.style.width = `${sideSpace}px`;
+  };
+
   // Interpolates scale (0.92 → 1.0) and opacity (0.70 → 1.0) for each card
   // based on its distance from the container center. Driven by rAF so there
   // is zero CSS transition lag and it feels physically tied to the scroll.
+  // With snap-center + correct spacers, a snapped card's center is exactly at
+  // containerCenter, so progress=1.0 at rest for every card including first/last.
   const updateCardScaleOpacity = () => {
     const container = scrollRef.current;
 
@@ -90,11 +126,18 @@ export default function ScrollableSection({
     if (snapTargets.length === 0) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Use getBoundingClientRect for both container and cards so the positions
+    // are always relative to the actual rendered layout — offsetLeft is
+    // relative to offsetParent which breaks when any ancestor (e.g. a Framer
+    // Motion wrapper) has position: relative between the card and this container.
+    const containerRect = container.getBoundingClientRect();
     const containerCenter = container.scrollLeft + container.clientWidth / 2;
     const maxDistance = container.clientWidth * 0.55;
 
     for (const el of snapTargets) {
-      const cardCenter = el.offsetLeft + el.offsetWidth / 2;
+      const elRect = el.getBoundingClientRect();
+      const cardLeft = elRect.left - containerRect.left + container.scrollLeft;
+      const cardCenter = cardLeft + elRect.width / 2;
       const distance = Math.abs(cardCenter - containerCenter);
       const progress = Math.max(0, 1 - distance / maxDistance);
 
@@ -134,6 +177,7 @@ export default function ScrollableSection({
     if (!scrollElement) return;
 
     syncMobileSnapTargets();
+    computeScrollGeometry();
     checkScrollPosition();
     updateCardScaleOpacity();
 
@@ -144,6 +188,7 @@ export default function ScrollableSection({
 
     const handleResize = () => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
       updateCardScaleOpacity();
     };
@@ -153,6 +198,7 @@ export default function ScrollableSection({
 
     const resizeObserver = new ResizeObserver(() => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
     });
     resizeObserver.observe(scrollElement);
@@ -162,6 +208,7 @@ export default function ScrollableSection({
     // by syncMobileSnapTargets itself setting data-mobile-snap-target.
     const mutationObserver = new MutationObserver(() => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
       scheduleCardScaleUpdate();
     });
@@ -176,23 +223,26 @@ export default function ScrollableSection({
     };
   }, [shouldEnableMobilePeek]);
 
-  // Re-measure after children settle so arrow visibility and card styles are accurate.
+  // Re-measure after children settle so spacers, arrows, and card styles are accurate.
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement || typeof window === "undefined") return;
 
     const rafId = window.requestAnimationFrame(() => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
       updateCardScaleOpacity();
     });
     const timeoutId = window.setTimeout(() => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
       updateCardScaleOpacity();
     }, 120);
     const lateTimeoutId = window.setTimeout(() => {
       syncMobileSnapTargets();
+      computeScrollGeometry();
       checkScrollPosition();
       updateCardScaleOpacity();
     }, 360);
@@ -244,10 +294,19 @@ export default function ScrollableSection({
           touchAction: "pan-x pan-y",
         } as React.CSSProperties}
       >
+        {/* Leading spacer: allows the first card to scroll to the container center.
+            Width is computed imperatively in computeScrollGeometry(). */}
+        {shouldEnableMobilePeek && (
+          <div ref={leadingSpacerRef} className="flex-shrink-0 sm:hidden" aria-hidden="true" />
+        )}
+
         {children}
-        {/* Trailing spacer: closes the right-edge gap on the last card */}
+
+        {/* Trailing spacer: allows the last card to scroll to the container center.
+            Width is computed imperatively in computeScrollGeometry(). */}
         {shouldEnableMobilePeek && (
           <div
+            ref={trailingSpacerRef}
             className={`flex-shrink-0 ${mobileTrailingSpacerClassName} sm:hidden`}
             aria-hidden="true"
           />
@@ -256,12 +315,14 @@ export default function ScrollableSection({
 
       <style jsx>{`
         @media (max-width: 639px) {
-          /* Industry-standard mobile scroll pattern: mandatory snap on the container
-             so the row always rests on a card, but normal stop on cards so a fling
-             can carry past multiple cards without braking at every boundary.
-             Overrides Tailwind's snap-always (scroll-snap-stop: always) that lives
-             on every card component — no need to touch those files. */
+          /* snap-center: cards snap so their center aligns with the container center.
+             This makes the scale/opacity effect accurate — a snapped card's center
+             is at containerCenter, giving progress=1.0 (full scale and opacity).
+             snap-stop normal: lets a fling carry past multiple cards without braking
+             at each boundary. Both override the Tailwind snap-start/snap-always on
+             card elements — no need to touch those files. */
           .scrollable-section-inner :global(.snap-start) {
+            scroll-snap-align: center !important;
             scroll-snap-stop: normal !important;
           }
 
