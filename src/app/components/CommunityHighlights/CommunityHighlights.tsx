@@ -91,6 +91,8 @@ interface CommunityHighlightsProps {
   disableAnimations?: boolean;
   /** Hide carousel arrows on desktop (lg+) breakpoints (default false). */
   hideCarouselArrowsOnDesktop?: boolean;
+  /** Enable infinite-loop mobile carousel on the featured-businesses (BOTM) rail (default false). */
+  loopFeaturedRail?: boolean;
 }
 
 export default function CommunityHighlights({
@@ -103,6 +105,7 @@ export default function CommunityHighlights({
   variant = "reviews",
   disableAnimations = false,
   hideCarouselArrowsOnDesktop = false,
+  loopFeaturedRail = false,
 }: CommunityHighlightsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
@@ -425,7 +428,7 @@ export default function CommunityHighlights({
                 </button>
               </div>
 
-              <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
+              <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop} loop={loopFeaturedRail}>
                 {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
                 <style dangerouslySetInnerHTML={{ __html: `
                   @media (max-width: 639px) {
