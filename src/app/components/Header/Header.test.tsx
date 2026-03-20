@@ -43,6 +43,8 @@ jest.mock('../../hooks/useLiveSearch', () => ({
       { id: '1', name: 'Test Business', category: 'Restaurant', location: 'Cape Town' },
       { id: '2', name: 'Another Business', category: 'Cafe', location: 'Cape Town' }
     ],
+    eventResults: [],
+    specialResults: [],
   }),
 }));
 
