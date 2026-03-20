@@ -180,7 +180,7 @@ export const PageMetadata = {
         'cape town restaurants',
         'hyper-local discovery',
       ],
-      url: '/',
+      url: '/home',
       type: 'website',
     }),
 
