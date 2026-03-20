@@ -286,11 +286,11 @@ export default function EventsSpecials({
               >
                 {isDesktop ? (
                   disableAnimations ? (
-                    <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
+                    <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
                       {filteredEvents.map((event, index) => (
                         <div
                           key={getStableEventRailKey(event)}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </div>
@@ -302,13 +302,13 @@ export default function EventsSpecials({
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, margin: "-50px" }}
-                      className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch"
+                      className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch"
                     >
                       {filteredEvents.map((event, index) => (
                         <m.div
                           key={getStableEventRailKey(event)}
                           variants={itemVariants}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </m.div>
@@ -320,7 +320,7 @@ export default function EventsSpecials({
                     {filteredEvents.map((event, index) => (
                       <div
                         key={getStableEventRailKey(event)}
-                        className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                        className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                       >
                         <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                       </div>

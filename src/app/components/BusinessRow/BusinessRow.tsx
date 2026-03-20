@@ -14,7 +14,7 @@ import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 // Mobile snap-center geometry: matches EventsSpecials / CommunityHighlights rail geometry.
 // - Card fills viewport minus 56px (16px section padding + 40px peek gutter), same as other rows.
 // - No left offset: first card starts flush with the scroll container edge, matching events/BOTM.
-const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-56px)]';
+const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-80px)]';
 // ScrollableSection default trailing spacer (w-4 = 16px) is used; no override needed.
 
 // Animation variants for staggered card appearance (matching badge page)
@@ -183,7 +183,7 @@ export default function BusinessRow({
           `}} />
           {isDesktop ? (
             disableAnimations ? (
-              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
@@ -199,7 +199,7 @@ export default function BusinessRow({
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
-                className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
+                className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
               >
                 {businesses.map((business, index) => (
                   <m.div
@@ -213,7 +213,7 @@ export default function BusinessRow({
               </m.div>
             )
           ) : (
-            <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+            <div className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
               {businesses.map((business, index) => (
                 <div
                   key={business.id}

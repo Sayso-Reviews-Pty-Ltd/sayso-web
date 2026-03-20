@@ -199,7 +199,7 @@ export default function CommunityHighlights({
               </div>
 
             <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
-              <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
                 {topReviewers.map((reviewer, index) => {
                 // Try to find an actual review first, otherwise use sample text
                 const actualReview = reviews.find(r => r.reviewer.id === reviewer.id);
@@ -209,7 +209,7 @@ export default function CommunityHighlights({
                 return (
                   <div
                     key={reviewer.id}
-                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
+                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
                   >
                     <ReviewerCard
                       reviewer={reviewer}
@@ -246,11 +246,11 @@ export default function CommunityHighlights({
               </div>
             </div>
             <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
-              <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
                 {Array.from({ length: 12 }).map((_, index) => (
                   <div
                     key={`reviewer-skeleton-${index}`}
-                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
+                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
                   >
                     <ReviewerCardSkeleton />
                   </div>
@@ -437,11 +437,11 @@ export default function CommunityHighlights({
                 `}} />
                 {isDesktop ? (
                   disableAnimations ? (
-                    <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
+                    <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
                       {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
                         <div
                           key={business.id}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
                         >
                           <BusinessOfTheMonthCard
                             business={business}
@@ -456,13 +456,13 @@ export default function CommunityHighlights({
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, margin: "-50px" }}
-                      className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none"
+                      className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none"
                     >
                       {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
                         <m.div
                           key={business.id}
                           variants={itemVariants}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
                         >
                           <BusinessOfTheMonthCard
                             business={business}
@@ -473,9 +473,9 @@ export default function CommunityHighlights({
                     </m.div>
                   )
                 ) : (
-                  <div className="flex gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
+                  <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
                     {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
-                      <div key={business.id} className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width">
+                      <div key={business.id} className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width">
                         <BusinessOfTheMonthCard
                           business={business}
                           index={index}
