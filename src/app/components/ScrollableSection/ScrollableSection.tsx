@@ -163,6 +163,7 @@ export default function ScrollableSection({
     const mutationObserver = new MutationObserver(() => {
       syncMobileSnapTargets();
       checkScrollPosition();
+      scheduleCardScaleUpdate();
     });
     mutationObserver.observe(scrollElement, { childList: true, subtree: true });
 
@@ -233,7 +234,7 @@ export default function ScrollableSection({
     <div className="relative">
       <div
         ref={scrollRef}
-        className={`scrollable-section-inner horizontal-scroll scrollbar-hide flex gap-2 sm:gap-3 overflow-x-auto pb-2 snap-x snap-proximity ${className}`}
+        className={`scrollable-section-inner horizontal-scroll scrollbar-hide flex gap-2 sm:gap-3 overflow-x-auto pb-2 snap-x snap-mandatory ${className}`}
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -255,6 +256,15 @@ export default function ScrollableSection({
 
       <style jsx>{`
         @media (max-width: 639px) {
+          /* Industry-standard mobile scroll pattern: mandatory snap on the container
+             so the row always rests on a card, but normal stop on cards so a fling
+             can carry past multiple cards without braking at every boundary.
+             Overrides Tailwind's snap-always (scroll-snap-stop: always) that lives
+             on every card component — no need to touch those files. */
+          .scrollable-section-inner :global(.snap-start) {
+            scroll-snap-stop: normal !important;
+          }
+
           /* Promote cards to their own compositor layer so the rAF-driven
              transform/opacity updates are GPU-composited without triggering
              layout or paint. */
