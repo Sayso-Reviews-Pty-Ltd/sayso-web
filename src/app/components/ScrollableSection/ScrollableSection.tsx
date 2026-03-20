@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 // Default visible card count - matches BusinessRowSkeleton default
@@ -14,7 +14,6 @@ interface ScrollableSectionProps {
   enableMobilePeek?: boolean;
   hideArrowsOnDesktop?: boolean;
   mobileTrailingSpacerClassName?: string;
-  loop?: boolean;
 }
 
 export default function ScrollableSection({
@@ -25,12 +24,10 @@ export default function ScrollableSection({
   enableMobilePeek = false,
   hideArrowsOnDesktop = false,
   mobileTrailingSpacerClassName = "w-4",
-  loop = false,
 }: ScrollableSectionProps) {
   const pathname = usePathname();
   const isHomeRoute = pathname === "/" || pathname.startsWith("/home");
   const shouldEnableMobilePeek = enableMobilePeek || isHomeRoute;
-  const isLoopMode = loop && shouldEnableMobilePeek;
   const arrowVisibilityClass = [
     shouldEnableMobilePeek ? "hidden sm:flex" : "flex",
     hideArrowsOnDesktop ? "lg:hidden" : "",
@@ -46,8 +43,6 @@ export default function ScrollableSection({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const animationFrameRef = useRef<number | null>(null);
-  const isTeleportingRef = useRef(false);
-  const normalizeTimerRef = useRef<number | null>(null);
 
   // ─── Scale / opacity effect ───────────────────────────────────────────────
   // Tags the topmost .snap-start children inside the container so the rAF
@@ -85,13 +80,6 @@ export default function ScrollableSection({
     const leading = leadingSpacerRef.current;
     const trailing = trailingSpacerRef.current;
 
-    // In loop mode spacers are unused; positioning is done imperatively.
-    if (isLoopMode) {
-      if (leading) leading.style.width = "0px";
-      if (trailing) trailing.style.width = "0px";
-      return;
-    }
-
     if (!container || !shouldEnableMobilePeek || window.innerWidth >= 640) {
       if (leading) leading.style.width = "0px";
       if (trailing) trailing.style.width = "0px";
@@ -109,58 +97,6 @@ export default function ScrollableSection({
 
     if (leading) leading.style.width = `${sideSpace}px`;
     if (trailing) trailing.style.width = `${sideSpace}px`;
-  };
-
-  const positionAtFirstRealSnapTarget = () => {
-    if (!isLoopMode) return;
-    const container = scrollRef.current;
-    if (!container || window.innerWidth >= 640) return;
-    const realSegment = container.querySelector<HTMLElement>('[data-loop-real]');
-    if (!realSegment) return;
-    const firstTarget = realSegment.querySelector<HTMLElement>('.snap-start');
-    if (!firstTarget) return;
-    const cRect = container.getBoundingClientRect();
-    const tRect = firstTarget.getBoundingClientRect();
-    const targetCenter = tRect.left - cRect.left + container.scrollLeft + tRect.width / 2;
-    container.scrollLeft = targetCenter - container.clientWidth / 2;
-  };
-
-  const normalizeLoopPosition = () => {
-    if (!isLoopMode || isTeleportingRef.current) return;
-    const container = scrollRef.current;
-    if (!container || window.innerWidth >= 640) return;
-    const preEl = container.querySelector<HTMLElement>('[data-loop-pre]');
-    const realEl = container.querySelector<HTMLElement>('[data-loop-real]');
-    if (!preEl || !realEl) return;
-    // Need ≥2 real snap targets to make looping meaningful.
-    if (realEl.querySelectorAll('.snap-start').length < 2) return;
-    const cRect = container.getBoundingClientRect();
-    const sl = container.scrollLeft;
-    const preLeft = preEl.getBoundingClientRect().left - cRect.left + sl;
-    const realRect = realEl.getBoundingClientRect();
-    const realLeft = realRect.left - cRect.left + sl;
-    const realWidth = realRect.width;
-    const shift = realLeft - preLeft; // = preWidth + wrapper gap
-    const center = sl + container.clientWidth / 2;
-    if (center < realLeft) {
-      // In pre-clone → jump forward into real zone
-      isTeleportingRef.current = true;
-      container.scrollLeft = sl + shift;
-      requestAnimationFrame(() => {
-        isTeleportingRef.current = false;
-        checkScrollPosition();
-        updateCardScaleOpacity();
-      });
-    } else if (center > realLeft + realWidth) {
-      // In post-clone → jump back into real zone
-      isTeleportingRef.current = true;
-      container.scrollLeft = sl - shift;
-      requestAnimationFrame(() => {
-        isTeleportingRef.current = false;
-        checkScrollPosition();
-        updateCardScaleOpacity();
-      });
-    }
   };
 
   // Interpolates scale (0.92 → 1.0) and opacity (0.70 → 1.0) for each card
@@ -236,16 +172,6 @@ export default function ScrollableSection({
     setShowLeftArrow(scrollLeft > 10);
   };
 
-  // Synchronously position the loop scroll before first paint to prevent
-  // a flash of the pre-clone segment (which starts at scrollLeft = 0).
-  useLayoutEffect(() => {
-    if (!isLoopMode) return;
-    if (typeof window === 'undefined' || window.innerWidth >= 640) return;
-    syncMobileSnapTargets();
-    positionAtFirstRealSnapTarget();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
@@ -255,20 +181,9 @@ export default function ScrollableSection({
     checkScrollPosition();
     updateCardScaleOpacity();
 
-    if (isLoopMode && window.innerWidth < 640) {
-      positionAtFirstRealSnapTarget();
-    }
-
-    const hasScrollEnd = 'onscrollend' in scrollElement;
-
     const handleScroll = () => {
       checkScrollPosition();
       scheduleCardScaleUpdate();
-      // Debounce-based normalise fallback for browsers without scrollend.
-      if (isLoopMode && !hasScrollEnd && !isTeleportingRef.current) {
-        if (normalizeTimerRef.current !== null) clearTimeout(normalizeTimerRef.current);
-        normalizeTimerRef.current = window.setTimeout(normalizeLoopPosition, 80);
-      }
     };
 
     const handleResize = () => {
@@ -276,17 +191,9 @@ export default function ScrollableSection({
       computeScrollGeometry();
       checkScrollPosition();
       updateCardScaleOpacity();
-      if (isLoopMode && window.innerWidth < 640) {
-        positionAtFirstRealSnapTarget();
-      }
     };
 
     scrollElement.addEventListener("scroll", handleScroll, { passive: true });
-
-    if (isLoopMode && hasScrollEnd) {
-      scrollElement.addEventListener('scrollend', normalizeLoopPosition);
-    }
-
     window.addEventListener("resize", handleResize);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -309,16 +216,12 @@ export default function ScrollableSection({
 
     return () => {
       scrollElement.removeEventListener("scroll", handleScroll);
-      if (isLoopMode && hasScrollEnd) {
-        scrollElement.removeEventListener('scrollend', normalizeLoopPosition);
-      }
-      if (normalizeTimerRef.current !== null) clearTimeout(normalizeTimerRef.current);
       window.removeEventListener("resize", handleResize);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [shouldEnableMobilePeek, isLoopMode]);
+  }, [shouldEnableMobilePeek]);
 
   // Re-measure after children settle so spacers, arrows, and card styles are accurate.
   useEffect(() => {
@@ -391,41 +294,22 @@ export default function ScrollableSection({
           touchAction: "pan-x pan-y",
         } as React.CSSProperties}
       >
-        {isLoopMode ? (
-          /* Clone sandwich: [pre-clone][real][post-clone].
-             Pre/post are hidden on sm+ so desktop sees only real content.
-             gap-1 on the wrapper matches the mobile card gap for seamless looping. */
-          <div className="flex-shrink-0 flex gap-1">
-            <div data-loop-pre="" aria-hidden="true" className="flex-shrink-0 sm:hidden">
-              {children}
-            </div>
-            <div data-loop-real="" className="flex-shrink-0">
-              {children}
-            </div>
-            <div data-loop-post="" aria-hidden="true" className="flex-shrink-0 sm:hidden">
-              {children}
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Leading spacer: allows the first card to scroll to the container center.
-                Width is computed imperatively in computeScrollGeometry(). */}
-            {shouldEnableMobilePeek && (
-              <div ref={leadingSpacerRef} className="flex-shrink-0 sm:hidden" aria-hidden="true" />
-            )}
+        {/* Leading spacer: allows the first card to scroll to the container center.
+            Width is computed imperatively in computeScrollGeometry(). */}
+        {shouldEnableMobilePeek && (
+          <div ref={leadingSpacerRef} className="flex-shrink-0 sm:hidden" aria-hidden="true" />
+        )}
 
-            {children}
+        {children}
 
-            {/* Trailing spacer: allows the last card to scroll to the container center.
-                Width is computed imperatively in computeScrollGeometry(). */}
-            {shouldEnableMobilePeek && (
-              <div
-                ref={trailingSpacerRef}
-                className={`flex-shrink-0 ${mobileTrailingSpacerClassName} sm:hidden`}
-                aria-hidden="true"
-              />
-            )}
-          </>
+        {/* Trailing spacer: allows the last card to scroll to the container center.
+            Width is computed imperatively in computeScrollGeometry(). */}
+        {shouldEnableMobilePeek && (
+          <div
+            ref={trailingSpacerRef}
+            className={`flex-shrink-0 ${mobileTrailingSpacerClassName} sm:hidden`}
+            aria-hidden="true"
+          />
         )}
       </div>
 

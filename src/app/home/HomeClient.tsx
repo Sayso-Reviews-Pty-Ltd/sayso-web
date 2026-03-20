@@ -544,7 +544,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                 onRetryForYou={refetchForYou}
                 onRetryTrending={refetchTrending}
                 onRetryFeatured={refetchFeatured}
-                renderBusinessRow={(props) => <MemoizedBusinessRow {...props} loop />}
+                renderBusinessRow={(props) => <MemoizedBusinessRow {...props} />}
                 renderEventsSpecials={() => (
                   <EventsSpecials
                     events={eventsAndSpecials}
@@ -553,7 +553,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                     ctaFontWeight={400}
                     premiumCtaHover
                     disableAnimations
-                    loop
                   />
                 )}
                 renderCommunityHighlights={(businessesOfTheMonth) => (
@@ -561,7 +560,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                     businessesOfTheMonth={businessesOfTheMonth}
                     variant="reviews"
                     disableAnimations
-                    loopFeaturedRail
                   />
                 )}
               />
