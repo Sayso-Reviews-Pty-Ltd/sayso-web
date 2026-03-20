@@ -56,7 +56,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       business = data;
     }
   } catch (error) {
-    console.error('[Business Metadata] Error fetching business:', error);
+    const digest = (error as any)?.digest;
+    if (digest !== 'DYNAMIC_SERVER_USAGE') {
+      console.error('[Business Metadata] Error fetching business:', error);
+    }
   }
 
   if (!business) {
@@ -228,7 +231,11 @@ export default async function BusinessLayout({
       ];
     }
   } catch (error) {
-    console.error('[Business Layout] Error generating schema:', error);
+    // DYNAMIC_SERVER_USAGE is expected during ISR background regeneration — suppress it.
+    const digest = (error as any)?.digest;
+    if (digest !== 'DYNAMIC_SERVER_USAGE') {
+      console.error('[Business Layout] Error generating schema:', error);
+    }
   }
 
   return (
