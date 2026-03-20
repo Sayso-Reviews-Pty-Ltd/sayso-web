@@ -80,11 +80,18 @@ export default function BusinessLocation({
     const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
     const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+    const [locationDenied, setLocationDenied] = useState(false);
     const [shareSupported, setShareSupported] = useState(false);
     const [resolvedCoordinates, setResolvedCoordinates] = useState<{ lat: number; lng: number } | null>(null);
     const [isResolvingCoordinates, setIsResolvingCoordinates] = useState(false);
 
-    const hasCoordinates = latitude != null && longitude != null;
+    // Validate coordinate ranges to catch swapped or clearly wrong values from the DB.
+    const isValidLatLng = (lat: number | null | undefined, lng: number | null | undefined) =>
+        lat != null && lng != null &&
+        Number.isFinite(lat) && Number.isFinite(lng) &&
+        lat >= -90 && lat <= 90 &&
+        lng >= -180 && lng <= 180;
+    const hasCoordinates = isValidLatLng(latitude, longitude);
     const displayLocation = address || location || "";
     const geocodeQuery = address || (location ? `${name} ${location}` : "");
     const effectiveLatitude = latitude ?? resolvedCoordinates?.lat ?? null;
@@ -102,6 +109,8 @@ export default function BusinessLocation({
 
         const controller = new AbortController();
         let cancelled = false;
+        // Hard cap: if the geocode API hangs, stop showing the spinner after 10 s.
+        const geocodeTimeoutId = window.setTimeout(() => controller.abort(), 10_000);
 
         const resolveCoordinates = async () => {
             setIsResolvingCoordinates(true);
@@ -146,6 +155,7 @@ export default function BusinessLocation({
 
         return () => {
             cancelled = true;
+            window.clearTimeout(geocodeTimeoutId);
             controller.abort();
         };
     }, [geocodeQuery, hasCoordinates]);
@@ -167,9 +177,12 @@ export default function BusinessLocation({
                     const dist = calculateDistance(userLat, userLng, effectiveLatitude!, effectiveLongitude!);
                     setDistance(dist);
                     setIsLoadingLocation(false);
+                    setLocationDenied(false);
                 },
-                () => {
+                (error) => {
                     setIsLoadingLocation(false);
+                    // GeolocationPositionError.PERMISSION_DENIED === 1
+                    if (error.code === 1) setLocationDenied(true);
                 },
                 { timeout: 5000, maximumAge: 300000 }
             );
@@ -394,6 +407,17 @@ export default function BusinessLocation({
                                 </span>
                             </m.div>
                         )}
+
+                        {locationDenied && hasEffectiveCoordinates && distance === null && (
+                            <m.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-xs text-charcoal/50 mt-2"
+                                style={{ fontFamily: 'Urbanist, sans-serif' }}
+                            >
+                                Enable location access to see distance
+                            </m.p>
+                        )}
                     </div>
                 </div>
 
@@ -543,6 +567,7 @@ export default function BusinessLocation({
                                 <div className="flex-1 min-w-0">
                                     <h2
                                         className="text-lg font-semibold text-white truncate"
+                                        title={name}
                                         style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600 }}
                                     >
                                         {name}

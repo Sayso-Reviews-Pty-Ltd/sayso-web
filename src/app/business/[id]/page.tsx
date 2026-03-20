@@ -1,15 +1,10 @@
-export const revalidate = 300;
-// Allow on-demand ISR for slugs not returned by generateStaticParams.
-export const dynamicParams = true;
+// Business detail pages are always dynamic: they reflect auth state, ownership,
+// and personalisation. Using ISR (revalidate) here conflicts with the layout's
+// getServerSupabase() call which reads cookies(), causing Next.js to throw
+// "Page changed from static to dynamic at runtime" in production.
+export const dynamic = 'force-dynamic';
 
 import BusinessClient from "./BusinessClient";
-
-// Pre-build top businesses at build time; all other slugs use on-demand ISR.
-// Returning [] is the safe minimum — it prevents "slug not found at runtime" errors
-// while allowing any slug to be generated and cached on first request.
-export async function generateStaticParams() {
-  return [];
-}
 
 export default function BusinessPage() {
   return <BusinessClient />;

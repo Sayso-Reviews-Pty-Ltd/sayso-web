@@ -59,14 +59,31 @@ export default function BusinessHeroImage({
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(new Set());
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const totalImages = allImages.length;
+
+  // Exclude URLs that have already 404'd or errored so we never show a broken img.
+  const validImages = useMemo(
+    () => allImages.filter((url) => !failedUrls.has(url)),
+    [allImages, failedUrls]
+  );
+
+  const handleImageError = (url: string) => {
+    setFailedUrls((prev) => {
+      if (prev.has(url)) return prev;
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
+  };
+
+  const totalImages = validImages.length;
   const hasMultipleImages = totalImages > 1;
   const hasImage = totalImages > 0;
   const activeIndex = hasImage
     ? Math.min(currentImageIndex, totalImages - 1)
     : 0;
-  const currentImage = hasImage ? allImages[activeIndex] : "";
+  const currentImage = hasImage ? validImages[activeIndex] : "";
   const placeholderSrc = getSubcategoryPlaceholder(subcategorySlug ?? undefined);
 
   useEffect(() => {
@@ -177,6 +194,7 @@ export default function BusinessHeroImage({
                   priority={activeIndex === 0}
                   quality={75}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 900px"
+                  onError={() => handleImageError(currentImage)}
                 />
               </div>
             </m.div>
@@ -241,7 +259,7 @@ export default function BusinessHeroImage({
 
           {/* Image Indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-            {allImages.map((_, index) => (
+            {validImages.map((_, index) => (
               <button
                 key={index}
                 onClick={(e) => {
@@ -263,7 +281,7 @@ export default function BusinessHeroImage({
           {/* Image Counter */}
           <div className="absolute bottom-6 right-6 z-30 px-3 py-1.5 rounded-full bg-charcoal/80 backdrop-blur-xl">
             <span className="text-sm font-semibold text-white" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-              {activeIndex + 1} / {allImages.length}
+              {activeIndex + 1} / {validImages.length}
             </span>
           </div>
         </>

@@ -58,6 +58,11 @@ const isCurrentlyOpen = (hours: Hours): { isOpen: boolean; status: string } => {
   const currentTime = now.getHours() * 60 + now.getMinutes();
 
   if (typeof hours === 'object' && !('raw' in hours) && !('friendly' in hours)) {
+    // An empty object means hours haven't been set yet — treat as unknown, not all-closed.
+    if (Object.keys(hours).length === 0) {
+      return { isOpen: false, status: 'Unknown' };
+    }
+
     const todayHours = (hours as Record<string, string | DayHours>)[currentDay];
 
     if (!todayHours) {
@@ -116,6 +121,11 @@ const parseHoursForDisplay = (hours: Hours): { day: string; label: string; hours
   if (typeof hours === 'string') return null;
 
   if (typeof hours === 'object' && ('raw' in hours || 'friendly' in hours)) {
+    return null;
+  }
+
+  // An empty object means hours haven't been set yet — show "Hours coming soon".
+  if (typeof hours === 'object' && Object.keys(hours).length === 0) {
     return null;
   }
 
