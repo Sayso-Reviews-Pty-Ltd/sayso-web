@@ -1,20 +1,22 @@
 // src/components/Header/Header.tsx
 "use client";
 
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import MobileMenu from "./MobileMenu";
 import HeaderSkeleton from "./HeaderSkeleton";
-import { DesktopHeaderSearch, MobileHeaderSearch } from "./HeaderSearch";
 import { useHeaderState } from "./useHeaderState";
 import { getLogoHref } from "./headerActionsConfig";
-import { useLiveSearch, type LiveSearchResult, type EventSearchResult, type SpecialSearchResult } from "../../hooks/useLiveSearch";
-import { useSearchSuggestions, type QuerySuggestion } from "../../hooks/useSearchSuggestions";
 import { usePrefetchRoutes } from "../../hooks/usePrefetchRoutes";
 import { AdminHeaderRole } from "./roles/AdminHeaderRole";
 import { PersonalHeaderRole } from "./roles/PersonalHeaderRole";
 import { BusinessHeaderRole } from "./roles/BusinessHeaderRole";
+import { useHeaderSearchController } from "./hooks/useHeaderSearchController";
+import {
+  renderHeaderDesktopSearchInput,
+  renderHeaderMobileSearchInput,
+} from "./parts/HeaderSearchRenderers";
 
 export default function Header({
   showSearch = true,
@@ -46,16 +48,12 @@ export default function Header({
     isGuest,
     isAdminUser,
     isBusinessAccountUser,
-    isCheckingBusinessOwner,
-    hasOwnedBusinesses,
     logout,
     unreadCount,
     messageUnreadCount,
     savedCount,
     pathname,
     navLinks,
-    isStackedLayout,
-    isNavReady,
     isDiscoverActive,
     isNotificationsActive,
     isMessagesActive,
@@ -75,111 +73,32 @@ export default function Header({
     closeDiscoverDropdown,
     scheduleDiscoverDropdownClose,
     clearDiscoverHoverTimeout,
-    setShowSearchBar,
     setIsMobileMenuOpen,
     fontStyle: sf,
   } = useHeaderState({ searchLayout, forceSearchOpen, forcePersonalMode });
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const mobileInputRef = useRef<HTMLInputElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  // Tracks whether a URL change was self-initiated by the user typing, so the
-  // URL-sync effect doesn't overwrite in-progress input with stale URL values.
-  const isSelfUrlUpdateRef = useRef(false);
-  
+
   // Prefetch critical routes for instant navigation
   usePrefetchRoutes();
-  const desktopSearchWrapRef = useRef<HTMLDivElement>(null);
-  const mobileSearchWrapRef = useRef<HTMLDivElement>(null);
-  const homeDesktopRowRef = useRef<HTMLDivElement>(null);
-  const homeDesktopNavRef = useRef<HTMLDivElement>(null);
-  const homeDesktopIconsRef = useRef<HTMLDivElement>(null);
-  
-  // Get search query from URL params
-  const urlSearchQuery = searchParams.get('search') || '';
-  
-  const [headerSearchQuery, setHeaderSearchQuery] = useState(urlSearchQuery);
-  const [headerPlaceholder, setHeaderPlaceholder] = useState(
-    "Search..."
-  );
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const [isDesktopSearchExpanded, setIsDesktopSearchExpanded] = useState(false);
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number>(-1);
-  const [desktopSearchExpandedWidth, setDesktopSearchExpandedWidth] = useState(280);
 
-  const {
-    query: suggestionQuery,
-    setQuery: setSuggestionQuery,
-    loading: suggestionsLoading,
-    results: suggestionResults,
-    eventResults: rawEventResults,
-    specialResults: rawSpecialResults,
-  } = useLiveSearch({ initialQuery: urlSearchQuery, debounceMs: 120 });
-
-  const { suggestions: querySuggestions } = useSearchSuggestions({
-    query: headerSearchQuery,
-    debounceMs: 200,
-  });
   const effectiveIsGuest = isGuest;
   const effectiveIsAdminUser = isAdminUser;
   const effectiveIsBusinessAccountUser = isBusinessAccountUser;
   const effectiveNavLinks = navLinks;
-  const shouldKeepGuestMode =
-    effectiveIsGuest || searchParams.get("guest") === "true";
-
-  const buildSearchResultsHref = useCallback(
-    (query: string) => {
-      const params = new URLSearchParams();
-      const trimmedQuery = query.trim();
-      if (trimmedQuery) {
-        params.set("search", trimmedQuery);
-      }
-      if (shouldKeepGuestMode) {
-        params.set("guest", "true");
-      }
-      const queryString = params.toString();
-      return `/home${queryString ? `?${queryString}` : ""}`;
-    },
-    [shouldKeepGuestMode]
-  );
-
-  // Sync local state with URL params — skip when the URL change was caused by
-  // the user typing (isSelfUrlUpdateRef prevents overwriting in-progress input).
-  useEffect(() => {
-    if (isSelfUrlUpdateRef.current) return;
-    setHeaderSearchQuery(urlSearchQuery);
-    if (urlSearchQuery) {
-      setIsMobileSearchOpen(true);
-    }
-  }, [urlSearchQuery]);
-
-  const isSearchActive = headerSearchQuery.trim().length > 0;
-
-  useEffect(() => {
-    setSuggestionQuery(headerSearchQuery);
-  }, [headerSearchQuery, setSuggestionQuery]);
-
-  const cappedSuggestions = useMemo(() => {
-    const list = Array.isArray(suggestionResults) ? suggestionResults : [];
-    return list.slice(0, 6);
-  }, [suggestionResults]);
-
-  const cappedEventResults = useMemo(() => rawEventResults.slice(0, 3), [rawEventResults]);
-  const cappedSpecialResults = useMemo(() => rawSpecialResults.slice(0, 3), [rawSpecialResults]);
-
-  const isSuggestionsOpen =
-    headerSearchQuery.trim().length > 0 &&
-    (isDesktopSearchExpanded || isMobileSearchOpen) &&
-    (suggestionsLoading ||
-      cappedSuggestions.length > 0 ||
-      querySuggestions.length > 0 ||
-      cappedEventResults.length > 0 ||
-      cappedSpecialResults.length > 0);
 
   const isHomePage = pathname === "/" || pathname === "/home";
-  const isHomepageHeroOverlay = isHomePage && urlSearchQuery.trim().length === 0;
+  const isPersonalLayout = !effectiveIsBusinessAccountUser && !effectiveIsAdminUser;
+
+  const searchController = useHeaderSearchController({
+    pathname,
+    isHomePage,
+    isPersonalLayout,
+    isGuest: effectiveIsGuest,
+  });
+
+  const isHomepageHeroOverlay =
+    isHomePage && searchController.urlSearchQuery.trim().length === 0;
   const [isHomepageAtTop, setIsHomepageAtTop] = useState(() =>
     typeof window === "undefined" ? true : window.scrollY <= 0.5
   );
@@ -220,15 +139,8 @@ export default function Header({
       ? "bg-transparent shadow-none"
       : "bg-navbar-bg shadow-md";
 
-  const isPersonalLayout =
-    !effectiveIsBusinessAccountUser && !effectiveIsAdminUser;
-
-  // Role-aware logo href:
-  // - Business accounts Ã¢â€ â€™ /my-businesses
-  // - Personal accounts Ã¢â€ â€™ /home
-  // - Guests Ã¢â€ â€™ /home?guest=true
   const logoHref = effectiveIsGuest
-    ? "/home?guest=true" 
+    ? "/home?guest=true"
     : getLogoHref(effectiveIsBusinessAccountUser);
   const messagesHref = effectiveIsGuest
     ? "/onboarding"
@@ -236,303 +148,9 @@ export default function Header({
       ? "/my-businesses/messages"
       : "/dm";
 
-
-
   useEffect(() => {
-    const setByViewport = () => {
-      setHeaderPlaceholder(
-        window.innerWidth >= 1024
-          ? "Search businesses..."
-          : "Search..."
-      );
-    };
-    setByViewport();
-    window.addEventListener("resize", setByViewport);
-    return () => window.removeEventListener("resize", setByViewport);
-  }, []);
-
-
-  // Keep home desktop nav links perfectly centered by capping search expansion
-  // to the right-side space that remains after center nav + icons.
-  useEffect(() => {
-    if (!isHomePage || !isPersonalLayout) {
-      setDesktopSearchExpandedWidth(280);
-      return;
-    }
-
-    // Keep enough room for the input to actually show when expanded.
-    // Using a larger min width prevents the search from collapsing to the same
-    // size as the trigger button on tighter desktop widths.
-    const minWidth = 180;
-    const preferredWidth = 280;
-    const interItemGap = 12; // gap-3 between search and icons
-    const centerClearance = 16;
-
-    const recalc = () => {
-      if (window.innerWidth < 1024) {
-        setDesktopSearchExpandedWidth(preferredWidth);
-        return;
-      }
-
-      const rowWidth = homeDesktopRowRef.current?.clientWidth ?? 0;
-      const navWidth = homeDesktopNavRef.current?.offsetWidth ?? 0;
-      const iconsWidth = homeDesktopIconsRef.current?.offsetWidth ?? 0;
-
-      if (!rowWidth || !navWidth) {
-        setDesktopSearchExpandedWidth(preferredWidth);
-        return;
-      }
-
-      const sideSpace = (rowWidth - navWidth) / 2;
-      const availableForSearch = Math.max(
-        0,
-        Math.floor(sideSpace - iconsWidth - interItemGap - centerClearance)
-      );
-
-      // If there isn't enough free space to keep the nav perfectly centred,
-      // still give the search a readable width and allow the grid to reflow slightly.
-      const targetWidth =
-        availableForSearch < minWidth
-          ? Math.min(preferredWidth, Math.max(minWidth, Math.floor(sideSpace - centerClearance)))
-          : Math.min(preferredWidth, availableForSearch);
-
-      setDesktopSearchExpandedWidth(Number.isFinite(targetWidth) ? targetWidth : preferredWidth);
-    };
-
-    recalc();
-
-    const observer = new ResizeObserver(recalc);
-    if (homeDesktopRowRef.current) observer.observe(homeDesktopRowRef.current);
-    if (homeDesktopNavRef.current) observer.observe(homeDesktopNavRef.current);
-    if (homeDesktopIconsRef.current) observer.observe(homeDesktopIconsRef.current);
-    window.addEventListener("resize", recalc);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", recalc);
-    };
-  }, [isHomePage, isPersonalLayout]);
-
-  // Update URL with search query (debounced for live search)
-  const updateSearchUrl = useCallback((query: string) => {
-    if (!isHomePage) return;
-    
-    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-    if (query.trim()) {
-      params.set("search", query.trim());
-    } else {
-      params.delete("search");
-    }
-    const searchString = params.toString();
-    const basePath = pathname === "/home" ? "/home" : "/";
-    router.replace(`${basePath}${searchString ? `?${searchString}` : ""}`, { scroll: false });
-  }, [isHomePage, pathname, router]);
-
-  // Handle live search input change with debounce
-  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setHeaderSearchQuery(value);
-    
-    // Debounce URL update for live search (300ms)
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    debounceRef.current = setTimeout(() => {
-      isSelfUrlUpdateRef.current = true;
-      updateSearchUrl(value);
-      // Clear the flag after the next render cycle so external navigations
-      // (back/forward, link clicks) still sync correctly.
-      setTimeout(() => { isSelfUrlUpdateRef.current = false; }, 100);
-    }, 300);
-  };
-
-  // Handle search form submit (immediate, no debounce)
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Clear any pending debounce
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    
-    if (isHomePage) {
-      // Immediate URL update
-      updateSearchUrl(headerSearchQuery);
-    } else {
-      // Navigate to home with search param for non-home pages
-      router.push(buildSearchResultsHref(headerSearchQuery));
-    }
-  };
-
-  // Handle clear search
-  const handleClearSearch = () => {
-    // Clear any pending debounce
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    setHeaderSearchQuery("");
-    if (isHomePage) {
-      updateSearchUrl("");
-    }
-    inputRef.current?.focus();
-    mobileInputRef.current?.focus();
-  };
-
-  const collapseDesktopSearch = useCallback(() => {
-    setIsDesktopSearchExpanded(false);
-    setActiveSuggestionIndex(-1);
-  }, []);
-
-  const expandDesktopSearch = useCallback(() => {
-    setIsDesktopSearchExpanded(true);
-    setActiveSuggestionIndex(-1);
-    window.setTimeout(() => inputRef.current?.focus(), 0);
-  }, []);
-
-  // Close suggestions when clicking outside (desktop + mobile overlay)
-  useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      const target = e.target as Node | null;
-      if (!target) return;
-      const inDesktop = desktopSearchWrapRef.current?.contains(target);
-      const inMobile = mobileSearchWrapRef.current?.contains(target);
-      if (!inDesktop && !inMobile) {
-        collapseDesktopSearch();
-        setActiveSuggestionIndex(-1);
-      }
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [collapseDesktopSearch]);
-
-  // Body scroll lock when mobile suggestions are visible
-  useEffect(() => {
-    if (isSuggestionsOpen && isMobileSearchOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
-    }
-  }, [isSuggestionsOpen, isMobileSearchOpen]);
-
-  // Close search on route change
-  useEffect(() => {
-    setIsMobileSearchOpen(false);
-    collapseDesktopSearch();
-  }, [pathname, collapseDesktopSearch]);
-
-  const navigateToSuggestion = useCallback(
-    (item: LiveSearchResult) => {
-      if (!item?.id) return;
-      collapseDesktopSearch();
-      setIsMobileSearchOpen(false);
-      setActiveSuggestionIndex(-1);
-      router.push(`/business/${item.id}`);
-    },
-    [collapseDesktopSearch, router]
-  );
-
-  const navigateToEvent = useCallback(
-    (item: EventSearchResult) => {
-      collapseDesktopSearch();
-      setIsMobileSearchOpen(false);
-      setActiveSuggestionIndex(-1);
-      router.push(`/event/${item.id}`);
-    },
-    [collapseDesktopSearch, router]
-  );
-
-  const navigateToSpecial = useCallback(
-    (item: SpecialSearchResult) => {
-      collapseDesktopSearch();
-      setIsMobileSearchOpen(false);
-      setActiveSuggestionIndex(-1);
-      router.push(`/special/${item.id}`);
-    },
-    [collapseDesktopSearch, router]
-  );
-
-  const handleSelectQuerySuggestion = useCallback(
-    (suggestion: QuerySuggestion) => {
-      const q = suggestion.query;
-      setHeaderSearchQuery(q);
-      setSuggestionQuery(q);
-      collapseDesktopSearch();
-      setIsMobileSearchOpen(false);
-      setActiveSuggestionIndex(-1);
-      router.push(buildSearchResultsHref(q));
-    },
-    [buildSearchResultsHref, collapseDesktopSearch, router, setSuggestionQuery]
-  );
-
-  // Handle "View all" button click - preserve search state during navigation
-  const handleViewAll = useCallback(() => {
-    const q = headerSearchQuery.trim();
-    if (!q) return;
-    
-    // Capture current state before any changes
-    const capturedQuery = q;
-    
-    // Only close the modal UI - do NOT clear search query or results
-    // This ensures smooth transition without flashing empty state
-    collapseDesktopSearch();
-    setIsMobileSearchOpen(false);
-    setActiveSuggestionIndex(-1);
-
-    // Navigate immediately with captured query params
-    router.push(buildSearchResultsHref(capturedQuery));
-  }, [buildSearchResultsHref, collapseDesktopSearch, headerSearchQuery, router]);
-
-  // Handle general search navigation (form submit, enter key)
-  const navigateToSearchResults = useCallback(() => {
-    const q = headerSearchQuery.trim();
-    if (!q) return;
-    
-    // For general navigation, we can still close modal and navigate normally
-    collapseDesktopSearch();
-    setIsMobileSearchOpen(false);
-    setActiveSuggestionIndex(-1);
-
-    router.push(buildSearchResultsHref(q));
-  }, [buildSearchResultsHref, collapseDesktopSearch, headerSearchQuery, router]);
-
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isSuggestionsOpen) return;
-    const max = cappedSuggestions.length;
-    if (e.key === "Escape") {
-      e.preventDefault();
-      collapseDesktopSearch();
-      setIsMobileSearchOpen(false);
-      return;
-    }
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (max === 0) return;
-      setActiveSuggestionIndex((prev) => (prev + 1) % max);
-      return;
-    }
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (max === 0) return;
-      setActiveSuggestionIndex((prev) => (prev - 1 + max) % max);
-      return;
-    }
-    if (e.key === "Enter" && activeSuggestionIndex >= 0) {
-      e.preventDefault();
-      const chosen = cappedSuggestions[activeSuggestionIndex];
-      if (chosen) navigateToSuggestion(chosen);
-    }
-  };
-
-    const handleMobileSearchToggle = () => {
-    setIsMobileSearchOpen(!isMobileSearchOpen);
-    if (!isMobileSearchOpen) {
-      window.setTimeout(() => {
-        mobileInputRef.current?.focus();
-      }, 100);
-    }
-  };
-useEffect(() => {
     if (effectiveIsAdminUser) {
-      void router.prefetch('/onboarding');
+      void router.prefetch("/onboarding");
     }
   }, [effectiveIsAdminUser, router]);
 
@@ -540,78 +158,12 @@ useEffect(() => {
     void logout();
   }, [logout]);
 
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, []);
+  const renderDesktopSearchInput = (expandedWidth: number = 280) =>
+    renderHeaderDesktopSearchInput(searchController, sf, expandedWidth);
+  const renderMobileSearchInput = () => renderHeaderMobileSearchInput(searchController, sf);
 
-    const renderDesktopSearchInput = (expandedWidth: number = 280) => (
-    <DesktopHeaderSearch
-      wrapperRef={desktopSearchWrapRef}
-      inputRef={inputRef}
-      expandedWidth={expandedWidth}
-      isExpanded={isDesktopSearchExpanded}
-      headerSearchQuery={headerSearchQuery}
-      headerPlaceholder={headerPlaceholder}
-      isSearchActive={isSearchActive}
-      isSuggestionsOpen={isSuggestionsOpen}
-      suggestionsLoading={suggestionsLoading}
-      cappedSuggestions={cappedSuggestions}
-      querySuggestions={querySuggestions}
-      eventResults={cappedEventResults}
-      specialResults={cappedSpecialResults}
-      activeSuggestionIndex={activeSuggestionIndex}
-      sf={sf}
-      onSubmit={handleSearchSubmit}
-      onChange={handleSearchInputChange}
-      onKeyDown={handleSearchKeyDown}
-      onExpand={expandDesktopSearch}
-      onCollapse={collapseDesktopSearch}
-      onClearSearch={handleClearSearch}
-      onSetActiveSuggestionIndex={setActiveSuggestionIndex}
-      onNavigateToSuggestion={navigateToSuggestion}
-      onSelectQuerySuggestion={handleSelectQuerySuggestion}
-      onNavigateToEvent={navigateToEvent}
-      onNavigateToSpecial={navigateToSpecial}
-      onViewAll={handleViewAll}
-    />
-  );
-
-  const renderMobileSearchInput = () => (
-    <MobileHeaderSearch
-      wrapperRef={mobileSearchWrapRef}
-      inputRef={mobileInputRef}
-      headerSearchQuery={headerSearchQuery}
-      isSearchActive={isSearchActive}
-      isSuggestionsOpen={isSuggestionsOpen}
-      suggestionsLoading={suggestionsLoading}
-      cappedSuggestions={cappedSuggestions}
-      querySuggestions={querySuggestions}
-      eventResults={cappedEventResults}
-      specialResults={cappedSpecialResults}
-      activeSuggestionIndex={activeSuggestionIndex}
-      sf={sf}
-      onSubmit={handleSearchSubmit}
-      onChange={handleSearchInputChange}
-      onKeyDown={handleSearchKeyDown}
-      onClose={() => setIsMobileSearchOpen(false)}
-      onClearSearch={handleClearSearch}
-      onSetActiveSuggestionIndex={setActiveSuggestionIndex}
-      onNavigateToSuggestion={navigateToSuggestion}
-      onSelectQuerySuggestion={handleSelectQuerySuggestion}
-      onNavigateToEvent={navigateToEvent}
-      onNavigateToSpecial={navigateToSpecial}
-      onViewAll={handleViewAll}
-    />
-  );
-const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4";
-  const horizontalPaddingClass = heroMode
-    ? "px-2"
-    : `px-2 ${currentPaddingClass}`;
+  const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4";
+  const horizontalPaddingClass = heroMode ? "px-2" : `px-2 ${currentPaddingClass}`;
 
   const desktopNavProps = {
     whiteText,
@@ -643,7 +195,6 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
     sf,
   };
 
-  // Show skeleton while auth is resolving to prevent layout shift
   if (authLoading) {
     return <HeaderSkeleton showSearch={showSearch} />;
   }
@@ -670,11 +221,11 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
               logoHref={logoHref}
               logoScaleClass={logoScaleClass}
               showSearch={showSearch}
-              desktopSearchExpandedWidth={desktopSearchExpandedWidth}
+              desktopSearchExpandedWidth={searchController.desktopSearchExpandedWidth}
               renderDesktopSearchInput={renderDesktopSearchInput}
-              isMobileSearchOpen={isMobileSearchOpen}
+              isMobileSearchOpen={searchController.isMobileSearchOpen}
               renderMobileSearchInput={renderMobileSearchInput}
-              handleMobileSearchToggle={handleMobileSearchToggle}
+              handleMobileSearchToggle={searchController.handleMobileSearchToggle}
               whiteText={whiteText}
               isGuest={effectiveIsGuest}
               isNotificationsActive={isNotificationsActive}
@@ -684,9 +235,9 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
               messageUnreadCount={messageUnreadCount}
               isMobileMenuOpen={isMobileMenuOpen}
               setIsMobileMenuOpen={setIsMobileMenuOpen}
-              homeDesktopRowRef={homeDesktopRowRef}
-              homeDesktopNavRef={homeDesktopNavRef}
-              homeDesktopIconsRef={homeDesktopIconsRef}
+              homeDesktopRowRef={searchController.homeDesktopRowRef}
+              homeDesktopNavRef={searchController.homeDesktopNavRef}
+              homeDesktopIconsRef={searchController.homeDesktopIconsRef}
               desktopNavProps={desktopNavProps}
             />
           ) : (
@@ -694,7 +245,7 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
               logoHref={logoHref}
               logoScaleClass={logoScaleClass}
               desktopNavProps={desktopNavProps}
-              isMobileSearchOpen={isMobileSearchOpen}
+              isMobileSearchOpen={searchController.isMobileSearchOpen}
               messagesHref={messagesHref}
               isMessagesActive={isMessagesActive}
               whiteText={whiteText}
@@ -709,10 +260,9 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
         </div>
       </header>
 
-      {/* Mobile suggestions backdrop (not for admin) */}
       {!effectiveIsAdminUser && (
         <AnimatePresence>
-          {isMobileSearchOpen && isSuggestionsOpen && (
+          {searchController.isMobileSearchOpen && searchController.isSuggestionsOpen && (
             <m.div
               key="search-backdrop"
               initial={{ opacity: 0 }}
@@ -721,8 +271,8 @@ const currentPaddingClass = heroMode ? "py-0" : reducedPadding ? "py-1" : "py-4"
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-40 bg-charcoal/20 backdrop-blur-[2px] lg:hidden"
               onClick={() => {
-                setIsMobileSearchOpen(false);
-                setActiveSuggestionIndex(-1);
+                searchController.setIsMobileSearchOpen(false);
+                searchController.setActiveSuggestionIndex(-1);
               }}
               aria-hidden
             />

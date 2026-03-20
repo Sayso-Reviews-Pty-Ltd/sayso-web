@@ -1,5 +1,5 @@
 import React from "react";
-import { getCategoryIcon } from "../../../components/BusinessCard/BusinessCard";
+import { getCategoryIcon } from "../BusinessCard.constants";
 
 interface BusinessCardCategoryProps {
   category: string;

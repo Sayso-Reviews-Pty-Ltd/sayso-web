@@ -19,6 +19,30 @@ jest.mock('@/app/lib/services/userService', () => ({
 
 import { GET } from '@/app/api/user/profile/route';
 
+describe('GET /api/user/profile — unauthenticated', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns 401 when no session or bearer token is present', async () => {
+    mockGetServerSupabase.mockResolvedValue({
+      auth: {
+        getUser: jest.fn().mockResolvedValue({
+          data: { user: null },
+          error: null,
+        }),
+      },
+    });
+
+    const req = new Request('http://localhost/api/user/profile') as any;
+    const res = await GET(req);
+
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body).toHaveProperty('error', 'Unauthorized');
+  });
+});
+
 describe('GET /api/user/profile auth modes', () => {
   beforeEach(() => {
     jest.clearAllMocks();

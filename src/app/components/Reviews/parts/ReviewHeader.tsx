@@ -1,0 +1,196 @@
+'use client';
+
+import { m } from 'framer-motion';
+import Image from 'next/image';
+import { Edit, Trash2 } from "@/app/lib/icons";
+import type { ReviewWithUser } from '../../../lib/types/database';
+import BadgePill, { BadgePillData } from '../../Badges/BadgePill';
+import VerifiedBadge from '../../VerifiedBadge/VerifiedBadge';
+import { getDisplayUsername } from '../../../utils/generateUsername';
+
+interface ReviewHeaderProps {
+  review: ReviewWithUser;
+  userBadges: BadgePillData[];
+  rating: number;
+  isDesktop: boolean;
+  isOwner: boolean;
+  isAnonymous: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  formatDate: (dateString: string) => string;
+}
+
+export function ReviewHeader({
+  review,
+  userBadges,
+  rating,
+  isDesktop,
+  isOwner,
+  isAnonymous,
+  onEdit,
+  onDelete,
+  formatDate,
+}: ReviewHeaderProps) {
+  return (
+    <div className="flex items-start space-x-4">
+      {/* Avatar */}
+      <m.div
+        whileHover={isDesktop ? undefined : { scale: 1.1, rotate: 5 }}
+        transition={isDesktop ? undefined : { duration: 0.3 }}
+        className="flex-shrink-0"
+      >
+        {review.user.avatar_url ? (
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full p-0.5 bg-off-white ring-2 ring-white/40">
+              <Image
+                src={review.user.avatar_url}
+                alt={review.user?.name || getDisplayUsername(
+                  review.user?.username,
+                  review.user?.display_name,
+                  review.user?.email,
+                  review.user_id
+                )}
+                width={48}
+                height={48}
+                className={`w-full h-full rounded-full object-cover ${
+                  isDesktop ? '' : 'group-hover:ring-2 group-hover:ring-sage/40 transition-all duration-300'
+                }`}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="w-12 h-12 bg-gradient-to-br from-sage/20 to-sage/10 rounded-full flex items-center justify-center ring-2 ring-white/40 transition-shadow duration-300">
+            <span className="font-urbanist text-lg font-700 text-sage">
+              {(review.user?.name || getDisplayUsername(
+                review.user?.username,
+                review.user?.display_name,
+                review.user?.email,
+                review.user_id
+              ))?.[0]?.toUpperCase() || 'U'}
+            </span>
+          </div>
+        )}
+      </m.div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
+          <div className="flex min-w-0 items-start sm:items-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <div className="flex min-w-0 flex-nowrap items-center gap-2">
+                <span
+                  className={`min-w-0 truncate font-urbanist text-lg font-600 leading-tight text-charcoal-700 ${
+                    isDesktop ? '' : 'transition-colors duration-300 group-hover:text-sage'
+                  }`}
+                  title={review.user?.name || getDisplayUsername(
+                    review.user?.username,
+                    review.user?.display_name,
+                    review.user?.email,
+                    review.user_id
+                  )}
+                >
+                  {review.user?.name || getDisplayUsername(
+                    review.user?.username,
+                    review.user?.display_name,
+                    review.user?.email,
+                    review.user_id
+                  )}
+                </span>
+                {isAnonymous ? (
+                  <span className="inline-flex flex-shrink-0 items-center rounded-full bg-charcoal/12 px-2 py-0.5 text-xs font-semibold text-charcoal/75">
+                    Anonymous
+                  </span>
+                ) : (
+                  <span className="inline-flex flex-shrink-0 items-center">
+                    <VerifiedBadge size="sm" />
+                  </span>
+                )}
+              </div>
+              {userBadges.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {userBadges.slice(0, 3).map((badge) => (
+                    <span
+                      key={badge.id}
+                      className="inline-flex origin-left scale-[1.03] rounded-full shadow-premium-sm sm:scale-100"
+                    >
+                      <BadgePill badge={badge} size="sm" />
+                    </span>
+                  ))}
+                  {userBadges.length > 3 && (
+                    <span className="inline-flex items-center rounded-full border border-charcoal/15 bg-charcoal/10 px-2 py-0.5 text-[10px] font-bold text-charcoal/60 shadow-premium-sm">
+                      +{userBadges.length - 3}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-start justify-between sm:justify-end gap-2 sm:gap-3">
+            <div className="flex flex-col items-start sm:items-end gap-1">
+              <div className="flex items-center space-x-1">
+                <svg width="0" height="0" className="absolute">
+                  <defs>
+                    <linearGradient id="reviewCardGoldStar" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#F5D547" />
+                      <stop offset="100%" stopColor="#E6A547" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {[...Array(5)].map((_, i) => (
+                  <m.div key={i}>
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                        fill={i < rating ? "url(#reviewCardGoldStar)" : "none"}
+                        stroke={i < rating ? "url(#reviewCardGoldStar)" : "#9ca3af"}
+                        strokeWidth={i < rating ? 0 : 2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </m.div>
+                ))}
+              </div>
+              <span className="font-urbanist text-xs sm:text-sm font-600 text-charcoal/60">
+                {formatDate(review.created_at)}
+              </span>
+            </div>
+
+            {isOwner && (
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                <m.button
+                  whileHover={isDesktop ? undefined : { scale: 1.1 }}
+                  whileTap={isDesktop ? undefined : { scale: 0.9 }}
+                  onClick={onEdit}
+                  className={`min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-navbar-bg rounded-full flex items-center justify-center active:scale-95 touch-manipulation ${
+                    isDesktop ? '' : 'hover:bg-navbar-bg/90 transition-all duration-300'
+                  }`}
+                  aria-label="Edit review"
+                  title="Edit review"
+                >
+                  <Edit className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-white" />
+                </m.button>
+                <m.button
+                  whileHover={isDesktop ? undefined : { scale: 1.1 }}
+                  whileTap={isDesktop ? undefined : { scale: 0.9 }}
+                  onClick={onDelete}
+                  className={`min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-navbar-bg rounded-full flex items-center justify-center active:scale-95 touch-manipulation ${
+                    isDesktop ? '' : 'hover:bg-navbar-bg/90 transition-all duration-300'
+                  }`}
+                  aria-label="Delete review"
+                  title="Delete review"
+                >
+                  <Trash2 className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-white" />
+                </m.button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -4,143 +4,22 @@ import type { MouseEvent } from "react";
 import type { Event } from "../../lib/types/Event";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { m } from "framer-motion";
-import { Star, Edit, Bookmark, Share2 } from "@/app/lib/icons";
 import { getEventIconPng } from "../../utils/eventIconToPngMapping";
 import EventBadge from "./EventBadge";
-import { useState, memo, useEffect, useMemo, useRef } from "react";
+import { useState, memo, useMemo } from "react";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { useToast } from "../../contexts/ToastContext";
 import { useEventRatings } from "../../hooks/useEventRatings";
-
-const EVENT_IMAGE_BASE_PATH = "/png";
-const loadedEventImageKeys = new Set<string>();
-
-// Tiny 4x3 SVG for instant visual fill while image loads
-const BLUR_DATA_URL =
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNCIgaGVpZ2h0PSIzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiNlNWUwZTUiLz48L3N2Zz4=";
-
-const SPECIAL_FOOD_KEYWORDS = [
-  "food",
-  "pizza",
-  "meal",
-  "dinner",
-  "lunch",
-  "breakfast",
-  "brunch",
-  "snack",
-  "burger",
-  "kitchen",
-  "restaurant",
-];
-
-const SPECIAL_DRINK_KEYWORDS = [
-  "cocktail",
-  "beer",
-  "wine",
-  "drink",
-  "bar",
-  "happy hour",
-  "brew",
-  "wine",
-];
-
-const EVENT_SPORT_KEYWORDS = [
-  "yoga",
-  "sport",
-  "fitness",
-  "run",
-  "park",
-  "outdoor",
-  "dance",
-  "music",
-];
-
-const fixImageUrl = (url: string): string =>
-  url.startsWith("//") ? `https:${url}` : url;
-
-const getImageCacheKey = (url: string): string => {
-  const normalizedUrl = fixImageUrl(url.trim());
-  if (!normalizedUrl) return "";
-
-  if (normalizedUrl.startsWith("/")) {
-    return normalizedUrl.toLowerCase();
-  }
-
-  try {
-    const parsed = new URL(normalizedUrl);
-    return `${parsed.origin}${parsed.pathname}${parsed.search}`.toLowerCase();
-  } catch {
-    return normalizedUrl.toLowerCase();
-  }
-};
-
-const isFallbackEventArtwork = (url: string): boolean =>
-  getImageCacheKey(url).startsWith(`${EVENT_IMAGE_BASE_PATH}/`);
-
-const getEventMediaImage = (event: Event) => {
-  // Priority 0: Uploaded images array (newer events)
-  const uploadedImages = (event as any).uploaded_images as string[] | undefined;
-  if (uploadedImages && Array.isArray(uploadedImages) && uploadedImages.length > 0) {
-    const first = uploadedImages.find((img) => typeof img === "string" && img.trim()) || uploadedImages[0];
-    if (first && typeof first === "string" && first.trim()) {
-      return fixImageUrl(first);
-    }
-  }
-
-  // Priority 1: Use real uploaded images from event
-  if (event.image && event.image.trim()) {
-    return fixImageUrl(event.image);
-  }
-
-  // Priority 1b: Common API aliases
-  if ((event as any).image_url && typeof (event as any).image_url === "string" && (event as any).image_url.trim()) {
-    return fixImageUrl((event as any).image_url as string);
-  }
-
-  if ((event as any).heroImage && typeof (event as any).heroImage === "string" && (event as any).heroImage.trim()) {
-    return fixImageUrl((event as any).heroImage as string);
-  }
-
-  if ((event as any).bannerImage && typeof (event as any).bannerImage === "string" && (event as any).bannerImage.trim()) {
-    return fixImageUrl((event as any).bannerImage as string);
-  }
-
-  // Priority 2: Use business image carousel if available (for business-owned events)
-  if ((event as any).businessImages && (event as any).businessImages.length > 0) {
-    return fixImageUrl((event as any).businessImages[0]);
-  }
-
-  // Fallback: Generate icon based on event type/keywords
-  const haystack = `${event.title} ${event.description ?? ""}`.toLowerCase();
-
-  if (event.type === "event") {
-    if (EVENT_SPORT_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-      return `${EVENT_IMAGE_BASE_PATH}/033-sport.png`;
-    }
-
-    if (haystack.includes("yoga")) {
-      return `${EVENT_IMAGE_BASE_PATH}/015-yoga.png`;
-    }
-
-    if (haystack.includes("music") || haystack.includes("concert")) {
-      return `${EVENT_IMAGE_BASE_PATH}/040-stage.png`;
-    }
-
-    return `${EVENT_IMAGE_BASE_PATH}/022-party-people.png`;
-  }
-
-  if (SPECIAL_DRINK_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-    return `${EVENT_IMAGE_BASE_PATH}/007-beer-tap.png`;
-  }
-
-  if (SPECIAL_FOOD_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-    return `${EVENT_IMAGE_BASE_PATH}/031-fast-food.png`;
-  }
-
-  return `${EVENT_IMAGE_BASE_PATH}/025-open-book.png`;
-};
+import { getEventMediaImage, isFallbackEventArtwork } from "./EventCard.utils";
+import { useEventCountdown } from "./hooks/useEventCountdown";
+import { useEventPrefetch } from "./hooks/useEventPrefetch";
+import { useEventImageLoading } from "./hooks/useEventImageLoading";
+import { EventCardMedia } from "./parts/EventCardMedia";
+import { EventCardCountdown } from "./parts/EventCardCountdown";
+import { EventCardFloatingActions } from "./parts/EventCardFloatingActions";
+import { EventCardRatingBadge } from "./parts/EventCardRatingBadge";
+import { EventCardContent } from "./parts/EventCardContent";
 
 interface EventCardProps {
   event: Event;
@@ -155,110 +34,22 @@ function EventCard({
   dateRibbonPosition = "corner",
   fullWidth = false,
 }: EventCardProps) {
-  const router = useRouter();
   const { toggleSavedItem, isItemSaved } = useSavedItems();
   const { showToast } = useToast();
   const eventMediaLayoutId = `event-media-${event.id}`;
-  const eventTitleLayoutId = `event-title-${event.id}`;
   const iconPng = getEventIconPng(event.icon);
   const mediaImage = getEventMediaImage(event);
-  const mediaImageCacheKey = useMemo(() => getImageCacheKey(mediaImage), [mediaImage]);
   const hasRealImage = !isFallbackEventArtwork(mediaImage);
-  const [imageLoaded, setImageLoaded] = useState(
-    () => !hasRealImage || (mediaImageCacheKey ? loadedEventImageKeys.has(mediaImageCacheKey) : true)
-  );
-  const showLoadingOverlay = hasRealImage && !imageLoaded;
 
   const eventDetailHref = event.type === "event" ? `/event/${event.id}` : `/special/${event.id}`;
   const reviewRoute = event.type === "event" ? `/write-review/event/${event.id}` : `/write-review/special/${event.id}`;
   const detailTypeLabel = event.type === "special" ? "Special" : "Event";
   const detailCtaLabel = `View ${detailTypeLabel}`;
   const detailAriaLabel = `View ${event.type} details`;
-  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Prefetch destination route on mount for the first visible cards.
-  useEffect(() => {
-    if (index > 1) return;
-    if (typeof window === "undefined") return;
-
-    let idleId: number | null = null;
-    let timeoutId: number | null = null;
-
-    const prefetch = () => {
-      try {
-        router.prefetch(eventDetailHref);
-      } catch {
-        // Ignore prefetch failures.
-      }
-    };
-
-    const idleCallback = (window as any).requestIdleCallback;
-    if (typeof idleCallback === "function") {
-      idleId = idleCallback(prefetch, { timeout: 1200 });
-    } else {
-      timeoutId = window.setTimeout(prefetch, 200);
-    }
-
-    return () => {
-      if (idleId !== null && typeof (window as any).cancelIdleCallback === "function") {
-        (window as any).cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, [eventDetailHref, index, router]);
-
-  const handleCardMouseEnter = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-
-    hoverTimeoutRef.current = setTimeout(() => {
-      try {
-        router.prefetch(eventDetailHref);
-      } catch {
-        // Ignore hover prefetch failures.
-      }
-    }, 100);
-  };
-
-  const handleCardMouseLeave = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-  };
-
-  const handleCardTouchStart = () => {
-    try {
-      router.prefetch(eventDetailHref);
-    } catch {
-      // Ignore touch-intent prefetch failures.
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!hasRealImage) {
-      setImageLoaded(true);
-      return;
-    }
-
-    if (!mediaImageCacheKey) {
-      setImageLoaded(true);
-      return;
-    }
-
-    setImageLoaded(loadedEventImageKeys.has(mediaImageCacheKey));
-  }, [hasRealImage, mediaImageCacheKey]);
+  const { handleCardMouseEnter, handleCardMouseLeave, handleCardTouchStart } = useEventPrefetch(eventDetailHref, index);
+  const { imageLoaded, showLoadingOverlay, mediaImageCacheKey, handleImageLoadingComplete, handleImageError } = useEventImageLoading(mediaImage, hasRealImage);
+  const countdown = useEventCountdown(event);
 
   const initialReviews = (event as any).reviews ?? (event as any).totalReviews ?? 0;
   const { rating: liveRating, totalReviews: liveTotalReviews } = useEventRatings(
@@ -270,75 +61,6 @@ function EventCard({
   const displayRating = hasRating ? Number(liveRating) : undefined;
   const reviews = liveTotalReviews ?? 0;
   const hasReviewed = false;
-
-  // Smart countdown state
-  const [countdown, setCountdown] = useState<{ 
-    days: number; 
-    hours: number; 
-    minutes: number; 
-    show: boolean;
-    status: 'upcoming' | 'live' | 'ended' | 'unknown';
-  }>({ 
-    days: 0, 
-    hours: 0, 
-    minutes: 0, 
-    show: true,
-    status: 'unknown'
-  });
-
-  // Calculate countdown to event start
-  useEffect(() => {
-    const calculateCountdown = () => {
-      const startDate = event.startDateISO || event.startDate;
-      const endDate = event.endDateISO || event.endDate;
-      
-      if (!startDate) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, show: true, status: 'unknown' });
-        return;
-      }
-
-      const now = new Date().getTime();
-      const eventStartTime = new Date(startDate).getTime();
-      if (!Number.isFinite(eventStartTime)) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, show: true, status: 'unknown' });
-        return;
-      }
-
-      let eventEndTime = endDate ? new Date(endDate).getTime() : eventStartTime + (24 * 60 * 60 * 1000); // Default to 24h after start if no end date
-      if (!Number.isFinite(eventEndTime)) {
-        eventEndTime = eventStartTime + (24 * 60 * 60 * 1000);
-      }
-      
-      // Event has ended
-      if (now > eventEndTime) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, show: true, status: 'ended' });
-        return;
-      }
-
-      // Event is currently happening
-      if (now >= eventStartTime && now <= eventEndTime) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, show: true, status: 'live' });
-        return;
-      }
-
-      // Event is upcoming
-      const diff = eventStartTime - now;
-      if (diff > 0) {
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        
-        setCountdown({ days, hours, minutes, show: true, status: 'upcoming' });
-      } else {
-        setCountdown({ days: 0, hours: 0, minutes: 0, show: true, status: 'live' });
-      }
-    };
-
-    calculateCountdown();
-    const interval = setInterval(calculateCountdown, 60000); // Update every minute
-
-    return () => clearInterval(interval);
-  }, [event.startDateISO, event.startDate, event.endDateISO, event.endDate]);
 
   const handleWriteReview = (e: MouseEvent) => {
     e.preventDefault();
