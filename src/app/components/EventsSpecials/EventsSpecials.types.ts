@@ -34,6 +34,4 @@ export interface EventsSpecialsProps {
   dateRibbonPosition?: "corner" | "middle";
   /** Remove title left padding so it aligns with the filter row. */
   alignTitleWithFilters?: boolean;
-  /** Enable infinite-loop DOM-clone carousel on mobile (default false). */
-  loop?: boolean;
 }

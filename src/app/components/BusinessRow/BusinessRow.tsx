@@ -43,7 +43,6 @@ export default function BusinessRow({
   href = "/home",
   disableAnimations = false,
   hideCarouselArrowsOnDesktop = false,
-  loop = false,
 }: {
   title: string;
   businesses: Business[];
@@ -51,7 +50,6 @@ export default function BusinessRow({
   href?: string;
   disableAnimations?: boolean;
   hideCarouselArrowsOnDesktop?: boolean;
-  loop?: boolean;
 }) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
@@ -173,7 +171,6 @@ export default function BusinessRow({
         <ScrollableSection
           enableMobilePeek
           hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
-          loop={loop}
         >
           {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
           <style dangerouslySetInnerHTML={{ __html: `

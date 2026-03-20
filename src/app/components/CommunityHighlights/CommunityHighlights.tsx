@@ -22,7 +22,6 @@ export default function CommunityHighlights({
   variant = "reviews",
   disableAnimations = false,
   hideCarouselArrowsOnDesktop = false,
-  loopFeaturedRail = false,
 }: CommunityHighlightsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
@@ -116,7 +115,6 @@ export default function CommunityHighlights({
           hideCarouselArrowsOnDesktop={hideCarouselArrowsOnDesktop}
           disableAnimations={disableAnimations}
           isDesktop={isDesktop}
-          loopFeaturedRail={loopFeaturedRail}
           onSeeMoreBusinesses={() => router.push('/leaderboard?tab=businesses')}
         />
       </div>

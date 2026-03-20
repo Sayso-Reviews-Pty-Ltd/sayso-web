@@ -12,8 +12,6 @@ export interface CommunityHighlightsProps {
   disableAnimations?: boolean;
   /** Hide carousel arrows on desktop (lg+) breakpoints (default false). */
   hideCarouselArrowsOnDesktop?: boolean;
-  /** Enable infinite-loop DOM-clone carousel on the featured businesses (BOTM) rail (default false). */
-  loopFeaturedRail?: boolean;
 }
 
 export interface BadgePreview {

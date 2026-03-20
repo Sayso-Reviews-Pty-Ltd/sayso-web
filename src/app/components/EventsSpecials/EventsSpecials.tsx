@@ -34,7 +34,6 @@ export default function EventsSpecials({
   showAllTypeFilter = false,
   dateRibbonPosition = "corner",
   alignTitleWithFilters = false,
-  loop = false,
 }: EventsSpecialsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
@@ -183,7 +182,6 @@ export default function EventsSpecials({
                 className="items-stretch py-2"
                 hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
                 enableMobilePeek={enableMobilePeek}
-                loop={loop}
               >
                 {isDesktop ? (
                   disableAnimations ? (

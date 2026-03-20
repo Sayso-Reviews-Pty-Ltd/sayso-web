@@ -15,7 +15,6 @@ interface FeaturedBusinessesSectionProps {
   hideCarouselArrowsOnDesktop: boolean;
   disableAnimations: boolean;
   isDesktop: boolean;
-  loopFeaturedRail?: boolean;
   onSeeMoreBusinesses: () => void;
 }
 
@@ -26,7 +25,6 @@ export default function FeaturedBusinessesSection({
   hideCarouselArrowsOnDesktop,
   disableAnimations,
   isDesktop,
-  loopFeaturedRail = false,
   onSeeMoreBusinesses,
 }: FeaturedBusinessesSectionProps) {
   if (hasBusinesses) {
@@ -60,7 +58,7 @@ export default function FeaturedBusinessesSection({
             </button>
           </div>
 
-          <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop} loop={loopFeaturedRail}>
+          <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
             {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
             <style dangerouslySetInnerHTML={{ __html: `
               @media (max-width: 639px) {
