@@ -11,6 +11,18 @@ interface EventLayoutProps {
   params: Promise<{ id: string }>;
 }
 
+interface EventData {
+  id: string;
+  title: string;
+  description: string | null;
+  image: string | null;
+  image_url: string | null;
+  location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  type: string | null;
+}
+
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -23,7 +35,7 @@ function toSlug(value: string): string {
     .replace(/\s+/g, '-');
 }
 
-async function getEventData(id: string) {
+async function getEventData(id: string): Promise<EventData | null> {
   const supabase = (() => {
     try {
       return getServiceSupabase();
@@ -60,12 +72,22 @@ async function getEventData(id: string) {
   // New events are in events_and_specials and resolved by the block above.
   const { data: ticketmasterByExternalId } = await dbClient
     .from('ticketmaster_events')
-    .select('id, title, description, image_url, image, location, start_date')
+    .select('id, title, description, image_url, location, start_date')
     .eq('ticketmaster_id', id)
     .maybeSingle();
 
   if (ticketmasterByExternalId) {
-    return ticketmasterByExternalId;
+    return {
+      id: ticketmasterByExternalId.id,
+      title: ticketmasterByExternalId.title,
+      description: ticketmasterByExternalId.description,
+      image: ticketmasterByExternalId.image_url,
+      image_url: ticketmasterByExternalId.image_url,
+      location: ticketmasterByExternalId.location,
+      start_date: ticketmasterByExternalId.start_date,
+      end_date: null,
+      type: 'event',
+    };
   }
 
   // DEPRECATED: UUID lookup in legacy ticketmaster_events table.
@@ -73,12 +95,22 @@ async function getEventData(id: string) {
   if (UUID_RE.test(id)) {
     const { data: ticketmasterByUuid } = await dbClient
       .from('ticketmaster_events')
-      .select('id, title, description, image_url, image, location, start_date')
+      .select('id, title, description, image_url, location, start_date')
       .eq('id', id)
       .maybeSingle();
 
     if (ticketmasterByUuid) {
-      return ticketmasterByUuid;
+      return {
+        id: ticketmasterByUuid.id,
+        title: ticketmasterByUuid.title,
+        description: ticketmasterByUuid.description,
+        image: ticketmasterByUuid.image_url,
+        image_url: ticketmasterByUuid.image_url,
+        location: ticketmasterByUuid.location,
+        start_date: ticketmasterByUuid.start_date,
+        end_date: null,
+        type: 'event',
+      };
     }
   }
 

@@ -4,7 +4,9 @@ import type { MouseEvent } from "react";
 import type { Event } from "../../lib/types/Event";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { m } from "framer-motion";
+import { Edit, Bookmark, Share2 } from "@/app/lib/icons";
 import { getEventIconPng } from "../../utils/eventIconToPngMapping";
 import EventBadge from "./EventBadge";
 import { useState, memo, useMemo } from "react";
@@ -12,6 +14,7 @@ import { useSavedItems } from "../../contexts/SavedItemsContext";
 import { useToast } from "../../contexts/ToastContext";
 import { useEventRatings } from "../../hooks/useEventRatings";
 import { getEventMediaImage, isFallbackEventArtwork } from "./EventCard.utils";
+import { BLUR_DATA_URL } from "./EventCard.constants";
 import { useEventCountdown } from "./hooks/useEventCountdown";
 import { useEventPrefetch } from "./hooks/useEventPrefetch";
 import { useEventImageLoading } from "./hooks/useEventImageLoading";
@@ -34,9 +37,11 @@ function EventCard({
   dateRibbonPosition = "corner",
   fullWidth = false,
 }: EventCardProps) {
+  const router = useRouter();
   const { toggleSavedItem, isItemSaved } = useSavedItems();
   const { showToast } = useToast();
   const eventMediaLayoutId = `event-media-${event.id}`;
+  const eventTitleLayoutId = `event-title-${event.id}`;
   const iconPng = getEventIconPng(event.icon);
   const mediaImage = getEventMediaImage(event);
   const hasRealImage = !isFallbackEventArtwork(mediaImage);
@@ -160,18 +165,8 @@ function EventCard({
                 className={hasRealImage ? "object-cover card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none" : "object-contain w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"}
                 quality={hasRealImage ? 75 : 60}
                 priority={false}
-                onLoadingComplete={() => {
-                  if (mediaImageCacheKey) {
-                    loadedEventImageKeys.add(mediaImageCacheKey);
-                  }
-                  setImageLoaded(true);
-                }}
-                onError={() => {
-                  if (mediaImageCacheKey) {
-                    loadedEventImageKeys.add(mediaImageCacheKey);
-                  }
-                  setImageLoaded(true);
-                }}
+                onLoadingComplete={handleImageLoadingComplete}
+                onError={handleImageError}
                 placeholder="blur"
                 blurDataURL={BLUR_DATA_URL}
               />
