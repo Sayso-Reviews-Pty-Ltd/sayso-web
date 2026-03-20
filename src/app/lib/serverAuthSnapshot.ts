@@ -135,14 +135,16 @@ export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
     const profile = profileFromRow(user.id, profileRow);
     return buildAuthenticatedSnapshot(toAuthUser(user, profile), "server");
   } catch (err) {
-    // DYNAMIC_SERVER_USAGE is thrown by Next.js during static generation when
-    // cookies() is accessed. Re-throw so Next.js can mark the route as dynamic
-    // instead of swallowing it and logging noise.
+    // DYNAMIC_SERVER_USAGE is thrown by Next.js during static generation and ISR
+    // background regeneration when cookies() is called without a request context.
+    // Return guest state silently — this is expected and should not log noise or
+    // crash the render. Re-throwing would break ISR pages (revalidate: N) in the
+    // RootLayout, surfacing 500s to users.
     if (
       err instanceof Error &&
       (err as Error & { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
     ) {
-      throw err;
+      return UNKNOWN_AUTH_SNAPSHOT;
     }
     console.error("[serverAuthSnapshot] unexpected error:", err);
     return UNKNOWN_AUTH_SNAPSHOT;
