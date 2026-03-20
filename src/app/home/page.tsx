@@ -7,6 +7,7 @@ const HomeClient = lazy(() => import('./HomeClient').then((m) => ({ default: m.d
 import Link from 'next/link';
 import SchemaMarkup from '../components/SEO/SchemaMarkup';
 import { generateWebSiteSchema } from '../lib/utils/schemaMarkup';
+import { getServerBaseUrl } from '../lib/utils/serverOrigin';
 import type { Business } from '../components/BusinessCard/BusinessCard';
 
 // app/home/page.tsx serves /home directly — middleware does not rewrite /home to a
@@ -14,9 +15,8 @@ import type { Business } from '../components/BusinessCard/BusinessCard';
 // routed to /home by middleware.
 async function prefetchTrending(): Promise<Business[]> {
   try {
-    const host = process.env.VERCEL_URL ?? 'localhost:3000';
-    const protocol = process.env.VERCEL_URL ? 'https' : 'http';
-    const res = await fetch(`${protocol}://${host}/api/trending?limit=20`, {
+    const baseUrl = await getServerBaseUrl();
+    const res = await fetch(`${baseUrl}/api/trending?limit=20`, {
       next: { revalidate: 30 },
       signal: AbortSignal.timeout(3000),
     });

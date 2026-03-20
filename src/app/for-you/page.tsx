@@ -1,8 +1,9 @@
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import ForYouClient from "./ForYouClient";
 import type { Business } from "../components/BusinessCard/BusinessCard";
 import type { UserPreferences } from "../hooks/useUserPreferences";
 import { buildForYouQueryParams, buildForYouRequestContract } from "../lib/swrKeys";
+import { getServerBaseUrl } from "../lib/utils/serverOrigin";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -59,16 +60,6 @@ async function fetchJsonWithTimeout<T>(
   }
 }
 
-async function getBaseUrl() {
-  const headerList = await headers();
-  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
-  if (host) {
-    const protocol = headerList.get("x-forwarded-proto") ?? "http";
-    return `${protocol}://${host}`;
-  }
-  return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-}
-
 async function buildCookieHeader() {
   const cookieStore = await cookies();
   const cookiePairs = cookieStore.getAll().map(({ name, value }) => `${name}=${value}`);
@@ -108,7 +99,7 @@ async function fetchPreferences(baseUrl: string, cookieHeader: string): Promise<
 // If this page ever fetches multiple APIs in parallel (e.g. featured + trending),
 // use Promise.allSettled() so one timeout doesn't make all sections empty.
 export default async function ForYouPage() {
-  const baseUrl = await getBaseUrl();
+  const baseUrl = await getServerBaseUrl();
   const cookieHeader = await buildCookieHeader();
 
   const preferencesResult = await fetchPreferences(baseUrl, cookieHeader);

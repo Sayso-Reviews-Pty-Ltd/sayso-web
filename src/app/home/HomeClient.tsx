@@ -5,14 +5,12 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { m, useReducedMotion } from "framer-motion";
 import { getChoreoItemMotion } from "../lib/motion/choreography";
-import { useSearchParams } from "next/navigation";
 import { usePredefinedPageTitle } from "../hooks/usePageTitle";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import { useBusinesses, useForYouBusinesses, useTrendingBusinesses } from "../hooks/useBusinesses";
-import { getBrowserSupabase } from "../lib/supabase/client";
+import { useForYouBusinesses, useTrendingBusinesses } from "../hooks/useBusinesses";
 import { useFeaturedBusinesses } from "../hooks/useFeaturedBusinesses";
 import { useRoutePrefetch } from "../hooks/useRoutePrefetch";
 import { useUserPreferences } from "../hooks/useUserPreferences";
@@ -29,10 +27,10 @@ import {
   SearchResultsPanel,
 } from "./homeClient.components";
 import { useHomeEventsSpecials } from "./hooks/useHomeEventsSpecials";
-import { useHomeFilterState } from "./hooks/useHomeFilterState";
 import { useHomeHeroReadiness } from "./hooks/useHomeHeroReadiness";
 import { useHomeBusinessCountsDebug, useHomePreferencesDebug } from "./hooks/useHomeDebugLogs";
-import { useLiveSearch } from "../hooks/useLiveSearch";
+import { useHomeSearchState } from "./hooks/useHomeSearchState";
+import { useHomeRealtimeFeedSync } from "./hooks/useHomeRealtimeFeedSync";
 
 // Note: dynamic and revalidate cannot be exported from client components
 // Client components are automatically dynamic
@@ -45,86 +43,28 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   const isDev = process.env.NODE_ENV === "development";
   const prefersReducedMotion = useReducedMotion() ?? false;
   const choreoEnabled = !prefersReducedMotion;
+  const { user } = useAuth();
   const { eventsAndSpecials, eventsAndSpecialsLoading } = useHomeEventsSpecials();
-
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Realtime: refresh feed sections when any new review is inserted Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-  // Keep a ref to the latest refetch callbacks so the channel doesn't need
-  // to be recreated when user auth state or SWR mutate identity changes.
-  const supabaseHomeRef = useRef(getBrowserSupabase());
-  const refetchFeedsRef = useRef<() => void>(() => {});
-  refetchFeedsRef.current = () => {
-    refetchTrending();
-    if (user) refetchForYou();
-  };
-
-  useEffect(() => {
-    const supabase = supabaseHomeRef.current;
-    const channel = supabase
-      .channel('home-reviews-feed')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reviews' }, () => {
-        refetchFeedsRef.current();
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []); // subscribe once on mount
 
   usePredefinedPageTitle('home');
   const { heroReady } = useHomeHeroReadiness();
-
-  const searchParams = useSearchParams();
-  const searchQueryParam = searchParams.get('search') || "";
-  const { user } = useAuth();
-
   const {
-    query: liveQuery,
-    setQuery,
-    loading: liveLoading,
-    results: liveResults,
-    error: liveError,
-    filters: liveFilters,
+    liveLoading,
+    liveResults,
+    liveError,
+    liveFilters,
     setDistanceKm,
     setMinRating,
     resetFilters,
-  } = useLiveSearch({
-    initialQuery: searchQueryParam,
-    debounceMs: 250, // Fast live search
-  });
-
-  // Sync URL param with live search
-  useEffect(() => {
-    if (searchQueryParam !== liveQuery) {
-      setQuery(searchQueryParam);
-    }
-  }, [searchQueryParam, liveQuery, setQuery]);
-
-  const {
-    isFiltered,
-    userLocation,
-    handleInlineDistanceChange,
-    handleInlineRatingChange,
-    handleFiltersChange,
-    handleClearFilters,
-    handleUpdateFilter,
-    handleToggleInterest,
-  } = useHomeFilterState({
-    isDev,
-    refetchAllBusinesses: () => refetchAllBusinesses(),
-  });
+    isSearchActive,
+    searchPanelQuery,
+  } = useHomeSearchState();
   // Ã¢Å“â€¦ USER PREFERENCES: From onboarding, persistent, used for personalization
   const { interests, subcategories, dealbreakers, loading: prefsLoading } = useUserPreferences();
   const preferences = useMemo(
     () => ({ interests, subcategories, dealbreakers }),
     [interests, subcategories, dealbreakers]
   );
-  // Destructure and alias refetch functions from business hooks
-  const {
-    businesses: allBusinesses,
-    loading: allBusinessesLoading,
-    refetch: refetchAllBusinesses,
-  } = useBusinesses({
-    // Filtered results section is hidden by default; avoid fetching it on first paint.
-    skip: !isFiltered,
-  });
 
   const {
     businesses: forYouBusinesses,
@@ -141,25 +81,24 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
     businesses: trendingBusinesses,
     loading: trendingLoading,
     error: trendingError,
-    statusCode: trendingStatus,
     refetch: refetchTrending,
   } = useTrendingBusinesses({ fallbackData: initialTrending });
+
+  useHomeRealtimeFeedSync({
+    hasUser: Boolean(user),
+    refetchTrending,
+    refetchForYou,
+  });
 
   useHomePreferencesDebug({ interests, subcategories, dealbreakers, isDev });
 
   // Fetch featured businesses from API
-  const { featuredBusinesses, loading: featuredLoading, error: featuredError, statusCode: featuredStatus, refetch: refetchFeatured } = useFeaturedBusinesses({
+  const { featuredBusinesses, loading: featuredLoading, error: featuredError, refetch: refetchFeatured } = useFeaturedBusinesses({
     limit: 12,
-    region: userLocation ? 'Cape Town' : null, // TODO: Get actual region from user location
+    region: null,
     skip: false,
     deferMs: 150, // Defer below-fold Community Highlights to prioritize For You / Trending
   });
-
-  // Note: Visibility-based refetch is handled by each hook (useBusinesses, useForYouBusinesses,
-  // useTrendingBusinesses, useFeaturedBusinesses) to avoid duplicate listeners and requests.
-
-  // Search is active when there's a query in the URL or live query
-  const isSearchActive = searchQueryParam.trim().length > 0 || liveQuery.trim().length > 0;
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   // Smooth scroll to top when entering search mode
@@ -177,10 +116,8 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   useHomeBusinessCountsDebug({
     forYouBusinesses,
     trendingBusinesses,
-    allBusinesses,
     forYouLoading,
     trendingLoading,
-    allBusinessesLoading,
     forYouError,
     trendingError,
     featuredByCategory,
@@ -235,7 +172,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                 {...getChoreoItemMotion({ order: 0, intent: "section", enabled: choreoEnabled })}
               >
                 <SearchResultsPanel
-                  query={liveQuery.trim() || searchQueryParam.trim()}
+                  query={searchPanelQuery}
                   loading={liveLoading}
                   error={liveError}
                   results={liveResults}
@@ -249,21 +186,16 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
               /* Discovery Mode - Default Home Page Content */
               <HomeDiscoverySections
                 choreoEnabled={choreoEnabled}
-                isFiltered={isFiltered}
                 hasUser={Boolean(user)}
                 forYouLoading={forYouLoading}
                 forYouError={forYouError}
                 forYouBusinesses={forYouBusinesses}
-                allBusinessesLoading={allBusinessesLoading}
-                allBusinesses={allBusinesses}
                 trendingLoading={trendingLoading}
                 trendingError={trendingError}
-                trendingStatus={trendingStatus ?? null}
                 hasTrendingBusinesses={hasTrendingBusinesses}
                 trendingBusinesses={trendingBusinesses}
                 featuredError={featuredError}
                 featuredLoading={featuredLoading}
-                featuredStatus={featuredStatus ?? null}
                 featuredByCategory={Array.isArray(featuredByCategory) ? featuredByCategory : []}
                 onRetryForYou={refetchForYou}
                 onRetryTrending={refetchTrending}
