@@ -4,55 +4,16 @@
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "@/app/lib/icons";
 import EventCard from "../EventCard/EventCard";
-import EventCardSkeleton from "../EventCard/EventCardSkeleton";
-import type { Event } from "../../lib/types/Event";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
 import { m, useReducedMotion } from "framer-motion";
 import FilterPillGroup from "../Filters/FilterPillGroup";
 import { useMemo, useState } from "react";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import WavyTypedTitle from "../Animations/WavyTypedTitle";
-
-// Animation variants for staggered card appearance (matching badge page)
-const containerVariants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
-  },
-};
-
-type ListingTypeFilter = "event" | "special" | null;
-
-const normalizeEventKeyPart = (value: string | null | undefined): string =>
-  (value ?? "").trim().toLowerCase();
-
-const getStableEventRailKey = (event: Event): string => {
-  if (event.id?.trim()) {
-    return event.id;
-  }
-
-  return [
-    normalizeEventKeyPart(event.type),
-    normalizeEventKeyPart(event.title),
-    normalizeEventKeyPart(event.startDateISO || event.startDate),
-    normalizeEventKeyPart(event.endDateISO || event.endDate),
-    normalizeEventKeyPart(event.location),
-    normalizeEventKeyPart(event.businessId),
-    normalizeEventKeyPart(event.href),
-    normalizeEventKeyPart(event.canonicalKey),
-  ].join("|");
-};
+import type { EventsSpecialsProps, ListingTypeFilter } from "./EventsSpecials.types";
+import { containerVariants, itemVariants } from "./eventsSpecials.constants";
+import { formatCtaLabel, getStableEventRailKey } from "./eventsSpecials.utils";
+import EventsSpecialsSkeleton from "./EventsSpecialsSkeleton";
 
 export default function EventsSpecials({
   title = "Events & Specials",
@@ -73,39 +34,8 @@ export default function EventsSpecials({
   showAllTypeFilter = false,
   dateRibbonPosition = "corner",
   alignTitleWithFilters = false,
-}: {
-  title?: string;
-  events: Event[];
-  cta?: string;
-  href?: string;
-  loading?: boolean;
-  /** Override section title font-weight (default 700). */
-  titleFontWeight?: number;
-  /** Override CTA link font-weight (default 600). */
-  ctaFontWeight?: number;
-  /** Enable premium micro-hover animation on the CTA (default false). */
-  premiumCtaHover?: boolean;
-  /** Disable scroll-triggered animations (default false). */
-  disableAnimations?: boolean;
-  /** Hide carousel arrows on desktop (lg+) breakpoints (default false). */
-  hideCarouselArrowsOnDesktop?: boolean;
-  /** Render the rail edge-to-edge without max-width constraints (default false). */
-  fullBleed?: boolean;
-  /** Enable home-like mobile hint indicators for horizontal overflow (default false). */
-  enableMobilePeek?: boolean;
-  /** Show the top-right CTA link in the section header (default true). */
-  showHeaderCta?: boolean;
-  /** Render title with one-time typed effect (no entrance motion on heading). */
-  useTypedTitle?: boolean;
-  /** Show Events/Specials pills (notifications styling) for local filtering. */
-  showTypeFilters?: boolean;
-  /** Include explicit "All" pill in type filters. */
-  showAllTypeFilter?: boolean;
-  /** Override date ribbon position on cards rendered by this section. */
-  dateRibbonPosition?: "corner" | "middle";
-  /** Remove title left padding so it aligns with the filter row. */
-  alignTitleWithFilters?: boolean;
-}) {
+  loop = false,
+}: EventsSpecialsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
   const prefersReducedMotion = useReducedMotion();
@@ -145,42 +75,12 @@ export default function EventsSpecials({
 
   if (showSkeleton) {
     return (
-      <section
-        className="relative m-0 w-full"
-        aria-label={title}
-        style={{
-          fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-        }}
-      >
-        <div className={containerClass}>
-          <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
-            <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse px-3 sm:px-4 py-1" />
-            {showHeaderCta && (
-              <div className="inline-flex items-center gap-1 px-4 py-2 -mx-2">
-                <div className="h-4 w-16 bg-charcoal/10 rounded-full animate-pulse" />
-                <div className="h-4 w-4 bg-charcoal/10 rounded-full animate-pulse" />
-              </div>
-            )}
-          </div>
-
-          <div className="pt-2">
-            <ScrollableSection
-              showArrows={false}
-              className="items-stretch py-2"
-              enableMobilePeek={enableMobilePeek}
-            >
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto min-w-[clamp(220px,18vw,320px)] list-none flex justify-center"
-                >
-                  <EventCardSkeleton />
-                </div>
-              ))}
-            </ScrollableSection>
-          </div>
-        </div>
-      </section>
+      <EventsSpecialsSkeleton
+        title={title}
+        containerClass={containerClass}
+        showHeaderCta={showHeaderCta}
+        enableMobilePeek={enableMobilePeek}
+      />
     );
   }
 
@@ -243,7 +143,7 @@ export default function EventsSpecials({
                 }
                 style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: ctaFontWeight }}
               >
-                {cta.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
+                {formatCtaLabel(cta)}
               </span>
               <ArrowRight
                 className={
@@ -283,6 +183,7 @@ export default function EventsSpecials({
                 className="items-stretch py-2"
                 hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
                 enableMobilePeek={enableMobilePeek}
+                loop={loop}
               >
                 {isDesktop ? (
                   disableAnimations ? (

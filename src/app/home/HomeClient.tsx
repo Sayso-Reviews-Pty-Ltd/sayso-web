@@ -5,37 +5,33 @@
 
 "use client";
 
-import { memo, useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { m, useReducedMotion } from "framer-motion";
 import { getChoreoItemMotion } from "../lib/motion/choreography";
-import useSWR from "swr";
-import { swrConfig } from "../lib/swrConfig";
 import { useSearchParams } from "next/navigation";
-import nextDynamic from "next/dynamic";
 import { usePredefinedPageTitle } from "../hooks/usePageTitle";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import { FilterState } from "../components/FilterModal/FilterModal";
-import BusinessRow from "../components/BusinessRow/BusinessRow";
-import FeaturedBusinessesSkeleton from "../components/CommunityHighlights/FeaturedBusinessesSkeleton";
 import { useBusinesses, useForYouBusinesses, useTrendingBusinesses } from "../hooks/useBusinesses";
 import { getBrowserSupabase } from "../lib/supabase/client";
 import { useFeaturedBusinesses } from "../hooks/useFeaturedBusinesses";
 import { useRoutePrefetch } from "../hooks/useRoutePrefetch";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { useAuth } from "../contexts/AuthContext";
-import type { Event } from "../lib/types/Event";
 import { HomeDiscoverySections } from "./HomeDiscoverySections";
-
-// Dynamically import HeroCarousel - it's heavy with images and animations
-import HeroSkeleton from "../components/Hero/HeroSkeleton";
-import MobileHeroSkeleton from "../components/Hero/MobileHeroSkeleton";
-
-const HeroCarousel = nextDynamic(
-  () => import("../components/Hero/HeroCarousel"),
-  {
-    loading: () => <HeroSkeleton />,
-  }
-);
+import {
+  CommunityHighlights,
+  EventsSpecials,
+  Footer,
+  HeroCarousel,
+  HeroSkeleton,
+  MemoizedBusinessRow,
+  MobileHeroSkeleton,
+  SearchResultsPanel,
+} from "./homeClient.components";
+import { useHomeEventsSpecials } from "./hooks/useHomeEventsSpecials";
+import { useHomeFilterState } from "./hooks/useHomeFilterState";
+import { useHomeHeroReadiness } from "./hooks/useHomeHeroReadiness";
+import { useHomeBusinessCountsDebug, useHomePreferencesDebug } from "./hooks/useHomeDebugLogs";
 import { useLiveSearch } from "../hooks/useLiveSearch";
 
 // Note: dynamic and revalidate cannot be exported from client components
@@ -43,67 +39,13 @@ import { useLiveSearch } from "../hooks/useLiveSearch";
 
 // Removed any animation / scroll-reveal classes and imports.
 
-const EventsSpecials = nextDynamic(
-  () => import("../components/EventsSpecials/EventsSpecials"),
-  {
-    loading: () => <div className="h-96 bg-off-white/50" />,
-  }
-);
-
-const CommunityHighlights = nextDynamic(
-  () => import("../components/CommunityHighlights/CommunityHighlights"),
-  {
-    loading: () => <FeaturedBusinessesSkeleton count={4} />,
-  }
-);
-
-const Footer = nextDynamic(() => import("../components/Footer/Footer"), {
-  loading: () => <div className="h-64 bg-charcoal" />,
-});
-
-const SearchResultsPanel = nextDynamic(
-  () => import("../components/SearchResultsPanel/SearchResultsPanel"),
-  {
-    loading: () => <div className="min-h-[40vh] w-full" />,
-  }
-);
-
-const MemoizedBusinessRow = memo(BusinessRow);
-
-function isIOSBrowser(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent || '';
-  const platform = (navigator as any).platform || '';
-  const maxTouchPoints = (navigator as any).maxTouchPoints || 0;
-  const isIPadOS = platform === 'MacIntel' && maxTouchPoints > 1;
-  return /iPad|iPhone|iPod/i.test(ua) || isIPadOS;
-}
-
 
 export default function HomeClient({ initialTrending }: { initialTrending?: import('../components/BusinessCard/BusinessCard').Business[] }) {
   const isDesktop = useIsDesktop();
   const isDev = process.env.NODE_ENV === "development";
   const prefersReducedMotion = useReducedMotion() ?? false;
   const choreoEnabled = !prefersReducedMotion;
-
-  // Defer below-fold Events fetch to prioritize above-fold content (For You, Trending)
-  const [eventsReady, setEventsReady] = useState(false);
-  useEffect(() => {
-    const id = setTimeout(() => setEventsReady(true), 200);
-    return () => clearTimeout(id);
-  }, []);
-
-  const { data: eventsData, isLoading: eventsAndSpecialsLoading } = useSWR(
-    eventsReady ? '/api/events-and-specials?limit=12&excludeSoldOut=true' : null,
-    async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data?.items) ? (data.items as Event[]) : [];
-    },
-    { ...swrConfig, dedupingInterval: 60_000, revalidateOnFocus: false }
-  );
-  const eventsAndSpecials = eventsData ?? [];
+  const { eventsAndSpecials, eventsAndSpecialsLoading } = useHomeEventsSpecials();
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Realtime: refresh feed sections when any new review is inserted Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   // Keep a ref to the latest refetch callbacks so the channel doesn't need
@@ -127,9 +69,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   }, []); // subscribe once on mount
 
   usePredefinedPageTitle('home');
-  const isIOS = useMemo(() => isIOSBrowser(), []);
-  // Start false so server and client render the same markup; enable after mount.
-  const [heroReady, setHeroReady] = useState(false);
+  const { heroReady } = useHomeHeroReadiness();
 
   const searchParams = useSearchParams();
   const searchQueryParam = searchParams.get('search') || "";
@@ -157,14 +97,19 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
     }
   }, [searchQueryParam, liveQuery, setQuery]);
 
-  // Ã¢Å“â€¦ ACTIVE FILTERS: User-initiated, ephemeral UI state (starts empty)
-  const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
-  // Ã¢Å“â€¦ Track if filters were user-initiated (prevents treating preferences as filters)
-  const [hasUserInitiatedFilters, setHasUserInitiatedFilters] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({ minRating: null, distance: null });
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const hasActiveFilters = selectedInterestIds.length > 0 || filters.minRating !== null || filters.distance !== null;
-  const isFiltered = hasUserInitiatedFilters && hasActiveFilters;
+  const {
+    isFiltered,
+    userLocation,
+    handleInlineDistanceChange,
+    handleInlineRatingChange,
+    handleFiltersChange,
+    handleClearFilters,
+    handleUpdateFilter,
+    handleToggleInterest,
+  } = useHomeFilterState({
+    isDev,
+    refetchAllBusinesses: () => refetchAllBusinesses(),
+  });
   // Ã¢Å“â€¦ USER PREFERENCES: From onboarding, persistent, used for personalization
   const { interests, subcategories, dealbreakers, loading: prefsLoading } = useUserPreferences();
   const preferences = useMemo(
@@ -200,16 +145,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
     refetch: refetchTrending,
   } = useTrendingBusinesses({ fallbackData: initialTrending });
 
-  // Debug logging for user preferences
-  useEffect(() => {
-    if (!isDev) return;
-    console.log("[Home] user prefs:", {
-      interestsLen: interests.length,
-      interests,
-      subcategoriesLen: subcategories.length,
-      dealbreakersLen: dealbreakers.length,
-    });
-  }, [interests, subcategories, dealbreakers, isDev]);
+  useHomePreferencesDebug({ interests, subcategories, dealbreakers, isDev });
 
   // Fetch featured businesses from API
   const { featuredBusinesses, loading: featuredLoading, error: featuredError, statusCode: featuredStatus, refetch: refetchFeatured } = useFeaturedBusinesses({
@@ -235,181 +171,22 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
 
   // Note: Prioritization of recently reviewed businesses is now handled on the backend
   // The API automatically prioritizes businesses the user has reviewed within the last 24 hours
-
-
-  // Ã¢Å“â€¦ Guard: Debug logging to track filter state changes
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Home] Filter state changed:', {
-        hasUserInitiatedFilters,
-        selectedInterestIdsLength: selectedInterestIds.length,
-        selectedInterestIds,
-        filters,
-        isFiltered,
-      });
-    }
-  }, [hasUserInitiatedFilters, selectedInterestIds, filters, isFiltered]);
-
-
-  const handleInlineDistanceChange = (distance: string) => {
-    const newFilters = { ...filters, distance };
-    setFilters(newFilters);
-    setHasUserInitiatedFilters(true);
-
-    // Request user location if not already available
-    if (!userLocation) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          (error) => {
-            if (isDev) console.warn('Error getting user location:', error);
-          }
-        );
-      }
-    }
-
-    // Trigger refetch immediately
-    refetchAllBusinesses();
-  };
-
-  const handleInlineRatingChange = (rating: number) => {
-    const newFilters = { ...filters, minRating: rating };
-    setFilters(newFilters);
-    setHasUserInitiatedFilters(true);
-    refetchAllBusinesses();
-  };
-
-  const handleFiltersChange = (f: FilterState) => {
-    // Ã¢Å“â€¦ Mark that user has explicitly initiated filtering
-    setHasUserInitiatedFilters(true);
-    setFilters(f);
-
-    // If distance filter is applied, request user location
-    if (f.distance && !userLocation) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          (error) => {
-            if (isDev) console.warn('Error getting user location:', error);
-            // Continue without location - distance filter won't work but other filters will
-          }
-        );
-      }
-    }
-
-    // Trigger refetch to apply filters immediately
-    refetchAllBusinesses();
-    // Note: For You doesn't refetch here because it uses preferences, not filters
-  };
-
-  const handleClearFilters = () => {
-    // Ã¢Å“â€¦ Reset filter state - return to default mode
-    setHasUserInitiatedFilters(false);
-    setSelectedInterestIds([]);
-    setFilters({ minRating: null, distance: null });
-    setUserLocation(null);
-    refetchAllBusinesses();
-  };
-
-  const handleUpdateFilter = (filterType: 'minRating' | 'distance', value: number | string | null) => {
-    const newFilters = { ...filters, [filterType]: value };
-    setFilters(newFilters);
-    setHasUserInitiatedFilters(true);
-
-    // If distance filter is applied, request user location
-    if (filterType === 'distance' && value && !userLocation) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          (error) => {
-            if (isDev) console.warn('Error getting user location:', error);
-          }
-        );
-      }
-    }
-
-    // Trigger refetch immediately
-    refetchAllBusinesses();
-  };
-
-  const handleToggleInterest = (interestId: string) => {
-    // Ã¢Å“â€¦ Mark that user has explicitly initiated filtering
-    // This is the ONLY way hasUserInitiatedFilters should become true
-    if (isDev) {
-      console.log('[Home] User toggled interest filter:', interestId);
-    }
-    setHasUserInitiatedFilters(true);
-
-    setSelectedInterestIds(prev => {
-      const newIds = prev.includes(interestId)
-        ? prev.filter(id => id !== interestId)
-        : [...prev, interestId];
-
-      if (isDev) {
-        console.log('[Home] Updated selectedInterestIds:', newIds);
-      }
-
-      // Immediately trigger refetch when category changes
-      setTimeout(() => {
-        refetchAllBusinesses();
-        // Note: For You doesn't refetch here because it uses preferences, not filters
-      }, 0);
-
-      return newIds;
-    });
-  };
-
   // Use featured businesses from API instead of client-side computation
   const featuredByCategory = featuredBusinesses;
 
-  // Debug logging for business counts (placed after featuredByCategory is defined)
-  useEffect(() => {
-    if (!isDev) return;
-    console.log('Ã¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€Â');
-    console.log('Ã°Å¸â€œÅ  [Home Page] Business Counts Summary');
-    console.log('Ã¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€Â');
-    console.log('[Home Page] For You:', {
-      count: forYouBusinesses.length,
-      loading: forYouLoading,
-      error: forYouError,
-    });
-    console.log('[Home Page] Trending:', {
-      count: trendingBusinesses.length,
-      loading: trendingLoading,
-      error: trendingError,
-    });
-    console.log('[Home Page] All Businesses:', {
-      count: allBusinesses.length,
-      loading: allBusinessesLoading,
-      firstBusiness: allBusinesses[0] ? {
-        id: allBusinesses[0].id,
-        name: allBusinesses[0].name,
-        hasImage: !!(allBusinesses[0].image || allBusinesses[0].image_url || allBusinesses[0].uploaded_images),
-      } : null,
-    });
-    const safeFeatured = Array.isArray(featuredByCategory) ? featuredByCategory : [];
-    console.log('[Home Page] Featured by Category:', {
-      count: safeFeatured.length,
-      loading: featuredLoading,
-      categories: safeFeatured.map(f => f.category),
-    });
-    console.log('Ã¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€ÂÃ¢â€Â');
-  }, [forYouBusinesses, trendingBusinesses, allBusinesses, forYouLoading, trendingLoading, allBusinessesLoading, featuredByCategory, featuredLoading, isDev]);
+  useHomeBusinessCountsDebug({
+    forYouBusinesses,
+    trendingBusinesses,
+    allBusinesses,
+    forYouLoading,
+    trendingLoading,
+    allBusinessesLoading,
+    forYouError,
+    trendingError,
+    featuredByCategory,
+    featuredLoading,
+    isDev,
+  });
 
   useRoutePrefetch(
     [
@@ -423,59 +200,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
     { delay: 1500 }
   );
   const hasTrendingBusinesses = trendingBusinesses.length > 0;
-
-  // iOS WebKit tends to be more sensitive to large above-the-fold image/animation work.
-  // Defer mounting HeroCarousel until idle or first interaction to avoid "Can't open this page" crashes.
-  useEffect(() => {
-    if (!isIOS) {
-      setHeroReady(true);
-      return;
-    }
-    if (heroReady) return;
-
-    let didSet = false;
-    let idleId: number | null = null;
-    let delayId: number | null = null;
-    const cleanupFns: Array<() => void> = [];
-
-    const markReady = () => {
-      if (didSet) return;
-      didSet = true;
-      setHeroReady(true);
-      cleanupFns.forEach((fn) => fn());
-      cleanupFns.length = 0;
-    };
-
-    const onInteract = () => markReady();
-
-    // Interaction signals: scroll/tap/click.
-    window.addEventListener('touchstart', onInteract, { passive: true, once: true });
-    window.addEventListener('pointerdown', onInteract, { passive: true, once: true });
-    window.addEventListener('scroll', onInteract, { passive: true, once: true });
-    cleanupFns.push(() => window.removeEventListener('touchstart', onInteract));
-    cleanupFns.push(() => window.removeEventListener('pointerdown', onInteract));
-    cleanupFns.push(() => window.removeEventListener('scroll', onInteract));
-
-    const scheduleIdle = () => {
-      const anyWindow = window as any;
-      if (typeof anyWindow.requestIdleCallback === 'function') {
-        // Reduced timeout from 1200ms to 300ms for faster perceived load
-        idleId = anyWindow.requestIdleCallback(() => markReady(), { timeout: 300 });
-        cleanupFns.push(() => anyWindow.cancelIdleCallback?.(idleId));
-      } else {
-        // Reduced delay from 1200ms to 300ms
-        delayId = window.setTimeout(() => markReady(), 300);
-        cleanupFns.push(() => delayId != null && clearTimeout(delayId));
-      }
-    };
-
-    // Start immediately instead of waiting 100ms
-    scheduleIdle();
-
-    return () => {
-      cleanupFns.forEach((fn) => fn());
-    };
-  }, [isIOS, heroReady]);
 
   return (
     <>
@@ -544,7 +268,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                 onRetryForYou={refetchForYou}
                 onRetryTrending={refetchTrending}
                 onRetryFeatured={refetchFeatured}
-                renderBusinessRow={(props) => <MemoizedBusinessRow {...props} />}
+                renderBusinessRow={(props) => <MemoizedBusinessRow {...props} loop />}
                 renderEventsSpecials={() => (
                   <EventsSpecials
                     events={eventsAndSpecials}
@@ -553,6 +277,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                     ctaFontWeight={400}
                     premiumCtaHover
                     disableAnimations
+                    loop
                   />
                 )}
                 renderCommunityHighlights={(businessesOfTheMonth) => (
@@ -560,6 +285,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                     businessesOfTheMonth={businessesOfTheMonth}
                     variant="reviews"
                     disableAnimations
+                    loopFeaturedRail
                   />
                 )}
               />
