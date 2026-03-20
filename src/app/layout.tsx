@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BRAND_POSITIONING, DEFAULT_SITE_DESCRIPTION, generateSEOMetadata, SITE_NAME } from "./lib/utils/seoMetadata";
 import { 
   Urbanist, 
@@ -244,7 +245,9 @@ export default async function RootLayout({
                 <NotificationsProvider>
                   <NotificationToasts />
                   <LazyMotionProvider>
-                    <GlobalHeader />
+                    <Suspense fallback={null}>
+                      <GlobalHeader />
+                    </Suspense>
                     <RealtimeProvider>
                       <DeferredProviders>
                         {children}
