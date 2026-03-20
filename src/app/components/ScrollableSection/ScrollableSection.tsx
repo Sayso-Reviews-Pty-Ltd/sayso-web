@@ -222,6 +222,13 @@ export default function ScrollableSection({
         }, 40);
       }
     };
+    // pointercancel / touchcancel fire when the browser takes over the gesture
+    // (e.g. horizontal scroll detected). The scroll is still in progress so we
+    // must NOT snap here — scrollend / the debounced scroll handler will snap
+    // once the scroll actually settles.
+    const handlePointerCancel = () => {
+      isPointerDownRef.current = false;
+    };
     const handleScrollEnd = () => {
       if (!isPointerDownRef.current) {
         snapToNearestTarget("auto");
@@ -238,10 +245,10 @@ export default function ScrollableSection({
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
     scrollElement.addEventListener("pointerdown", handlePointerDown, { passive: true });
     window.addEventListener("pointerup", handlePointerUp, { passive: true });
-    window.addEventListener("pointercancel", handlePointerUp, { passive: true });
+    window.addEventListener("pointercancel", handlePointerCancel, { passive: true });
     scrollElement.addEventListener("touchstart", handlePointerDown, { passive: true });
     scrollElement.addEventListener("touchend", handlePointerUp, { passive: true });
-    scrollElement.addEventListener("touchcancel", handlePointerUp, { passive: true });
+    scrollElement.addEventListener("touchcancel", handlePointerCancel, { passive: true });
     scrollElement.addEventListener("scrollend", handleScrollEnd as EventListener);
     window.addEventListener('resize', handleResize);
 
@@ -264,10 +271,10 @@ export default function ScrollableSection({
       scrollElement.removeEventListener('scroll', handleScroll);
       scrollElement.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointerup", handlePointerUp);
-      window.removeEventListener("pointercancel", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerCancel);
       scrollElement.removeEventListener("touchstart", handlePointerDown);
       scrollElement.removeEventListener("touchend", handlePointerUp);
-      scrollElement.removeEventListener("touchcancel", handlePointerUp);
+      scrollElement.removeEventListener("touchcancel", handlePointerCancel);
       scrollElement.removeEventListener("scrollend", handleScrollEnd as EventListener);
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
