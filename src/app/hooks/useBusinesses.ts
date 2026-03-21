@@ -353,7 +353,9 @@ export function useForYouBusinesses(
 
   return {
     businesses: data ?? fallbackBusinesses,
-    loading: isLoading,
+    // Also report loading while waiting for preferences — SWR returns isLoading:false
+    // when swrKey is null, which would flash the empty state before prefs resolve.
+    loading: isLoading || shouldWaitForPreferences,
     error: error ? (error as Error).message : null,
     refetch: () => mutate(),
   };

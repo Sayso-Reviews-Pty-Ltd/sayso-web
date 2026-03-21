@@ -66,10 +66,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
     [interests, subcategories, dealbreakers]
   );
 
-  // True once prefs have loaded and the user has no interests set (e.g. just signed up,
-  // hasn't completed onboarding). Skipping the fetch avoids a spurious empty-results state.
-  const hasNoInterests = !prefsLoading && Boolean(user) && interests.length === 0;
-
   const {
     businesses: forYouBusinesses,
     loading: forYouLoading,
@@ -78,7 +74,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   } = useForYouBusinesses(20, undefined, {
     preferences,
     preferencesLoading: prefsLoading, // Wait for preference hydration to avoid double-fetching For You
-    skip: !user || hasNoInterests, // Don't fetch when signed out or interests not set yet
+    skip: !user, // Don't fetch For You when not signed in; section shows teaser only
   });
 
   const {
@@ -191,7 +187,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
               <HomeDiscoverySections
                 choreoEnabled={choreoEnabled}
                 hasUser={Boolean(user)}
-                hasNoInterests={hasNoInterests}
                 forYouLoading={forYouLoading}
                 forYouError={forYouError}
                 forYouBusinesses={forYouBusinesses}
