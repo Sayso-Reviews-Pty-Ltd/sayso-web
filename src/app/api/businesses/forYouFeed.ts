@@ -17,6 +17,85 @@ export function createDailySeedComponent(): string {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
+const DIVERSITY_FALLBACK_BUCKET = 'miscellaneous';
+
+function normalizeDiversityBucket(value: string | null | undefined): string {
+  if (!value) return DIVERSITY_FALLBACK_BUCKET;
+  const normalized = value.trim().toLowerCase();
+  return normalized.length > 0 ? normalized : DIVERSITY_FALLBACK_BUCKET;
+}
+
+function getRawBusinessBucket(
+  business: Pick<BusinessRPCResult, 'sub_interest_id' | 'category' | 'interest_id'>
+): string {
+  return normalizeDiversityBucket(
+    business.sub_interest_id ?? business.category ?? business.interest_id ?? null
+  );
+}
+
+function getCardBusinessBucket(
+  business: Record<string, unknown>
+): string {
+  return normalizeDiversityBucket(
+    (business.sub_interest_id as string | undefined) ??
+      (business.subInterestId as string | undefined) ??
+      (business.category as string | undefined) ??
+      (business.interest_id as string | undefined) ??
+      (business.interestId as string | undefined) ??
+      null
+  );
+}
+
+function diversifyByBucket<T>(
+  items: T[],
+  getBucket: (item: T) => string,
+  context: { requestId?: string | null; source: string }
+): T[] {
+  if (items.length <= 2) return items;
+
+  const bucketOrder: string[] = [];
+  const bucketMap = new Map<string, { items: T[]; cursor: number }>();
+  for (const item of items) {
+    const bucket = getBucket(item);
+    if (!bucketMap.has(bucket)) {
+      bucketOrder.push(bucket);
+      bucketMap.set(bucket, { items: [], cursor: 0 });
+    }
+    bucketMap.get(bucket)!.items.push(item);
+  }
+
+  if (bucketOrder.length <= 1) return items;
+
+  const diversified: T[] = [];
+  let remaining = items.length;
+  while (remaining > 0) {
+    let addedThisRound = 0;
+    for (const bucket of bucketOrder) {
+      const state = bucketMap.get(bucket);
+      if (!state || state.cursor >= state.items.length) continue;
+      diversified.push(state.items[state.cursor]);
+      state.cursor += 1;
+      remaining -= 1;
+      addedThisRound += 1;
+    }
+    if (addedThisRound === 0) break;
+  }
+
+  if (diversified.length !== items.length) return items;
+
+  const changedOrder = diversified.some((item, index) => item !== items[index]);
+  if (changedOrder) {
+    console.log('[BUSINESSES API] For You sequence diversity applied:', {
+      requestId: context.requestId ?? null,
+      source: context.source,
+      buckets: bucketOrder.length,
+      total: items.length,
+    });
+  }
+
+  return diversified;
+}
+
 /**
  * Unified For You feed.
  * Calls recommend_for_you_unified — single RPC that handles preference scoring,
@@ -202,7 +281,11 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
   const cleanedBusinesses = filteredBusinesses.filter(
     (business) => business?.is_system !== true && business?.name !== 'Sayso System'
   );
-  const transformedBusinesses = cleanedBusinesses.map(transformBusinessForCard);
+  const diversifiedBusinesses = diversifyByBucket(cleanedBusinesses, getRawBusinessBucket, {
+    requestId,
+    source: 'for_you_unified_raw',
+  });
+  const transformedBusinesses = diversifiedBusinesses.map(transformBusinessForCard);
   const coordinateFilteredBusinesses = requireCoordinates
     ? transformedBusinesses.filter(
         (business) =>
@@ -226,7 +309,14 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
     return fallback;
   }
 
-  const businessesForResponse = coordinateFilteredBusinesses;
+  const businessesForResponse = diversifyByBucket(
+    coordinateFilteredBusinesses,
+    getCardBusinessBucket,
+    {
+      requestId,
+      source: requireCoordinates ? 'for_you_unified_coords' : 'for_you_unified',
+    }
+  );
   const pagedBusinesses = businessesForResponse.slice(cursorOffset, cursorOffset + limit);
   const nextCursor =
     businessesForResponse.length > cursorOffset + limit
@@ -279,27 +369,45 @@ export async function fetchTopPicksFallback(
   } = options;
 
   const fetchLimit = Math.min(Math.max(limit, 20), 80);
-  let fallbackQuery: any = supabase
-    .from('businesses')
-    .select(
-      'id,name,description,primary_subcategory_slug,primary_category_slug,location,address,phone,email,website,image_url,verified,price_range,badge,slug,lat,lng,created_at,updated_at,is_hidden,is_system'
-    )
-    .eq('status', 'active')
-    .eq('is_hidden', false)
-    .or('is_system.is.null,is_system.eq.false')
-    .order('created_at', { ascending: false });
+  const buildFallbackQuery = (applyTaxonomyFilters: boolean) => {
+    let query: any = supabase
+      .from('businesses')
+      .select(
+        'id,name,description,primary_subcategory_slug,primary_category_slug,location,address,phone,email,website,image_url,verified,price_range,badge,slug,lat,lng,created_at,updated_at,is_hidden,is_system'
+      )
+      .eq('status', 'active')
+      .eq('is_hidden', false)
+      .or('is_system.is.null,is_system.eq.false')
+      .order('created_at', { ascending: false });
 
-  if (subInterestIds && subInterestIds.length > 0) {
-    fallbackQuery = fallbackQuery.in('primary_subcategory_slug', subInterestIds);
-  } else if (interestIds && interestIds.length > 0) {
-    fallbackQuery = fallbackQuery.in('primary_category_slug', interestIds);
+    if (applyTaxonomyFilters) {
+      if (subInterestIds && subInterestIds.length > 0) {
+        query = query.in('primary_subcategory_slug', subInterestIds);
+      } else if (interestIds && interestIds.length > 0) {
+        query = query.in('primary_category_slug', interestIds);
+      }
+    }
+
+    if (requireCoordinates) {
+      query = query.not('lat', 'is', null).not('lng', 'is', null);
+    }
+
+    return query.limit(fetchLimit);
+  };
+
+  const hasTaxonomyFilters =
+    (subInterestIds && subInterestIds.length > 0) ||
+    (interestIds && interestIds.length > 0);
+
+  let { data: rawData } = await buildFallbackQuery(true);
+  if ((!rawData || rawData.length === 0) && hasTaxonomyFilters) {
+    console.warn('[BUSINESSES API] Top picks fallback returned 0 with preference filters; relaxing taxonomy filters.', {
+      requestId: requestId ?? null,
+      subInterestFilters: subInterestIds?.length ?? 0,
+      interestFilters: interestIds?.length ?? 0,
+    });
+    ({ data: rawData } = await buildFallbackQuery(false));
   }
-
-  if (requireCoordinates) {
-    fallbackQuery = fallbackQuery.not('lat', 'is', null).not('lng', 'is', null);
-  }
-
-  const { data: rawData } = await fallbackQuery.limit(fetchLimit);
 
   const rows: BusinessRPCResult[] = (rawData ?? []).map((row: any) => ({
     id: row.id,
@@ -358,9 +466,13 @@ export async function fetchTopPicksFallback(
         isValidLongitude(business.lng)
       );
     });
-  const pagedBusinesses = transformed.slice(cursorOffset, cursorOffset + limit);
+  const businessesForResponse = diversifyByBucket(transformed, getCardBusinessBucket, {
+    requestId,
+    source: requireCoordinates ? 'for_you_fallback_coords' : 'for_you_fallback',
+  });
+  const pagedBusinesses = businessesForResponse.slice(cursorOffset, cursorOffset + limit);
   const nextCursor =
-    transformed.length > cursorOffset + limit
+    businessesForResponse.length > cursorOffset + limit
       ? encodeFeedCursor({
           kind: 'offset',
           offset: cursorOffset + limit,

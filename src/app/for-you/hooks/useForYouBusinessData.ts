@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import type { Business } from '../../components/BusinessCard/BusinessCard';
-import { sortBusinessesByPriority } from '../../utils/businessPrioritization';
 import { ITEMS_PER_PAGE } from '../ForYouClient.constants';
 
 export function useForYouBusinessData(
@@ -11,7 +10,9 @@ export function useForYouBusinessData(
   isSearchActive: boolean,
   currentPage: number
 ) {
-  const prioritizedBusinesses = useMemo(() => sortBusinessesByPriority(businesses), [businesses]);
+  // Preserve backend ordering so API-side diversity (e.g., no repeated subcategory streaks)
+  // remains intact across pagination.
+  const prioritizedBusinesses = useMemo(() => businesses, [businesses]);
 
   const activeBusinesses = useMemo(
     () => (isSearchActive ? prioritizedSearchResults : prioritizedBusinesses),
