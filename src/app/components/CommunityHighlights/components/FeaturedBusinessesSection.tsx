@@ -107,14 +107,19 @@ export default function FeaturedBusinessesSection({
               )
             ) : (
               <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
-                {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
-                  <div key={business.id} className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width">
-                    <BusinessOfTheMonthCard
-                      business={business}
-                      index={index}
-                    />
-                  </div>
-                ))}
+                {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index, arr) => {
+                  const isFirst = index === 0 && arr.length > 1;
+                  const isLast = index === arr.length - 1 && arr.length > 1;
+                  return (
+                    <div
+                      key={business.id}
+                      data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
+                      className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
+                    >
+                      <BusinessOfTheMonthCard business={business} index={index} />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </ScrollableSection>

@@ -68,11 +68,14 @@ export default function TopContributorsSection({
                 const actualReview = reviews.find((r) => r.reviewer.id === reviewer.id);
                 const reviewIndex = parseInt(reviewer.id) % sampleReviewTexts.length;
                 const sampleText = sampleReviewTexts[reviewIndex];
+                const isFirst = index === 0 && topReviewers.length > 1;
+                const isLast = index === topReviewers.length - 1 && topReviewers.length > 1;
 
                 return (
                   <div
                     key={reviewer.id}
-                    className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
+                    data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
+                    className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
                   >
                     <ReviewerCard
                       reviewer={reviewer}
@@ -113,7 +116,8 @@ export default function TopContributorsSection({
               {Array.from({ length: 12 }).map((_, index) => (
                 <div
                   key={`reviewer-skeleton-${index}`}
-                  className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center"
+                  data-edge-snap={index === 0 ? "first" : index === 11 ? "last" : undefined}
+                  className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center${index === 0 ? ' pl-2 sm:pl-0' : ''}${index === 11 ? ' pr-2 sm:pr-0' : ''}`}
                 >
                   <ReviewerCardSkeleton />
                 </div>
