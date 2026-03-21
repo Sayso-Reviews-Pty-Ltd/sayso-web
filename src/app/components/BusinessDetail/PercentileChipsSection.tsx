@@ -69,8 +69,8 @@ function PercentileChipsSection({
           // Calculate color intensity based on value
           const getColor = (value: number) => {
             if (value === 0) return "text-charcoal/30";
-            if (value >= 80) return "text-green-600";
-            if (value >= 60) return "text-sage";
+            if (value >= 80) return "text-navbar-bg";
+            if (value >= 60) return "text-navbar-bg/70";
             if (value >= 40) return "text-amber-600";
             return "text-coral";
           };
