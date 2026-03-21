@@ -275,55 +275,11 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
     return groups;
   }, [characters]);
 
-  // Typing animation - only starts when hasStartedTyping is true
+  // Show all characters immediately — no typing animation
   useEffect(() => {
-    if (prefersReducedMotion) {
-      // Show all letters immediately if reduced motion is preferred
-      setVisibleCount(characters.length);
-      setIsTypingComplete(true);
-      return;
-    }
-
-    if (!hasStartedTyping) {
-      // Reset to start if typing hasn't started yet
-      setVisibleCount(0);
-      setIsTypingComplete(false);
-      return;
-    }
-
-    // Initial delay
-    const startTimeout = setTimeout(() => {
-      let currentIndex = 0;
-
-      const typeNext = () => {
-        if (currentIndex < characters.length) {
-          const char = characters[currentIndex];
-          const isSpace = char === " ";
-
-          // Spaces appear immediately or with minimal delay
-          const delay = isSpace ? Math.max(10, typingSpeedMs * 0.2) : typingSpeedMs;
-
-          setTimeout(() => {
-            setVisibleCount((prev) => {
-              const next = prev + 1;
-              if (next === characters.length) {
-                setIsTypingComplete(true);
-              }
-              return next;
-            });
-            currentIndex++;
-            if (currentIndex < characters.length) {
-              typeNext();
-            }
-          }, delay);
-        }
-      };
-
-      typeNext();
-    }, startDelayMs);
-
-    return () => clearTimeout(startTimeout);
-  }, [characters, typingSpeedMs, startDelayMs, prefersReducedMotion, hasStartedTyping]);
+    setVisibleCount(characters.length);
+    setIsTypingComplete(true);
+  }, [characters]);
 
   // Generate unique animation name per instance
   const animationName = useMemo(() => {
