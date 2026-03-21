@@ -449,14 +449,9 @@ function WriteReviewContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-card-bg border-0 sm:border-none rounded-[12px] shadow-none sm:shadow-lg relative overflow-hidden"
+                    className="bg-card-bg border-0 sm:border-none rounded-[12px] shadow-none sm:shadow-lg"
                   >
-                    {/* Background Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
-                    
-                    <div className="p-4 md:p-6 relative z-10">
+                    <div className="p-4 md:p-6">
                       {!user && (
                         <div className="mb-4 rounded-lg border border-sage/20 bg-card-bg/5 p-3">
                           <p className="text-sm font-semibold text-charcoal">Posting as Anonymous</p>
