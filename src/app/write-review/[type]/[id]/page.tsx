@@ -353,8 +353,7 @@ function WriteReviewContent() {
                     href="/events-specials"
                     className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium whitespace-nowrap"
                   >
-                    <span className="sm:hidden">{isEvent ? "Events" : "Specials"}</span>
-                    <span className="hidden sm:inline">Events & Specials</span>
+                    {isEvent ? "Events" : "Specials"}
                   </Link>
                 </li>
                 <li className="flex items-center shrink-0">
