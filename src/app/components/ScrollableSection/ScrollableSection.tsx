@@ -247,15 +247,18 @@ export default function ScrollableSection({
 
       <style jsx>{`
         @media (max-width: 639px) {
-          /* snap-center: cards snap so their center aligns with the container center.
-             This makes the scale/opacity effect accurate — a snapped card's center
-             is at containerCenter, giving progress=1.0 at rest for every card including first/last.
-             snap-stop normal: lets a fling carry past multiple cards without braking
-             at each boundary. Both override the Tailwind snap-start/snap-always on
-             card elements — no need to touch those files. */
+          /* Middle cards snap to center so scale/opacity progress=1.0 at rest.
+             Edge cards override to start/end so they anchor flush to their edge.
+             snap-stop normal lets flings carry past multiple cards freely. */
           .scrollable-section-inner :global(.snap-start) {
             scroll-snap-align: center !important;
             scroll-snap-stop: normal !important;
+          }
+          .scrollable-section-inner :global([data-edge-snap="first"]) {
+            scroll-snap-align: start !important;
+          }
+          .scrollable-section-inner :global([data-edge-snap="last"]) {
+            scroll-snap-align: end !important;
           }
 
           /* Promote cards to their own compositor layer so the rAF-driven

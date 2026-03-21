@@ -29,20 +29,10 @@ export const computeScrollGeometry = ({
   trailing,
   shouldEnableMobilePeek,
 }: ComputeScrollGeometryParams): void => {
-  if (!container || !shouldEnableMobilePeek || window.innerWidth >= 640) {
-    if (leading) leading.style.width = "0px";
-    if (trailing) trailing.style.width = "0px";
-    return;
-  }
-
-  const firstTarget = container.querySelector<HTMLElement>('[data-mobile-snap-target="true"]');
-  if (!firstTarget) return;
-
-  const gap = 8; // gap-2 = 8px on mobile
-  const sideSpace = Math.max(0, Math.round((container.clientWidth - firstTarget.offsetWidth) / 2) - gap);
-
-  if (leading) leading.style.width = `${sideSpace}px`;
-  if (trailing) trailing.style.width = `${sideSpace}px`;
+  // Edge-bleed layout: first and last cards are flush to their respective edges,
+  // so neither spacer is needed. Middle cards center via native snap-center.
+  if (leading) leading.style.width = "0px";
+  if (trailing) trailing.style.width = "0px";
 };
 
 interface UpdateCardScaleOpacityParams {
@@ -79,12 +69,26 @@ export const updateCardScaleOpacity = ({
   const containerCenter = container.scrollLeft + container.clientWidth / 2;
   const maxDistance = container.clientWidth * 0.55;
 
+  const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
   for (const el of snapTargets) {
-    const elRect = el.getBoundingClientRect();
-    const cardLeft = elRect.left - containerRect.left + container.scrollLeft;
-    const cardCenter = cardLeft + elRect.width / 2;
-    const distance = Math.abs(cardCenter - containerCenter);
-    const progress = Math.max(0, 1 - distance / maxDistance);
+    let progress: number;
+    const edgeSnap = el.dataset.edgeSnap;
+
+    if (edgeSnap === "first") {
+      // Full opacity/scale when at left edge; fades as you scroll away.
+      progress = Math.max(0, 1 - container.scrollLeft / (container.clientWidth * 0.6));
+    } else if (edgeSnap === "last") {
+      // Full opacity/scale when at right edge; fades as you scroll away.
+      const distFromEnd = maxScrollLeft - container.scrollLeft;
+      progress = Math.max(0, 1 - distFromEnd / (container.clientWidth * 0.6));
+    } else {
+      const elRect = el.getBoundingClientRect();
+      const cardLeft = elRect.left - containerRect.left + container.scrollLeft;
+      const cardCenter = cardLeft + elRect.width / 2;
+      const distance = Math.abs(cardCenter - containerCenter);
+      progress = Math.max(0, 1 - distance / maxDistance);
+    }
 
     if (reducedMotion) {
       el.style.transform = "";
@@ -144,17 +148,11 @@ export const positionAtSecondCard = ({
   shouldEnableMobilePeek,
   hasInitialPositionRef,
 }: PositionAtSecondCardParams): void => {
+  // Edge-bleed layout: scroll starts at card 0 (left edge), not card 1.
   if (!shouldEnableMobilePeek || hasInitialPositionRef.current) return;
   if (typeof window === "undefined" || window.innerWidth >= 640) return;
   if (!container) return;
 
-  const targets = container.querySelectorAll<HTMLElement>('[data-mobile-snap-target="true"]');
-  if (targets.length < 2) return;
-
   hasInitialPositionRef.current = true;
-  const second = targets[1];
-  const cRect = container.getBoundingClientRect();
-  const tRect = second.getBoundingClientRect();
-  const center = tRect.left - cRect.left + container.scrollLeft + tRect.width / 2;
-  container.scrollLeft = center - container.clientWidth / 2;
+  container.scrollLeft = 0;
 };

@@ -214,14 +214,19 @@ export default function BusinessRow({
             )
           ) : (
             <div className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
-              {businesses.map((business, index) => (
-                <div
-                  key={business.id}
-                  className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
-                >
-                  <BusinessCard business={business} index={index} />
-                </div>
-              ))}
+              {businesses.map((business, index) => {
+                const isFirst = index === 0 && businesses.length > 1;
+                const isLast = index === businesses.length - 1 && businesses.length > 1;
+                return (
+                  <div
+                    key={business.id}
+                    data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
+                  >
+                    <BusinessCard business={business} index={index} />
+                  </div>
+                );
+              })}
             </div>
           )}
         </ScrollableSection>
