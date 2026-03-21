@@ -21,6 +21,7 @@ type BusinessRowComponentProps = {
 type HomeDiscoverySectionsProps = {
   choreoEnabled: boolean;
   hasUser: boolean;
+  hasNoInterests?: boolean;
   forYouLoading: boolean;
   forYouError: string | null;
   forYouBusinesses: Business[];
@@ -60,6 +61,7 @@ function RetryButton({ onRetry }: { onRetry: () => void }) {
 export function HomeDiscoverySections({
   choreoEnabled,
   hasUser,
+  hasNoInterests = false,
   forYouLoading,
   forYouError,
   forYouBusinesses,
@@ -134,6 +136,26 @@ export function HomeDiscoverySections({
                 href: "/for-you",
                 disableAnimations: true,
               })
+            ) : hasNoInterests ? (
+              <div className="mx-auto w-full max-w-[2000px] px-2 py-4">
+                <div className="relative border border-charcoal/10 bg-off-white rounded-[14px] p-6 sm:p-8 text-center space-y-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+                  <h3 className="text-lg sm:text-xl font-extrabold text-charcoal" style={fontStyle}>
+                    Set up your For You
+                  </h3>
+                  <p className="text-body sm:text-base text-charcoal/60 max-w-[60ch] mx-auto" style={fontStyle}>
+                    Pick your interests to unlock personalised recommendations.
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      href="/onboarding"
+                      className="inline-flex items-center justify-center rounded-full min-h-[48px] px-6 py-3 text-body font-semibold text-white bg-gradient-to-r from-coral to-coral/85 hover:opacity-95 shadow-md"
+                      style={fontStyle}
+                    >
+                      Complete your profile
+                    </Link>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="mx-auto w-full max-w-[2000px] px-2 py-4">
                 <div className="bg-card-bg/10 border border-sage/30 rounded-lg p-6 text-center">
