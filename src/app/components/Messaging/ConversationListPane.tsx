@@ -107,7 +107,7 @@ export function ConversationListPane({
       {/* Header */}
       <div className="px-5 pb-3 pt-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold text-charcoal" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal" style={{ fontFamily: 'Urbanist, system-ui, sans-serif', fontWeight: 800 }}>
             {title}
           </h1>
           {unreadTotal > 0 && (
