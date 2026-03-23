@@ -105,7 +105,7 @@ export function ConversationListPane({
     <aside className={`${listPaneVisibleClass} w-full lg:w-[360px] xl:w-[400px] flex-col border-r border-charcoal/8 bg-off-white`}>
 
       {/* Header */}
-      <div className="px-5 pb-3 pt-5">
+      <div className="px-5 pb-3 pt-0">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal" style={{ fontFamily: 'Urbanist, system-ui, sans-serif', fontWeight: 800 }}>
             {title}
