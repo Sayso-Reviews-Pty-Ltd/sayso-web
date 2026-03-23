@@ -19,7 +19,7 @@ export default function WeeklyChallengesPanel({ userId }: WeeklyChallengesPanelP
     return (
       <div className="space-y-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="animate-pulse rounded-xl bg-charcoal/5 h-20" />
+          <div key={i} className="animate-pulse rounded-xl bg-white/10 h-20" />
         ))}
       </div>
     );
@@ -32,8 +32,8 @@ export default function WeeklyChallengesPanel({ userId }: WeeklyChallengesPanelP
   return (
     <section className="font-urbanist" aria-label="Weekly challenges">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-700 text-charcoal">This Week&apos;s Challenges</h3>
-        <span className="text-xs text-charcoal/50">
+        <h3 className="text-base font-700 text-white">This Week&apos;s Challenges</h3>
+        <span className="text-xs text-white/60">
           {resets === 0 ? 'Resets tonight' : `Resets in ${resets}d`}
         </span>
       </div>

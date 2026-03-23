@@ -17,6 +17,7 @@ export default function WeeklyChallengeCard({ challenge, index = 0 }: WeeklyChal
   const pct      = challenge.target > 0
     ? Math.min(100, Math.round((challenge.userProgress / challenge.target) * 100))
     : 0;
+  const visiblePct = pct > 0 ? Math.max(pct, 6) : 0;
   const daysLeft = daysRemaining(challenge.ends_at);
 
   return (
@@ -50,11 +51,15 @@ export default function WeeklyChallengeCard({ challenge, index = 0 }: WeeklyChal
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 w-full rounded-full bg-charcoal/10 overflow-hidden mb-1">
+      <div className="h-2 w-full rounded-full bg-charcoal/15 overflow-hidden mb-1">
         <m.div
-          className={`h-full rounded-full ${challenge.completed ? 'bg-emerald-500' : 'bg-navbar-bg'}`}
+          className={`h-full rounded-full ${
+            challenge.completed
+              ? 'bg-emerald-500'
+              : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-[0_0_8px_rgba(251,191,36,0.35)]'
+          }`}
           initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
+          animate={{ width: `${visiblePct}%` }}
           transition={{ duration: 0.5, delay: index * 0.07 + 0.15, ease: 'easeOut' }}
         />
       </div>

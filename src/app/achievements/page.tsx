@@ -196,7 +196,7 @@ export default function AchievementsPage() {
         {/* ── UP NEXT (badge progress) ── */}
         {user && (
           <div className="relative z-10 max-w-6xl mx-auto px-4 mb-8">
-            <NextBadgeNudge userId={user.id} />
+            <NextBadgeNudge userId={user.id} theme="dark" />
           </div>
         )}
 
