@@ -194,6 +194,17 @@ export async function getUserStats(
       
       // If stats table exists and has data, use it
       if (!statsError && cachedStats) {
+        // Compute extended fields for badge progress (not stored in user_stats cache)
+        const [photoResult, categoryResult] = await Promise.allSettled([
+          supabase.from('reviews').select('id', { count: 'exact', head: true })
+            .eq('user_id', userId).not('photos', 'eq', '[]').not('photos', 'is', null),
+          supabase.from('reviews').select('primary_category').eq('user_id', userId).not('primary_category', 'is', null),
+        ]);
+        const photoCount = photoResult.status === 'fulfilled' ? (photoResult.value.count ?? 0) : 0;
+        const distinctCategories = categoryResult.status === 'fulfilled'
+          ? new Set((categoryResult.value.data ?? []).map((r: any) => r.primary_category)).size
+          : 0;
+
         return {
           totalReviewsWritten: cachedStats.total_reviews_written || 0,
           totalHelpfulVotesGiven: cachedStats.total_helpful_votes_given || 0,
@@ -201,6 +212,8 @@ export async function getUserStats(
           accountCreationDate: profile.created_at,
           lastActiveDate: profile.updated_at || profile.created_at,
           helpfulVotesReceived: cachedStats.helpful_votes_received || 0,
+          photoCount,
+          distinctCategories,
         };
       }
       
@@ -321,6 +334,28 @@ export async function getUserStats(
       }
     }
 
+    // Compute photo_count and distinct_categories for badge progress
+    let photoCount = 0;
+    let distinctCategories = 0;
+    try {
+      const { count: pCount } = await supabase
+        .from('reviews')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .not('photos', 'eq', '[]')
+        .not('photos', 'is', null);
+      photoCount = pCount ?? 0;
+
+      const { data: catRows } = await supabase
+        .from('reviews')
+        .select('primary_category')
+        .eq('user_id', userId)
+        .not('primary_category', 'is', null);
+      distinctCategories = new Set((catRows ?? []).map((r: any) => r.primary_category)).size;
+    } catch {
+      // Non-critical — badge progress degrades gracefully
+    }
+
     return {
       totalReviewsWritten: totalReviews || 0,
       totalHelpfulVotesGiven: totalHelpfulVotes || 0,
@@ -328,6 +363,8 @@ export async function getUserStats(
       accountCreationDate: profile.created_at,
       lastActiveDate: profile.updated_at || profile.created_at,
       helpfulVotesReceived,
+      photoCount,
+      distinctCategories,
     };
   } catch (error) {
     console.error('[getUserStats] Unexpected error:', {

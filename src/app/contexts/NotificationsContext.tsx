@@ -31,7 +31,9 @@ export type NotificationType =
   | 'claim_approved'
   | 'comment_reply'
   | 'photo_approved'
-  | 'milestone_achievement';
+  | 'milestone_achievement'
+  | 'level_up'
+  | 'challenge_complete';
 
 export interface ToastNotificationData {
   id: string;

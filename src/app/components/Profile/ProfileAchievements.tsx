@@ -8,12 +8,14 @@ import { Award, ChevronRight } from "@/app/lib/icons";
 import { ProfileBadgeRibbon } from "@/app/components/Badges/ProfileBadgeRibbon";
 import { getBadgePngPath } from "@/app/lib/badgeMappings";
 import type { UserAchievement } from "@/app/hooks/useUserBadges";
+import NextBadgeNudge from "@/app/components/Badges/NextBadgeNudge";
 
 interface ProfileAchievementsProps {
   achievements: UserAchievement[];
+  userId?: string;
 }
 
-export function ProfileAchievements({ achievements }: ProfileAchievementsProps) {
+export function ProfileAchievements({ achievements, userId }: ProfileAchievementsProps) {
   return (
     <section
       className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8"
@@ -83,7 +85,7 @@ export function ProfileAchievements({ achievements }: ProfileAchievementsProps) 
                     <h4 className="line-clamp-1 text-[10px] font-bold leading-tight text-charcoal/95 sm:text-[11px]">
                       {normalizedAchievementMeta.name}
                     </h4>
-                    <p className="line-clamp-1 text-[9px] leading-tight text-charcoal/75 sm:line-clamp-2 sm:text-[10px]">
+                    <p className="line-clamp-2 text-[9px] leading-tight text-charcoal/75 sm:text-[10px]">
                       {normalizedAchievementMeta.description}
                     </p>
                   </div>
@@ -91,6 +93,13 @@ export function ProfileAchievements({ achievements }: ProfileAchievementsProps) 
               </m.div>
             );
           })}
+        </div>
+      )}
+
+      {/* Next badge to unlock */}
+      {userId && achievements.length > 0 && (
+        <div className="mt-4">
+          <NextBadgeNudge userId={userId} compact />
         </div>
       )}
     </section>

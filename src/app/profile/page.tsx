@@ -106,7 +106,7 @@ function ProfileContent() {
                   )}
 
                   <div className="profile-load-item profile-load-delay-4">
-                    {achievementsLoading ? <AchievementsSkeleton /> : <ProfileAchievements achievements={achievements} />}
+                    {achievementsLoading ? <AchievementsSkeleton /> : <ProfileAchievements achievements={achievements} userId={user?.id} />}
                   </div>
 
                   <div className="profile-load-item profile-load-delay-5">

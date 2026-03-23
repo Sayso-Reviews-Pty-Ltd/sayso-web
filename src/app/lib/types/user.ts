@@ -62,6 +62,9 @@ export interface UserStats {
   accountCreationDate: string;
   lastActiveDate: string;
   helpfulVotesReceived: number;
+  // Extended fields for badge progress calculations
+  photoCount?: number;
+  distinctCategories?: number;
 }
 
 export type ActivityType = 'REVIEW' | 'SAVE' | 'UNSAVE' | 'HELPFUL_VOTE';

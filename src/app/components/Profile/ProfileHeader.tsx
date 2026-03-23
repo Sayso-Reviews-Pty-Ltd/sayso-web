@@ -17,6 +17,8 @@ import { LiveIndicator } from "@/app/components/Realtime/RealtimeIndicators";
 import { ProfileBadgeRibbon } from "@/app/components/Badges/ProfileBadgeRibbon";
 import type { AuthUser } from "@/app/lib/types/database";
 import type { EnhancedProfile } from "@/app/lib/types/user";
+import XPBar from "@/app/components/XP/XPBar";
+import StreakCounter from "@/app/components/Profile/StreakCounter";
 
 interface UserProfile {
   user_id: string;
@@ -200,6 +202,16 @@ export function ProfileHeader({
                   {reviewsCount} reviews
                 </div>
               </div>
+
+              {/* XP + Streak row */}
+              {user && (
+                <div className="flex items-center gap-3 mb-4 flex-wrap">
+                  <div className="flex-1 min-w-0">
+                    <XPBar userId={user.id} compact />
+                  </div>
+                  <StreakCounter compact />
+                </div>
+              )}
 
               <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <button
