@@ -7,6 +7,7 @@ export const DEFAULT_AUTH_CONTEXT: AuthContextType = {
   user: null,
   snapshotStatus: "unknown",
   isLoading: false,
+  isAuthInitialized: false,
   error: null,
   login: async () => null,
   register: async () => false,

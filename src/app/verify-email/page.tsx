@@ -33,7 +33,7 @@ function isExpiredVerificationError(message: string): boolean {
 }
 
 export default function VerifyEmailPage() {
-  const { user, resendVerificationEmail, refreshUser, isLoading } = useAuth();
+  const { user, resendVerificationEmail, refreshUser, isAuthInitialized } = useAuth();
   const { showToast, queueFlashToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -595,14 +595,14 @@ export default function VerifyEmailPage() {
   // Already-verified guard: redirect off /verify-email if session is already confirmed.
   // Covers arriving with a live verified session and AuthContext catching up after auth events.
   useEffect(() => {
-    if (isLoading) return;
+    if (!isAuthInitialized) return;
     if (!user?.email_verified) return;
     if (redirectingRef.current) return;
     redirectingRef.current = true;
     const destination = getPostVerifyRedirect(user);
     debugLog("already verified, redirecting", { destination });
     router.replace(destination);
-  }, [user?.id, user?.email_verified, isLoading, getPostVerifyRedirect, router, debugLog]);
+  }, [user?.id, user?.email_verified, isAuthInitialized, getPostVerifyRedirect, router, debugLog]);
 
   const displayEmail = user?.email || pendingEmail;
 
@@ -642,7 +642,7 @@ export default function VerifyEmailPage() {
     );
   }
 
-  if (isLoading || isProcessingCodeExchange || (hasCodeInUrl && !verificationLinkError)) {
+  if (isProcessingCodeExchange || (hasCodeInUrl && !verificationLinkError)) {
     return (
       <VerifyEmailShell prefersReduced={prefersReduced}>
         <VerifyEmailLoadingView isVerifyingLink={isProcessingCodeExchange || hasCodeInUrl} />

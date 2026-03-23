@@ -26,6 +26,8 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
   const [user, setUser] = useState<AuthUser | null>(initialUser);
   const [snapshotStatus, setSnapshotStatus] = useState<AuthSnapshotStatus>(initialSnapshot.status);
   const [isLoading, setIsLoading] = useState(initialSnapshot.status === "unknown");
+  // True immediately when server confirmed auth; true after client-side init settles in all other cases.
+  const [isAuthInitialized, setIsAuthInitialized] = useState(initialSnapshot.status === "authenticated");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = getBrowserSupabase();
@@ -83,6 +85,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
           setUser(snapshot.user);
           setSnapshotStatus(snapshot.status);
           setIsLoading(false);
+          setIsAuthInitialized(true);
           initCompleteRef.current = true;
           console.log('[AuthContext] Auth initialization complete');
         } catch (error) {
@@ -105,6 +108,7 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
 
           if (isMounted) {
             setIsLoading(false);
+            setIsAuthInitialized(true);
             setSnapshotStatus("guest");
             initCompleteRef.current = true;
           }
@@ -261,8 +265,9 @@ export function AuthProvider({ children, initialSnapshot = UNKNOWN_AUTH_SNAPSHOT
     refreshUser,
     resendVerificationEmail,
     isLoading,
+    isAuthInitialized,
     error
-  }), [user, snapshotStatus, isLoading, error, login, register, logout, updateUser, refreshUser, resendVerificationEmail]);
+  }), [user, snapshotStatus, isLoading, isAuthInitialized, error, login, register, logout, updateUser, refreshUser, resendVerificationEmail]);
 
   return (
     <AuthContext.Provider value={value}>

@@ -103,7 +103,7 @@ const FALLBACK_INTERESTS: Interest[] = [
 ];
 
 export function OnboardingProvider({ children }: OnboardingProviderProps) {
-  const { user, isLoading: authLoading, updateUser } = useAuth();
+  const { user, isLoading: authLoading, isAuthInitialized } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
   const [interests, setInterests] = useState<Interest[]>([]);
@@ -129,8 +129,9 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Don't initialize until auth is ready (prevents mobile race condition)
-    if (authLoading) return;
+    // Don't initialize until auth is fully settled (prevents race condition where server
+    // snapshot reports "guest" but client session hasn't been verified yet).
+    if (authLoading || !isAuthInitialized) return;
 
     const currentUserId = user?.id || null;
 
@@ -220,7 +221,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     };
 
     void initializeOnboarding();
-  }, [user, authLoading, hasInitialized]);
+  }, [user, authLoading, isAuthInitialized, hasInitialized]);
 
   // Debounced localStorage save for mobile performance (300ms)
   const debouncedSaveRef = useRef(
@@ -428,17 +429,9 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       }
 
       try {
-        await updateUser({
-          profile: {
-            onboarding_completed_at: new Date().toISOString(),
-            onboarding_step: 'complete',
-            interests_count: selectedInterests.length,
-            subcategories_count: selectedSubInterests.length,
-            dealbreakers_count: selectedDealbreakers.length,
-          } as Profile
-        });
-      } catch (updateError) {
-        console.warn('Failed to update user profile locally:', updateError);
+        await fetch('/api/onboarding/complete', { method: 'POST', credentials: 'include' });
+      } catch {
+        // Non-fatal — /complete page will retry via handleContinue()
       }
 
       if (typeof window !== 'undefined') {
@@ -457,7 +450,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [user, selectedInterests, selectedSubInterests, selectedDealbreakers, showToast, router, updateUser]);
+  }, [user, selectedInterests, selectedSubInterests, selectedDealbreakers, showToast, router]);
 
   const resetOnboarding = useCallback(() => {
     setSelectedInterests([]);

@@ -22,6 +22,7 @@ export interface AuthContextType {
     errorMessage?: string;
   }>;
   isLoading: boolean;
+  isAuthInitialized: boolean;
   error: string | null;
 }
 
