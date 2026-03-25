@@ -71,13 +71,13 @@ export function UsernameInput({
         />
       </div>
 
-      {/* Username validation feedback — auto-dismiss */}
-      <AutoDismissFeedback type="error" message={hasError ? error! : null} resetKey={focusKey}>
+      {/* Username validation feedback — persistent for errors, auto-dismiss for success */}
+      {hasError && (
         <p id={errorId} className="auth-field-feedback auth-field-feedback-error" role="alert">
           <AlertCircle className="w-3 h-3" aria-hidden="true" />
           {error}
         </p>
-      </AutoDismissFeedback>
+      )}
       <AutoDismissFeedback type="success" message={checking ? "checking" : isValid ? "Username looks good." : null} resetKey={focusKey}>
         <p id={successId} className="auth-field-feedback auth-field-feedback-success" role="status">
           <CheckCircle className="w-3 h-3" aria-hidden="true" />

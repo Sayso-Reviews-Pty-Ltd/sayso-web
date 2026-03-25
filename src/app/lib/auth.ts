@@ -623,14 +623,18 @@ export class AuthService {
       return { message: 'This email is already in use. Please log in or use a different email.', code: 'user_exists' };
     }
 
+    // Email not confirmed — check BEFORE invalid_credentials (Supabase may return "invalid login credentials" for unverified emails)
+    if (
+      errorCode === 'email_not_confirmed' ||
+      message.includes('email not confirmed') ||
+      message.includes('not confirmed')
+    ) {
+      return { message: 'Please verify your email before logging in. Check your inbox for the confirmation link.', code: 'email_not_confirmed' };
+    }
+
     // Invalid credentials
     if (message.includes('invalid login credentials') || message.includes('invalid email or password')) {
       return { message: 'Incorrect email or password. Please try again.', code: 'invalid_credentials' };
-    }
-
-    // Email not confirmed
-    if (message.includes('email not confirmed')) {
-      return { message: 'Your email is not yet verified. Please check your inbox for the confirmation link.', code: 'email_not_confirmed' };
     }
 
     // Email already confirmed

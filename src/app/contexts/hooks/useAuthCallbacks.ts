@@ -24,6 +24,14 @@ export function useAuthCallbacks(
       const { user: authUser, error: authError } = await AuthService.signIn({ email, password });
 
       if (authError) {
+        if (authError.code === 'email_not_confirmed') {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('pendingVerificationEmail', email);
+          }
+          router.push('/verify-email');
+          setIsLoading(false);
+          return null;
+        }
         setError(authError.message);
         setIsLoading(false);
         return null;
@@ -140,7 +148,7 @@ export function useAuthCallbacks(
     accountType: 'user' | 'business_owner' = 'user',
     displayName?: string,
     consentGiven?: boolean
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; errorMessage?: string; errorCode?: string }> => {
     setIsLoading(true);
     setError(null);
     try {
@@ -176,7 +184,7 @@ export function useAuthCallbacks(
         }
         setError(errorMessage);
         setIsLoading(false);
-        return false;
+        return { success: false, errorMessage, errorCode: rawCode };
       }
       if (authUser) {
         console.log('AuthContext: Registration successful', {
@@ -195,13 +203,13 @@ export function useAuthCallbacks(
         router.push('/verify-email');
       }
       setIsLoading(false);
-      return true;
+      return { success: true };
     } catch (error: unknown) {
       console.log('AuthContext: Registration exception', error);
       const message = error instanceof Error ? error.message : 'Registration failed';
       setError(message);
       setIsLoading(false);
-      return false;
+      return { success: false, errorMessage: message, errorCode: 'unknown_error' };
     }
   }, [router, supabase, setUser, setIsLoading, setError, setSnapshotStatus]);
 

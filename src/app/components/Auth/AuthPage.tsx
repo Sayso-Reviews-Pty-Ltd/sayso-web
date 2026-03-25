@@ -289,7 +289,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     const normalizedEmail = email.trim().toLowerCase();
 
     const desiredRole = isBusiness ? "business_owner" : "user";
-    const success = await register(
+    const result = await register(
       normalizedEmail,
       password,
       usernameValue.trim(),
@@ -298,7 +298,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       consent
     );
 
-    if (success) {
+    if (result.success) {
       resetFormState();
       showToast(
         isBusiness
@@ -310,14 +310,19 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       return;
     }
 
-    if (authError) {
-      const lower = authError.toLowerCase();
+    const registrationError = result.errorMessage;
+    const registrationErrorCode = result.errorCode;
+
+    if (registrationError) {
+      const lower = registrationError.toLowerCase();
       if (lower.includes("fetch") || lower.includes("network")) {
         const msg =
           "Connection error. Please check your internet and try again.";
         setError(msg);
         showToast(msg, "error", 4000);
       } else if (
+        registrationErrorCode === 'user_exists' ||
+        registrationErrorCode === 'duplicate_account_type' ||
         lower.includes("already in use") ||
         lower.includes("already registered") ||
         lower.includes("already exists") ||
@@ -327,8 +332,8 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
         lower.includes("user_exists")
       ) {
         setExistingAccountError(true);
-        setError(authError);
-        showToast(authError, "error", 4000);
+        setError(registrationError);
+        showToast(registrationError, "error", 4000);
       } else if (
         lower.includes("invalid email") ||
         (lower.includes("email address") && lower.includes("invalid"))
@@ -349,8 +354,8 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
         setError(msg);
         showToast(msg, "error", 4000);
       } else {
-        setError(authError);
-        showToast(authError, "error", 4000);
+        setError(registrationError);
+        showToast(registrationError, "error", 4000);
       }
     } else {
       const msg = "Registration failed. Please try again.";

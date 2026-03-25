@@ -12,7 +12,7 @@ export interface AuthContextType {
     accountType?: 'user' | 'business_owner',
     displayName?: string,
     consentGiven?: boolean
-  ) => Promise<boolean>;
+  ) => Promise<{ success: boolean; errorMessage?: string; errorCode?: string }>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<AuthUser>) => Promise<void>;
   refreshUser: () => Promise<void>;

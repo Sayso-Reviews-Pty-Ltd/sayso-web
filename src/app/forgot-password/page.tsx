@@ -257,7 +257,7 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="mb-4 text-center">
-                  <p className="font-urbanist text-body-sm text-white/80" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                  <p className="font-urbanist text-body-sm text-white/80 [hyphens:none]" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
                     Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
                   </p>
                 </div>

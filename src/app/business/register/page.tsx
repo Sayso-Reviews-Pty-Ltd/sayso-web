@@ -271,25 +271,29 @@ export default function BusinessRegisterPage() {
       }
 
       // STEP 2: Create a brand-new business auth user
-      const success = await register(
+      const result = await register(
         normalizedEmail,
         password,
         username.trim(),
         "business_owner"
       );
 
-      if (success) {
+      if (result.success) {
         setUsername("");
         setEmail("");
         setPassword("");
         showToast("Business account created! Check your email to confirm your account.", "success", 5000);
       } else {
+        const authError = result.errorMessage;
+        const authErrorCode = result.errorCode;
         if (authError) {
           const lower = authError.toLowerCase();
           if (lower.includes("fetch") || lower.includes("network")) {
             setError("Connection error. Please check your internet connection and try again.");
             showToast("Connection error. Please check your internet connection and try again.", "sage", 4000);
           } else if (
+            authErrorCode === 'user_exists' ||
+            authErrorCode === 'duplicate_account_type' ||
             lower.includes("already in use") ||
             lower.includes("already registered") ||
             lower.includes("already exists") ||

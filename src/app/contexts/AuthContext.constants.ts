@@ -10,7 +10,7 @@ export const DEFAULT_AUTH_CONTEXT: AuthContextType = {
   isAuthInitialized: false,
   error: null,
   login: async () => null,
-  register: async () => false,
+  register: async () => ({ success: false }),
   logout: async () => {},
   updateUser: async () => {},
   refreshUser: async () => {},

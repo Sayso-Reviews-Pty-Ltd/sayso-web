@@ -274,7 +274,7 @@ export function AuthPageView({
                       transition={{ duration: 0.25, ease: "easeOut" }}
                     >
                       <form onSubmit={onSubmit} className="space-y-4 relative z-10">
-                        <AutoDismissFeedback type="error" message={error || null}>
+                        {error && (
                           <div className="bg-off-white border border-error-100 rounded-[12px] p-4 text-center">
                             <p
                               className="text-caption font-semibold text-error-600"
@@ -283,7 +283,7 @@ export function AuthPageView({
                               {error}
                             </p>
                           </div>
-                        </AutoDismissFeedback>
+                        )}
 
                         <AutoDismissFeedback type="error" message={!isOnline && !error && isRegisterMode ? "offline" : null}>
                           <div className="bg-off-white border border-orange-200 rounded-[12px] p-4 text-center">
