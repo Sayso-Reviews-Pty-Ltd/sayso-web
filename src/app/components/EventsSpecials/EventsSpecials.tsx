@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "@/app/lib/icons";
 import EventCard from "../EventCard/EventCard";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
-import { m, useReducedMotion } from "framer-motion";
+import { m } from "framer-motion";
 import FilterPillGroup from "../Filters/FilterPillGroup";
 import { useMemo, useState } from "react";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import WavyTypedTitle from "../Animations/WavyTypedTitle";
 import type { EventsSpecialsProps, ListingTypeFilter } from "./EventsSpecials.types";
 import { containerVariants, itemVariants } from "./eventsSpecials.constants";
-import { formatCtaLabel, getStableEventRailKey } from "./eventsSpecials.utils";
+import { getStableEventRailKey } from "./eventsSpecials.utils";
 import EventsSpecialsSkeleton from "./EventsSpecialsSkeleton";
 import { HomeSectionRow } from "../HomeSectionRow/HomeSectionRow";
 
@@ -38,12 +38,11 @@ export default function EventsSpecials({
 }: EventsSpecialsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
-  const prefersReducedMotion = useReducedMotion();
   const [activeTypeFilter, setActiveTypeFilter] = useState<ListingTypeFilter>(null);
 
   const containerClass = fullBleed
     ? "w-full relative z-10 px-2 sm:px-3"
-    : "mx-auto w-full max-w-[2000px] relative z-10 px-4";
+    : "mx-auto w-full max-w-[2000px] relative z-10 px-2";
 
   const displayEvents = useMemo(() => (events || []).slice(0, 12), [events]);
 

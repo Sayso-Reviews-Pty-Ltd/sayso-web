@@ -58,7 +58,7 @@ export function HomeSectionRow({
 
   const containerClass = fullBleed
     ? "w-full relative z-10 px-2 sm:px-3"
-    : "mx-auto w-full max-w-[2000px] relative z-10 px-4";
+    : "mx-auto w-full max-w-[2000px] relative z-10 px-2";
 
   const headingStyle = { ...FONT_STYLE, fontWeight: titleFontWeight } as const;
 
