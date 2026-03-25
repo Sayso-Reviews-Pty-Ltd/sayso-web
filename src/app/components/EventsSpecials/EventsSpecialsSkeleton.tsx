@@ -2,6 +2,11 @@
 
 import EventCardSkeleton from "../EventCard/EventCardSkeleton";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
+import {
+  HOME_SECTION_CARD_BASE_CLASS,
+  HOME_SECTION_CONTAINER_INSET_CLASS,
+  HOME_SECTION_RAIL_CLASS,
+} from "../HomeSectionRow/homeSectionLayout";
 
 interface EventsSpecialsSkeletonProps {
   title: string;
@@ -25,7 +30,7 @@ export default function EventsSpecialsSkeleton({
       }}
     >
       <div
-        className={`${containerClass} pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] sm:px-4`}
+        className={`${containerClass} ${HOME_SECTION_CONTAINER_INSET_CLASS}`}
       >
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse py-1" />
@@ -40,13 +45,13 @@ export default function EventsSpecialsSkeleton({
         <div className="pt-2">
           <ScrollableSection
             showArrows={false}
-            className="items-stretch py-2"
+            className={HOME_SECTION_RAIL_CLASS}
             enableMobilePeek={enableMobilePeek}
           >
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="snap-start snap-always flex-shrink-0 w-[calc(100vw-72px)] sm:w-auto min-w-[clamp(220px,18vw,320px)] list-none flex justify-center"
+                className={HOME_SECTION_CARD_BASE_CLASS}
               >
                 <EventCardSkeleton />
               </div>

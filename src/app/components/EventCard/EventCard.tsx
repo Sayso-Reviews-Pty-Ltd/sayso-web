@@ -221,7 +221,7 @@ function EventCard({
               {/* Countdown / Status Badge */}
               {countdown.show && (
                 <div
-                  className={`absolute left-3 bottom-3 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] ${
+                  className={`absolute left-4 bottom-4 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] ${
                     countdown.status === "live"
                       ? "bg-sage/95 text-white"
                       : countdown.status === "ended"

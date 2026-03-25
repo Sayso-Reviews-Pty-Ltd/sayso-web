@@ -14,7 +14,15 @@ import type { EventsSpecialsProps, ListingTypeFilter } from "./EventsSpecials.ty
 import { containerVariants, itemVariants } from "./eventsSpecials.constants";
 import { getStableEventRailKey } from "./eventsSpecials.utils";
 import EventsSpecialsSkeleton from "./EventsSpecialsSkeleton";
-import { HomeSectionRow } from "../HomeSectionRow/HomeSectionRow";
+import {
+  HomeSectionRow,
+  HOME_SECTION_HEADING_CLASS,
+} from "../HomeSectionRow/HomeSectionRow";
+import {
+  HOME_SECTION_CARD_BASE_CLASS,
+  HOME_SECTION_RAIL_CLASS,
+  HOME_SECTION_RAIL_GAP_CLASS,
+} from "../HomeSectionRow/homeSectionLayout";
 
 export default function EventsSpecials({
   title = "Events & Specials",
@@ -34,7 +42,7 @@ export default function EventsSpecials({
   showTypeFilters = false,
   showAllTypeFilter = false,
   dateRibbonPosition = "corner",
-  alignTitleWithFilters = false,
+  alignTitleWithFilters: _alignTitleWithFilters = false,
 }: EventsSpecialsProps) {
   const router = useRouter();
   const isDesktop = useIsDesktop();
@@ -59,9 +67,7 @@ export default function EventsSpecials({
   const hasEvents = displayEvents.length > 0;
   const hasFilteredEvents = filteredEvents.length > 0;
 
-  const headingClass = `font-urbanist text-xl sm:text-2xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 ${
-    alignTitleWithFilters ? "pl-0 pr-0 py-1" : "py-1"
-  } hover:bg-card-bg/5 rounded-lg cursor-default`;
+  const headingClass = HOME_SECTION_HEADING_CLASS;
 
   const headingStyle = {
     fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
@@ -108,10 +114,10 @@ export default function EventsSpecials({
     />
   ) : undefined;
 
-  const cardClass = "snap-start snap-always flex-shrink-0 w-[calc(100vw-72px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full";
+  const cardClass = HOME_SECTION_CARD_BASE_CLASS;
 
   const desktopCards = disableAnimations ? (
-    <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
+    <div className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}>
       {filteredEvents.map((event, index) => (
         <div key={getStableEventRailKey(event)} className={cardClass}>
           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
@@ -124,7 +130,7 @@ export default function EventsSpecials({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch"
+      className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}
     >
       {filteredEvents.map((event, index) => (
         <m.div key={getStableEventRailKey(event)} variants={itemVariants} className={cardClass}>
@@ -165,20 +171,14 @@ export default function EventsSpecials({
     >
       {hasEvents ? (
         hasFilteredEvents ? (
-          <div className="events-specials-rail pt-2">
+          <div className="pt-2">
             <ScrollableSection
-              className="items-stretch py-2"
+              className={HOME_SECTION_RAIL_CLASS}
               hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
               enableMobilePeek={enableMobilePeek}
             >
               {isDesktop ? desktopCards : <>{mobileCards}</>}
             </ScrollableSection>
-            <style jsx>{`
-              .events-specials-rail :global(.left-3.bottom-3) {
-                left: 1rem;
-                bottom: 1rem;
-              }
-            `}</style>
           </div>
         ) : (
           <div className="py-4">

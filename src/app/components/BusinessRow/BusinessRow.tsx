@@ -7,12 +7,14 @@ import BusinessCard, { Business } from "../BusinessCard/BusinessCard";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
 import LocationPromptBanner from "../Location/LocationPromptBanner";
 import { HomeSectionRow } from "../HomeSectionRow/HomeSectionRow";
+import {
+  HOME_SECTION_CARD_BASE_CLASS,
+  HOME_SECTION_RAIL_CLASS,
+  HOME_SECTION_RAIL_GAP_CLASS,
+} from "../HomeSectionRow/homeSectionLayout";
 import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 import { useRouter } from "next/navigation";
-
-// Full-bleed mobile sections with a balanced 36px peek affordance.
-const MOBILE_PEEK_CARD_WIDTH = "w-[calc(100vw-72px)]";
 
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -104,10 +106,12 @@ export default function BusinessRow({
 
   if (!businesses || businesses.length === 0) return null;
 
-  const cardClass = `snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full business-card-full-width`;
+  const cardClass = isSingleCard
+    ? "snap-start snap-always flex-shrink-0 w-auto sm:w-auto list-none flex justify-center h-full business-card-full-width"
+    : `${HOME_SECTION_CARD_BASE_CLASS} business-card-full-width`;
 
   const desktopCards = disableAnimations ? (
-    <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
+    <div className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}>
       {businesses.map((business, index) => (
         <div key={business.id} className={cardClass}>
           <BusinessCard business={business} index={index} />
@@ -120,7 +124,7 @@ export default function BusinessRow({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch"
+      className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}
     >
       {businesses.map((business, index) => (
         <m.div key={business.id} variants={itemVariants} className={cardClass}>
@@ -164,7 +168,7 @@ export default function BusinessRow({
         <ScrollableSection
           enableMobilePeek
           hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
-          className="items-stretch py-2"
+          className={HOME_SECTION_RAIL_CLASS}
         >
           {isDesktop ? desktopCards : <>{mobileCards}</>}
         </ScrollableSection>

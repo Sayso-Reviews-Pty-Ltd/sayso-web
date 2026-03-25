@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { ArrowRight } from "@/app/lib/icons";
+import { HOME_SECTION_CONTAINER_INSET_CLASS } from "./homeSectionLayout";
 
 const FONT_STYLE = {
   fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
@@ -30,14 +31,14 @@ export type HomeSectionRowProps = {
   children: ReactNode;
 };
 
-const DEFAULT_HEADING_CLASS =
+export const HOME_SECTION_HEADING_CLASS =
   "font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 py-1 hover:bg-card-bg/5 rounded-lg cursor-default";
 
 export function HomeSectionRow({
   title,
   titleSlot,
   titleFontWeight = 800,
-  headingClassName = DEFAULT_HEADING_CLASS,
+  headingClassName = HOME_SECTION_HEADING_CLASS,
   cta,
   ctaFontWeight = 400,
   href,
@@ -92,7 +93,7 @@ export function HomeSectionRow({
   return (
     <section className="relative m-0 w-full" aria-label={title} style={FONT_STYLE}>
       <div
-        className={`${containerClass} pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] sm:px-4`}
+        className={`${containerClass} ${HOME_SECTION_CONTAINER_INSET_CLASS}`}
       >
         <div className={`${headerPb} flex flex-wrap items-center justify-between gap-2`}>
           {headingNode}
