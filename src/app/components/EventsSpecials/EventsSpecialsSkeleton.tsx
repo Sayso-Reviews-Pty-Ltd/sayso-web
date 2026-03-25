@@ -25,11 +25,7 @@ export default function EventsSpecialsSkeleton({
       }}
     >
       <div
-        className={containerClass}
-        style={{
-          paddingLeft: "max(16px, env(safe-area-inset-left))",
-          paddingRight: "max(16px, env(safe-area-inset-right))",
-        }}
+        className={`${containerClass} pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] sm:px-4`}
       >
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse py-1" />
@@ -50,7 +46,7 @@ export default function EventsSpecialsSkeleton({
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto min-w-[clamp(220px,18vw,320px)] list-none flex justify-center"
+                className="snap-start snap-always flex-shrink-0 w-[calc(100vw-72px)] sm:w-auto min-w-[clamp(220px,18vw,320px)] list-none flex justify-center"
               >
                 <EventCardSkeleton />
               </div>

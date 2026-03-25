@@ -59,12 +59,6 @@ export function HomeSectionRow({
   const containerClass = fullBleed
     ? "w-full relative z-10"
     : "mx-auto w-full max-w-[2000px] relative z-10";
-  const containerStyle = {
-    // Keep a single 16px horizontal system while respecting device safe areas.
-    paddingLeft: "max(16px, env(safe-area-inset-left))",
-    paddingRight: "max(16px, env(safe-area-inset-right))",
-  } as const;
-
   const headingStyle = { ...FONT_STYLE, fontWeight: titleFontWeight } as const;
 
   const headingNode = titleSlot ?? (
@@ -97,7 +91,9 @@ export function HomeSectionRow({
 
   return (
     <section className="relative m-0 w-full" aria-label={title} style={FONT_STYLE}>
-      <div className={containerClass} style={containerStyle}>
+      <div
+        className={`${containerClass} pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] sm:px-4`}
+      >
         <div className={`${headerPb} flex flex-wrap items-center justify-between gap-2`}>
           {headingNode}
 

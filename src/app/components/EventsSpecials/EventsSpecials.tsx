@@ -108,7 +108,7 @@ export default function EventsSpecials({
     />
   ) : undefined;
 
-  const cardClass = "snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full";
+  const cardClass = "snap-start snap-always flex-shrink-0 w-[calc(100vw-72px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full";
 
   const desktopCards = disableAnimations ? (
     <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
