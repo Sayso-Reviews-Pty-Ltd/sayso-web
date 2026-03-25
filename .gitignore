@@ -65,6 +65,7 @@ supabase/.temp/**/*
 
 # MCP config
 .mcp.json
+.playwright-mcp/
 
 # NPM config
 docs/.npmrc
