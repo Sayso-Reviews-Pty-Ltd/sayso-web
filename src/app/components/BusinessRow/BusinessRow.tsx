@@ -11,7 +11,8 @@ import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 import { useRouter } from "next/navigation";
 
-const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-80px)]';
+// 16px + 16px outer insets with a 48px peek affordance.
+const MOBILE_PEEK_CARD_WIDTH = "w-[calc(100vw-80px)]";
 
 const containerVariants = {
   hidden: { opacity: 1 },

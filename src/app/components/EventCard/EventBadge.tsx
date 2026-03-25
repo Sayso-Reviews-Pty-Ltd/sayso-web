@@ -1,4 +1,4 @@
-﻿// Generate a unique color for each event based on its ID
+// Generate a unique color for each event based on its ID
 // This ensures every event badge has a different color
 const getUniqueEventColor = (eventId: string): string => {
   // Create a simple hash from the event ID
@@ -183,20 +183,16 @@ export default function EventBadge({
   }
 
   return (
-    <div className="absolute -left-1 -top-1 z-20 overflow-hidden" style={{ width: '150px', height: '120px' }}>
+    <div className="absolute left-4 top-4 z-20">
       <div
-        className="absolute text-white px-5 py-2.5 shadow-md bg-navbar-bg/90"
+        className="inline-flex items-center justify-center rounded-full bg-navbar-bg/90 px-3 py-1.5 text-white shadow-md"
         style={{
-          transform: 'rotate(-50deg)',
-          transformOrigin: 'center',
-          left: '-40px',
-          top: '22px',
-          width: '250px',
-          textAlign: 'center',
+          textAlign: "center",
           fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
           fontWeight: 600,
-          fontSize: '0.75rem',
-          letterSpacing: '0.025em',
+          fontSize: "0.75rem",
+          letterSpacing: "0.02em",
+          lineHeight: 1,
         }}
       >
         {dateText}

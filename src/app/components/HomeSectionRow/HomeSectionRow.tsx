@@ -31,7 +31,7 @@ export type HomeSectionRowProps = {
 };
 
 const DEFAULT_HEADING_CLASS =
-  "font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default";
+  "font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 py-1 hover:bg-card-bg/5 rounded-lg cursor-default";
 
 export function HomeSectionRow({
   title,
@@ -57,8 +57,13 @@ export function HomeSectionRow({
   const headerPb = filterSlot ? "pb-2 sm:pb-3" : "pb-4 sm:pb-8 md:pb-10";
 
   const containerClass = fullBleed
-    ? "w-full relative z-10 px-2 sm:px-3"
-    : "mx-auto w-full max-w-[2000px] relative z-10 px-2";
+    ? "w-full relative z-10"
+    : "mx-auto w-full max-w-[2000px] relative z-10";
+  const containerStyle = {
+    // Keep a single 16px horizontal system while respecting device safe areas.
+    paddingLeft: "max(16px, env(safe-area-inset-left))",
+    paddingRight: "max(16px, env(safe-area-inset-right))",
+  } as const;
 
   const headingStyle = { ...FONT_STYLE, fontWeight: titleFontWeight } as const;
 
@@ -92,7 +97,7 @@ export function HomeSectionRow({
 
   return (
     <section className="relative m-0 w-full" aria-label={title} style={FONT_STYLE}>
-      <div className={containerClass}>
+      <div className={containerClass} style={containerStyle}>
         <div className={`${headerPb} flex flex-wrap items-center justify-between gap-2`}>
           {headingNode}
 

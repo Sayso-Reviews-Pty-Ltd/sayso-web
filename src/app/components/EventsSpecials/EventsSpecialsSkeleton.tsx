@@ -24,9 +24,15 @@ export default function EventsSpecialsSkeleton({
         fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}
     >
-      <div className={containerClass}>
+      <div
+        className={containerClass}
+        style={{
+          paddingLeft: "max(16px, env(safe-area-inset-left))",
+          paddingRight: "max(16px, env(safe-area-inset-right))",
+        }}
+      >
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
-          <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse px-3 sm:px-4 py-1" />
+          <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse py-1" />
           {showHeaderCta && (
             <div className="inline-flex items-center gap-1 px-4 py-2 -mx-2">
               <div className="h-4 w-16 bg-charcoal/10 rounded-full animate-pulse" />

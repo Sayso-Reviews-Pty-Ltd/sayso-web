@@ -41,8 +41,8 @@ export default function EventsSpecials({
   const [activeTypeFilter, setActiveTypeFilter] = useState<ListingTypeFilter>(null);
 
   const containerClass = fullBleed
-    ? "w-full relative z-10 px-2 sm:px-3"
-    : "mx-auto w-full max-w-[2000px] relative z-10 px-2";
+    ? "w-full relative z-10"
+    : "mx-auto w-full max-w-[2000px] relative z-10";
 
   const displayEvents = useMemo(() => (events || []).slice(0, 12), [events]);
 
@@ -60,7 +60,7 @@ export default function EventsSpecials({
   const hasFilteredEvents = filteredEvents.length > 0;
 
   const headingClass = `font-urbanist text-xl sm:text-2xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 ${
-    alignTitleWithFilters ? "pl-0 pr-3 sm:pr-4 py-1" : "px-3 sm:px-4 py-1"
+    alignTitleWithFilters ? "pl-0 pr-0 py-1" : "py-1"
   } hover:bg-card-bg/5 rounded-lg cursor-default`;
 
   const headingStyle = {
@@ -165,7 +165,7 @@ export default function EventsSpecials({
     >
       {hasEvents ? (
         hasFilteredEvents ? (
-          <div className="pt-2">
+          <div className="events-specials-rail pt-2">
             <ScrollableSection
               className="items-stretch py-2"
               hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
@@ -173,6 +173,12 @@ export default function EventsSpecials({
             >
               {isDesktop ? desktopCards : <>{mobileCards}</>}
             </ScrollableSection>
+            <style jsx>{`
+              .events-specials-rail :global(.left-3.bottom-3) {
+                left: 1rem;
+                bottom: 1rem;
+              }
+            `}</style>
           </div>
         ) : (
           <div className="py-4">

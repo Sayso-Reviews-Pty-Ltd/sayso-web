@@ -49,7 +49,7 @@ export default function BusinessCardContent({
 }: BusinessCardContentProps) {
   return (
     <div
-      className={`px-5 pt-2.5 sm:px-6 sm:pt-1 md:pt-2 lg:pt-2.5 pb-2.5 ${
+      className={`px-4 pt-3 sm:px-4 sm:pt-2 md:pt-3 lg:pt-3 pb-3 ${
         compact
           ? "lg:py-1 lg:pt-2 lg:pb-0 lg:min-h-[160px]"
           : "flex-1"
