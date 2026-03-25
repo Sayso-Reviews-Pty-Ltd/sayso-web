@@ -171,6 +171,7 @@ export default function BusinessRow({
         <ScrollableSection
           enableMobilePeek
           hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
+          className="items-stretch py-2"
         >
           {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
           <style dangerouslySetInnerHTML={{ __html: `
@@ -183,11 +184,11 @@ export default function BusinessRow({
           `}} />
           {isDesktop ? (
             disableAnimations ? (
-              <div className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch">
                 {businesses.map((business, index) => (
                   <div
                     key={business.id}
-                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </div>
@@ -199,13 +200,13 @@ export default function BusinessRow({
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
-                className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2"
+                className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch"
               >
                 {businesses.map((business, index) => (
                   <m.div
                     key={business.id}
                     variants={itemVariants}
-                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </m.div>
@@ -213,7 +214,7 @@ export default function BusinessRow({
               </m.div>
             )
           ) : (
-            <div className="flex gap-1 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
+            <>
               {businesses.map((business, index) => {
                 const isFirst = index === 0 && businesses.length > 1;
                 const isLast = index === businesses.length - 1 && businesses.length > 1;
@@ -221,13 +222,13 @@ export default function BusinessRow({
                   <div
                     key={business.id}
                     data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </div>
                 );
               })}
-            </div>
+            </>
           )}
         </ScrollableSection>
       </div>
