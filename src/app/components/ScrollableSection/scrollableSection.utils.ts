@@ -29,11 +29,9 @@ export const computeScrollGeometry = ({
   trailing,
   shouldEnableMobilePeek,
 }: ComputeScrollGeometryParams): void => {
-  // On mobile (<640px) the scroll container is full-width (no parent px-2), so
-  // we add an 8px leading spacer to match APP_PAGE_GUTTER (same as mobile app).
-  // On sm+ the parent already provides px-2 so no spacer is needed.
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
-  if (leading) leading.style.width = isMobile ? "8px" : "0px";
+  // Edge-bleed layout: first and last cards are flush to their respective edges,
+  // so neither spacer is needed. Middle cards center via native snap-center.
+  if (leading) leading.style.width = "0px";
   if (trailing) trailing.style.width = "0px";
 };
 

@@ -14,7 +14,7 @@ import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 // Mobile snap-center geometry: matches EventsSpecials / CommunityHighlights rail geometry.
 // - Card fills viewport minus 56px (16px section padding + 40px peek gutter), same as other rows.
 // - No left offset: first card starts flush with the scroll container edge, matching events/BOTM.
-const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-56px)]';
+const MOBILE_PEEK_CARD_WIDTH = 'w-[calc(100vw-80px)]';
 // ScrollableSection default trailing spacer (w-4 = 16px) is used; no override needed.
 
 // Animation variants for staggered card appearance (matching badge page)
@@ -125,8 +125,8 @@ export default function BusinessRow({
       }}
     >
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
-      <div className="mx-auto w-full max-w-[2000px] relative z-10 sm:px-2">
-        <div className="px-2 sm:px-0 pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
+      <div className="mx-auto w-full max-w-[2000px] relative z-10 px-2">
+        <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           {disableAnimations ? (
             <h2
               className="font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
