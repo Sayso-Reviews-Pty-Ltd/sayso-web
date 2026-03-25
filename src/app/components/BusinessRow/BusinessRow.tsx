@@ -125,7 +125,7 @@ export default function BusinessRow({
       }}
     >
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
-      <div className="mx-auto w-full max-w-[2000px] relative z-10 px-1.5 sm:px-2">
+      <div className="mx-auto w-full max-w-[2000px] relative z-10 px-2">
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           {disableAnimations ? (
             <h2
