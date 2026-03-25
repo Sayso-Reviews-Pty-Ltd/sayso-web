@@ -221,7 +221,7 @@ export default function BusinessRow({
                   <div
                     key={business.id}
                     data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
+                    className={`snap-start snap-always flex-shrink-0 ${isSingleCard ? 'w-auto' : MOBILE_PEEK_CARD_WIDTH} sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center business-card-full-width`}
                   >
                     <BusinessCard business={business} index={index} />
                   </div>

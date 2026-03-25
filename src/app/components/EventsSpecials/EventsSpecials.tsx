@@ -223,7 +223,7 @@ export default function EventsSpecials({
                         <div
                           key={getStableEventRailKey(event)}
                           data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                          className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </div>

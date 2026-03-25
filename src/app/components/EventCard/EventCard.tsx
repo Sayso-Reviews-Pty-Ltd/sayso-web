@@ -107,7 +107,7 @@ function EventCard({
 
   return (
     <li
-      className={fullWidth ? "flex w-full h-full" : "flex w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px] h-full"}
+      className={fullWidth ? "flex w-full h-full" : "flex w-full sm:w-[260px] md:w-[340px] h-full"}
       style={{
         fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         fontWeight: 600,
