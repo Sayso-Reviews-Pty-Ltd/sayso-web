@@ -701,7 +701,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
     // Fetch business contact info for verification detection
     const { data: business } = await supabase
       .from('businesses')
-      .select('id, name, category, location, website, email, phone')
+      .select('id, name, primary_subcategory_label, location, website, email, phone')
       .eq('id', business_id)
       .single();
 
@@ -737,7 +737,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
             recipientEmail: userEmail,
             recipientName: (profile?.display_name || profile?.username) as string | undefined,
             businessName: business.name,
-            businessCategory: business.category,
+            businessCategory: business.primary_subcategory_label,
             businessLocation: business.location,
           }).catch((err) => console.error('Claim received email failed:', err));
         }
@@ -839,7 +839,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
         recipientEmail: userEmail,
         recipientName: (profile?.display_name || profile?.username) as string | undefined,
         businessName: business.name,
-        businessCategory: business.category,
+        businessCategory: business.primary_subcategory_label,
         businessLocation: business.location,
       }).catch((err) => console.error('Claim received email failed:', err));
     }

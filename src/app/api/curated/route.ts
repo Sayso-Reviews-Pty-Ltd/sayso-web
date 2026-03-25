@@ -143,7 +143,7 @@ function transformToUI(
     id: business.id,
     name: business.name,
     image: primaryImage?.url || business.image_url || '',
-    alt: primaryImage?.alt_text || business.name,
+    alt: business.name,
     category: displayCategory,
     description: business.description || `${business.is_top3 ? 'Top rated' : 'Featured'} in ${displayCategory}`,
     location: business.location || 'Cape Town',
@@ -234,7 +234,7 @@ export async function GET(request: NextRequest) {
     const businessIds = curatedData.map((b) => b.id);
     const { data: imagesData } = await supabase
       .from('business_images')
-      .select('business_id, url, alt_text, is_primary')
+      .select('business_id, url, is_primary')
       .in('business_id', businessIds)
       .order('is_primary', { ascending: false })
       .order('created_at', { ascending: false });

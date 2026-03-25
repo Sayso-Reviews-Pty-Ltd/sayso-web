@@ -53,12 +53,12 @@ export function useRealtimeReviews(
     try {
       const { data, error } = await supabase.current
         .from('profiles')
-        .select('id, display_name, username, avatar_url, is_top_reviewer')
-        .eq('id', userId)
+        .select('user_id, display_name, username, avatar_url, is_top_reviewer')
+        .eq('user_id', userId)
         .single();
 
       if (error) throw error;
-      return data;
+      return data ? { ...data, id: data.user_id } : null;
     } catch (error) {
       console.error('Error fetching user data:', error);
       return null;

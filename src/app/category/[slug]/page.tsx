@@ -40,7 +40,7 @@ async function getCategoryOgImage(slug: string): Promise<string | undefined> {
     const supabase = await getServerSupabase();
     const { data } = await supabase
       .from('businesses')
-      .select('image_url, uploaded_images, business_images(url, is_primary, sort_order)')
+      .select('image_url, business_images(url, is_primary, sort_order)')
       .eq('primary_category_slug', slug)
       .eq('status', 'active')
       .or('is_system.is.null,is_system.eq.false')
@@ -58,7 +58,6 @@ async function getCategoryOgImage(slug: string): Promise<string | undefined> {
     });
 
     return (
-      (Array.isArray((data as any).uploaded_images) ? (data as any).uploaded_images[0] : undefined) ||
       orderedBusinessImages[0]?.url ||
       (data as any).image_url ||
       undefined

@@ -12,13 +12,9 @@ const CARD_W = 1200;
 const CARD_H = 630;
 
 function pickImage(business: {
-  uploaded_images?: string[] | null;
   business_images?: { url: string; is_primary?: boolean; sort_order?: number }[] | null;
   image_url?: string | null;
 }): string | null {
-  const uploaded = Array.isArray(business.uploaded_images) ? business.uploaded_images : [];
-  if (uploaded[0]) return uploaded[0];
-
   const gallery = Array.isArray(business.business_images) ? business.business_images : [];
   const sorted = [...gallery].sort((a, b) => {
     if (a.is_primary && !b.is_primary) return -1;
@@ -49,9 +45,9 @@ export async function GET(
 
   let business: {
     name: string;
-    primary_category_label?: string | null;
-    category?: string | null;
-    uploaded_images?: string[] | null;
+    primary_subcategory_label?: string | null;
+    category_raw?: string | null;
+    primary_category_slug?: string | null;
     business_images?: { url: string; is_primary?: boolean; sort_order?: number }[] | null;
     image_url?: string | null;
     business_stats?: { average_rating: number | null; total_reviews: number | null }[] | null;
@@ -71,7 +67,7 @@ export async function GET(
         const { data } = await supabase
           .from("businesses")
           .select(
-            "name, primary_category_label, category, uploaded_images, business_images(url, is_primary, sort_order), image_url, business_stats(average_rating, total_reviews)"
+            "name, primary_subcategory_label, category_raw, primary_category_slug, business_images(url, is_primary, sort_order), image_url, business_stats(average_rating, total_reviews)"
           )
           .eq("id", slugRow.id)
           .eq("status", "active")
@@ -82,7 +78,7 @@ export async function GET(
       const { data } = await supabase
         .from("businesses")
         .select(
-          "name, primary_category_label, category, uploaded_images, business_images(url, is_primary, sort_order), image_url, business_stats(average_rating, total_reviews)"
+          "name, primary_subcategory_label, category_raw, primary_category_slug, business_images(url, is_primary, sort_order), image_url, business_stats(average_rating, total_reviews)"
         )
         .eq("id", id)
         .eq("status", "active")
@@ -95,7 +91,7 @@ export async function GET(
 
   const name = business?.name ?? "Sayso Business";
   const category =
-    business?.primary_category_label ?? business?.category ?? null;
+    business?.primary_subcategory_label ?? business?.category_raw ?? business?.primary_category_slug ?? null;
   const photoUrl = business ? pickImage(business) : null;
   const stats = business?.business_stats?.[0] ?? null;
   const rating = stats?.average_rating ?? null;

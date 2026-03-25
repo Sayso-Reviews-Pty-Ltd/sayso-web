@@ -199,7 +199,7 @@ export function formatConversationListItem(conversation: any, role: MessagingRol
           id: business.id,
           name: business.name,
           image_url: business.image_url,
-          category: business.category,
+          category: business.primary_subcategory_label || null,
           verified: business.verified,
           slug: business.slug,
         }

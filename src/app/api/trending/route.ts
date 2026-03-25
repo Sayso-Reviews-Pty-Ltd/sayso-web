@@ -224,13 +224,13 @@ export async function GET(request: NextRequest) {
     // 4. Fetch images
     let imagesByBusinessId: Record<
       string,
-      Array<{ url: string; alt_text: string | null; is_primary: boolean | null }>
+      Array<{ url: string; is_primary: boolean | null }>
     > = {};
     if (selectedIds.length > 0) {
       const { data: imagesData } = await withTimeout(
         supabase
           .from('business_images')
-          .select('business_id, url, alt_text, is_primary')
+          .select('business_id, url, is_primary')
           .in('business_id', selectedIds)
           .order('is_primary', { ascending: false })
           .order('created_at', { ascending: false }) as any,
@@ -241,7 +241,7 @@ export async function GET(request: NextRequest) {
       for (const img of imagesData || []) {
         const bid = (img as { business_id: string }).business_id;
         if (!imagesByBusinessId[bid]) imagesByBusinessId[bid] = [];
-        imagesByBusinessId[bid].push(img as { url: string; alt_text: string | null; is_primary: boolean | null });
+        imagesByBusinessId[bid].push(img as { url: string; is_primary: boolean | null });
       }
     }
 
@@ -271,7 +271,7 @@ export async function GET(request: NextRequest) {
         image: primaryImage?.url || business.image_url || null,
         image_url: primaryImage?.url || business.image_url || null,
         uploaded_images: uploadedImageUrls,
-        alt: primaryImage?.alt_text || business.name,
+        alt: business.name,
         category: slug || undefined,
         category_label: categoryLabel,
         sub_interest_id: business.primary_subcategory_slug ?? (slug || undefined),

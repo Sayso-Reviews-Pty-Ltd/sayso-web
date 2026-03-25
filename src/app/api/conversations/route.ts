@@ -16,7 +16,7 @@ const BUSINESS_RELATION_SELECT = `
     name,
     slug,
     image_url,
-    category,
+    primary_subcategory_label,
     verified
   )
 `;
@@ -191,7 +191,7 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       if (missingBusinessIds.length > 0) {
         const { data: fetchedBusinesses } = await supabase
           .from('businesses')
-          .select('id, name, slug, image_url, category, verified')
+          .select('id, name, slug, image_url, primary_subcategory_label, verified')
           .in('id', missingBusinessIds);
 
         if (fetchedBusinesses && fetchedBusinesses.length > 0) {

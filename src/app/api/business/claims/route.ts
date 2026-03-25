@@ -25,13 +25,13 @@ type ClaimRow = {
   businesses?: {
     id: string;
     name: string;
-    category: string | null;
+    primary_subcategory_label: string | null;
     location: string | null;
     slug: string | null;
   } | Array<{
     id: string;
     name: string;
-    category: string | null;
+    primary_subcategory_label: string | null;
     location: string | null;
     slug: string | null;
   }> | null;
@@ -105,7 +105,7 @@ async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{
        businesses!inner (
          id,
          name,
-         category,
+         primary_subcategory_label,
          location,
          slug
        )`,
@@ -146,7 +146,7 @@ async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{
 
   const businessesResult = await supabase
     .from("businesses")
-    .select("id,name,category,location,slug")
+    .select("id,name,primary_subcategory_label,location,slug")
     .in("id", businessIds);
 
   if (businessesResult.error) {
@@ -201,7 +201,7 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
         business_id: claim.business_id,
         business_name: business?.name ?? "Unknown",
         business_slug: business?.slug ?? null,
-        category: business?.category ?? null,
+        category: business?.primary_subcategory_label ?? null,
         location: business?.location ?? null,
         status: claim.status,
         display_status: toDisplayStatus(claim.status, claim.method_attempted),

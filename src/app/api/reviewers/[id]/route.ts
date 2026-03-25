@@ -104,7 +104,7 @@ export async function GET(
         // Fetch businesses by ID without status filter first
         const { data: bizRows, error: bizError } = await supabase
           .from('businesses')
-          .select('id, name, primary_subcategory_slug, primary_category_slug, status, image_url, uploaded_images')
+          .select('id, name, primary_subcategory_slug, primary_category_slug, status, image_url, business_images(url, is_primary, sort_order)')
           .in('id', bizIds);
           
         if (bizError) {
@@ -226,14 +226,27 @@ export async function GET(
         businessId: review.business_id,
         foundBusiness: !!biz,
         businessName: biz?.name || 'NOT_FOUND',
-        businessImageUrl: biz?.uploaded_images?.[0] || biz?.image_url || null,
+        businessImageUrl:
+          (Array.isArray(biz?.business_images)
+            ? [...biz.business_images]
+                .sort((a: any, b: any) => {
+                  if (a?.is_primary && !b?.is_primary) return -1;
+                  if (!a?.is_primary && b?.is_primary) return 1;
+                  return Number(a?.sort_order || 0) - Number(b?.sort_order || 0);
+                })[0]?.url
+            : null) || biz?.image_url || null,
         businessStatus: biz?.status
       });
       
-      // Get business image - prioritize uploaded_images array, fallback to image_url
-      const businessImageUrl = biz?.uploaded_images && Array.isArray(biz.uploaded_images) && biz.uploaded_images.length > 0 
-        ? biz.uploaded_images[0] 
-        : biz?.image_url || null;
+      // Get business image from business_images relation first, fallback to image_url
+      const businessImageUrl = (Array.isArray(biz?.business_images)
+        ? [...biz.business_images]
+            .sort((a: any, b: any) => {
+              if (a?.is_primary && !b?.is_primary) return -1;
+              if (!a?.is_primary && b?.is_primary) return 1;
+              return Number(a?.sort_order || 0) - Number(b?.sort_order || 0);
+            })[0]?.url
+        : null) || biz?.image_url || null;
       
       // Better fallback for business name
       const businessName = biz?.name || 'Unknown Business';

@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: CategorySubcategoryPageProps)
     const supabase = await getServerSupabase();
     const { data } = await supabase
       .from('businesses')
-      .select('image_url, uploaded_images, business_images(url, is_primary, sort_order), primary_subcategory_slug, sub_interest_id, primary_subcategory_label')
+      .select('image_url, business_images(url, is_primary, sort_order), primary_subcategory_slug, sub_interest_id, primary_subcategory_label')
       .eq('primary_category_slug', category)
       .eq('status', 'active')
       .or('is_system.is.null,is_system.eq.false')
@@ -65,7 +65,6 @@ export async function generateMetadata({ params }: CategorySubcategoryPageProps)
       });
 
       ogImage =
-        (Array.isArray((match as any).uploaded_images) ? (match as any).uploaded_images[0] : undefined) ||
         orderedBusinessImages[0]?.url ||
         (match as any).image_url ||
         undefined;

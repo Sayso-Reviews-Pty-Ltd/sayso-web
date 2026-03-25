@@ -588,13 +588,13 @@ export async function GET(request: NextRequest) {
     const businessIds = featuredData.map((b: any) => b.id);
     const { data: imagesData } = await supabase
       .from('business_images')
-      .select('business_id, url, alt_text, is_primary')
+      .select('business_id, url, is_primary')
       .in('business_id', businessIds)
       .order('is_primary', { ascending: false })
       .order('created_at', { ascending: false });
 
     // Group images by business_id
-    const imagesByBusinessId: Record<string, Array<{ business_id: string; url: string; alt_text: string | null; is_primary: boolean | null }>> = {};
+    const imagesByBusinessId: Record<string, Array<{ business_id: string; url: string; is_primary: boolean | null }>> = {};
     for (const img of imagesData || []) {
       if (!imagesByBusinessId[img.business_id]) {
         imagesByBusinessId[img.business_id] = [];
@@ -621,7 +621,7 @@ export async function GET(request: NextRequest) {
         image: primaryImage?.url || business.image_url || '',
         image_url: primaryImage?.url || business.image_url || '',
         uploaded_images: uploadedImageUrls,
-        alt: primaryImage?.alt_text || business.name,
+        alt: business.name,
         category: (business.category ?? slug) || undefined,
         category_label: categoryLabel,
         // Snake_case for backward compatibility
