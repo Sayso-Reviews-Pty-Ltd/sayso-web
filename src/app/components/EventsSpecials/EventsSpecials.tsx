@@ -41,7 +41,7 @@ export default function EventsSpecials({
   const [activeTypeFilter, setActiveTypeFilter] = useState<ListingTypeFilter>(null);
   const containerClass = fullBleed
     ? "w-full relative z-10 px-2 sm:px-3"
-    : "mx-auto w-full max-w-[2000px] relative z-10 px-2";
+    : "mx-auto w-full max-w-[2000px] relative z-10 sm:px-2";
 
   // Only block on parent loading; the feed is unified server-side.
   const showSkeleton = loading;
@@ -93,7 +93,7 @@ export default function EventsSpecials({
       }}
     >
       <div className={containerClass}>
-        <div className={`${showTypeFilters && hasEvents ? "pb-2 sm:pb-3" : "pb-4 sm:pb-8 md:pb-10"} flex flex-wrap items-center justify-between gap-2`}>
+        <div className={`${showTypeFilters && hasEvents ? "pb-2 sm:pb-3" : "pb-4 sm:pb-8 md:pb-10"} px-2 sm:px-0 flex flex-wrap items-center justify-between gap-2`}>
           {useTypedTitle ? (
             <WavyTypedTitle
               text={title}
@@ -189,7 +189,7 @@ export default function EventsSpecials({
                       {filteredEvents.map((event, index) => (
                         <div
                           key={getStableEventRailKey(event)}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </div>
@@ -207,7 +207,7 @@ export default function EventsSpecials({
                         <m.div
                           key={getStableEventRailKey(event)}
                           variants={itemVariants}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </m.div>
@@ -223,7 +223,7 @@ export default function EventsSpecials({
                         <div
                           key={getStableEventRailKey(event)}
                           data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
+                          className="snap-start snap-always flex-shrink-0 w-[calc(100vw-56px)] sm:w-auto min-w-[clamp(200px,16vw,300px)] list-none flex justify-center h-full"
                         >
                           <EventCard event={event} index={index} dateRibbonPosition={dateRibbonPosition} />
                         </div>
