@@ -14,6 +14,8 @@ const buttonVariants = cva(
         outline:     "border-2 border-sage text-sage hover:bg-card-bg hover:text-white shadow-md active:scale-[0.98]",
         ghost:       "text-sage hover:bg-card-bg/10 active:scale-[0.98]",
         danger:      "bg-coral text-white hover:bg-coral/90 shadow-md hover:shadow-lg active:scale-[0.98]",
+        // No colour — use className to supply custom colours (for animated/specialised buttons)
+        bare:        "",
       },
       size: {
         sm:  "px-4 py-2 text-sm min-h-[40px]",

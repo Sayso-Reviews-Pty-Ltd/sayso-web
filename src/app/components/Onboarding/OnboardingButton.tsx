@@ -2,6 +2,8 @@
 
 import { ArrowRight } from "@/app/lib/icons";
 import { m } from "framer-motion";
+import { buttonVariants } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 interface OnboardingButtonProps {
   canProceed: boolean;
@@ -78,7 +80,11 @@ export default function OnboardingButton({
   return (
     <m.button
       type="button"
-      className={`w-full min-h-[44px] text-sm font-600 py-3 px-4 rounded-full transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-target btn-press ${getButtonColor()}`}
+      className={cn(
+        buttonVariants({ variant: "bare", size: "sm" }),
+        "w-full min-h-[44px] btn-target btn-press",
+        getButtonColor()
+      )}
       onClick={handleClick}
       disabled={!canProceed || isProcessing}
       style={sfPro}

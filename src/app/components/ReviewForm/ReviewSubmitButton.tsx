@@ -3,6 +3,8 @@
 import { useRef, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Send, Loader2, AlertCircle } from "@/app/lib/icons";
+import { buttonVariants } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 interface ReviewSubmitButtonProps {
   isFormValid: boolean;
@@ -103,15 +105,13 @@ export default function ReviewSubmitButton({
         disabled={!isFormValid || isSubmitting}
         whileHover={isFormValid && !isSubmitting ? { scale: 1.02 } : {}}
         whileTap={isFormValid && !isSubmitting ? { scale: 0.98 } : {}}
-        className={`
-          w-full py-4 px-6 rounded-full text-lg font-bold
-          transition-all duration-300 relative overflow-hidden
-          touch-manipulation min-h-[56px] flex items-center justify-center gap-2
-          ${isFormValid && !isSubmitting
+        className={cn(
+          buttonVariants({ variant: "bare", size: "lg" }),
+          "w-full relative overflow-hidden touch-manipulation",
+          isFormValid && !isSubmitting
             ? "bg-gradient-to-r from-coral to-coral/90 text-white shadow-lg shadow-coral/25 hover:shadow-xl hover:shadow-coral/30"
             : "bg-charcoal/10 text-charcoal/60 cursor-not-allowed"
-          }
-        `}
+        )}
         style={{
           touchAction: 'manipulation',
           WebkitTapHighlightColor: 'transparent',
