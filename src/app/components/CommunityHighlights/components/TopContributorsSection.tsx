@@ -135,7 +135,7 @@ export default function TopContributorsSection({
             </div>
           </div>
 
-          <div className="w-full bg-off-white border border-sage/20 rounded-3xl pt-16 pb-6 text-center space-y-3">
+          <div className="w-full bg-off-white border border-sage/20 rounded-[12px] pt-16 pb-6 text-center space-y-3">
             <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
               {contributorsEmptyTitle}
             </h2>
@@ -145,7 +145,7 @@ export default function TopContributorsSection({
             <div className="pt-2 flex items-center justify-center">
               <Link
                 href="/badges"
-                className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-[12px] bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
+                className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
                 aria-label="Learn about badges"
               >
                 <span>Explore badges</span>

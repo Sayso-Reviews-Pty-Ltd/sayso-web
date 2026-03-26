@@ -125,8 +125,8 @@ export function ReviewHeader({
             </div>
           </div>
 
-          <div className="flex items-start justify-between sm:justify-end gap-2 sm:gap-3">
-            <div className="flex flex-col items-start sm:items-end gap-1">
+          <div className="ml-auto flex items-start justify-end gap-2 sm:gap-3">
+            <div className="flex flex-col items-end gap-1 text-right">
               <div className="flex items-center space-x-1">
                 <svg width="0" height="0" className="absolute">
                   <defs>
@@ -139,7 +139,7 @@ export function ReviewHeader({
                 {[...Array(5)].map((_, i) => (
                   <m.div key={i}>
                     <svg
-                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      className="w-5 h-5 sm:w-5 sm:h-5"
                       viewBox="0 0 24 24"
                       aria-hidden
                     >
