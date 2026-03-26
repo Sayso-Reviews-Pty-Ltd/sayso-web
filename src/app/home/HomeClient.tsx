@@ -31,7 +31,6 @@ import { useHomeHeroReadiness } from "./hooks/useHomeHeroReadiness";
 import { useHomeBusinessCountsDebug, useHomePreferencesDebug } from "./hooks/useHomeDebugLogs";
 import { useHomeSearchState } from "./hooks/useHomeSearchState";
 import { useHomeRealtimeFeedSync } from "./hooks/useHomeRealtimeFeedSync";
-import { roundRobinForYouBusinesses } from "./utils/forYouRoundRobin";
 
 // Note: dynamic and revalidate cannot be exported from client components
 // Client components are automatically dynamic
@@ -113,13 +112,8 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   // The API automatically prioritizes businesses the user has reviewed within the last 24 hours
   // Use featured businesses from API instead of client-side computation
   const featuredByCategory = featuredBusinesses;
-  const forYouRoundRobinBusinesses = useMemo(
-    () => roundRobinForYouBusinesses(forYouBusinesses),
-    [forYouBusinesses]
-  );
-
   useHomeBusinessCountsDebug({
-    forYouBusinesses: forYouRoundRobinBusinesses,
+    forYouBusinesses,
     trendingBusinesses,
     forYouLoading,
     trendingLoading,
@@ -194,7 +188,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                 hasUser={Boolean(user)}
                 forYouLoading={forYouLoading}
                 forYouError={forYouError}
-                forYouBusinesses={forYouRoundRobinBusinesses}
+                forYouBusinesses={forYouBusinesses}
                 trendingLoading={trendingLoading}
                 trendingError={trendingError}
                 hasTrendingBusinesses={hasTrendingBusinesses}

@@ -98,7 +98,7 @@ function diversifyByBucket<T>(
 
 /**
  * Unified For You feed.
- * Calls recommend_for_you_unified — single RPC that handles preference scoring,
+ * Calls recommend_for_you_unified_category_rr — single RPC that handles preference scoring,
  * quality (Bayesian), freshness, new-business discovery, and dealbreaker exclusions.
  * `punctuality` / `friendliness` dealbreakers (percentile-based) are still applied
  * in Node after the RPC so that no-stats businesses are never incorrectly excluded.
@@ -138,7 +138,7 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
 
   try {
     const fetchLimit = Math.min(Math.max(cursorOffset + limit + 1, limit + 1), 1000);
-    const result = await supabase.rpc('recommend_for_you_unified', {
+    const result = await supabase.rpc('recommend_for_you_unified_category_rr', {
       p_interest_ids: interestIds || [],
       p_sub_interest_ids: subInterestIds || [],
       p_dealbreaker_ids: dealbreakerIds || [],
@@ -281,11 +281,8 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
   const cleanedBusinesses = filteredBusinesses.filter(
     (business) => business?.is_system !== true && business?.name !== 'Sayso System'
   );
-  const diversifiedBusinesses = diversifyByBucket(cleanedBusinesses, getRawBusinessBucket, {
-    requestId,
-    source: 'for_you_unified_raw',
-  });
-  const transformedBusinesses = diversifiedBusinesses.map(transformBusinessForCard);
+  // Keep unified RPC order intact - category round-robin happens in SQL.
+  const transformedBusinesses = cleanedBusinesses.map(transformBusinessForCard);
   const coordinateFilteredBusinesses = requireCoordinates
     ? transformedBusinesses.filter(
         (business) =>
@@ -309,14 +306,7 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
     return fallback;
   }
 
-  const businessesForResponse = diversifyByBucket(
-    coordinateFilteredBusinesses,
-    getCardBusinessBucket,
-    {
-      requestId,
-      source: requireCoordinates ? 'for_you_unified_coords' : 'for_you_unified',
-    }
-  );
+  const businessesForResponse = coordinateFilteredBusinesses;
   const pagedBusinesses = businessesForResponse.slice(cursorOffset, cursorOffset + limit);
   const nextCursor =
     businessesForResponse.length > cursorOffset + limit
