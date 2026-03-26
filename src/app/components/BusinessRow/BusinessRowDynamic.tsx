@@ -3,23 +3,19 @@
 import dynamic from "next/dynamic";
 import { Business } from "../BusinessCard/BusinessCard";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
+import { HOME_SECTION_CONTAINER_INSET_CLASS } from "../HomeSectionRow/homeSectionLayout";
 
-const MOBILE_PEEK_CARD_WIDTH = "w-[calc(100%-40px)]";
-const MOBILE_EDGE_CENTER_OFFSET = "pl-5 sm:pl-0";
-const MOBILE_TRAILING_SPACER_CLASS = "w-3";
+const MOBILE_PEEK_CARD_WIDTH = "w-[min(19.5rem,calc(100vw-3rem))]";
 
 // Minimal loading component for BusinessRow
 const BusinessRowSkeleton = () => (
   <section className="pb-4 sm:pb-6 sm:pt-2 bg-off-white relative">
-    <div className="container mx-auto max-w-[2000px] px-2 relative z-10">
+    <div className={`container mx-auto max-w-[2000px] ${HOME_SECTION_CONTAINER_INSET_CLASS} relative z-10`}>
       <div className="mb-6 sm:mb-12 flex items-center justify-between gap-3">
         <div className="h-6 bg-card-bg/10 rounded w-32" />
         <div className="h-4 bg-card-bg/10 rounded w-20" />
       </div>
-      <ScrollableSection
-        enableMobilePeek
-        mobileTrailingSpacerClassName={MOBILE_TRAILING_SPACER_CLASS}
-      >
+      <ScrollableSection enableMobilePeek>
         <style dangerouslySetInnerHTML={{ __html: `
           @media (max-width: 639px) {
             .business-card-skeleton-full-width > div {
@@ -28,7 +24,7 @@ const BusinessRowSkeleton = () => (
             }
           }
         `}} />
-        <div className={`flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 ${MOBILE_EDGE_CENTER_OFFSET}`}>
+        <div className="flex gap-2.5 sm:gap-3 items-stretch pt-2">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className={`snap-start snap-always flex-shrink-0 ${MOBILE_PEEK_CARD_WIDTH} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex business-card-skeleton-full-width`}>
               <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-visible w-full sm:w-[260px] md:w-[340px] h-[650px] sm:h-auto md:h-[416px] flex flex-col border-none backdrop-blur-xl  shadow-md animate-pulse">
