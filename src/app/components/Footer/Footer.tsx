@@ -107,7 +107,6 @@ export default function Footer() {
     {
       title: "Company",
       links: [
-        { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },
       ],
     },
@@ -172,7 +171,7 @@ export default function Footer() {
                 />
               </Link>
               <p className="font-urbanist text-xs sm:text-sm text-off-white/80 font-normal text-left max-w-[46ch]">
-                Discover trusted local businesses, events, and community favourites.
+                Less Guessing, More Confessing.
               </p>
             </div>
 

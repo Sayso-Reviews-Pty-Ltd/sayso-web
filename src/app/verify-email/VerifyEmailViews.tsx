@@ -290,19 +290,6 @@ export function VerifyEmailMainView({
               Please check your email and click the verification link to activate your account. The link will
               automatically redirect you back to the app once verified.
             </p>
-
-            <div className="bg-gradient-to-r from-sage/5 to-coral/5 rounded-lg p-6 mb-6 text-left border border-sage/10">
-              <h3 className="text-base font-600 text-charcoal mb-4 flex items-center gap-2" style={FONT_STYLE}>
-                <CheckCircle className="w-5 h-5 text-sage" />
-                Why verify your email?
-              </h3>
-              <ul className="text-sm text-charcoal/80 space-y-2 list-disc pl-5" style={FONT_STYLE}>
-                <li>Unlock full app features (posting, saving, leaderboards)</li>
-                <li>Secure account recovery and password resets</li>
-                <li>Receive important updates and notifications</li>
-                <li>Build trust within the community</li>
-              </ul>
-            </div>
           </div>
 
           <div className="space-y-3 mb-6">
