@@ -89,7 +89,7 @@ function SimilarBusinessCard({
   return (
     <Link
       href={`/business/${businessIdentifier}`}
-      className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full h-full flex flex-col border-none backdrop-blur-xl shadow-md transition-all duration-300 hover:border-white/80 hover:-translate-y-1 hover:shadow-lg"
+      className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full h-full flex flex-col border-none backdrop-blur-xl shadow-md"
       style={{ minHeight: "416px" } as React.CSSProperties}
     >
       {/* Image Section */}
@@ -124,7 +124,7 @@ function SimilarBusinessCard({
                 src={usingFallback ? placeholderSrc : displayImage}
                 alt={name}
                 fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02] group-active:scale-[0.98] motion-reduce:transition-none"
+                className="object-cover"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 340px, 340px"
                 priority={false}
                 quality={90}
@@ -133,7 +133,7 @@ function SimilarBusinessCard({
               />
             </div>
             <div
-              className="absolute inset-0 pointer-events-none z-[1] transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none"
+              className="absolute inset-0 pointer-events-none z-[1]"
               style={{ background: "linear-gradient(to top, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.02) 30%, transparent 60%)" }}
               aria-hidden="true"
             />

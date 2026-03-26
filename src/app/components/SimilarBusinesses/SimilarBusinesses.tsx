@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import SimilarBusinessCard from "./SimilarBusinessCard";
-import StaggeredContainer from "../Animations/StaggeredContainer";
-import AnimatedElement from "../Animations/AnimatedElement";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 
 interface SimilarBusinessesProps {
@@ -253,39 +251,35 @@ export default function SimilarBusinesses({
         </div>
       </div>
 
-      <StaggeredContainer>
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
-          <ul className="list-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {similarBusinesses.map((business, index) => (
-              <AnimatedElement key={business.id} index={index} direction="bottom">
-                <li>
-                <SimilarBusinessCard
-                  id={business.id}
-                  slug={business.slug}
-                  name={business.name}
-                  image={business.image}
-                  image_url={business.image_url}
-                  uploaded_images={business.uploaded_images}
-                  category={business.category}
-                  location={business.location}
-                  address={business.address}
-                  description={business.description}
-                  rating={business.rating}
-                  totalRating={business.totalRating}
-                  reviews={business.reviews}
-                  verified={business.verified}
-                  priceRange={business.priceRange}
-                  compact={true}
-                  distanceKm={business.distance_km}
-                  subInterestId={business.subInterestId}
-                  subInterestLabel={business.subInterestLabel}
-                />
-                </li>
-              </AnimatedElement>
-            ))}
-          </ul>
-        </div>
-      </StaggeredContainer>
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
+        <ul className="list-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {similarBusinesses.map((business) => (
+            <li key={business.id}>
+              <SimilarBusinessCard
+                id={business.id}
+                slug={business.slug}
+                name={business.name}
+                image={business.image}
+                image_url={business.image_url}
+                uploaded_images={business.uploaded_images}
+                category={business.category}
+                location={business.location}
+                address={business.address}
+                description={business.description}
+                rating={business.rating}
+                totalRating={business.totalRating}
+                reviews={business.reviews}
+                verified={business.verified}
+                priceRange={business.priceRange}
+                compact={true}
+                distanceKm={business.distance_km}
+                subInterestId={business.subInterestId}
+                subInterestLabel={business.subInterestLabel}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
