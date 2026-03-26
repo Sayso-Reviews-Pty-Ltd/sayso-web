@@ -153,6 +153,8 @@ export async function GET(req: NextRequest) {
     sastMidnight.setUTCHours(sastMidnight.getUTCHours() - 2);
     const bufferStart = sastMidnight.toISOString();
 
+    const currentYearStart = new Date(nowUtc.getFullYear(), 0, 1).toISOString();
+
     const baseSelect =
       "id,title,type,business_id,start_date,end_date,location,description,icon,image,price,rating,availability_status";
 
@@ -161,6 +163,8 @@ export async function GET(req: NextRequest) {
       .select(baseSelect + BOOKING_SELECT_FRAGMENT + CATEGORY_SELECT_FRAGMENT)
       // Include items still active via end_date (multi-day) even if start_date is earlier.
       .or(`end_date.gte.${bufferStart},and(end_date.is.null,start_date.gte.${bufferStart})`)
+      // Constrain to current year — exclude 2025 events whose end_date extends into the future.
+      .gte("start_date", currentYearStart)
       .order("start_date", { ascending: true })
       .limit(MAX_RAW_ROWS);
 

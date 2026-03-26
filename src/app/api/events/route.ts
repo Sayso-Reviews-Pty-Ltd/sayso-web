@@ -89,6 +89,10 @@ export async function GET(req: NextRequest) {
       query = query.or(`end_date.gte.${todayStart},and(end_date.is.null,start_date.gte.${todayStart})`);
     }
 
+    // Constrain to current year
+    const currentYearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
+    query = query.gte("start_date", currentYearStart);
+
     // Search across title, description, venue_name, location
     if (search && search.length > 0) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,venue_name.ilike.%${search}%,location.ilike.%${search}%`);

@@ -100,8 +100,12 @@ export async function GET(req: NextRequest) {
         .order('start_date', { ascending: true });
 
       // Filter out expired specials (end_date < now or start_date < now if no end_date)
-      const now = new Date().toISOString();
-      query = query.or(`end_date.gte.${now},and(end_date.is.null,start_date.gte.${now})`);
+      const now = new Date();
+      query = query.or(`end_date.gte.${now.toISOString()},and(end_date.is.null,start_date.gte.${now.toISOString()})`);
+
+      // Constrain to current year
+      const currentYearStart = new Date(now.getFullYear(), 0, 1).toISOString();
+      query = query.gte("start_date", currentYearStart);
 
       // Filter by business ID if provided
       if (businessId) {
