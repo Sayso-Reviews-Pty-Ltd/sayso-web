@@ -448,7 +448,7 @@ export default function NotificationsPage() {
 
           {/* Breadcrumb */}
           <m.div
-            className="mx-auto w-full max-w-[2000px] px-2 relative mb-4"
+            className="mx-auto w-full max-w-[2000px] px-2 relative"
             {...getChoreoItemMotion({ order: 0, intent: "inline", enabled: choreoEnabled })}
           >
             <nav className="pb-1" aria-label="Breadcrumb">
