@@ -31,6 +31,32 @@ import { useHomeHeroReadiness } from "./hooks/useHomeHeroReadiness";
 import { useHomeBusinessCountsDebug, useHomePreferencesDebug } from "./hooks/useHomeDebugLogs";
 import { useHomeSearchState } from "./hooks/useHomeSearchState";
 import { useHomeRealtimeFeedSync } from "./hooks/useHomeRealtimeFeedSync";
+import { roundRobinForYouBusinesses } from "./utils/forYouRoundRobin";
+
+function getBusinessCategoryKey(business: import("../components/BusinessCard/BusinessCard").Business): string {
+  return (
+    business.primary_category_slug ||
+    business.interest_id ||
+    business.interestId ||
+    business.category ||
+    "miscellaneous"
+  )
+    .toString()
+    .trim()
+    .toLowerCase();
+}
+
+function shouldApplyForYouRoundRobinFallback(
+  businesses: import("../components/BusinessCard/BusinessCard").Business[]
+): boolean {
+  if (!Array.isArray(businesses) || businesses.length <= 2) return false;
+  const categories = businesses.map(getBusinessCategoryKey);
+  if (new Set(categories).size <= 1) return false;
+  for (let i = 1; i < categories.length; i += 1) {
+    if (categories[i] === categories[i - 1]) return true;
+  }
+  return false;
+}
 
 // Note: dynamic and revalidate cannot be exported from client components
 // Client components are automatically dynamic
@@ -112,8 +138,15 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   // The API automatically prioritizes businesses the user has reviewed within the last 24 hours
   // Use featured businesses from API instead of client-side computation
   const featuredByCategory = featuredBusinesses;
+  const forYouBusinessesWithFallback = useMemo(
+    () =>
+      shouldApplyForYouRoundRobinFallback(forYouBusinesses)
+        ? roundRobinForYouBusinesses(forYouBusinesses)
+        : forYouBusinesses,
+    [forYouBusinesses]
+  );
   useHomeBusinessCountsDebug({
-    forYouBusinesses,
+    forYouBusinesses: forYouBusinessesWithFallback,
     trendingBusinesses,
     forYouLoading,
     trendingLoading,
@@ -188,7 +221,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                 hasUser={Boolean(user)}
                 forYouLoading={forYouLoading}
                 forYouError={forYouError}
-                forYouBusinesses={forYouBusinesses}
+                forYouBusinesses={forYouBusinessesWithFallback}
                 trendingLoading={trendingLoading}
                 trendingError={trendingError}
                 hasTrendingBusinesses={hasTrendingBusinesses}
