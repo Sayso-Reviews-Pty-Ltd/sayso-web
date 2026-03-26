@@ -17,6 +17,7 @@ import { getEventMediaImage, isFallbackEventArtwork } from "./EventCard.utils";
 import { BLUR_DATA_URL } from "./EventCard.constants";
 import { useEventCountdown } from "./hooks/useEventCountdown";
 import { useEventPrefetch } from "./hooks/useEventPrefetch";
+import { RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
 import { useEventImageLoading } from "./hooks/useEventImageLoading";
 import { EventCardMedia } from "./parts/EventCardMedia";
 import { EventCardCountdown } from "./parts/EventCardCountdown";
@@ -106,8 +107,8 @@ function EventCard({
   }, [displayRating]);
 
   return (
-    <li
-      className={fullWidth ? "flex w-full h-full" : "flex w-full sm:w-[260px] md:w-[340px] h-full"}
+    <div
+      className={fullWidth ? "flex w-full h-full" : `flex ${RAIL_CARD_WIDTH} h-full`}
       style={{
         fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         fontWeight: 600,
@@ -477,7 +478,7 @@ function EventCard({
           </div>
         </article>
       </Link>
-    </li>
+    </div>
   );
 }
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { m } from "framer-motion";
 import { ArrowRight } from "@/app/lib/icons";
 import ScrollableSection from "../../ScrollableSection/ScrollableSection";
 import LocationPromptBanner from "../../Location/LocationPromptBanner";
 import BusinessOfTheMonthCard from "../../BusinessCard/BusinessOfTheMonthCard";
 import type { BusinessOfTheMonth } from "../../../types/community";
-import { containerVariants, itemVariants } from "../communityHighlights.constants";
+import { HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS, HOME_SECTION_RAIL_CLASS } from "../../HomeSectionRow/homeSectionLayout";
+import CardRail from "../../CardRail/CardRail";
 
 interface FeaturedBusinessesSectionProps {
   hasBusinesses: boolean;
@@ -14,7 +14,6 @@ interface FeaturedBusinessesSectionProps {
   hasCoordinateBusinesses: boolean;
   hideCarouselArrowsOnDesktop: boolean;
   disableAnimations: boolean;
-  isDesktop: boolean;
   onSeeMoreBusinesses: () => void;
 }
 
@@ -24,9 +23,10 @@ export default function FeaturedBusinessesSection({
   hasCoordinateBusinesses,
   hideCarouselArrowsOnDesktop,
   disableAnimations,
-  isDesktop,
   onSeeMoreBusinesses,
 }: FeaturedBusinessesSectionProps) {
+  const businessRailCardClass = `snap-start snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
+
   if (hasBusinesses) {
     return (
       <section
@@ -37,93 +37,37 @@ export default function FeaturedBusinessesSection({
         }}
       >
         <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
-        <div className="mx-auto w-full max-w-[2000px] relative z-10">
-          <div className="pb-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30 mb-4">
-              <span className="text-sm font-semibold text-sage" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
-                <span className="sm:hidden">Featured Businesses</span>
-                <span className="hidden sm:inline">Featured Businesses of the Month by Category</span>
-              </span>
-            </div>
-            <button
-              onClick={onSeeMoreBusinesses}
-              className="group inline-flex items-center gap-1 text-body-sm sm:text-caption font-normal text-charcoal transition-colors duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-sage focus:outline-none px-4 py-2 -mx-2 relative no-underline motion-reduce:transition-none"
-              aria-label="See More: Featured Businesses"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
-            >
-              <span className="relative z-10 transition-[color,transform] duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] text-charcoal group-hover:text-sage group-hover:translate-x-[-1px] no-underline motion-reduce:transition-none" style={{ fontWeight: 400 }}>
-                See More
-              </span>
-              <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-x-[3px] text-charcoal group-hover:text-sage motion-reduce:transition-none" />
-            </button>
+        <div className="pb-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30 mb-4">
+            <span className="text-sm font-semibold text-sage" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+              <span className="sm:hidden">Featured Businesses</span>
+              <span className="hidden sm:inline">Featured Businesses of the Month by Category</span>
+            </span>
           </div>
-
-          <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
-            {/* Gap harmonizes with card radius/shadows; list semantics preserved via <li> inside cards */}
-            <style dangerouslySetInnerHTML={{ __html: `
-              @media (max-width: 639px) {
-                .business-month-card-full-width > li {
-                  width: 100% !important;
-                  max-width: 100% !important;
-                }
-              }
-            `}} />
-            {isDesktop ? (
-              disableAnimations ? (
-                <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
-                  {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
-                    <div
-                      key={business.id}
-                      className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
-                    >
-                      <BusinessOfTheMonthCard
-                        business={business}
-                        index={index}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <m.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none"
-                >
-                  {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index) => (
-                    <m.div
-                      key={business.id}
-                      variants={itemVariants}
-                      className="snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width"
-                    >
-                      <BusinessOfTheMonthCard
-                        business={business}
-                        index={index}
-                      />
-                    </m.div>
-                  ))}
-                </m.div>
-              )
-            ) : (
-              <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 list-none">
-                {(Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []).map((business, index, arr) => {
-                  const isFirst = index === 0 && arr.length > 1;
-                  const isLast = index === arr.length - 1 && arr.length > 1;
-                  return (
-                    <div
-                      key={business.id}
-                      data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                      className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
-                    >
-                      <BusinessOfTheMonthCard business={business} index={index} />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </ScrollableSection>
+          <button
+            onClick={onSeeMoreBusinesses}
+            className="group inline-flex items-center gap-1 text-body-sm sm:text-caption font-normal text-charcoal transition-colors duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-sage focus:outline-none px-4 py-2 -mx-2 relative no-underline motion-reduce:transition-none"
+            aria-label="See More: Featured Businesses"
+            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
+          >
+            <span className="relative z-10 transition-[color,transform] duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] text-charcoal group-hover:text-sage group-hover:translate-x-[-1px] no-underline motion-reduce:transition-none" style={{ fontWeight: 400 }}>
+              See More
+            </span>
+            <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-x-[3px] text-charcoal group-hover:text-sage motion-reduce:transition-none" />
+          </button>
         </div>
+
+        <ScrollableSection enableMobilePeek hideArrowsOnDesktop={hideCarouselArrowsOnDesktop} className={HOME_SECTION_RAIL_CLASS}>
+          <CardRail
+            items={Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []}
+            getKey={(b) => b.id}
+            renderCard={(b, i) => <BusinessOfTheMonthCard business={b} index={i} />}
+            cardClassName={businessRailCardClass}
+            disableAnimations={disableAnimations}
+            containerClassName="pt-2 list-none"
+            mobileFullBleedClassName="business-month-card-full-width"
+          />
+        </ScrollableSection>
       </section>
     );
   }
@@ -136,24 +80,22 @@ export default function FeaturedBusinessesSection({
         fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
       }}
     >
-      <div className="mx-auto w-full max-w-[2000px] relative z-10">
-        <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30 mb-4">
-            <span className="text-sm font-semibold text-sage" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
-              <span className="sm:hidden">Featured</span>
-              <span className="hidden sm:inline">Featured Businesses</span>
-            </span>
-          </div>
+      <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30 mb-4">
+          <span className="text-sm font-semibold text-sage" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+            <span className="sm:hidden">Featured</span>
+            <span className="hidden sm:inline">Featured Businesses</span>
+          </span>
         </div>
+      </div>
 
-        <div className="w-full bg-off-white border border-sage/20 rounded-3xl px-6 py-16 text-center space-y-3">
-          <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-            Curated by trust and completeness.
-          </h2>
-          <p className="text-body-sm text-charcoal/60 max-w-[70ch] mx-auto" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
-            As the community grows, this will highlight rising businesses. For now, we’ll feature verified, well-profiled places worth exploring.
-          </p>
-        </div>
+      <div className="w-full bg-off-white border border-sage/20 rounded-3xl px-6 py-16 text-center space-y-3">
+        <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+          Curated by trust and completeness.
+        </h2>
+        <p className="text-body-sm text-charcoal/60 max-w-[70ch] mx-auto" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
+          As the community grows, this will highlight rising businesses. For now, we'll feature verified, well-profiled places worth exploring.
+        </p>
       </div>
     </section>
   );

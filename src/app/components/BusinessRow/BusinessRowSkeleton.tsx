@@ -1,4 +1,5 @@
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
+import { HOME_SECTION_CONTAINER_INSET_CLASS } from "../HomeSectionRow/homeSectionLayout";
 
 interface BusinessRowSkeletonProps {
   title: string;
@@ -6,9 +7,7 @@ interface BusinessRowSkeletonProps {
 }
 
 const DEFAULT_CARD_COUNT = 5;
-const MOBILE_PEEK_CARD_WIDTH = "w-[calc(100%-40px)]";
-const MOBILE_EDGE_CENTER_OFFSET = "pl-5 sm:pl-0";
-const MOBILE_TRAILING_SPACER_CLASS = "w-3";
+const MOBILE_PEEK_CARD_WIDTH = "w-[min(19.5rem,calc(100vw-3rem))]";
 
 export default function BusinessRowSkeleton({ title, cards = DEFAULT_CARD_COUNT }: BusinessRowSkeletonProps) {
   return (
@@ -20,16 +19,13 @@ export default function BusinessRowSkeleton({ title, cards = DEFAULT_CARD_COUNT 
         fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
       }}
     >
-      <div className="mx-auto w-full max-w-[2000px] relative z-10 px-2">
+      <div className={`mx-auto w-full max-w-[2000px] relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`}>
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <div className="h-7 w-32 rounded-lg bg-charcoal/5 animate-pulse" />
           <div className="h-8 w-24 rounded-full bg-charcoal/5 animate-pulse" />
         </div>
 
-        <ScrollableSection
-          enableMobilePeek
-          mobileTrailingSpacerClassName={MOBILE_TRAILING_SPACER_CLASS}
-        >
+        <ScrollableSection enableMobilePeek>
           <style dangerouslySetInnerHTML={{ __html: `
             @media (max-width: 639px) {
               .business-card-skeleton-full-width > div {
@@ -38,7 +34,7 @@ export default function BusinessRowSkeleton({ title, cards = DEFAULT_CARD_COUNT 
               }
             }
           `}} />
-          <div className={`flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2 ${MOBILE_EDGE_CENTER_OFFSET}`}>
+          <div className="flex gap-2.5 sm:gap-3 items-stretch pt-2">
             {Array.from({ length: cards }).map((_, index) => (
               <div key={index} className={`snap-start snap-always flex-shrink-0 ${MOBILE_PEEK_CARD_WIDTH} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex business-card-skeleton-full-width`}>
                 <div className="px-1 pt-1 pb-0 rounded-[12px] relative flex-shrink-0 flex flex-col justify-between bg-card-bg z-10 shadow-md w-full sm:w-[260px] md:w-[340px] h-[650px] sm:h-auto">

@@ -1,293 +1,181 @@
 "use client";
 
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import React, { useRef } from "react";
 import { usePathname } from "next/navigation";
-import ScrollArrowButton from "./ScrollArrowButton";
-import {
-  computeScrollGeometry,
-  getScrollPositionState,
-  positionAtSecondCard,
-  scrollContainer,
-  syncMobileSnapTargets,
-  updateCardScaleOpacity,
-} from "./scrollableSection.utils";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
 
-// Default visible card count - matches BusinessRowSkeleton default
+// Default visible card count — kept for external references
 export const DEFAULT_VISIBLE_CARD_COUNT = 4;
 
 interface ScrollableSectionProps {
-  children: React.ReactNode;
+  /** Preferred API — each item becomes its own SwiperSlide. */
+  items?: React.ReactNode[];
+  /** Compat path — children are flattened via React.Children.toArray into slides. */
+  children?: React.ReactNode;
   className?: string;
   showArrows?: boolean;
-  arrowColor?: string;
   enableMobilePeek?: boolean;
   hideArrowsOnDesktop?: boolean;
-  mobileTrailingSpacerClassName?: string;
+  /** When true, suppresses the opacity fade applied to off-centre peeking slides. */
+  disablePeekFade?: boolean;
 }
 
 export default function ScrollableSection({
+  items,
   children,
   className = "",
   showArrows = true,
-  arrowColor = "text-charcoal/60",
   enableMobilePeek = false,
   hideArrowsOnDesktop = false,
-  mobileTrailingSpacerClassName = "w-4",
+  disablePeekFade = false,
 }: ScrollableSectionProps) {
   const pathname = usePathname();
   const isHomeRoute = pathname === "/" || pathname.startsWith("/home");
   const shouldEnableMobilePeek = enableMobilePeek || isHomeRoute;
-  const arrowVisibilityClass = [
-    shouldEnableMobilePeek ? "hidden sm:flex" : "flex",
-    hideArrowsOnDesktop ? "lg:hidden" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const spaceBetween = 10;
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const leadingSpacerRef = useRef<HTMLDivElement>(null);
-  const trailingSpacerRef = useRef<HTMLDivElement>(null);
-  const [showRightArrow, setShowRightArrow] = useState(false);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const animationFrameRef = useRef<number | null>(null);
-  const hasInitialPositionRef = useRef(false);
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
 
-  const applyScrollGeometry = () => {
-    computeScrollGeometry({
-      container: scrollRef.current,
-      leading: leadingSpacerRef.current,
-      trailing: trailingSpacerRef.current,
-      shouldEnableMobilePeek,
-    });
-  };
+  // Resolve slides from items prop (preferred) or flatten children (compat)
+  const slides: React.ReactNode[] = items
+    ? items
+    : React.Children.toArray(children);
 
-  // Interpolates scale (0.92 → 1.0) and opacity (0.70 → 1.0) for each card
-  // based on its distance from the container center. Driven by rAF so there
-  // is zero CSS transition lag and it feels physically tied to the scroll.
-  const applyCardScaleOpacity = () => {
-    updateCardScaleOpacity({
-      container: scrollRef.current,
-      shouldEnableMobilePeek,
-    });
-  };
-
-  const scheduleCardScaleUpdate = () => {
-    if (animationFrameRef.current !== null) {
-      cancelAnimationFrame(animationFrameRef.current);
+  const handleProgress = (swiper: SwiperType) => {
+    if (typeof window === "undefined" || window.innerWidth >= 640) {
+      // Clear any mobile styles on desktop
+      swiper.slides.forEach((slide) => {
+        (slide as HTMLElement).style.transform = "";
+        (slide as HTMLElement).style.opacity = "";
+      });
+      return;
     }
-    animationFrameRef.current = requestAnimationFrame(() => {
-      animationFrameRef.current = null;
-      applyCardScaleOpacity();
+    if (!shouldEnableMobilePeek) return;
+
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const containerWidth = swiper.width;
+    const containerCenter = swiper.translate * -1 + containerWidth / 2;
+    const maxDistance = containerWidth * 0.55;
+
+    swiper.slides.forEach((slide, i) => {
+      const el = slide as HTMLElement;
+      el.style.transform = "";
+
+      if (disablePeekFade) {
+        el.style.opacity = "";
+        return;
+      }
+
+      const slideLeft = (swiper as any).slidesGrid?.[i] ?? 0;
+      const slideWidth = el.offsetWidth;
+      const slideCenter = slideLeft + slideWidth / 2;
+      const distance = Math.abs(slideCenter - containerCenter);
+      const progress = Math.max(0, 1 - distance / maxDistance);
+
+      el.style.opacity = reducedMotion
+        ? (progress > 0.5 ? "1" : "0.75")
+        : (0.7 + progress * 0.3).toFixed(3);
     });
   };
 
-  const checkScrollPosition = () => {
-    const scrollState = getScrollPositionState(scrollRef.current);
-    if (!scrollState) return;
-    setCanScrollRight(scrollState.canScrollRight);
-    setCanScrollLeft(scrollState.canScrollLeft);
-    setShowRightArrow(scrollState.showRightArrow);
-    setShowLeftArrow(scrollState.showLeftArrow);
-  };
-
-  // Run before first paint so the user never sees a scroll jump.
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    const container = scrollRef.current;
-    if (!container || window.innerWidth >= 640) return;
-
-    if (shouldEnableMobilePeek) {
-      syncMobileSnapTargets(container);
-      computeScrollGeometry({
-        container,
-        leading: leadingSpacerRef.current,
-        trailing: trailingSpacerRef.current,
-        shouldEnableMobilePeek,
-      });
-      positionAtSecondCard({
-        container,
-        shouldEnableMobilePeek,
-        hasInitialPositionRef,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (!scrollElement) return;
-
-    syncMobileSnapTargets(scrollElement);
-    applyScrollGeometry();
-    checkScrollPosition();
-    applyCardScaleOpacity();
-
-    const handleScroll = () => {
-      checkScrollPosition();
-      scheduleCardScaleUpdate();
-    };
-
-    const handleResize = () => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-      applyCardScaleOpacity();
-    };
-
-    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
-
-    const resizeObserver = new ResizeObserver(() => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-    });
-    resizeObserver.observe(scrollElement);
-
-    // Catch cards added asynchronously (dynamic imports, async data).
-    // Observe childList only — NOT attributes, to avoid an infinite loop caused
-    // by syncMobileSnapTargets itself setting data-mobile-snap-target.
-    const mutationObserver = new MutationObserver(() => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-      scheduleCardScaleUpdate();
-      // If cards weren't ready during the initial useLayoutEffect (async data),
-      // position at second card now that they've arrived.
-      positionAtSecondCard({
-        container: scrollElement,
-        shouldEnableMobilePeek,
-        hasInitialPositionRef,
-      });
-    });
-    mutationObserver.observe(scrollElement, { childList: true, subtree: true });
-
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-      resizeObserver.disconnect();
-      mutationObserver.disconnect();
-      if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, [shouldEnableMobilePeek]);
-
-  // Re-measure after children settle so spacers, arrows, and card styles are accurate.
-  useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (!scrollElement || typeof window === "undefined") return;
-
-    const rafId = window.requestAnimationFrame(() => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-      applyCardScaleOpacity();
-    });
-    const timeoutId = window.setTimeout(() => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-      applyCardScaleOpacity();
-    }, 120);
-    const lateTimeoutId = window.setTimeout(() => {
-      syncMobileSnapTargets(scrollElement);
-      applyScrollGeometry();
-      checkScrollPosition();
-      applyCardScaleOpacity();
-    }, 360);
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      window.clearTimeout(timeoutId);
-      window.clearTimeout(lateTimeoutId);
-    };
-  }, [children, className, shouldEnableMobilePeek]);
-
-  const scrollRight = () => {
-    scrollContainer(scrollRef.current, "right");
-  };
-
-  const scrollLeft = () => {
-    scrollContainer(scrollRef.current, "left");
-  };
+  const arrowBase = `
+    absolute top-1/2 -translate-y-1/2 z-40
+    w-14 h-14 sm:w-12 sm:h-12
+    bg-navbar-bg rounded-full
+    flex items-center justify-center
+    transition-all duration-300 ease-out active:scale-95
+    text-white touch-manipulation
+    shadow-[4px_4px_8px_rgba(0,0,0,0.1),-4px_-4px_8px_rgba(139,176,138,0.3)]
+    sm:shadow-lg
+    hover:bg-card-bg hover:shadow-[6px_6px_12px_rgba(0,0,0,0.12),-6px_-6px_12px_rgba(139,176,138,0.4)]
+    border border-sage/20
+  `;
+  const desktopHide = hideArrowsOnDesktop ? "lg:hidden" : "";
+  // On mobile peek routes arrows are hidden on mobile (swipe handles it)
+  const mobileHide = shouldEnableMobilePeek ? "hidden sm:flex" : "flex";
 
   return (
-    <div className="relative">
-      <div
-        ref={scrollRef}
-        className={`scrollable-section-inner horizontal-scroll scrollbar-hide flex gap-2 sm:gap-3 overflow-x-auto pb-2 snap-x snap-mandatory ${className}`}
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-          overscrollBehaviorX: "contain",
-          overscrollBehaviorY: "auto",
-          touchAction: "pan-x pan-y",
-        } as React.CSSProperties}
-      >
-        {/* Leading spacer: allows the first card to scroll to the container center.
-            Width is computed imperatively in computeScrollGeometry(). */}
-        {shouldEnableMobilePeek && (
-          <div ref={leadingSpacerRef} className="flex-shrink-0 sm:hidden" aria-hidden="true" />
-        )}
-
-        {children}
-
-        {/* Trailing spacer: allows the last card to scroll to the container center.
-            Width is computed imperatively in computeScrollGeometry(). */}
-        {shouldEnableMobilePeek && (
-          <div
-            ref={trailingSpacerRef}
-            className={`flex-shrink-0 ${mobileTrailingSpacerClassName} sm:hidden`}
-            aria-hidden="true"
-          />
-        )}
-      </div>
-
-      <style jsx>{`
-        @media (max-width: 639px) {
-          /* Middle cards snap to center so scale/opacity progress=1.0 at rest.
-             Edge cards override to start/end so they anchor flush to their edge.
-             snap-stop normal lets flings carry past multiple cards freely. */
-          .scrollable-section-inner :global(.snap-start) {
-            scroll-snap-align: center !important;
-            scroll-snap-stop: normal !important;
-          }
-          .scrollable-section-inner :global([data-edge-snap="first"]) {
-            scroll-snap-align: start !important;
-          }
-          .scrollable-section-inner :global([data-edge-snap="last"]) {
-            scroll-snap-align: end !important;
-          }
-
-          /* Promote cards to their own compositor layer so the rAF-driven
-             transform/opacity updates are GPU-composited without triggering
-             layout or paint. */
-          .scrollable-section-inner :global([data-mobile-snap-target="true"]) {
-            will-change: transform, opacity;
-          }
+    <div className={`relative ${className}`}>
+      <Swiper
+        modules={[Navigation]}
+        slidesPerView="auto"
+        spaceBetween={spaceBetween}
+        freeMode={false}
+        grabCursor
+        navigation={
+          showArrows
+            ? { prevEl: prevRef.current, nextEl: nextRef.current }
+            : false
         }
-      `}</style>
+        onBeforeInit={(swiper) => {
+          if (!showArrows) return;
+          // Wire up custom arrow refs before Swiper initialises
+          if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+          }
+        }}
+        onProgress={handleProgress}
+        onSlideChange={handleProgress}
+        style={{ overflow: "visible" }}
+        className="swiper-scroll-rail"
+      >
+        {slides.map((slide, i) => (
+          <SwiperSlide
+            key={i}
+            style={{ width: "auto", height: "auto" }}
+          >
+            {slide}
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
       {showArrows && (
         <>
-          {canScrollLeft && showLeftArrow && (
-            <ScrollArrowButton
-              direction="left"
-              onClick={scrollLeft}
-              arrowVisibilityClass={arrowVisibilityClass}
-            />
-          )}
-          {canScrollRight && showRightArrow && (
-            <ScrollArrowButton
-              direction="right"
-              onClick={scrollRight}
-              arrowVisibilityClass={arrowVisibilityClass}
-            />
-          )}
+          <button
+            ref={prevRef}
+            className={`${arrowBase} left-2 ${mobileHide} ${desktopHide} swiper-custom-prev`}
+            aria-label="Scroll left"
+          >
+            <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button
+            ref={nextRef}
+            className={`${arrowBase} right-2 ${mobileHide} ${desktopHide} swiper-custom-next`}
+            aria-label="Scroll right"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </>
       )}
+
+      <style jsx>{`
+        :global(.swiper-scroll-rail) {
+          overflow: visible !important;
+          padding-bottom: 8px;
+        }
+        :global(.swiper-scroll-rail .swiper-wrapper) {
+          align-items: stretch;
+        }
+        :global(.swiper-scroll-rail .swiper-slide) {
+          height: auto !important;
+        }
+        :global(.swiper-button-disabled) {
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      `}</style>
     </div>
   );
 }

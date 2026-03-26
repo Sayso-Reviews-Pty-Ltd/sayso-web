@@ -18,6 +18,7 @@ import {
   ChevronRight,
   MapPin,
 } from "@/app/lib/icons";
+import { RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
 
 
 interface ReviewerCardProps {
@@ -87,10 +88,10 @@ export default function ReviewerCard({
     return (
       <div
         id={idForSnap}
-        className="snap-start snap-always w-full sm:w-[240px] flex-shrink-0 h-full"
+        className={`snap-start snap-always ${RAIL_CARD_WIDTH} flex-shrink-0 h-full`}
       >
         <Link href={cardHref} className="block group/card h-full">
-          <div className={`relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer group-hover/card:-translate-y-1 ${
+          <div className={`relative ${RAIL_CARD_RADIUS} overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col cursor-pointer group-hover/card:-translate-y-1 ${
             isTopReviewer
               ? 'bg-[#1c1712]'
               : 'bg-card-bg'
@@ -324,7 +325,7 @@ export default function ReviewerCard({
   const reviewRating = (review as any)?.rating ?? null;
 
   return (
-    <li className="w-[calc(50vw-12px)] sm:w-auto sm:min-w-[213px] flex-shrink-0">
+    <div className="w-[calc(50vw-12px)] sm:w-auto sm:min-w-[213px] flex-shrink-0">
       <Link href={cardHref} className="block group/card">
         <div className="bg-card-bg rounded-2xl cursor-pointer h-[187px] flex flex-col relative overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ease-out group-hover/card:-translate-y-1">
 
@@ -452,6 +453,6 @@ export default function ReviewerCard({
           </div>
         </div>
       </Link>
-    </li>
+    </div>
   );
 }

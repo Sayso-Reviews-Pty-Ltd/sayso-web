@@ -19,6 +19,7 @@ import {
 import BusinessOfTheMonthCardMedia from "./parts/BusinessOfTheMonthCardMedia";
 import BusinessOfTheMonthCardContent from "./parts/BusinessOfTheMonthCardContent";
 import { BLUR_DATA_URL } from "./BusinessOfTheMonthCard.constants";
+import { RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
 
 export default function BusinessOfTheMonthCard({ business, index = 0 }: { business: BusinessOfTheMonth; index?: number }) {
   const router = useRouter();
@@ -372,16 +373,16 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
   }, []);
 
   return (
-    <li
+    <div
       id={idForSnap}
-      className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px] list-none"
+      className={`snap-start snap-always flex-shrink-0 h-full ${RAIL_CARD_WIDTH} list-none`}
       style={{
         fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
         fontWeight: 600,
       }}
     >
       <div
-        className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full flex flex-col backdrop-blur-xl shadow-md sm:h-auto"
+        className={`relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 ${RAIL_CARD_RADIUS} overflow-hidden group cursor-pointer w-full h-full flex flex-col backdrop-blur-xl shadow-md`}
         style={{
           maxWidth: "540px",
         } as React.CSSProperties}
@@ -437,6 +438,6 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
           onBookmark={handleBookmark}
         />
       </div>
-    </li>
+    </div>
   );
 }

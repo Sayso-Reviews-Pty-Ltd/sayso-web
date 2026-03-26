@@ -12,7 +12,7 @@ interface EventCardSkeletonProps {
 
 export default function EventCardSkeleton({ fullWidth = false }: EventCardSkeletonProps) {
   return (
-    <li
+    <div
       className={fullWidth ? "flex w-full" : "flex w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px]"}
       style={{
         fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
@@ -59,6 +59,6 @@ export default function EventCardSkeleton({ fullWidth = false }: EventCardSkelet
           <div className="mt-1 w-full h-10 px-4 py-2.5 bg-charcoal/10 rounded-full" />
         </div>
       </article>
-    </li>
+    </div>
   );
 }

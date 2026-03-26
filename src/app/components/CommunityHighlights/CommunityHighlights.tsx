@@ -6,11 +6,11 @@ import { useReviewersTop } from "../../hooks/useReviewersTop";
 import { useRecentReviews } from "../../hooks/useRecentReviews";
 import { m } from "framer-motion";
 import CommunityHighlightsSkeleton from "./CommunityHighlightsSkeleton";
-import { useIsDesktop } from "../../hooks/useIsDesktop";
 import type { Review, Reviewer } from "../../types/community";
 import type { CommunityHighlightsProps } from "./CommunityHighlights.types";
 import TopContributorsSection from "./components/TopContributorsSection";
 import FeaturedBusinessesSection from "./components/FeaturedBusinessesSection";
+import { SECTION_WRAPPER_CLASS } from "../HomeSectionRow/homeSectionLayout";
 
 export default function CommunityHighlights({
   title = "Community Highlights",
@@ -24,7 +24,6 @@ export default function CommunityHighlights({
   hideCarouselArrowsOnDesktop = false,
 }: CommunityHighlightsProps) {
   const router = useRouter();
-  const isDesktop = useIsDesktop();
 
   // Fetch from API via SWR only when props are not provided
   const { reviewers: fetchedReviewers, mode: fetchedMode, loading: reviewersLoading } = useReviewersTop(12);
@@ -64,12 +63,12 @@ export default function CommunityHighlights({
       }}
     >
 
-      <div className="mx-auto w-full max-w-[2000px] relative z-10 px-2">
+      <div className={SECTION_WRAPPER_CLASS}>
         {/* Header */}
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           {disableAnimations ? (
             <h2
-              className="font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
+              className="font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
               style={{ 
                 fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 fontWeight: 800,
@@ -83,7 +82,7 @@ export default function CommunityHighlights({
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
+              className="font-urbanist text-2xl sm:text-3xl md:text-2xl font-bold text-charcoal hover:text-sage transition-all duration-300 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
               style={{ 
                 fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 fontWeight: 800,
@@ -114,7 +113,6 @@ export default function CommunityHighlights({
           hasCoordinateBusinesses={hasCoordinateBusinesses}
           hideCarouselArrowsOnDesktop={hideCarouselArrowsOnDesktop}
           disableAnimations={disableAnimations}
-          isDesktop={isDesktop}
           onSeeMoreBusinesses={() => router.push('/leaderboard?tab=businesses')}
         />
       </div>

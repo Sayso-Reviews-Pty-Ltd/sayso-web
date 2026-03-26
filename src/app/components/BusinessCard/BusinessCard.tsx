@@ -10,6 +10,7 @@ import BusinessCardDistanceBadge from "./parts/BusinessCardDistanceBadge";
 import BusinessCardContent from "./parts/BusinessCardContent";
 import { useBusinessCardController } from "./hooks/useBusinessCardController";
 import type { Business, Percentiles } from "./BusinessCard.types";
+import { RAIL_CARD_MEDIA_HEIGHT, RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
 
 export type { Business, Percentiles };
 
@@ -38,14 +39,12 @@ function BusinessCard({
 
   const mediaBaseClass =
     "relative overflow-hidden z-10 cursor-pointer bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl";
-  const mediaClass = compact
-    ? `${mediaBaseClass} h-[280px] sm:h-[300px] md:h-[220px]`
-    : `${mediaBaseClass} h-[280px] sm:h-[300px] md:h-[220px]`;
+  const mediaClass = `${mediaBaseClass} ${RAIL_CARD_MEDIA_HEIGHT}`;
 
   return (
-    <li
+    <div
       id={controller.idForSnap}
-      className={`snap-start snap-always flex-shrink-0 ${compact ? "w-auto" : "w-[240px] sm:w-[260px] md:w-[340px]"}`}
+      className={`snap-start snap-always flex-shrink-0 h-full ${compact ? "w-auto" : RAIL_CARD_WIDTH}`}
       style={{
         fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         fontWeight: 600,
@@ -54,7 +53,7 @@ function BusinessCard({
       <Link
         href={controller.businessProfileRoute}
         prefetch={false}
-        className={`rounded-[12px] ${compact ? "lg:min-h-[200px]" : "flex-1"} relative flex-shrink-0 flex flex-col justify-between bg-card-bg z-10 shadow-md group cursor-pointer w-full sm:h-auto overflow-hidden`}
+        className={`${RAIL_CARD_RADIUS} ${compact ? "lg:min-h-[200px]" : "h-full"} relative flex-shrink-0 flex flex-col justify-between bg-card-bg z-10 shadow-md group cursor-pointer w-full overflow-hidden`}
         style={{ maxWidth: compact ? "100%" : "540px" } as React.CSSProperties}
         onMouseEnter={controller.handleMouseEnter}
         onMouseLeave={controller.handleMouseLeave}
@@ -124,7 +123,7 @@ function BusinessCard({
           isBusinessAccount={controller.isBusinessAccount}
         />
       </Link>
-    </li>
+    </div>
   );
 }
 

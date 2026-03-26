@@ -8,6 +8,8 @@ import ReviewerCard from "../../ReviewerCard/ReviewerCard";
 import ReviewerCardSkeleton from "../../ReviewerCard/ReviewerCardSkeleton";
 import type { Review, Reviewer } from "../../../types/community";
 import { badgePreviews, sampleReviewTexts } from "../communityHighlights.constants";
+import { HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS, HOME_SECTION_RAIL_CLASS } from "../../HomeSectionRow/homeSectionLayout";
+import CardRail from "../../CardRail/CardRail";
 
 interface TopContributorsSectionProps {
   hasReviewers: boolean;
@@ -36,13 +38,15 @@ export default function TopContributorsSection({
   hideCarouselArrowsOnDesktop,
   onSeeMoreContributors,
 }: TopContributorsSectionProps) {
+  const reviewerRailCardClass = `snap-start snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+
   return (
     <>
       {/* Top Reviewers */}
       {hasReviewers && (
         <div className="mt-1" aria-busy={recentReviewsLoading}>
-          <div className="pb-1 sm:pb-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30">
+          <div className="pb-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-sage/20 to-sage/10 border border-sage/30 mb-4">
               <span className="text-sm font-semibold text-sage" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
                 <span className="sm:hidden">{contributorsHeadingMobile}</span>
                 <span className="hidden sm:inline">{contributorsHeadingDesktop}</span>
@@ -61,41 +65,36 @@ export default function TopContributorsSection({
             </button>
           </div>
 
-          <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
-            <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
-              {topReviewers.map((reviewer, index) => {
-                // Try to find an actual review first, otherwise use sample text
+          <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop} className={HOME_SECTION_RAIL_CLASS}>
+            <CardRail
+              items={topReviewers}
+              getKey={(r) => r.id}
+              renderCard={(reviewer, index) => {
                 const actualReview = reviews.find((r) => r.reviewer.id === reviewer.id);
                 const reviewIndex = parseInt(reviewer.id) % sampleReviewTexts.length;
                 const sampleText = sampleReviewTexts[reviewIndex];
-                const isFirst = index === 0 && topReviewers.length > 1;
-                const isLast = index === topReviewers.length - 1 && topReviewers.length > 1;
-
                 return (
-                  <div
-                    key={reviewer.id}
-                    data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-                    className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center${isFirst ? ' pl-2 sm:pl-0' : ''}${isLast ? ' pr-2 sm:pr-0' : ''}`}
-                  >
-                    <ReviewerCard
-                      reviewer={reviewer}
-                      variant="reviewer"
-                      index={index}
-                      latestReview={actualReview || {
-                        id: `${reviewer.id}-latest`,
-                        reviewer,
-                        businessName: `${reviewer.location} Favorite`,
-                        businessType: "Local Business",
-                        rating: reviewer.rating,
-                        reviewText: sampleText,
-                        date: index < 3 ? `${index + 1} days ago` : `${index + 1} weeks ago`,
-                        likes: Math.floor((reviewer.reviewCount * 0.3) + 5)
-                      }}
-                    />
-                  </div>
+                  <ReviewerCard
+                    reviewer={reviewer}
+                    variant="reviewer"
+                    index={index}
+                    latestReview={actualReview || {
+                      id: `${reviewer.id}-latest`,
+                      reviewer,
+                      businessName: `${reviewer.location} Favorite`,
+                      businessType: "Local Business",
+                      rating: reviewer.rating,
+                      reviewText: sampleText,
+                      date: index < 3 ? `${index + 1} days ago` : `${index + 1} weeks ago`,
+                      likes: Math.floor((reviewer.reviewCount * 0.3) + 5),
+                    }}
+                  />
                 );
-              })}
-            </div>
+              }}
+              cardClassName={reviewerRailCardClass}
+              disableAnimations
+              containerClassName="pt-2"
+            />
           </ScrollableSection>
         </div>
       )}
@@ -111,18 +110,15 @@ export default function TopContributorsSection({
               </span>
             </div>
           </div>
-          <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}>
-            <div className="flex gap-2 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2 items-stretch pt-2">
-              {Array.from({ length: 12 }).map((_, index) => (
-                <div
-                  key={`reviewer-skeleton-${index}`}
-                  data-edge-snap={index === 0 ? "first" : index === 11 ? "last" : undefined}
-                  className={`snap-start snap-always flex-shrink-0 w-[calc(100vw-80px)] sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center${index === 0 ? ' pl-2 sm:pl-0' : ''}${index === 11 ? ' pr-2 sm:pr-0' : ''}`}
-                >
-                  <ReviewerCardSkeleton />
-                </div>
-              ))}
-            </div>
+          <ScrollableSection hideArrowsOnDesktop={hideCarouselArrowsOnDesktop} className={HOME_SECTION_RAIL_CLASS}>
+            <CardRail
+              items={Array.from({ length: 12 }, (_, i) => i)}
+              getKey={(_, i) => `reviewer-skeleton-${i}`}
+              renderCard={() => <ReviewerCardSkeleton />}
+              cardClassName={reviewerRailCardClass}
+              disableAnimations
+              containerClassName="pt-2"
+            />
           </ScrollableSection>
         </div>
       )}
