@@ -18,6 +18,7 @@ const staticPublicPages: Array<{
   changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'];
 }> = [
   { url: '/home', lastModified: now, priority: 1.0, changeFrequency: 'daily' },
+  { url: '/for-you', lastModified: now, priority: 0.95, changeFrequency: 'daily' },
   { url: '/search', lastModified: now, priority: 0.9, changeFrequency: 'daily' },
   { url: '/events-specials', lastModified: now, priority: 0.9, changeFrequency: 'daily' },
   { url: '/trending', lastModified: now, priority: 0.85, changeFrequency: 'daily' },

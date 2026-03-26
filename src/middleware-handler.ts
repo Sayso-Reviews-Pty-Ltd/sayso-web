@@ -533,7 +533,12 @@ export async function handleRequest(request: NextRequest) {
     const guestModeRequested = request.nextUrl.searchParams.get('guest') === 'true';
     // Guests should never land on /for-you (empty state can trap navigation on some webviews).
     // Keep /home public; lock personalization to authenticated users only.
+    // Exception: allow crawlers so /for-you can be indexed as a branded destination page.
     if (pathname === '/for-you' || pathname.startsWith('/for-you/')) {
+      if (isCrawlerRequest(request)) {
+        edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_for_you_crawler' });
+        return response;
+      }
       const to = '/home?guest=true';
       edgeLog('REDIRECT', pathname, { hasUser: false, to, reason: 'guest_for_you' });
       return redirectWithGuard(request, new URL(to, request.url));

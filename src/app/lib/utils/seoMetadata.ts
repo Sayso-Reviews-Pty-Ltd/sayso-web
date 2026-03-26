@@ -196,13 +196,11 @@ export const PageMetadata = {
 
   forYou: (): Metadata =>
     generateSEOMetadata({
-      title: `Personalized recommendations | ${SITE_NAME}`,
+      title: `Sayso For You | Personalized recommendations in Cape Town`,
       description:
-        'Personalized recommendations on Sayso based on your preferences and local Cape Town activity.',
-      keywords: ['personalized recommendations', 'sayso'],
+        'Explore your personalized Sayso feed with local Cape Town recommendations tailored to your interests.',
+      keywords: ['sayso for you', 'personalized recommendations cape town', 'sayso'],
       url: '/for-you',
-      noindex: true,
-      nofollow: true,
       type: 'website',
     }),
 

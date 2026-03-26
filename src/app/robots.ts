@@ -9,6 +9,9 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/home',
+          '/for-you',
+          '/trending',
+          '/events-specials',
         ],
         disallow: [
           '/api/',

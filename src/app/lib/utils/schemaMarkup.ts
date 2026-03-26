@@ -376,9 +376,11 @@ export function generateCollectionPageSchema({
  */
 export function generateSiteNavigationSchema(): object {
   const navItems = [
-    { name: 'Explore Cape Town', url: `${SITE_URL}/search` },
+    { name: 'Home', url: `${SITE_URL}/home` },
+    { name: 'For You', url: `${SITE_URL}/for-you` },
+    { name: 'Trending', url: `${SITE_URL}/trending` },
     { name: 'Events & Specials', url: `${SITE_URL}/events-specials` },
-    { name: 'Trending Places', url: `${SITE_URL}/trending` },
+    { name: 'Explore Cape Town', url: `${SITE_URL}/search` },
     { name: 'Leaderboard', url: `${SITE_URL}/leaderboard` },
     { name: 'About Sayso', url: `${SITE_URL}/about` },
     { name: 'Contact', url: `${SITE_URL}/contact` },

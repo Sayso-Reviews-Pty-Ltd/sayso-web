@@ -370,7 +370,7 @@ function LeaderboardPage() {
                   href="/badges"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white text-navbar-bg hover:bg-white/90 transition-all duration-200 text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-[12px] bg-white text-navbar-bg hover:bg-white/90 transition-all duration-200 text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5"
                   style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                 >
                   <FileText className="w-4 h-4" />
@@ -381,7 +381,7 @@ function LeaderboardPage() {
                 {user && (
                   <Link
                     href="/achievements"
-                    className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/15 transition-all duration-200 text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-[12px] border border-white/20 bg-white/10 text-white hover:bg-white/15 transition-all duration-200 text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5"
                     style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                   >
                     <Award className="w-4 h-4" />
