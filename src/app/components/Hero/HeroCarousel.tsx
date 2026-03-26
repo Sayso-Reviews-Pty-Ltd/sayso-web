@@ -108,14 +108,7 @@ const FONT_STACK = "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sa
 const DEFAULT_HERO_IMAGE = "/hero/devon-janse-van-rensburg-CeI5GZF0MrQ-unsplash.jpg";
 
 function orderHeroImages(images: string[], seed: string): string[] {
-  const uniqueImages = [...new Set(images)];
-  const remainingImages = uniqueImages.filter((image) => image !== DEFAULT_HERO_IMAGE);
-
-  if (!uniqueImages.includes(DEFAULT_HERO_IMAGE)) {
-    return seededShuffle(uniqueImages, seed);
-  }
-
-  return [DEFAULT_HERO_IMAGE, ...seededShuffle(remainingImages, seed)];
+  return seededShuffle([...new Set(images)], seed);
 }
 
 const buildSlides = (images: string[]): HeroSlide[] => {
