@@ -99,9 +99,7 @@ export default function Header({
 
   const isHomepageHeroOverlay =
     isHomePage && searchController.urlSearchQuery.trim().length === 0;
-  const [isHomepageAtTop, setIsHomepageAtTop] = useState(() =>
-    typeof window === "undefined" ? true : window.scrollY <= 0.5
-  );
+  const [isHomepageAtTop, setIsHomepageAtTop] = useState(true);
 
   useEffect(() => {
     if (!isHomepageHeroOverlay) {

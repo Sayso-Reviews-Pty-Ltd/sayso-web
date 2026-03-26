@@ -44,7 +44,7 @@ function BusinessCard({
   return (
     <div
       id={controller.idForSnap}
-      className={`snap-start snap-always flex-shrink-0 h-full ${compact ? "w-auto" : RAIL_CARD_WIDTH}`}
+      className={`snap-center snap-always flex-shrink-0 h-full ${compact ? "w-auto" : RAIL_CARD_WIDTH}`}
       style={{
         fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
         fontWeight: 600,

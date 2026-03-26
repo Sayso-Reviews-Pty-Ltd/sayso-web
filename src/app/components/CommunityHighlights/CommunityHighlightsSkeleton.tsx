@@ -13,7 +13,7 @@ interface CommunityHighlightsSkeletonProps {
 function BusinessOfTheMonthCardSkeleton() {
   return (
     <div
-      className="snap-start snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px] list-none"
+      className="snap-center snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px] list-none"
       style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
     >
       <div
@@ -46,8 +46,8 @@ export default function CommunityHighlightsSkeleton({
   reviewerCount = 12,
   businessCount = 4,
 }: CommunityHighlightsSkeletonProps) {
-  const reviewerCardClass = `snap-start snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
-  const businessCardClass = `snap-start snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
+  const reviewerCardClass = `snap-center snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+  const businessCardClass = `snap-center snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
 
   const reviewerSlides = Array.from({ length: reviewerCount }, (_, idx) => (
     <div key={idx} className={reviewerCardClass}>

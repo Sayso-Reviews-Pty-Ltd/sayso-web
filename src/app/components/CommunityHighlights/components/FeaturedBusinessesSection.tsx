@@ -25,7 +25,7 @@ export default function FeaturedBusinessesSection({
   disableAnimations,
   onSeeMoreBusinesses,
 }: FeaturedBusinessesSectionProps) {
-  const businessRailCardClass = `snap-start snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
+  const businessRailCardClass = `snap-center snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
 
   if (hasBusinesses) {
     return (

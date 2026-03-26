@@ -88,7 +88,7 @@ export default function ReviewerCard({
     return (
       <div
         id={idForSnap}
-        className={`snap-start snap-always ${RAIL_CARD_WIDTH} flex-shrink-0 h-full`}
+        className={`snap-center snap-always ${RAIL_CARD_WIDTH} flex-shrink-0 h-full`}
       >
         <Link href={cardHref} className="block group/card h-full">
           <div className={`relative ${RAIL_CARD_RADIUS} overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col cursor-pointer group-hover/card:-translate-y-1 ${

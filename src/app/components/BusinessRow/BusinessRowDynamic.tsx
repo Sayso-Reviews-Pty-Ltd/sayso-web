@@ -26,7 +26,7 @@ const BusinessRowSkeleton = () => (
         `}} />
         <div className="flex gap-2.5 sm:gap-3 items-stretch pt-2">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className={`snap-start snap-always flex-shrink-0 ${MOBILE_PEEK_CARD_WIDTH} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex business-card-skeleton-full-width`}>
+            <div key={i} className={`snap-center snap-always flex-shrink-0 ${MOBILE_PEEK_CARD_WIDTH} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex business-card-skeleton-full-width`}>
               <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-visible w-full sm:w-[260px] md:w-[340px] h-[650px] sm:h-auto md:h-[416px] flex flex-col border-none backdrop-blur-xl  shadow-md animate-pulse">
                 {/* Image Section Skeleton */}
                 <div className="relative overflow-hidden z-10 rounded-t-[12px] bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 border-b border-white/60 backdrop-blur-xl h-[490px] sm:h-[320px] md:h-[240px]" />

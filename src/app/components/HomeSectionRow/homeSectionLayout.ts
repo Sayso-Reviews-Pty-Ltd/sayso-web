@@ -11,11 +11,12 @@ export const HOME_SECTION_RAIL_CLASS = "items-stretch py-2";
 export const HOME_SECTION_RAIL_GAP_CLASS =
   "gap-2.5 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2";
 
-// 90vw on mobile — the rail goes full-bleed so the remaining ~10vw shows the next card peeking.
+// Single centered card on mobile — 16px gutter on each side from viewport edge.
+// Section wrapper: 8px each side (16px) + scroll container: 8px each side (16px) = 32px total.
 export const HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS =
-  "w-[90vw]";
+  "w-[calc(100vw-32px)]";
 
 export const HOME_SECTION_CARD_MIN_WIDTH_CLASS = "min-w-[clamp(200px,16vw,300px)]";
 
 export const HOME_SECTION_CARD_BASE_CLASS =
-  `snap-start snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto ${HOME_SECTION_CARD_MIN_WIDTH_CLASS} list-none flex justify-center h-full`;
+  `snap-center snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto ${HOME_SECTION_CARD_MIN_WIDTH_CLASS} list-none flex justify-center h-full`;

@@ -38,7 +38,7 @@ export default function TopContributorsSection({
   hideCarouselArrowsOnDesktop,
   onSeeMoreContributors,
 }: TopContributorsSectionProps) {
-  const reviewerRailCardClass = `snap-start snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+  const reviewerRailCardClass = `snap-center snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
 
   return (
     <>
@@ -145,7 +145,7 @@ export default function TopContributorsSection({
             <div className="pt-2 flex items-center justify-center">
               <Link
                 href="/badges"
-                className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
+                className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-[12px] bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
                 aria-label="Learn about badges"
               >
                 <span>Explore badges</span>

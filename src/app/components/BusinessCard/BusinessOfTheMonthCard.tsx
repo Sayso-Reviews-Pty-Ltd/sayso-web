@@ -375,7 +375,7 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
   return (
     <div
       id={idForSnap}
-      className={`snap-start snap-always flex-shrink-0 h-full ${RAIL_CARD_WIDTH} list-none`}
+      className={`snap-center snap-always flex-shrink-0 h-full ${RAIL_CARD_WIDTH} list-none`}
       style={{
         fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
         fontWeight: 600,

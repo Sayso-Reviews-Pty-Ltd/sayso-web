@@ -9,7 +9,7 @@ import React from "react";
 export default function ReviewerCardSkeleton() {
   return (
     <div
-      className="snap-start snap-always w-full sm:w-[240px] flex-shrink-0"
+      className="snap-center snap-always w-full sm:w-[240px] flex-shrink-0"
       aria-hidden
     >
       <div className="relative bg-card-bg rounded-2xl overflow-hidden shadow-md">

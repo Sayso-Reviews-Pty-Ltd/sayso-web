@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 
 // Default visible card count — kept for external references
@@ -36,39 +36,8 @@ export default function ScrollableSection({
   const scroll = useCallback((dir: 1 | -1) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+    el.scrollBy({ left: dir * el.clientWidth, behavior: "smooth" });
   }, []);
-
-  // Mark the card whose left edge is closest to the current scroll position.
-  // The CSS below uses [data-rail-active] to apply scale on mobile only.
-  const updateActive = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const flex = el.firstElementChild as HTMLElement | null;
-    if (!flex) return;
-    const cards = Array.from(flex.children) as HTMLElement[];
-    if (cards.length === 0) return;
-
-    // Snap target = scrollLeft + the left gutter (pl-2 = 8px).
-    const snapTarget = el.scrollLeft + 8;
-    let bestIdx = 0;
-    let bestDist = Infinity;
-    cards.forEach((card, i) => {
-      const dist = Math.abs(card.offsetLeft - snapTarget);
-      if (dist < bestDist) { bestDist = dist; bestIdx = i; }
-    });
-    cards.forEach((card, i) => {
-      card.dataset.railActive = i === bestIdx ? "1" : "0";
-    });
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    updateActive();
-    el.addEventListener("scroll", updateActive, { passive: true });
-    return () => el.removeEventListener("scroll", updateActive);
-  }, [updateActive]);
 
   const arrowBase = `
     absolute top-1/2 -translate-y-1/2 z-40
@@ -88,20 +57,14 @@ export default function ScrollableSection({
   const mobileHide = shouldEnableMobilePeek ? "hidden sm:flex" : "flex";
 
   return (
-    // -mx-2 sm:mx-0: cancel the parent section's 8px horizontal inset on mobile so
-    // the rail extends to the viewport edge, letting 90vw cards leave ~10vw of peek.
-    <div className={`relative -mx-2 sm:mx-0 ${className}`}>
+    <div className={`relative ${className}`}>
       <div
         ref={scrollRef}
-        // pl-2: 8px left gutter aligns the first card with the page content.
-        // pr-0 on mobile: no right padding so the next card peeks through.
-        // sm:px-2: restore symmetric padding on tablet/desktop.
-        className="rail-scroll overflow-x-auto pl-2 pr-0 sm:px-2 pb-2"
+        className="rail-scroll overflow-x-auto px-2 pb-2"
         style={{
           scrollbarWidth: "none",
           WebkitOverflowScrolling: "touch",
           scrollSnapType: "x mandatory",
-          scrollPaddingLeft: "0.5rem",
         } as React.CSSProperties}
       >
         {items ? (
@@ -142,20 +105,6 @@ export default function ScrollableSection({
       <style jsx>{`
         :global(.rail-scroll::-webkit-scrollbar) {
           display: none;
-        }
-
-        /* Mobile-only visual hierarchy: focused card is full size, others recede. */
-        @media (max-width: 639px) {
-          :global(.rail-scroll > * > [data-rail-active="1"]) {
-            transform: scale(1);
-            opacity: 1;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-          }
-          :global(.rail-scroll > * > [data-rail-active="0"]) {
-            transform: scale(0.95);
-            opacity: 0.82;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-          }
         }
       `}</style>
     </div>
