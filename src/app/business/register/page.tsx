@@ -11,6 +11,7 @@ import { usePredefinedPageTitle } from "../../hooks/usePageTitle";
 import { InlineLoader } from "../../components/Loader/Loader";
 import { getBrowserSupabase } from "../../lib/supabase/client";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
+import { getClearAuthMessage } from "../../components/Auth/authFeedback";
 
 // Import shared components
 import { authStyles } from "../../components/Auth/Shared/authStyles";
@@ -319,17 +320,22 @@ export default function BusinessRegisterPage() {
             setError("Too many attempts. Please wait a moment and try again.");
             showToast("Too many attempts. Please wait a moment and try again.", "sage", 4000);
           } else {
-            setError(authError);
-            showToast(authError, "sage", 4000);
+            const clearMessage = getClearAuthMessage(authError, "register");
+            setError(clearMessage);
+            showToast(clearMessage, "sage", 4000);
           }
         } else {
-          setError("Registration failed. Please try again.");
-          showToast("Registration failed. Please try again.", "sage", 4000);
+          const clearMessage = getClearAuthMessage("Registration failed. Please try again.", "register");
+          setError(clearMessage);
+          showToast(clearMessage, "sage", 4000);
         }
       }
     } catch (error: unknown) {
       console.error("Registration error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      const errorMessage = getClearAuthMessage(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+        "register"
+      );
       setError(errorMessage);
       showToast(errorMessage, "sage", 4000);
     } finally {
@@ -450,7 +456,10 @@ export default function BusinessRegisterPage() {
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-error-50 border border-error-100 rounded-[12px] p-4 text-center">
+                  <div role="alert" aria-live="assertive" className="bg-error-50 border border-error-100 rounded-[12px] p-4 text-center">
+                    <p className="text-caption font-bold text-error-700 mb-1" style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+                      Registration failed
+                    </p>
                     <p className="text-caption font-semibold text-error-600" style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>{error}</p>
                   </div>
                 )}

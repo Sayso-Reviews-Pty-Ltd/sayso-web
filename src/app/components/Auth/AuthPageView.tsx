@@ -275,7 +275,17 @@ export function AuthPageView({
                     >
                       <form onSubmit={onSubmit} className="space-y-4 relative z-10">
                         {error && (
-                          <div className="bg-off-white border border-error-100 rounded-[12px] p-4 text-center">
+                          <div
+                            role="alert"
+                            aria-live="assertive"
+                            className="bg-off-white border border-error-100 rounded-[12px] p-4 text-center"
+                          >
+                            <p
+                              className="text-caption font-bold text-error-700 mb-1"
+                              style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+                            >
+                              {isRegisterMode ? "Registration failed" : "Sign in failed"}
+                            </p>
                             <p
                               className="text-caption font-semibold text-error-600"
                               style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}

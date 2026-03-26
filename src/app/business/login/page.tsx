@@ -8,6 +8,7 @@ import { useToast } from "../../contexts/ToastContext";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import { usePredefinedPageTitle } from "../../hooks/usePageTitle";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
+import { getClearAuthMessage } from "../../components/Auth/authFeedback";
 
 // Import shared components
 import { authStyles } from "../../components/Auth/Shared/authStyles";
@@ -97,12 +98,12 @@ export default function BusinessLoginPage() {
       if (loggedInUser) {
         showToast("Welcome back", 'sage', 2000);
       } else {
-        const errorMsg = authError || "Email or password is incorrect";
+        const errorMsg = getClearAuthMessage(authError || "Email or password is incorrect", "login");
         setError(errorMsg);
         showToast(errorMsg, 'sage', 3000);
       }
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'Login failed';
+      const errorMsg = getClearAuthMessage(error instanceof Error ? error.message : 'Login failed', "login");
       setError(errorMsg);
       showToast(errorMsg, 'sage', 4000);
     } finally {
@@ -151,7 +152,8 @@ export default function BusinessLoginPage() {
             <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
               {/* Error Message */}
               {error && (
-                <div className="bg-orange-50 border border-orange-200 rounded-[12px] p-4 text-center">
+                <div role="alert" aria-live="assertive" className="bg-orange-50 border border-orange-200 rounded-[12px] p-4 text-center">
+                  <p className="text-caption font-bold text-orange-700 mb-1">Sign in failed</p>
                   <p className="text-caption font-semibold text-orange-600">{error}</p>
                 </div>
               )}

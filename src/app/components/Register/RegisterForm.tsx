@@ -43,7 +43,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [mounted, setMounted] = useState(false);
 
   const { register, isLoading: authLoading, error: authError } = useAuth();
-  const isLoading = true; 
+  const isLoading = authLoading;
   const { showToast } = useToast();
 
   // Prevent hydration mismatch

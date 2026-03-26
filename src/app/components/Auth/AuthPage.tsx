@@ -10,6 +10,7 @@ import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import { usePasswordStrength, validatePassword } from "./Register/usePasswordStrength";
 import { AuthPageView } from "./AuthPageView";
+import { getClearAuthMessage } from "./authFeedback";
 
 type AccountType = "personal" | "business";
 type AuthMode = "login" | "register";
@@ -218,7 +219,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       return;
     }
 
-    const errorMsg = authError || "Incorrect email or password. Please try again.";
+    const errorMsg = getClearAuthMessage(authError, "login");
     setError(errorMsg);
     showToast(errorMsg, "error", 3000);
   };
@@ -354,11 +355,12 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
         setError(msg);
         showToast(msg, "error", 4000);
       } else {
-        setError(registrationError);
-        showToast(registrationError, "error", 4000);
+        const clearMessage = getClearAuthMessage(registrationError, "register");
+        setError(clearMessage);
+        showToast(clearMessage, "error", 4000);
       }
     } else {
-      const msg = "Registration failed. Please try again.";
+      const msg = getClearAuthMessage("Registration failed. Please try again.", "register");
       setError(msg);
       showToast(msg, "error", 4000);
     }
@@ -380,7 +382,10 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       }
     } catch (err: unknown) {
       console.error("Auth error:", err);
-      const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      const msg = getClearAuthMessage(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+        isRegisterMode ? "register" : "login"
+      );
       setError(msg);
       showToast(msg, "error", 4000);
     } finally {
