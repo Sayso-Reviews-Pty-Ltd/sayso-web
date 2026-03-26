@@ -701,7 +701,7 @@ export default function HeroCarousel() {
           >
             <h2
               key={`hero-title-${currentTextSlide?.id ?? currentIndex}`}
-              className={`text-[2rem] sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-off-white drop-shadow-lg mb-3 sm:mb-4 leading-[1.1] tracking-[-0.02em] whitespace-pre-line [word-break:normal] [overflow-wrap:normal] [hyphens:none] transition-opacity ease-out ${textTransitionClass}`}
+              className={`text-[2rem] sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-off-white drop-shadow-lg mb-3 sm:mb-4 leading-[1.1] tracking-[-0.02em] whitespace-pre-line [word-break:normal] [overflow-wrap:normal] [hyphens:none] transition-opacity ease-out min-h-[4.5rem] sm:min-h-0 ${textTransitionClass}`}
               style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', textShadow: '0 2px 24px rgba(0,0,0,0.4)' }}
             >
               {currentTitle}

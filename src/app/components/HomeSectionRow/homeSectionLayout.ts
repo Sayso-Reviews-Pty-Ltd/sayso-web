@@ -11,9 +11,9 @@ export const HOME_SECTION_RAIL_CLASS = "items-stretch py-2";
 export const HOME_SECTION_RAIL_GAP_CLASS =
   "gap-2.5 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2";
 
-// Allbirds mobile slides use ~312px width; cap with min() so narrow phones still fit.
+// 90vw on mobile — the rail goes full-bleed so the remaining ~10vw shows the next card peeking.
 export const HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS =
-  "w-[min(19.5rem,calc(100vw-3rem))]";
+  "w-[90vw]";
 
 export const HOME_SECTION_CARD_MIN_WIDTH_CLASS = "min-w-[clamp(200px,16vw,300px)]";
 
