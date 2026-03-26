@@ -152,7 +152,9 @@ export default function EventBadge({
 
   if (occurrences && occurrences.length > 0) {
     const starts = occurrences.map(o => o.startDate).filter(Boolean).sort();
-    const ends = occurrences.map(o => o.endDate || o.startDate).filter(Boolean).sort();
+    // Only count real end dates — don't fall back to startDate here or it
+    // overwrites endDateISO and makes multi-day events show a single date.
+    const ends = occurrences.map(o => o.endDate).filter((d): d is string => !!d).sort();
     earliest = starts[0] || startDateISO;
     latest = ends[ends.length - 1] || endDateISO;
   }
