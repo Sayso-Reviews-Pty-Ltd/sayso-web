@@ -156,12 +156,21 @@ export function useAddEventSpecialForm({
     let message = "";
     if (field === "businessId" && isSpecialForm && !value) message = "Please select a business.";
     if (field === "title" && !value.trim()) message = "Please add a title.";
-    if (field === "startDate" && !value) message = "Please choose a start date and time.";
+    if (field === "startDate") {
+      const currentYear = new Date().getFullYear();
+      if (!value) message = "Please choose a start date and time.";
+      else if (new Date(value).getFullYear() !== currentYear) message = `Start date must be within ${currentYear}.`;
+    }
     if (field === "location" && !value.trim()) message = "Please add a location.";
-    if (field === "endDate" && value && formData.startDate) {
-      const start = new Date(formData.startDate).getTime();
-      const end = new Date(value).getTime();
-      if (!Number.isNaN(start) && !Number.isNaN(end) && end < start) message = "End date cannot be before the start date.";
+    if (field === "endDate" && value) {
+      const currentYear = new Date().getFullYear();
+      if (new Date(value).getFullYear() !== currentYear) {
+        message = `End date must be within ${currentYear}.`;
+      } else if (formData.startDate) {
+        const start = new Date(formData.startDate).getTime();
+        const end = new Date(value).getTime();
+        if (!Number.isNaN(start) && !Number.isNaN(end) && end < start) message = "End date cannot be before the start date.";
+      }
     }
     if (field === "image" && value.trim() && !isValidHttpUrl(value.trim())) message = "Use a valid image URL starting with http:// or https://";
     if (field === "price" && value.trim()) {

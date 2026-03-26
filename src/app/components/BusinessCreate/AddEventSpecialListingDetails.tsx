@@ -48,6 +48,10 @@ export default function AddEventSpecialListingDetails({
 }: Props) {
   if (!isEventForm && businesses.length === 0) return null;
 
+  const currentYear = new Date().getFullYear();
+  const minDate = `${currentYear}-01-01T00:00`;
+  const maxDate = `${currentYear}-12-31T23:59`;
+
   return (
     <div className={`${sectionClassName} animate-fade-in-up animate-delay-200`}>
       <div className="relative z-10 space-y-6">
@@ -69,7 +73,7 @@ export default function AddEventSpecialListingDetails({
             <label className="block text-sm font-semibold text-charcoal mb-2" style={fontStyle}>Start date and time <span className="text-coral">*</span></label>
             <div className="relative">
               <Clock3 className="w-4 h-4 text-charcoal/50 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input type="datetime-local" value={formData.startDate} onChange={(e) => setFieldValue("startDate", e.target.value)} onBlur={() => handleBlur("startDate")} className={`${inputClassName} pl-10`} />
+              <input type="datetime-local" value={formData.startDate} onChange={(e) => setFieldValue("startDate", e.target.value)} onBlur={() => handleBlur("startDate")} min={minDate} max={maxDate} className={`${inputClassName} pl-10`} />
             </div>
             {touched.startDate && errors.startDate ? <p className="mt-2 text-sm text-coral font-medium">{errors.startDate}</p> : null}
           </div>
@@ -114,7 +118,7 @@ export default function AddEventSpecialListingDetails({
                     <label className="block text-sm font-semibold text-charcoal mb-2" style={fontStyle}>End date and time (optional)</label>
                     <div className="relative">
                       <Clock3 className="w-4 h-4 text-charcoal/50 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      <input type="datetime-local" value={formData.endDate} onChange={(e) => setFieldValue("endDate", e.target.value)} onBlur={() => handleBlur("endDate")} className={`${inputClassName} pl-10`} />
+                      <input type="datetime-local" value={formData.endDate} onChange={(e) => setFieldValue("endDate", e.target.value)} onBlur={() => handleBlur("endDate")} min={minDate} max={maxDate} className={`${inputClassName} pl-10`} />
                     </div>
                     {touched.endDate && errors.endDate ? <p className="mt-2 text-sm text-coral font-medium">{errors.endDate}</p> : null}
                   </div>
