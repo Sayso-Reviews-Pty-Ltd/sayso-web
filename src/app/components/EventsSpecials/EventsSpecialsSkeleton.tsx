@@ -2,6 +2,7 @@
 
 import EventCardSkeleton from "../EventCard/EventCardSkeleton";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
+import CardRail from "../CardRail/CardRail";
 import {
   HOME_SECTION_CARD_BASE_CLASS,
   HOME_SECTION_CONTAINER_INSET_CLASS,
@@ -21,6 +22,9 @@ export default function EventsSpecialsSkeleton({
   showHeaderCta,
   enableMobilePeek,
 }: EventsSpecialsSkeletonProps) {
+  const skeletonItems = Array.from({ length: 4 }, (_, index) => index);
+  const cardClass = `${HOME_SECTION_CARD_BASE_CLASS} event-card-rail-full-width`;
+
   return (
     <section
       className="relative m-0 w-full"
@@ -44,7 +48,7 @@ export default function EventsSpecialsSkeleton({
 
         <style dangerouslySetInnerHTML={{ __html: `
           @media (max-width: 639px) {
-            .event-card-rail-full-width > li {
+            .event-card-rail-full-width > div {
               width: 100% !important;
               max-width: 100% !important;
             }
@@ -54,14 +58,14 @@ export default function EventsSpecialsSkeleton({
           className={HOME_SECTION_RAIL_CLASS}
           enableMobilePeek={enableMobilePeek}
         >
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className={`${HOME_SECTION_CARD_BASE_CLASS} event-card-rail-full-width`}
-            >
-              <EventCardSkeleton />
-            </div>
-          ))}
+          <CardRail
+            items={skeletonItems}
+            getKey={(item) => `event-skeleton-${item}`}
+            renderCard={() => <EventCardSkeleton />}
+            cardClassName={cardClass}
+            disableAnimations
+            mobileFullBleedClassName="event-card-rail-full-width"
+          />
         </ScrollableSection>
       </div>
     </section>
