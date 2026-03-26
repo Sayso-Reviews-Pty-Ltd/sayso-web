@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X, AlertCircle, Loader2 } from "@/app/lib/icons";
+import { AlertCircle, Loader2 } from "@/app/lib/icons";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 
 const FLAG_REASONS = [
   { value: 'spam', label: 'Spam', desc: 'Promotional or repetitive content' },
@@ -25,22 +26,17 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    if (!reason) {
-      setLocalError('Please select a reason.');
-      return;
-    }
-    if (reason === 'other' && !details.trim()) {
-      setLocalError("Please add details for 'Other'.");
-      return;
-    }
+    if (!reason) { setLocalError('Please select a reason.'); return; }
+    if (reason === 'other' && !details.trim()) { setLocalError("Please add details for 'Other'."); return; }
     await onSubmit(reason, details);
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="p-0 gap-0 w-full max-w-none translate-x-0 translate-y-0 left-0 right-0 bottom-0 top-auto rounded-t-3xl sm:rounded-2xl sm:max-w-md sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:bottom-auto flex flex-col max-h-[90dvh]">
+        <DialogTitle className="sr-only">Report Review</DialogTitle>
+        <DialogDescription className="sr-only">Help us keep sayso trustworthy</DialogDescription>
 
-      <div className="relative z-10 w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]">
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-10 h-1 rounded-full bg-charcoal/20" />
         </div>
@@ -51,14 +47,6 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
               <h2 className="font-urbanist text-lg font-bold text-charcoal">Report Review</h2>
               <p className="font-urbanist text-sm text-charcoal/50">Help us keep sayso trustworthy</p>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-2 rounded-xl hover:bg-charcoal/8 text-charcoal/40 hover:text-charcoal transition-colors"
-              aria-label="Close report modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
 
           <div className="flex flex-col gap-2 mb-4">
@@ -66,14 +54,9 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
               <button
                 key={value}
                 type="button"
-                onClick={() => {
-                  setReason(value);
-                  setLocalError(null);
-                }}
+                onClick={() => { setReason(value); setLocalError(null); }}
                 className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
-                  reason === value
-                    ? 'border-navbar-bg bg-navbar-bg/5'
-                    : 'border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/[0.025]'
+                  reason === value ? 'border-navbar-bg bg-navbar-bg/5' : 'border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/[0.025]'
                 }`}
               >
                 <div className="flex-1">
@@ -98,10 +81,7 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
               </span>
               <textarea
                 value={details}
-                onChange={(e) => {
-                  setDetails(e.target.value);
-                  setLocalError(null);
-                }}
+                onChange={(e) => { setDetails(e.target.value); setLocalError(null); }}
                 rows={3}
                 placeholder="Describe the issue..."
                 className="w-full rounded-2xl border border-charcoal/15 bg-charcoal/[0.025] px-4 py-3 font-urbanist text-sm text-charcoal placeholder-charcoal/35 focus:outline-none focus:ring-2 focus:ring-navbar-bg/25 focus:border-navbar-bg/40 resize-none"
@@ -117,26 +97,18 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
           )}
 
           <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="flex-1 py-3 rounded-2xl border border-charcoal/15 font-urbanist text-sm font-semibold text-charcoal/70 hover:bg-charcoal/5 transition-colors disabled:opacity-40"
-            >
+            <button type="button" onClick={onClose} disabled={submitting}
+              className="flex-1 py-3 rounded-2xl border border-charcoal/15 font-urbanist text-sm font-semibold text-charcoal/70 hover:bg-charcoal/5 transition-colors disabled:opacity-40">
               Cancel
             </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!reason || submitting}
-              className="flex-1 py-3 rounded-2xl bg-navbar-bg font-urbanist text-sm font-semibold text-white hover:bg-navbar-bg/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-            >
+            <button type="button" onClick={handleSubmit} disabled={!reason || submitting}
+              className="flex-1 py-3 rounded-2xl bg-navbar-bg font-urbanist text-sm font-semibold text-white hover:bg-navbar-bg/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Submit Report
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
