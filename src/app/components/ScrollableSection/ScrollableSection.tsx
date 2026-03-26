@@ -107,7 +107,7 @@ export default function ScrollableSection({
         modules={[Navigation]}
         slidesPerView="auto"
         spaceBetween={spaceBetween}
-        freeMode={false}
+        freeMode
         grabCursor
         navigation={
           showArrows
