@@ -137,7 +137,15 @@ export async function handleForYouFeed(options: MixedFeedOptions): Promise<NextR
   let rpcError: any = null;
 
   try {
-    const fetchLimit = Math.min(Math.max(cursorOffset + limit + 1, limit + 1), 1000);
+    // Pull a larger window so category round-robin has enough variety candidates.
+    const fetchLimit = Math.min(
+      Math.max(
+        cursorOffset + limit + 1,
+        cursorOffset + limit * 5 + 5,
+        limit + 1
+      ),
+      1000
+    );
     const result = await supabase.rpc('recommend_for_you_unified_category_rr', {
       p_interest_ids: interestIds || [],
       p_sub_interest_ids: subInterestIds || [],

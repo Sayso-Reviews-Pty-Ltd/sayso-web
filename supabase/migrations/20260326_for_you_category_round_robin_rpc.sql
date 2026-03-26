@@ -54,7 +54,7 @@ with base as (
     p_price_ranges,
     p_latitude,
     p_longitude,
-    greatest(p_limit, 1),
+    greatest(p_limit * 5, p_limit + 40, 60),
     p_seed
   )
 ),
