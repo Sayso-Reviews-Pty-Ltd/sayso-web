@@ -1,6 +1,7 @@
 import type { Business } from "@/app/components/BusinessCard/BusinessCard";
 
-const MAX_PER_CATEGORY = 3;
+const MAX_PER_SUBCATEGORY = 1;
+const MAX_PER_CATEGORY = 1;
 
 function getCategoryKey(business: Business): string {
   const categoryKey =
@@ -27,7 +28,7 @@ function getSubcategoryKey(business: Business): string {
 /**
  * BOTM-style diversification:
  * 1) subcategory rounds (winner per subcategory, then second-per-subcategory, etc.)
- * 2) parent-category cap on the primary pass
+ * 2) strict 1-per-subcategory AND 1-per-parent-category cap on the primary pass
  * 3) overflow appended so we preserve the full list size
  */
 export function roundRobinForYouBusinesses(businesses: Business[]): Business[] {
@@ -45,8 +46,6 @@ export function roundRobinForYouBusinesses(businesses: Business[]): Business[] {
     subcategoryBuckets.get(key)!.push(business);
   }
 
-  if (subcategoryOrder.length <= 1) return businesses;
-
   const maxBucketDepth = subcategoryOrder.reduce((depth, key) => {
     const size = subcategoryBuckets.get(key)?.length ?? 0;
     return Math.max(depth, size);
@@ -62,16 +61,20 @@ export function roundRobinForYouBusinesses(businesses: Business[]): Business[] {
     }
   }
 
+  const subcategoryCounts = new Map<string, number>();
   const categoryCounts = new Map<string, number>();
   const primary: Business[] = [];
   const overflow: Business[] = [];
 
   for (const business of roundOrdered) {
-    const category = getCategoryKey(business);
-    const used = categoryCounts.get(category) ?? 0;
-    if (used < MAX_PER_CATEGORY) {
+    const subKey = getSubcategoryKey(business);
+    const catKey = getCategoryKey(business);
+    const subUsed = subcategoryCounts.get(subKey) ?? 0;
+    const catUsed = categoryCounts.get(catKey) ?? 0;
+    if (subUsed < MAX_PER_SUBCATEGORY && catUsed < MAX_PER_CATEGORY) {
       primary.push(business);
-      categoryCounts.set(category, used + 1);
+      subcategoryCounts.set(subKey, subUsed + 1);
+      categoryCounts.set(catKey, catUsed + 1);
     } else {
       overflow.push(business);
     }
