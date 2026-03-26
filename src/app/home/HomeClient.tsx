@@ -209,6 +209,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
                     ctaFontWeight={400}
                     premiumCtaHover
                     disableAnimations
+                    enableMobilePeek
                   />
                 )}
                 renderCommunityHighlights={(businessesOfTheMonth) => (

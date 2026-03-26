@@ -64,6 +64,7 @@ interface QuicketEvent {
   lastModified?: string;
   startDate?: string;
   endDate?: string;
+  guestListCount?: number;
   venue?: QuicketVenue;
   locality?: QuicketLocality;
   organiser?: QuicketOrganiser;
@@ -493,7 +494,7 @@ function mapEvent(base: QuicketEvent, detail: QuicketEvent | null, bizId: string
     maximum_ticket_price: ticketStats.maximumTicketPrice,
     tickets_available_boolean: ticketStats.ticketsAvailableBoolean,
     schedules_json: normalizeJsonArray(event.schedules),
-    guestlist_count: 0,
+    guestlist_count: isFiniteNum(event.guestListCount) && event.guestListCount! > 0 ? event.guestListCount! : 0,
   };
 }
 

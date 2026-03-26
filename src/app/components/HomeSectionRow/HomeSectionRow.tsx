@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { ArrowRight } from "@/app/lib/icons";
-import { HOME_SECTION_CONTAINER_INSET_CLASS } from "./homeSectionLayout";
+import { HOME_SECTION_CONTAINER_INSET_CLASS, SECTION_WRAPPER_CLASS } from "./homeSectionLayout";
 
 const FONT_STYLE = {
   fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
@@ -58,8 +58,8 @@ export function HomeSectionRow({
   const headerPb = filterSlot ? "pb-2 sm:pb-3" : "pb-4 sm:pb-8 md:pb-10";
 
   const containerClass = fullBleed
-    ? "w-full relative z-10"
-    : "mx-auto w-full max-w-[2000px] relative z-10";
+    ? `w-full relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`
+    : SECTION_WRAPPER_CLASS;
   const headingStyle = { ...FONT_STYLE, fontWeight: titleFontWeight } as const;
 
   const headingNode = titleSlot ?? (
@@ -92,9 +92,7 @@ export function HomeSectionRow({
 
   return (
     <section className="relative m-0 w-full" aria-label={title} style={FONT_STYLE}>
-      <div
-        className={`${containerClass} ${HOME_SECTION_CONTAINER_INSET_CLASS}`}
-      >
+      <div className={containerClass}>
         <div className={`${headerPb} flex flex-wrap items-center justify-between gap-2`}>
           {headingNode}
 

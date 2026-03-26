@@ -8,7 +8,6 @@ import { ArrowLeft } from "@/app/lib/icons";
 import { AuthService } from "../lib/auth";
 import { useToast } from "../contexts/ToastContext";
 import { useScrollReveal } from "../hooks/useScrollReveal";
-import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 
 // Import shared components
 import { authStyles } from "../components/Auth/Shared/authStyles";
@@ -117,18 +116,12 @@ export default function ForgotPasswordPage() {
           {/* Header with premium styling and animations */}
           <div className="text-center mb-4 pt-16 sm:pt-20 title-no-break">
             <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-              <WavyTypedTitle
-                text="Check your email"
-                as="h2"
+              <h2
                 className={`${urbanist.className} text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal`}
-                typingSpeedMs={40}
-                startDelayMs={300}
-                waveVariant="subtle"
-                loopWave={false}
-                style={{ 
-                  fontFamily: urbanist.style.fontFamily,
-                }}
-              />
+                style={{ fontFamily: urbanist.style.fontFamily }}
+              >
+                Check your email
+              </h2>
             </div>
             <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
               Password reset instructions sent
@@ -227,18 +220,12 @@ export default function ForgotPasswordPage() {
         {/* Header with premium styling and animations */}
         <div className="text-center mb-4 pt-16 sm:pt-20 title-no-break">
           <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-            <WavyTypedTitle
-              text="Forgot password?"
-              as="h2"
+            <h2
               className={`${urbanist.className} text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal`}
-              typingSpeedMs={40}
-              startDelayMs={300}
-              waveVariant="subtle"
-              loopWave={false}
-              style={{ 
-                fontFamily: urbanist.style.fontFamily,
-              }}
-            />
+              style={{ fontFamily: urbanist.style.fontFamily }}
+            >
+              Forgot password?
+            </h2>
           </div>
           <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
             Enter your email to reset your password

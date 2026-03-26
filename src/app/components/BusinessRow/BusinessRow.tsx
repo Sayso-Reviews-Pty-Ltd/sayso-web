@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { m } from "framer-motion";
 import BusinessCard, { Business } from "../BusinessCard/BusinessCard";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
 import LocationPromptBanner from "../Location/LocationPromptBanner";
@@ -10,29 +9,10 @@ import { HomeSectionRow } from "../HomeSectionRow/HomeSectionRow";
 import {
   HOME_SECTION_CARD_BASE_CLASS,
   HOME_SECTION_RAIL_CLASS,
-  HOME_SECTION_RAIL_GAP_CLASS,
 } from "../HomeSectionRow/homeSectionLayout";
-import { useIsDesktop } from "../../hooks/useIsDesktop";
 import { coerceCoordinate } from "../../hooks/useBusinessDistanceLocation";
 import { useRouter } from "next/navigation";
-
-const containerVariants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
-  },
-};
+import CardRail from "../CardRail/CardRail";
 
 export default function BusinessRow({
   title,
@@ -50,8 +30,6 @@ export default function BusinessRow({
   hideCarouselArrowsOnDesktop?: boolean;
 }) {
   const router = useRouter();
-  const isDesktop = useIsDesktop();
-  const isSingleCard = businesses.length === 1;
   const hasCoordinateBusinesses = useMemo(
     () =>
       businesses.some((business) => {
@@ -106,59 +84,12 @@ export default function BusinessRow({
 
   if (!businesses || businesses.length === 0) return null;
 
-  const cardClass = isSingleCard
-    ? "snap-start snap-always flex-shrink-0 w-auto sm:w-auto list-none flex justify-center h-full business-card-full-width"
-    : `${HOME_SECTION_CARD_BASE_CLASS} business-card-full-width`;
-
-  const desktopCards = disableAnimations ? (
-    <div className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}>
-      {businesses.map((business, index) => (
-        <div key={business.id} className={cardClass}>
-          <BusinessCard business={business} index={index} />
-        </div>
-      ))}
-    </div>
-  ) : (
-    <m.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      className={`flex ${HOME_SECTION_RAIL_GAP_CLASS} items-stretch`}
-    >
-      {businesses.map((business, index) => (
-        <m.div key={business.id} variants={itemVariants} className={cardClass}>
-          <BusinessCard business={business} index={index} />
-        </m.div>
-      ))}
-    </m.div>
-  );
-
-  const mobileCards = businesses.map((business, index) => {
-    const isFirst = index === 0 && businesses.length > 1;
-    const isLast = index === businesses.length - 1 && businesses.length > 1;
-    return (
-      <div
-        key={business.id}
-        data-edge-snap={isFirst ? "first" : isLast ? "last" : undefined}
-        className={cardClass}
-      >
-        <BusinessCard business={business} index={index} />
-      </div>
-    );
-  });
+  // Always use the home-section peek shell so one-card rails match Events & Specials gutters/width.
+  const cardClass = `${HOME_SECTION_CARD_BASE_CLASS} business-card-full-width`;
 
   return (
     <>
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 639px) {
-          .business-card-full-width > li {
-            width: 100% !important;
-            max-width: 100% !important;
-          }
-        }
-      `}} />
       <HomeSectionRow
         title={title}
         cta={cta}
@@ -170,7 +101,14 @@ export default function BusinessRow({
           hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}
           className={HOME_SECTION_RAIL_CLASS}
         >
-          {isDesktop ? desktopCards : <>{mobileCards}</>}
+          <CardRail
+            items={businesses}
+            getKey={(b) => b.id}
+            renderCard={(b, i) => <BusinessCard business={b} index={i} />}
+            cardClassName={cardClass}
+            disableAnimations={disableAnimations}
+            mobileFullBleedClassName="business-card-full-width"
+          />
         </ScrollableSection>
       </HomeSectionRow>
     </>

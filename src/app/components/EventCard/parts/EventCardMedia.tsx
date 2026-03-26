@@ -3,6 +3,7 @@
 import { m } from 'framer-motion';
 import Image from 'next/image';
 import { BLUR_DATA_URL } from '../EventCard.constants';
+import { RAIL_CARD_MEDIA_HEIGHT } from '../../HomeSectionRow/cardDimensions';
 
 interface EventCardMediaProps {
   mediaImage: string;
@@ -29,7 +30,7 @@ export function EventCardMedia({
     <div className="relative w-full flex-shrink-0 z-10">
       <m.div
         layoutId={layoutId}
-        className="relative w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-off-white/95 to-off-white/85 h-[280px] sm:h-[300px] md:h-[220px]"
+        className={`relative w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-off-white/95 to-off-white/85 ${RAIL_CARD_MEDIA_HEIGHT}`}
       >
         {showLoadingOverlay && (
           <div className="absolute inset-0 bg-charcoal/5 animate-pulse z-10 flex items-center justify-center">

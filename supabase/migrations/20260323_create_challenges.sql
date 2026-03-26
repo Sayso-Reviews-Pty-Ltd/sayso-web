@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.challenges (
   category_key     TEXT,
   target           INT         NOT NULL DEFAULT 1,
   reward_xp        INT         NOT NULL DEFAULT 25,
-  reward_badge_id  UUID        REFERENCES public.badges(id) ON DELETE SET NULL,
+  reward_badge_id  TEXT        REFERENCES public.badges(id) ON DELETE SET NULL,
   starts_at        TIMESTAMPTZ NOT NULL,
   ends_at          TIMESTAMPTZ NOT NULL,
   is_active        BOOL        NOT NULL DEFAULT false,

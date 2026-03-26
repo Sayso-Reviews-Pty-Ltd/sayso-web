@@ -42,22 +42,27 @@ export default function EventsSpecialsSkeleton({
           )}
         </div>
 
-        <div className="pt-2">
-          <ScrollableSection
-            showArrows={false}
-            className={HOME_SECTION_RAIL_CLASS}
-            enableMobilePeek={enableMobilePeek}
-          >
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className={HOME_SECTION_CARD_BASE_CLASS}
-              >
-                <EventCardSkeleton />
-              </div>
-            ))}
-          </ScrollableSection>
-        </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (max-width: 639px) {
+            .event-card-rail-full-width > li {
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+          }
+        `}} />
+        <ScrollableSection
+          className={HOME_SECTION_RAIL_CLASS}
+          enableMobilePeek={enableMobilePeek}
+        >
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className={`${HOME_SECTION_CARD_BASE_CLASS} event-card-rail-full-width`}
+            >
+              <EventCardSkeleton />
+            </div>
+          ))}
+        </ScrollableSection>
       </div>
     </section>
   );

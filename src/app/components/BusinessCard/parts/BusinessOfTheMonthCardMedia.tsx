@@ -6,6 +6,7 @@ import { AnimatePresence, m } from "framer-motion";
 import VerifiedBadge from "../../VerifiedBadge/VerifiedBadge";
 import { getSubcategoryPlaceholderFromCandidates } from "../../../utils/subcategoryPlaceholders";
 import { BLUR_DATA_URL } from "../BusinessOfTheMonthCard.constants";
+import { RAIL_CARD_MEDIA_HEIGHT, RAIL_CARD_RADIUS } from "../../HomeSectionRow/cardDimensions";
 
 interface BusinessOfTheMonthCardMediaProps {
   displayImage: string;
@@ -88,7 +89,7 @@ export default function BusinessOfTheMonthCardMedia({
 
       {/* MEDIA - Full bleed with premium overlay */}
       <div
-        className="relative isolate overflow-hidden z-10 cursor-pointer h-[280px] sm:h-[300px] md:h-[220px]"
+        className={`relative isolate overflow-hidden z-10 cursor-pointer ${RAIL_CARD_MEDIA_HEIGHT} ${RAIL_CARD_RADIUS} rounded-b-none`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onClick={onCardClick}
