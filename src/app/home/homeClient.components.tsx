@@ -3,7 +3,8 @@
 import { memo } from "react";
 import nextDynamic from "next/dynamic";
 import BusinessRow from "../components/BusinessRow/BusinessRow";
-import FeaturedBusinessesSkeleton from "../components/CommunityHighlights/FeaturedBusinessesSkeleton";
+import CommunityHighlightsSkeleton from "../components/CommunityHighlights/CommunityHighlightsSkeleton";
+import EventsSpecialsSkeleton from "../components/EventsSpecials/EventsSpecialsSkeleton";
 import HeroSkeleton from "../components/Hero/HeroSkeleton";
 import MobileHeroSkeleton from "../components/Hero/MobileHeroSkeleton";
 
@@ -17,14 +18,21 @@ export const HeroCarousel = nextDynamic(
 export const EventsSpecials = nextDynamic(
   () => import("../components/EventsSpecials/EventsSpecials"),
   {
-    loading: () => <div className="h-96 bg-off-white/50" />,
+    loading: () => (
+      <EventsSpecialsSkeleton
+        title="Events & Specials"
+        containerClass="mx-auto w-full max-w-[2000px] relative z-10"
+        showHeaderCta
+        enableMobilePeek
+      />
+    ),
   }
 );
 
 export const CommunityHighlights = nextDynamic(
   () => import("../components/CommunityHighlights/CommunityHighlights"),
   {
-    loading: () => <FeaturedBusinessesSkeleton count={4} />,
+    loading: () => <CommunityHighlightsSkeleton reviewerCount={12} businessCount={4} />,
   }
 );
 
