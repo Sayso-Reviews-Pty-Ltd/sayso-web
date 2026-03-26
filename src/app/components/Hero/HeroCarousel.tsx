@@ -708,7 +708,7 @@ export default function HeroCarousel() {
             </h2>
             {/* Conditional CTA Button */}
             <div
-              className="w-full flex justify-center pointer-events-auto"
+              className="w-full flex justify-center pointer-events-auto mt-3 sm:mt-4"
             >
               {!user ? (
                 <Link
