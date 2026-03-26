@@ -84,19 +84,13 @@ export default function Footer() {
 
   const linkSections = [
     {
-      title: "Discover",
+      title: "",
       links: [
         { name: "Home", href: "/home" },
         { name: "Trending", href: "/trending" },
         { name: "Events & Specials", href: "/events-specials" },
         { name: "Leaderboard", href: "/leaderboard" },
-      ],
-    },
-    {
-      title: "Community",
-      links: [
         { name: "Badges", href: "/badges" },
-        { name: "Achievements", href: "/achievements" },
         { name: "For You", href: "/for-you" },
         { name: "Saved", href: "/saved" },
       ],
@@ -135,9 +129,9 @@ export default function Footer() {
   ];
 
   const linkColumns = [
-    [linkSections[0], linkSections[1]], // Discover + Community
-    [linkSections[2]],                  // Business
-    [linkSections[3], linkSections[4]], // Company + Legal
+    [linkSections[0]],                  // merged nav links (no heading)
+    [linkSections[1]],                  // Business
+    [linkSections[2], linkSections[3]], // Company + Legal
   ];
 
   const appDownloadBadges = [
@@ -190,10 +184,12 @@ export default function Footer() {
                 className="flex flex-col gap-8"
               >
                 {column.map((section) => (
-                    <div key={section.title} className="flex flex-col gap-2">
-                    <p className="font-urbanist text-sm text-off-white font-700">
-                      {section.title}
-                    </p>
+                    <div key={section.title || "nav"} className="flex flex-col gap-2">
+                    {section.title && (
+                      <p className="font-urbanist text-sm text-off-white font-700">
+                        {section.title}
+                      </p>
+                    )}
                     <ul className="flex flex-col gap-2">
                       {section.links.map((link) => (
                         <li key={link.name}>
