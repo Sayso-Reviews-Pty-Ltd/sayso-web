@@ -60,7 +60,7 @@ export default function ScrollableSection({
     <div className={`relative ${className}`}>
       <div
         ref={scrollRef}
-        className="rail-scroll overflow-x-auto pb-2"
+        className="rail-scroll overflow-x-auto px-2 pb-2"
         style={{
           scrollbarWidth: "none",
           WebkitOverflowScrolling: "touch",
