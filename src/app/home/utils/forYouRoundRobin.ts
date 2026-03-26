@@ -1,5 +1,7 @@
 import type { Business } from "@/app/components/BusinessCard/BusinessCard";
 
+const MAX_PER_CATEGORY = 3;
+
 function getCategoryKey(business: Business): string {
   const categoryKey =
     business.primary_category_slug ||
@@ -11,67 +13,69 @@ function getCategoryKey(business: Business): string {
   return "miscellaneous";
 }
 
+function getSubcategoryKey(business: Business): string {
+  const subcategoryKey =
+    business.primary_subcategory_slug ||
+    business.sub_interest_id ||
+    business.subInterestId ||
+    business.category;
+  const normalizedSubcategory = (subcategoryKey || "").toString().trim().toLowerCase();
+  if (normalizedSubcategory) return normalizedSubcategory;
+  return "miscellaneous";
+}
+
 /**
- * Interleave items by top-level category while preserving each category's
- * original ranking order and avoiding consecutive same-category cards whenever
- * alternatives exist.
+ * BOTM-style diversification:
+ * 1) subcategory rounds (winner per subcategory, then second-per-subcategory, etc.)
+ * 2) parent-category cap on the primary pass
+ * 3) overflow appended so we preserve the full list size
  */
 export function roundRobinForYouBusinesses(businesses: Business[]): Business[] {
   if (!Array.isArray(businesses) || businesses.length <= 2) return businesses;
 
-  const buckets = new Map<string, Business[]>();
-  const categoryOrder: string[] = [];
+  const subcategoryBuckets = new Map<string, Business[]>();
+  const subcategoryOrder: string[] = [];
 
   for (const business of businesses) {
-    const key = getCategoryKey(business);
-    if (!buckets.has(key)) {
-      buckets.set(key, []);
-      categoryOrder.push(key);
+    const key = getSubcategoryKey(business);
+    if (!subcategoryBuckets.has(key)) {
+      subcategoryBuckets.set(key, []);
+      subcategoryOrder.push(key);
     }
-    buckets.get(key)!.push(business);
+    subcategoryBuckets.get(key)!.push(business);
   }
 
-  if (categoryOrder.length <= 1) return businesses;
+  if (subcategoryOrder.length <= 1) return businesses;
 
-  const interleaved: Business[] = [];
-  let previousCategory = "";
-  let cursor = 0;
+  const maxBucketDepth = subcategoryOrder.reduce((depth, key) => {
+    const size = subcategoryBuckets.get(key)?.length ?? 0;
+    return Math.max(depth, size);
+  }, 0);
 
-  while (interleaved.length < businesses.length) {
-    let selectedCategory: string | null = null;
-
-    for (let i = 0; i < categoryOrder.length; i += 1) {
-      const idx = (cursor + i) % categoryOrder.length;
-      const candidate = categoryOrder[idx];
-      const bucket = buckets.get(candidate);
-      if (!bucket || bucket.length === 0) continue;
-      if (candidate === previousCategory) continue;
-      selectedCategory = candidate;
-      cursor = (idx + 1) % categoryOrder.length;
-      break;
+  const roundOrdered: Business[] = [];
+  for (let rank = 0; rank < maxBucketDepth; rank += 1) {
+    for (const key of subcategoryOrder) {
+      const bucket = subcategoryBuckets.get(key);
+      if (!bucket) continue;
+      const candidate = bucket[rank];
+      if (candidate) roundOrdered.push(candidate);
     }
-
-    if (!selectedCategory) {
-      for (let i = 0; i < categoryOrder.length; i += 1) {
-        const idx = (cursor + i) % categoryOrder.length;
-        const candidate = categoryOrder[idx];
-        const bucket = buckets.get(candidate);
-        if (!bucket || bucket.length === 0) continue;
-        selectedCategory = candidate;
-        cursor = (idx + 1) % categoryOrder.length;
-        break;
-      }
-    }
-
-    if (!selectedCategory) break;
-
-    const selectedBucket = buckets.get(selectedCategory);
-    const nextBusiness = selectedBucket?.shift();
-    if (!nextBusiness) continue;
-
-    interleaved.push(nextBusiness);
-    previousCategory = selectedCategory;
   }
 
-  return interleaved;
+  const categoryCounts = new Map<string, number>();
+  const primary: Business[] = [];
+  const overflow: Business[] = [];
+
+  for (const business of roundOrdered) {
+    const category = getCategoryKey(business);
+    const used = categoryCounts.get(category) ?? 0;
+    if (used < MAX_PER_CATEGORY) {
+      primary.push(business);
+      categoryCounts.set(category, used + 1);
+    } else {
+      overflow.push(business);
+    }
+  }
+
+  return [...primary, ...overflow];
 }
