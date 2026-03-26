@@ -149,7 +149,7 @@ export default function OnboardingPage() {
       </div>
 
       <p className="w-full text-center font-urbanist text-[14px] leading-[24px] italic font-medium text-[rgba(45,45,45,0.72)] [word-break:normal] [overflow-wrap:normal] [hyphens:none]">
-        Less guessing, more confessing
+        Less Guessing, More Confessing
       </p>
     </main>
   );

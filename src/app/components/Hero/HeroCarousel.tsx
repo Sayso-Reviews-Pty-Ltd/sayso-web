@@ -593,10 +593,6 @@ export default function HeroCarousel() {
     typeof currentTextSlide?.title === "string" && currentTextSlide.title.trim().length > 0
       ? currentTextSlide.title.trim()
       : FALLBACK_HERO_TEXT.title;
-  const currentDescription =
-    typeof currentTextSlide?.description === "string" && currentTextSlide.description.trim().length > 0
-      ? currentTextSlide.description.trim()
-      : FALLBACK_HERO_TEXT.description;
   const textTransitionClass = prefersReduced ? "duration-200" : "duration-500";
 
   return (
@@ -710,14 +706,6 @@ export default function HeroCarousel() {
             >
               {currentTitle}
             </h2>
-            <p
-              key={`hero-description-${currentTextSlide?.id ?? currentIndex}`}
-              className={`text-base sm:text-lg lg:text-xl text-off-white/90 drop-shadow-md max-w-xl mb-5 sm:mb-6 leading-relaxed whitespace-pre-line [word-break:normal] [overflow-wrap:normal] [hyphens:none] transition-opacity ease-out ${textTransitionClass}`}
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
-            >
-              {currentDescription}
-            </p>
-
             {/* Conditional CTA Button */}
             <div
               className="w-full flex justify-center pointer-events-auto"

@@ -31,7 +31,7 @@ function normalizeSiteUrl(url: string): string {
 
 export const SITE_URL = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_SITE_URL);
 export const SITE_NAME = 'Sayso';
-export const SITE_TAGLINE = 'Less guessing, and more confessing.';
+export const SITE_TAGLINE = 'Less Guessing, More Confessing.';
 export const BRAND_POSITIONING = 'Hyper-local reviews & discovery for Cape Town';
 export const DEFAULT_SITE_DESCRIPTION =
   'Sayso is a hyper-local reviews and discovery app for Cape Town. Explore restaurants, salons, gyms, events, and more - with real community ratings.';

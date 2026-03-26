@@ -75,7 +75,7 @@ export default async function Image() {
               opacity: 0.95,
             }}
           >
-            Less guessing,and more confessing.
+            Less Guessing, More Confessing.
           </div>
           <div
             style={{
