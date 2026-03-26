@@ -91,16 +91,23 @@ const EN_DASH = '–';
 const formatCompact = (start: Date, end?: Date): string => {
   const dayFormatter = new Intl.DateTimeFormat('en-US', { day: 'numeric' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
+  const yearFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric' });
 
   if (!end || (start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth() && start.getDate() === end.getDate())) {
-    return `${dayFormatter.format(start)} ${monthFormatter.format(start)}`;
+    return `${dayFormatter.format(start)} ${monthFormatter.format(start)} ${yearFormatter.format(start)}`;
   }
 
-  const sameMonth = start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const sameMonth = sameYear && start.getMonth() === end.getMonth();
   if (sameMonth) {
-    return `${dayFormatter.format(start)}${EN_DASH}${dayFormatter.format(end)} ${monthFormatter.format(start)}`;
+    return `${dayFormatter.format(start)}${EN_DASH}${dayFormatter.format(end)} ${monthFormatter.format(start)} ${yearFormatter.format(start)}`;
   }
-  return `${dayFormatter.format(start)} ${monthFormatter.format(start)}${EN_DASH}${dayFormatter.format(end)} ${monthFormatter.format(end)}`;
+
+  if (sameYear) {
+    return `${dayFormatter.format(start)} ${monthFormatter.format(start)}${EN_DASH}${dayFormatter.format(end)} ${monthFormatter.format(end)} ${yearFormatter.format(start)}`;
+  }
+
+  return `${dayFormatter.format(start)} ${monthFormatter.format(start)} ${yearFormatter.format(start)}${EN_DASH}${dayFormatter.format(end)} ${monthFormatter.format(end)} ${yearFormatter.format(end)}`;
 };
 
 const tryParse = (value?: string): Date | null => {

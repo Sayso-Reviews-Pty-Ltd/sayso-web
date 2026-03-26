@@ -1,5 +1,5 @@
 export const HOME_SECTION_CONTAINER_INSET_CLASS =
-  "pl-[max(8px,env(safe-area-inset-left))] pr-[max(8px,env(safe-area-inset-right))] sm:px-4";
+  "pl-[max(8px,env(safe-area-inset-left))] pr-[max(8px,env(safe-area-inset-right))] sm:px-2";
 
 // Reusable section wrapper: max-width + page gutter in one primitive.
 export const SECTION_WRAPPER_CLASS =
