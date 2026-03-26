@@ -106,7 +106,10 @@ export function ForYouResultsList({
               ? 'No businesses match your filters'
               : 'Curated from your interests'}
         </h2>
-        <p className="text-body-sm text-charcoal/60 max-w-[70ch] mx-auto" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
+        <p
+          className="text-body-sm text-charcoal/60 max-w-[62ch] mx-auto leading-relaxed break-normal [text-wrap:balance]"
+          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
+        >
           {showOnboardingEmptyState
             ? 'We need a few preferences before we can curate recommendations for you.'
             : isFiltered

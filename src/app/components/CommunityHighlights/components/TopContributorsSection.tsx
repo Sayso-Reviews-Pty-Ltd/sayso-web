@@ -160,7 +160,7 @@ export default function TopContributorsSection({
                   {[...badgePreviews, ...badgePreviews].map((badge, idx) => (
                     <div
                       key={`${badge.label}-${idx}`}
-                      className="group relative flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-charcoal/10 px-4 py-2 shadow-md transition-transform duration-200 hover:-translate-y-0.5"
+                      className="group relative flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-charcoal/10 px-4 py-2 transition-transform duration-200 hover:-translate-y-0.5"
                       title={badge.description}
                       tabIndex={0}
                     >
