@@ -225,7 +225,7 @@ export default function PortalSidebar({ pathname, onClose }: PortalSidebarProps)
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col min-w-0">
+            <div className="flex flex-col min-w-0 flex-1">
               {displayName && (
                 <span className="text-xs font-medium text-white/80 font-urbanist truncate leading-tight">
                   {displayName}
@@ -235,6 +235,7 @@ export default function PortalSidebar({ pathname, onClose }: PortalSidebarProps)
                 {email}
               </span>
             </div>
+            <ChevronRight className="w-3.5 h-3.5 text-white/30 flex-shrink-0" />
           </Link>
         )}
       </div>
