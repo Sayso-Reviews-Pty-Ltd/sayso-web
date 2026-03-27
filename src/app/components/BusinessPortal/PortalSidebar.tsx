@@ -214,7 +214,11 @@ export default function PortalSidebar({ pathname, onClose }: PortalSidebarProps)
       {/* Footer */}
       <div className="px-4 py-3 border-t border-white/10">
         {email && (
-          <div className="flex items-center gap-2.5 min-w-0">
+          <Link
+            href="/settings"
+            onClick={handleMobileLinkClick}
+            className="flex items-center gap-2.5 min-w-0 rounded-lg hover:bg-white/8 transition-colors p-1 -mx-1"
+          >
             <Avatar className="w-7 h-7 flex-shrink-0">
               {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName ?? email} />}
               <AvatarFallback className="text-xs font-semibold bg-white/15 text-white">
@@ -231,7 +235,7 @@ export default function PortalSidebar({ pathname, onClose }: PortalSidebarProps)
                 {email}
               </span>
             </div>
-          </div>
+          </Link>
         )}
       </div>
     </aside>
