@@ -212,14 +212,7 @@ export default function PortalSidebar({ pathname, onClose }: PortalSidebarProps)
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-white/10 space-y-3">
-        <Link
-          href="/home"
-          onClick={handleMobileLinkClick}
-          className="flex items-center gap-2 text-xs text-white/50 hover:text-white/80 transition-colors font-urbanist"
-        >
-          <span>← Back to Sayso</span>
-        </Link>
+      <div className="px-4 py-3 border-t border-white/10">
         {email && (
           <div className="flex items-center gap-2.5 min-w-0">
             <Avatar className="w-7 h-7 flex-shrink-0">
