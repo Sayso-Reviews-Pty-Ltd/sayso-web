@@ -13,6 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/app/components/ui/breadcrumb";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 export default function BusinessMessagesPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -23,13 +24,13 @@ export default function BusinessMessagesPage() {
   if (authLoading || businessesLoading) {
     return (
       <div className="bg-off-white">
-        <div className="mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm h-[calc(100dvh-3.5rem)] lg:h-[100dvh] animate-pulse">
+        <div className="mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm h-[calc(100dvh-3.5rem)] lg:h-[100dvh]">
           {/* Conversation list sidebar skeleton */}
           <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border-r border-charcoal/8 bg-white">
             {/* Sidebar header */}
             <div className="px-4 py-4 border-b border-charcoal/8">
-              <div className="h-6 w-20 rounded-md bg-charcoal/8 mb-3" />
-              <div className="h-9 w-full rounded-full bg-charcoal/6" />
+              <Skeleton className="h-6 w-20 mb-3" />
+              <Skeleton className="h-9 w-full rounded-full" />
             </div>
 
             {/* Conversation items */}
@@ -39,14 +40,14 @@ export default function BusinessMessagesPage() {
                   key={i}
                   className="flex items-start gap-3 px-4 py-3.5 border-b border-charcoal/6"
                 >
-                  <div className="h-10 w-10 rounded-full bg-charcoal/8 flex-shrink-0" />
+                  <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <div className="h-4 w-28 rounded-md bg-charcoal/8" />
-                      <div className="h-3 w-10 rounded-md bg-charcoal/6" />
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-3 w-10" />
                     </div>
-                    <div className="h-3 w-full rounded-md bg-charcoal/6" />
-                    <div className="h-3 w-2/3 rounded-md bg-charcoal/5" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
                   </div>
                 </div>
               ))}
@@ -56,9 +57,9 @@ export default function BusinessMessagesPage() {
           {/* Thread pane skeleton (desktop) */}
           <div className="hidden lg:flex min-w-0 flex-1 flex-col bg-off-white">
             <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-              <div className="h-20 w-20 rounded-full bg-charcoal/6" />
-              <div className="mt-4 h-5 w-32 rounded-md bg-charcoal/8" />
-              <div className="mt-2 h-4 w-56 rounded-md bg-charcoal/6" />
+              <Skeleton className="h-20 w-20 rounded-full" />
+              <Skeleton className="mt-4 h-5 w-32" />
+              <Skeleton className="mt-2 h-4 w-56" />
             </div>
           </div>
         </div>

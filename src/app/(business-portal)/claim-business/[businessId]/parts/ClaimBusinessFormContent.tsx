@@ -88,22 +88,17 @@ export function ClaimBusinessFormContent({
             <span className={`${ICON_CHIP_CLASS} w-14 h-14 mx-auto mb-3`}>
               <Store className="w-6 h-6" />
             </span>
-            <h1 className="text-xl font-bold text-charcoal mb-1" style={{ fontFamily: FONT }}>
-              Claim Business
-            </h1>
-            <p className="text-base text-charcoal/70" style={{ fontFamily: FONT }}>
+            <h1 className="text-xl font-bold text-charcoal mb-1 font-urbanist">Claim Business</h1>
+            <p className="text-base text-charcoal/70 font-urbanist">
               Verify your ownership or management role
             </p>
           </div>
 
           <div className="bg-card-bg rounded-[12px] p-4 mb-6 border border-sage/20">
-            <h2 className="text-base font-semibold text-white mb-1" style={{ fontFamily: FONT }}>
+            <h2 className="text-base font-semibold text-white mb-1 font-urbanist">
               {business.name}
             </h2>
-            <div
-              className="flex items-center gap-1.5 text-sm text-white/90"
-              style={{ fontFamily: FONT }}
-            >
+            <div className="flex items-center gap-1.5 text-sm text-white/90 font-urbanist">
               <span>{business.category}</span>
               {business.location && (
                 <>
@@ -117,10 +112,7 @@ export function ClaimBusinessFormContent({
 
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-3">
-              <label
-                className="text-sm font-semibold text-charcoal flex items-center gap-2"
-                style={{ fontFamily: FONT }}
-              >
+              <label className="text-sm font-semibold text-charcoal flex items-center gap-2 font-urbanist">
                 <span className={SMALL_ICON_CHIP_CLASS}>
                   <UserCheck className="w-3.5 h-3.5" />
                 </span>
@@ -130,24 +122,22 @@ export function ClaimBusinessFormContent({
                 <button
                   type="button"
                   onClick={() => updateFormData({ role: "owner" })}
-                  className={`px-4 py-3 rounded-[10px] border-2 transition-all text-sm font-semibold ${
+                  className={`px-4 py-3 rounded-[10px] border-2 transition-all text-sm font-semibold font-urbanist ${
                     formData.role === "owner"
                       ? "border-sage bg-card-bg/10 text-sage"
                       : "border-charcoal/15 bg-white text-charcoal/70 hover:border-charcoal/30"
                   }`}
-                  style={{ fontFamily: FONT }}
                 >
                   Owner
                 </button>
                 <button
                   type="button"
                   onClick={() => updateFormData({ role: "manager" })}
-                  className={`px-4 py-3 rounded-[10px] border-2 transition-all text-sm font-semibold ${
+                  className={`px-4 py-3 rounded-[10px] border-2 transition-all text-sm font-semibold font-urbanist ${
                     formData.role === "manager"
                       ? "border-sage bg-card-bg/10 text-sage"
                       : "border-charcoal/15 bg-white text-charcoal/70 hover:border-charcoal/30"
                   }`}
-                  style={{ fontFamily: FONT }}
                 >
                   Manager
                 </button>
@@ -157,8 +147,7 @@ export function ClaimBusinessFormContent({
             <div>
               <label
                 htmlFor="claim-email"
-                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2"
-                style={{ fontFamily: FONT }}
+                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2 font-urbanist"
               >
                 <span className={SMALL_ICON_CHIP_CLASS}>
                   <Mail className="w-3.5 h-3.5" />
@@ -171,10 +160,9 @@ export function ClaimBusinessFormContent({
                 value={formData.email}
                 onChange={(e) => updateFormData({ email: e.target.value })}
                 placeholder="info@business.co.za"
-                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm"
-                style={{ fontFamily: FONT }}
+                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm font-urbanist"
               />
-              <p className="text-sm text-charcoal/50 mt-1.5" style={{ fontFamily: FONT }}>
+              <p className="text-sm text-charcoal/50 mt-1.5 font-urbanist">
                 Match website domain to auto-verify
               </p>
             </div>
@@ -182,8 +170,7 @@ export function ClaimBusinessFormContent({
             <div>
               <label
                 htmlFor="claim-phone"
-                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2"
-                style={{ fontFamily: FONT }}
+                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2 font-urbanist"
               >
                 <span className={SMALL_ICON_CHIP_CLASS}>
                   <Phone className="w-3.5 h-3.5" />
@@ -196,16 +183,12 @@ export function ClaimBusinessFormContent({
                 value={formData.phone}
                 onChange={(e) => updateFormData({ phone: e.target.value })}
                 placeholder="Business phone for OTP"
-                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm"
-                style={{ fontFamily: FONT }}
+                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm font-urbanist"
               />
             </div>
 
             <div className="space-y-2">
-              <label
-                className="text-sm font-semibold text-charcoal flex items-center gap-2"
-                style={{ fontFamily: FONT }}
-              >
+              <label className="text-sm font-semibold text-charcoal flex items-center gap-2 font-urbanist">
                 <span className={SMALL_ICON_CHIP_CLASS}>
                   <Building2 className="w-3.5 h-3.5" />
                 </span>
@@ -216,18 +199,16 @@ export function ClaimBusinessFormContent({
                 value={formData.cipc_registration_number}
                 onChange={(e) => updateFormData({ cipc_registration_number: e.target.value })}
                 placeholder="Company registration number"
-                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm"
-                style={{ fontFamily: FONT }}
+                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm font-urbanist"
               />
               <input
                 type="text"
                 value={formData.cipc_company_name}
                 onChange={(e) => updateFormData({ cipc_company_name: e.target.value })}
                 placeholder="Registered company name"
-                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm"
-                style={{ fontFamily: FONT }}
+                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors text-sm font-urbanist"
               />
-              <p className="text-sm text-charcoal/50" style={{ fontFamily: FONT }}>
+              <p className="text-sm text-charcoal/50 font-urbanist">
                 For manual CIPC review; no documents required
               </p>
             </div>
@@ -235,8 +216,7 @@ export function ClaimBusinessFormContent({
             <div>
               <label
                 htmlFor="claim-notes"
-                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2"
-                style={{ fontFamily: FONT }}
+                className="text-sm font-semibold text-charcoal flex items-center gap-2 mb-2 font-urbanist"
               >
                 <span className={SMALL_ICON_CHIP_CLASS}>
                   <FileText className="w-3.5 h-3.5" />
@@ -249,15 +229,13 @@ export function ClaimBusinessFormContent({
                 onChange={(e) => updateFormData({ note: e.target.value })}
                 placeholder="Tell us about your relationship with this business..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors resize-none text-sm"
-                style={{ fontFamily: FONT }}
+                className="w-full px-4 py-3 rounded-[10px] border border-charcoal/15 bg-white text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-sage/50 focus:ring-1 focus:ring-sage/20 transition-colors resize-none text-sm font-urbanist"
               />
             </div>
 
             {claimStateMessage && (
               <div
-                className="flex items-start gap-3 p-4 rounded-[10px] bg-card-bg/10 border border-sage/25 text-sage"
-                style={{ fontFamily: FONT }}
+                className="flex items-start gap-3 p-4 rounded-[10px] bg-card-bg/10 border border-sage/25 text-sage font-urbanist"
                 role="status"
                 aria-live="polite"
               >
@@ -271,8 +249,7 @@ export function ClaimBusinessFormContent({
                     <button
                       type="button"
                       onClick={onReopenOtp}
-                      className="mt-2 inline-flex items-center gap-2 rounded-full bg-card-bg px-3 py-1.5 text-xs font-semibold text-white hover:bg-card-bg/90 transition-colors"
-                      style={{ fontFamily: FONT }}
+                      className="mt-2 inline-flex items-center gap-2 rounded-full bg-card-bg px-3 py-1.5 text-xs font-semibold text-white hover:bg-card-bg/90 transition-colors font-urbanist"
                     >
                       Continue OTP verification
                     </button>
@@ -286,8 +263,7 @@ export function ClaimBusinessFormContent({
                 ref={errorRef}
                 role="alert"
                 tabIndex={-1}
-                className="flex items-start gap-3 p-4 rounded-[10px] bg-coral/10 border border-coral/30 text-coral"
-                style={{ fontFamily: FONT }}
+                className="flex items-start gap-3 p-4 rounded-[10px] bg-coral/10 border border-coral/30 text-coral font-urbanist"
               >
                 <span className={`${ICON_CHIP_CLASS} h-7 w-7 flex-shrink-0 mt-0.5`}>
                   <AlertCircle className="w-4 h-4" />
@@ -299,16 +275,14 @@ export function ClaimBusinessFormContent({
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Link
                 href="/claim-business"
-                className="flex-1 px-4 py-3 rounded-full border-2 border-charcoal/15 text-charcoal text-sm font-semibold hover:bg-charcoal/5 transition-colors text-center"
-                style={{ fontFamily: FONT }}
+                className="flex-1 px-4 py-3 rounded-full border-2 border-charcoal/15 text-charcoal text-sm font-semibold hover:bg-charcoal/5 transition-colors text-center font-urbanist"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={isSubmitting || isSendingOtp || !hasValidContact}
-                className="flex-1 px-4 py-3 rounded-full bg-gradient-to-br from-coral to-coral/90 text-white text-sm font-semibold hover:from-coral/90 hover:to-coral/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                style={{ fontFamily: FONT }}
+                className="flex-1 px-4 py-3 rounded-full bg-gradient-to-br from-coral to-coral/90 text-white text-sm font-semibold hover:from-coral/90 hover:to-coral/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-urbanist"
               >
                 {isSubmitting || isSendingOtp ? (
                   <>

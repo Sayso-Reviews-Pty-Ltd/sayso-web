@@ -31,6 +31,8 @@ import {
 } from "@/app/components/ui/breadcrumb";
 import Link from "next/link";
 import { ConfirmationDialog } from "@/components/molecules/ConfirmationDialog";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import { Button } from "@/app/components/atoms/Button";
 
 const ICON_CHIP_BASE_CLASS =
   "rounded-full bg-off-white/70 text-charcoal/85 flex items-center justify-center transition-colors hover:bg-off-white/90";
@@ -341,12 +343,12 @@ export default function OwnerBusinessDashboard() {
   if (authLoading || isLoading) {
     return (
       <div className="font-urbanist">
-        <div className="px-2 sm:px-4 lg:px-6 2xl:px-8 py-6 max-w-5xl mx-auto">
+        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
           {/* Breadcrumb skeleton */}
           <div className="pt-4 sm:pt-6 pb-2 flex items-center gap-2">
-            <div className="h-4 w-24 bg-charcoal/8 rounded animate-pulse" />
-            <div className="h-4 w-3 bg-charcoal/8 rounded animate-pulse" />
-            <div className="h-4 w-32 bg-charcoal/10 rounded animate-pulse" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-3" />
+            <Skeleton className="h-4 w-32" />
           </div>
 
           <div className="pt-1 pb-4 space-y-4">
@@ -354,24 +356,24 @@ export default function OwnerBusinessDashboard() {
             <article className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl rounded-[12px] shadow-lg relative overflow-hidden">
               <div className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-charcoal/8 animate-pulse flex-shrink-0" />
+                  <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex-shrink-0" />
                   <div className="flex-1 min-w-0 w-full space-y-2.5">
                     <div className="flex items-center gap-2">
-                      <div className="h-6 w-48 bg-charcoal/10 rounded animate-pulse" />
-                      <div className="h-5 w-16 bg-charcoal/6 rounded-full animate-pulse" />
+                      <Skeleton className="h-6 w-48" />
+                      <Skeleton className="h-5 w-16 rounded-full" />
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-4 w-28 bg-charcoal/7 rounded animate-pulse" />
-                      <div className="h-4 w-24 bg-charcoal/7 rounded animate-pulse" />
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-4 w-24" />
                     </div>
                     <div className="flex items-center gap-2.5">
-                      <div className="h-4 w-12 bg-charcoal/6 rounded-full animate-pulse" />
+                      <Skeleton className="h-4 w-12 rounded-full" />
                       <div className="h-3 w-px bg-charcoal/10" />
-                      <div className="h-4 w-20 bg-charcoal/6 rounded animate-pulse" />
+                      <Skeleton className="h-4 w-20" />
                       <div className="h-3 w-px bg-charcoal/10" />
-                      <div className="h-4 w-16 bg-charcoal/6 rounded animate-pulse" />
+                      <Skeleton className="h-4 w-16" />
                       <div className="h-3 w-px bg-charcoal/10" />
-                      <div className="h-4 w-24 bg-charcoal/6 rounded animate-pulse" />
+                      <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
                 </div>
@@ -386,12 +388,12 @@ export default function OwnerBusinessDashboard() {
                   className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/80 backdrop-blur-xl rounded-[12px] shadow-lg p-4 min-h-[120px] flex flex-col justify-between"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-charcoal/8 animate-pulse" />
-                    <div className="h-3.5 w-20 bg-charcoal/7 rounded animate-pulse" />
+                    <Skeleton className="w-8 h-8 rounded-full" />
+                    <Skeleton className="h-3.5 w-20" />
                   </div>
                   <div>
-                    <div className="h-8 w-16 bg-charcoal/10 rounded animate-pulse mb-1" />
-                    <div className="h-3 w-24 bg-charcoal/5 rounded animate-pulse" />
+                    <Skeleton className="h-8 w-16 mb-1" />
+                    <Skeleton className="h-3 w-24" />
                   </div>
                 </div>
               ))}
@@ -400,8 +402,8 @@ export default function OwnerBusinessDashboard() {
             {/* Quick actions skeleton */}
             <section className="space-y-3" aria-label="Quick actions loading">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-charcoal/8 animate-pulse" />
-                <div className="h-4 w-28 bg-charcoal/10 rounded animate-pulse" />
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <Skeleton className="h-4 w-28" />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -409,8 +411,8 @@ export default function OwnerBusinessDashboard() {
                     key={i}
                     className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/80 backdrop-blur-xl rounded-[12px] p-4 flex flex-col items-center gap-2"
                   >
-                    <div className="w-10 h-10 rounded-full bg-charcoal/8 animate-pulse" />
-                    <div className="h-3.5 w-20 bg-charcoal/7 rounded animate-pulse" />
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                    <Skeleton className="h-3.5 w-20" />
                   </div>
                 ))}
               </div>
@@ -422,21 +424,18 @@ export default function OwnerBusinessDashboard() {
               aria-label="Growth loading"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-charcoal/8 animate-pulse" />
-                <div className="h-4 w-36 bg-charcoal/10 rounded animate-pulse" />
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <Skeleton className="h-4 w-36" />
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 bg-charcoal/8 rounded-full animate-pulse" />
-                <div className="h-3 w-8 bg-charcoal/7 rounded animate-pulse" />
+                <Skeleton className="flex-1 h-2 rounded-full" />
+                <Skeleton className="h-3 w-8" />
               </div>
               <div className="space-y-2.5">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-charcoal/8 animate-pulse flex-shrink-0" />
-                    <div
-                      className="h-3.5 bg-charcoal/7 rounded animate-pulse"
-                      style={{ width: `${55 + i * 12}%` }}
-                    />
+                    <Skeleton className="w-5 h-5 rounded-full flex-shrink-0" />
+                    <Skeleton className="h-3.5" style={{ width: `${55 + i * 12}%` }} />
                   </div>
                 ))}
               </div>
@@ -447,13 +446,13 @@ export default function OwnerBusinessDashboard() {
               className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl rounded-[12px] shadow-lg p-6 sm:p-8"
               aria-label="Analytics loading"
             >
-              <div className="animate-pulse flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-full bg-charcoal/10" />
-                <div className="h-4 w-32 bg-charcoal/10 rounded" />
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-4 w-32" />
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="h-[220px] rounded-[12px] bg-charcoal/5" />
-                <div className="h-[220px] rounded-[12px] bg-charcoal/5" />
+                <Skeleton className="h-[220px] rounded-[12px]" />
+                <Skeleton className="h-[220px] rounded-[12px]" />
               </div>
             </section>
           </div>
@@ -488,7 +487,7 @@ export default function OwnerBusinessDashboard() {
 
   return (
     <div className="font-urbanist">
-      <div className="px-2 sm:px-4 lg:px-6 2xl:px-8 py-6 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
         <Breadcrumb className="pt-4 sm:pt-6 pb-2">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -760,17 +759,18 @@ export default function OwnerBusinessDashboard() {
                     Soon
                   </span>
                 </div>
-                <button
+                <Button
+                  variant="bare"
                   type="button"
                   onClick={handleDeleteClick}
-                  className="group bg-gradient-to-br from-card-bg via-card-bg to-card-bg/80 backdrop-blur-xl border border-coral/40 rounded-[12px] p-4 flex flex-col items-center gap-2 text-center hover:border-coral/70 hover:bg-coral/5 transition-all duration-200"
+                  className="group bg-gradient-to-br from-card-bg via-card-bg to-card-bg/80 backdrop-blur-xl border border-coral/40 rounded-full p-4 flex flex-col items-center gap-2 text-center hover:border-coral/70 hover:bg-coral/5 transition-all duration-200"
                   aria-label="Delete business"
                 >
                   <span className={`${ICON_CHIP_LARGE_CLASS} group-hover:bg-off-white/90`}>
                     <Trash2 className="w-5 h-5" />
                   </span>
                   <span className="text-sm font-semibold text-coral">Delete Business</span>
-                </button>
+                </Button>
               </div>
             </section>
 
