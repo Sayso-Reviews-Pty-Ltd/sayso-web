@@ -37,6 +37,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const isSlot = !!props.asChild;
+
     return (
       <ShadButton
         ref={ref}
@@ -46,10 +48,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(fullWidth && "w-full", className)}
         {...props}
       >
-        {isLoading && <Spinner />}
-        {!isLoading && leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
-        <span>{children}</span>
-        {!isLoading && rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+        {isSlot ? (
+          children
+        ) : (
+          <>
+            {isLoading && <Spinner />}
+            {!isLoading && leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+            <span>{children}</span>
+            {!isLoading && rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+          </>
+        )}
       </ShadButton>
     );
   }
