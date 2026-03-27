@@ -5,6 +5,7 @@ import { m } from "framer-motion";
 import { X, User, Upload } from "@/app/lib/icons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/app/components/ui/avatar";
 import { H2, Small } from "@/app/components/ui/typography";
+import { Input } from "@/app/components/ui/input";
 
 interface EditProfileFormProps {
   username: string;
@@ -115,14 +116,14 @@ export function EditProfileForm({
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
             <User className="w-5 h-5" />
           </div>
-          <input
+          <Input
             id="username"
             type="text"
             value={username}
             onChange={(e) => onUsernameChange(e.target.value)}
             placeholder="Choose a username"
             disabled={saving}
-            className="font-urbanist w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-body font-medium text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="font-urbanist pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-body font-medium text-white placeholder-white/50 focus-visible:ring-white/30 focus-visible:border-white/40"
           />
         </div>
         <Small className="text-white/70 mt-2 block">
@@ -138,14 +139,14 @@ export function EditProfileForm({
         >
           Display Name
         </label>
-        <input
+        <Input
           id="displayName"
           type="text"
           value={displayName}
           onChange={(e) => onDisplayNameChange(e.target.value)}
           placeholder="Your display name (optional)"
           disabled={saving}
-          className="font-urbanist w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-body font-medium text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="font-urbanist px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-body font-medium text-white placeholder-white/50 focus-visible:ring-white/30 focus-visible:border-white/40"
         />
         <Small className="text-white/70 mt-2 block">This is how your name appears to others</Small>
       </div>

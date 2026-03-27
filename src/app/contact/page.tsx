@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Send, ChevronRight, CheckCircle2, AlertCircle, Loader2 } from "@/app/lib/icons";
 import { m, AnimatePresence } from "framer-motion";
 import Footer from "../components/Footer/Footer";
+import { Input } from "@/app/components/ui/input";
 
 const FONT = "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
@@ -52,7 +53,9 @@ export default function ContactPage() {
     message: validateMessage(form.message),
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     if (name === "message" && value.length > MESSAGE_MAX) return;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -113,11 +116,12 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-dvh bg-navbar-bg" style={{ fontFamily: FONT }}>
-
       {/* Breadcrumb */}
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 pt-6 pb-0">
         <nav className="flex items-center gap-2 text-sm text-white/50" aria-label="Breadcrumb">
-          <Link href="/home" className="hover:text-white transition-colors">Home</Link>
+          <Link href="/home" className="hover:text-white transition-colors">
+            Home
+          </Link>
           <ChevronRight className="w-3.5 h-3.5" />
           <span className="text-white/80">Contact</span>
         </nav>
@@ -128,9 +132,7 @@ export default function ContactPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
           Contact us
         </h1>
-        <p className="mt-2 text-sm text-white/50">
-          We typically respond within 24–48 hours.
-        </p>
+        <p className="mt-2 text-sm text-white/50">We typically respond within 24–48 hours.</p>
       </div>
 
       {/* Body */}
@@ -150,7 +152,8 @@ export default function ContactPage() {
               </div>
               <h3 className="text-xl font-extrabold text-white mb-2">Message sent!</h3>
               <p className="text-sm text-white/70 max-w-xs mx-auto mb-7 leading-relaxed">
-                We've received your message and sent you a confirmation. We'll get back to you within 24–48 hours.
+                We've received your message and sent you a confirmation. We'll get back to you
+                within 24–48 hours.
               </p>
               <button
                 type="button"
@@ -174,11 +177,14 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* Name */}
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="contact-name" className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                  <label
+                    htmlFor="contact-name"
+                    className="text-xs font-semibold text-white/60 uppercase tracking-wider"
+                  >
                     Full name <span className="text-white/40 normal-case tracking-normal">*</span>
                   </label>
                   <div className="relative">
-                    <input
+                    <Input
                       id="contact-name"
                       name="name"
                       type="text"
@@ -188,12 +194,12 @@ export default function ContactPage() {
                       onChange={handleChange}
                       onBlur={() => handleBlur("name")}
                       placeholder="Your name"
-                      className={`w-full rounded-full border bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 transition pr-9 ${
+                      className={`rounded-full border bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus-visible:ring-2 pr-9 ${
                         isNameInvalid
-                          ? "border-red-400/60 focus:ring-red-400/20 focus:border-red-400/80"
+                          ? "border-red-400/60 focus-visible:ring-red-400/20 focus-visible:border-red-400/80"
                           : isNameValid
-                          ? "border-emerald-400/50 focus:ring-emerald-400/20 focus:border-emerald-400/70"
-                          : "border-white/20 focus:ring-white/20 focus:border-white/40"
+                            ? "border-emerald-400/50 focus-visible:ring-emerald-400/20 focus-visible:border-emerald-400/70"
+                            : "border-white/20 focus-visible:ring-white/20 focus-visible:border-white/40"
                       }`}
                     />
                     <AnimatePresence>
@@ -227,11 +233,15 @@ export default function ContactPage() {
 
                 {/* Email */}
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="contact-email" className="text-xs font-semibold text-white/60 uppercase tracking-wider">
-                    Email address <span className="text-white/40 normal-case tracking-normal">*</span>
+                  <label
+                    htmlFor="contact-email"
+                    className="text-xs font-semibold text-white/60 uppercase tracking-wider"
+                  >
+                    Email address{" "}
+                    <span className="text-white/40 normal-case tracking-normal">*</span>
                   </label>
                   <div className="relative">
-                    <input
+                    <Input
                       id="contact-email"
                       name="email"
                       type="email"
@@ -241,12 +251,12 @@ export default function ContactPage() {
                       onChange={handleChange}
                       onBlur={() => handleBlur("email")}
                       placeholder="you@example.com"
-                      className={`w-full rounded-full border bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 transition pr-9 ${
+                      className={`rounded-full border bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/35 focus-visible:ring-2 pr-9 ${
                         isEmailInvalid
-                          ? "border-red-400/60 focus:ring-red-400/20 focus:border-red-400/80"
+                          ? "border-red-400/60 focus-visible:ring-red-400/20 focus-visible:border-red-400/80"
                           : isEmailValid
-                          ? "border-emerald-400/50 focus:ring-emerald-400/20 focus:border-emerald-400/70"
-                          : "border-white/20 focus:ring-white/20 focus:border-white/40"
+                            ? "border-emerald-400/50 focus-visible:ring-emerald-400/20 focus-visible:border-emerald-400/70"
+                            : "border-white/20 focus-visible:ring-white/20 focus-visible:border-white/40"
                       }`}
                     />
                     <AnimatePresence>
@@ -281,7 +291,10 @@ export default function ContactPage() {
 
               {/* Reason */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="contact-reason" className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                <label
+                  htmlFor="contact-reason"
+                  className="text-xs font-semibold text-white/60 uppercase tracking-wider"
+                >
                   How can we help?
                 </label>
                 <select
@@ -292,7 +305,9 @@ export default function ContactPage() {
                   className="w-full rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/40 transition"
                 >
                   {CONTACT_REASONS.map((r) => (
-                    <option key={r.value} value={r.value} className="text-charcoal bg-white">{r.label}</option>
+                    <option key={r.value} value={r.value} className="text-charcoal bg-white">
+                      {r.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -300,12 +315,21 @@ export default function ContactPage() {
               {/* Message */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="contact-message" className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                  <label
+                    htmlFor="contact-message"
+                    className="text-xs font-semibold text-white/60 uppercase tracking-wider"
+                  >
                     Message <span className="text-white/40 normal-case tracking-normal">*</span>
                   </label>
-                  <span className={`text-xs tabular-nums transition-colors ${
-                    charAtLimit ? "text-red-400 font-semibold" : charNearLimit ? "text-amber-400" : "text-white/35"
-                  }`}>
+                  <span
+                    className={`text-xs tabular-nums transition-colors ${
+                      charAtLimit
+                        ? "text-red-400 font-semibold"
+                        : charNearLimit
+                          ? "text-amber-400"
+                          : "text-white/35"
+                    }`}
+                  >
                     {charCount}/{MESSAGE_MAX}
                   </span>
                 </div>
@@ -369,7 +393,9 @@ export default function ContactPage() {
                       Sending…
                     </>
                   ) : (
-                    <>Send message <Send className="w-4 h-4" /></>
+                    <>
+                      Send message <Send className="w-4 h-4" />
+                    </>
                   )}
                 </button>
               </div>

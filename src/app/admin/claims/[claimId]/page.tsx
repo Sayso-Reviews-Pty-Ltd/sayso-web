@@ -3,14 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Loader2,
-  CheckCircle,
-  XCircle,
-  FileText,
-  ExternalLink,
-  Send,
-} from "@/app/lib/icons";
+import { Loader2, CheckCircle, XCircle, FileText, ExternalLink, Send } from "@/app/lib/icons";
+import { Input } from "@/app/components/ui/input";
 
 type ClaimDetail = {
   claim: {
@@ -35,9 +29,21 @@ type ClaimDetail = {
     reviewed_by: string | null;
     last_notified_at: string | null;
   };
-  events: Array<{ id: string; event_type: string; event_data: unknown; created_at: string; created_by: string | null }>;
-  documents: Array<{ id: string; doc_type: string; status: string; uploaded_at: string; delete_after: string }>;
-}
+  events: Array<{
+    id: string;
+    event_type: string;
+    event_data: unknown;
+    created_at: string;
+    created_by: string | null;
+  }>;
+  documents: Array<{
+    id: string;
+    doc_type: string;
+    status: string;
+    uploaded_at: string;
+    delete_after: string;
+  }>;
+};
 
 export default function AdminClaimDetailPage() {
   const router = useRouter();
@@ -96,7 +102,10 @@ export default function AdminClaimDetailPage() {
       const res = await fetch(`/api/admin/claims/${claimId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: rejectReason.trim(), admin_notes: adminNotes.trim() || null }),
+        body: JSON.stringify({
+          reason: rejectReason.trim(),
+          admin_notes: adminNotes.trim() || null,
+        }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -155,7 +164,10 @@ export default function AdminClaimDetailPage() {
   return (
     <>
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-xl font-bold text-charcoal" style={{ fontFamily: "'Urbanist', sans-serif" }}>
+        <h1
+          className="text-xl font-bold text-charcoal"
+          style={{ fontFamily: "'Urbanist', sans-serif" }}
+        >
           Claim: {claim.business_name ?? claim.id}
         </h1>
         {error && (
@@ -231,7 +243,11 @@ export default function AdminClaimDetailPage() {
                 disabled={action !== "idle"}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card-bg text-white font-medium hover:opacity-90 disabled:opacity-50"
               >
-                {action === "approve" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                {action === "approve" ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CheckCircle className="w-4 h-4" />
+                )}
                 Approve
               </button>
               <button
@@ -239,18 +255,22 @@ export default function AdminClaimDetailPage() {
                 disabled={action !== "idle"}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-charcoal/10 text-charcoal font-medium hover:bg-charcoal/15 disabled:opacity-50"
               >
-                {action === "request-docs" ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                {action === "request-docs" ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <FileText className="w-4 h-4" />
+                )}
                 Request documents
               </button>
               <div className="flex-1 min-w-[200px] flex flex-col gap-2">
-                <input
+                <Input
                   type="text"
                   placeholder="Rejection reason (required to reject)"
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
                 />
-                <input
+                <Input
                   type="text"
                   placeholder="Admin notes (optional)"
                   value={adminNotes}
@@ -262,7 +282,11 @@ export default function AdminClaimDetailPage() {
                   disabled={action !== "idle" || !rejectReason.trim()}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-coral/15 text-coral font-medium hover:bg-coral/20 disabled:opacity-50 w-fit"
                 >
-                  {action === "reject" ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                  {action === "reject" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <XCircle className="w-4 h-4" />
+                  )}
                   Reject
                 </button>
               </div>
@@ -275,7 +299,10 @@ export default function AdminClaimDetailPage() {
             <h2 className="text-lg font-semibold text-charcoal mb-4">Documents</h2>
             <ul className="space-y-2">
               {documents.map((doc) => (
-                <li key={doc.id} className="flex items-center justify-between py-2 border-b border-charcoal/5 last:border-0">
+                <li
+                  key={doc.id}
+                  className="flex items-center justify-between py-2 border-b border-charcoal/5 last:border-0"
+                >
                   <span className="text-sm text-charcoal">
                     {doc.doc_type.replace(/_/g, " ")} — {formatDate(doc.uploaded_at)}
                   </span>
@@ -297,7 +324,9 @@ export default function AdminClaimDetailPage() {
           <ul className="space-y-3">
             {events.map((ev) => (
               <li key={ev.id} className="text-sm text-charcoal/80">
-                <span className="font-medium text-charcoal">{ev.event_type.replace(/_/g, " ")}</span>
+                <span className="font-medium text-charcoal">
+                  {ev.event_type.replace(/_/g, " ")}
+                </span>
                 {" — "}
                 {formatDate(ev.created_at)}
               </li>

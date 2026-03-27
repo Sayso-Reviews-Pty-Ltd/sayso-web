@@ -3,6 +3,8 @@
 import React from "react";
 import { UserCheck, Mail, Phone, FileText, Building2, AlertCircle } from "@/app/lib/icons";
 import { Loader } from "../../Loader/Loader";
+import { Input } from "@/app/components/ui/input";
+import { Textarea } from "@/app/components/ui/textarea";
 
 const MODAL_FONT = "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
@@ -49,7 +51,10 @@ export function ClaimForm({
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-6 sm:py-5">
         <div className="space-y-5 sm:space-y-6">
           <div className="bg-white/20 rounded-[12px] p-4 border border-white/30">
-            <h3 className="text-sm font-semibold text-white mb-2" style={{ fontFamily: MODAL_FONT }}>
+            <h3
+              className="text-sm font-semibold text-white mb-2"
+              style={{ fontFamily: MODAL_FONT }}
+            >
               {business.name}
             </h3>
             <p className="text-sm text-white/90" style={{ fontFamily: MODAL_FONT }}>
@@ -58,7 +63,10 @@ export function ClaimForm({
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-white flex items-center gap-2" style={{ fontFamily: MODAL_FONT }}>
+            <label
+              className="text-sm font-semibold text-white flex items-center gap-2"
+              style={{ fontFamily: MODAL_FONT }}
+            >
               <UserCheck className="w-4 h-4" />
               Your Role
             </label>
@@ -92,17 +100,21 @@ export function ClaimForm({
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="claim-email" className="text-sm font-semibold text-white flex items-center gap-2 mb-2" style={{ fontFamily: MODAL_FONT }}>
+              <label
+                htmlFor="claim-email"
+                className="text-sm font-semibold text-white flex items-center gap-2 mb-2"
+                style={{ fontFamily: MODAL_FONT }}
+              >
                 <Mail className="w-4 h-4" />
                 Business Email (optional)
               </label>
-              <input
+              <Input
                 id="claim-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => onUpdateFormData({ email: e.target.value })}
                 placeholder="info@business.co.za"
-                className="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:border-white/50 transition-colors"
+                className="px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus-visible:border-white/50 focus-visible:ring-white/20"
                 style={{ fontFamily: MODAL_FONT }}
               />
               <p className="text-xs text-white/70 mt-1" style={{ fontFamily: MODAL_FONT }}>
@@ -111,40 +123,47 @@ export function ClaimForm({
             </div>
 
             <div>
-              <label htmlFor="claim-phone" className="text-sm font-semibold text-white flex items-center gap-2 mb-2" style={{ fontFamily: MODAL_FONT }}>
+              <label
+                htmlFor="claim-phone"
+                className="text-sm font-semibold text-white flex items-center gap-2 mb-2"
+                style={{ fontFamily: MODAL_FONT }}
+              >
                 <Phone className="w-4 h-4" />
                 Phone (optional)
               </label>
-              <input
+              <Input
                 id="claim-phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => onUpdateFormData({ phone: e.target.value })}
                 placeholder="Business phone for OTP"
-                className="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:border-white/50 transition-colors"
+                className="px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus-visible:border-white/50 focus-visible:ring-white/20"
                 style={{ fontFamily: MODAL_FONT }}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-white flex items-center gap-2" style={{ fontFamily: MODAL_FONT }}>
+              <label
+                className="text-sm font-semibold text-white flex items-center gap-2"
+                style={{ fontFamily: MODAL_FONT }}
+              >
                 <Building2 className="w-4 h-4" />
                 CIPC (optional)
               </label>
-              <input
+              <Input
                 type="text"
                 value={formData.cipc_registration_number}
                 onChange={(e) => onUpdateFormData({ cipc_registration_number: e.target.value })}
                 placeholder="Company registration number"
-                className="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:border-white/50 transition-colors"
+                className="px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus-visible:border-white/50 focus-visible:ring-white/20"
                 style={{ fontFamily: MODAL_FONT }}
               />
-              <input
+              <Input
                 type="text"
                 value={formData.cipc_company_name}
                 onChange={(e) => onUpdateFormData({ cipc_company_name: e.target.value })}
                 placeholder="Registered company name"
-                className="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:border-white/50 transition-colors"
+                className="px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus-visible:border-white/50 focus-visible:ring-white/20"
                 style={{ fontFamily: MODAL_FONT }}
               />
               <p className="text-xs text-white/70" style={{ fontFamily: MODAL_FONT }}>
@@ -153,17 +172,21 @@ export function ClaimForm({
             </div>
 
             <div>
-              <label htmlFor="claim-notes" className="text-sm font-semibold text-white flex items-center gap-2 mb-2" style={{ fontFamily: MODAL_FONT }}>
+              <label
+                htmlFor="claim-notes"
+                className="text-sm font-semibold text-white flex items-center gap-2 mb-2"
+                style={{ fontFamily: MODAL_FONT }}
+              >
                 <FileText className="w-4 h-4" />
                 Additional Notes (Optional)
               </label>
-              <textarea
+              <Textarea
                 id="claim-notes"
                 value={formData.note}
                 onChange={(e) => onUpdateFormData({ note: e.target.value })}
                 placeholder="Tell us about your relationship with this business..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:border-white/50 transition-colors resize-none"
+                className="px-4 py-3 rounded-lg border border-white/30 bg-white/10 text-white placeholder:text-white/60 focus-visible:border-white/50 focus-visible:ring-white/20 resize-none"
                 style={{ fontFamily: MODAL_FONT }}
               />
             </div>
@@ -199,7 +222,11 @@ export function ClaimForm({
             type="submit"
             disabled={
               isSubmitting ||
-              !(formData.email?.trim() || formData.phone?.trim() || (formData.cipc_registration_number?.trim() && formData.cipc_company_name?.trim()))
+              !(
+                formData.email?.trim() ||
+                formData.phone?.trim() ||
+                (formData.cipc_registration_number?.trim() && formData.cipc_company_name?.trim())
+              )
             }
             className="flex-1 px-4 py-3 rounded-full bg-gradient-to-br from-coral to-coral/90 text-white hover:from-coral/90 hover:to-coral/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ fontFamily: MODAL_FONT }}

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Type, MessageSquare, Lightbulb } from "@/app/lib/icons";
+import { Input } from "@/app/components/ui/input";
 
 interface ReviewTextFormProps {
   reviewTitle: string;
@@ -43,7 +44,7 @@ export default function ReviewTextForm({
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${Math.max(120, textareaRef.current.scrollHeight)}px`;
     }
   }, [reviewText]);
@@ -62,7 +63,7 @@ export default function ReviewTextForm({
           <Type className="w-4 h-4 text-charcoal/60" />
           <label
             className="text-base font-semibold text-charcoal"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           >
             Title
             <span className="ml-1 text-sm font-normal text-charcoal/40">(optional)</span>
@@ -75,7 +76,7 @@ export default function ReviewTextForm({
           }}
           transition={{ duration: 0.2 }}
         >
-          <input
+          <Input
             type="text"
             value={reviewTitle}
             onChange={(e) => {
@@ -89,15 +90,15 @@ export default function ReviewTextForm({
             placeholder="Summarize your experience..."
             maxLength={200}
             className={`
-              w-full bg-white/95 border-2 rounded-full px-5 py-3.5
+              bg-white/95 border-2 rounded-full px-5 py-3.5
               text-base font-semibold text-charcoal placeholder-charcoal/40
-              focus:outline-none transition-all duration-200
-              ${isTitleFocused
-                ? 'border-coral/50 ring-2 ring-coral/20'
-                : 'border-white/60 hover:border-white/80'
+              ${
+                isTitleFocused
+                  ? "border-coral/50 ring-2 ring-coral/20"
+                  : "border-white/60 hover:border-white/80"
               }
             `}
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           />
         </m.div>
       </div>
@@ -109,7 +110,7 @@ export default function ReviewTextForm({
             <MessageSquare className="w-4 h-4 text-charcoal/60" />
             <label
               className="text-base font-semibold text-charcoal"
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+              style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
             >
               Your review
             </label>
@@ -118,10 +119,14 @@ export default function ReviewTextForm({
           {/* Character counter */}
           <m.span
             animate={{
-              color: isNearLimit ? '#E88D67' : charCount < minChars ? 'rgba(45,52,54,0.4)' : 'rgba(45,52,54,0.6)',
+              color: isNearLimit
+                ? "#E88D67"
+                : charCount < minChars
+                  ? "rgba(45,52,54,0.4)"
+                  : "rgba(45,52,54,0.6)",
             }}
             className="text-sm font-medium"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           >
             {charCount}/{maxChars}
           </m.span>
@@ -160,12 +165,13 @@ export default function ReviewTextForm({
               text-base font-medium text-charcoal placeholder-charcoal/40
               focus:outline-none transition-all duration-200 resize-none
               min-h-[120px]
-              ${isTextFocused
-                ? 'border-coral/50 ring-2 ring-coral/20'
-                : 'border-white/60 hover:border-white/80'
+              ${
+                isTextFocused
+                  ? "border-coral/50 ring-2 ring-coral/20"
+                  : "border-white/60 hover:border-white/80"
               }
             `}
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           />
 
           {/* Smart writing prompt */}
@@ -182,7 +188,7 @@ export default function ReviewTextForm({
                 <Lightbulb className="w-4 h-4 text-coral/60 flex-shrink-0" />
                 <span
                   className="text-sm text-charcoal/60"
-                  style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+                  style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
                 >
                   Tip: {writingPrompts[currentPrompt]}
                 </span>
@@ -199,9 +205,9 @@ export default function ReviewTextForm({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="mt-2 px-1 text-sm text-coral/80"
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+              style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
             >
-              {minChars - charCount} more character{minChars - charCount !== 1 ? 's' : ''} needed
+              {minChars - charCount} more character{minChars - charCount !== 1 ? "s" : ""} needed
             </m.p>
           )}
         </AnimatePresence>

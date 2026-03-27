@@ -1,6 +1,15 @@
 "use client";
 
-import { AlertCircle, CheckCircle, Mail, Lock, User as UserIcon, Eye, EyeOff } from "@/app/lib/icons";
+import {
+  AlertCircle,
+  CheckCircle,
+  Mail,
+  Lock,
+  User as UserIcon,
+  Eye,
+  EyeOff,
+} from "@/app/lib/icons";
+import { Input } from "@/app/components/ui/input";
 
 interface FormFieldProps {
   type: "text" | "email" | "password";
@@ -29,29 +38,33 @@ export default function FormField({
   disabled,
   showPassword,
   onTogglePassword,
-  icon: IconComponent
+  icon: IconComponent,
 }: FormFieldProps) {
   const getIcon = () => {
     if (error) return <AlertCircle className="w-5 h-5" />;
     if (value && isValid && touched) return <CheckCircle className="w-5 h-5" />;
     if (IconComponent) return <IconComponent className="w-5 h-5" />;
-    
+
     // Default icons
     switch (type) {
-      case "email": return <Mail className="w-5 h-5" />;
-      case "password": return <Lock className="w-5 h-5" />;
-      default: return <UserIcon className="w-5 h-5" />;
+      case "email":
+        return <Mail className="w-5 h-5" />;
+      case "password":
+        return <Lock className="w-5 h-5" />;
+      default:
+        return <UserIcon className="w-5 h-5" />;
     }
   };
 
   const getIconColor = () => {
-    if (error) return 'text-error-500';
-    if (value && isValid && touched) return 'text-sage';
-    return 'text-charcoal/60 group-focus-within:text-sage';
+    if (error) return "text-error-500";
+    if (value && isValid && touched) return "text-sage";
+    return "text-charcoal/60 group-focus-within:text-sage";
   };
 
   const getInputClasses = () => {
-    const baseClasses = "w-full bg-cultured-1/50 border pl-12 sm:pl-14 pr-4 py-3 sm:py-4 md:py-5 font-urbanist text-body font-600 text-charcoal placeholder-charcoal/50 focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full";
+    const baseClasses =
+      "w-full bg-cultured-1/50 border pl-12 sm:pl-14 pr-4 py-3 sm:py-4 md:py-5 font-urbanist text-body font-600 text-charcoal placeholder-charcoal/50 focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full";
 
     if (error) {
       return `${baseClasses} border-error-100 focus:border-error-500 focus:ring-error-500/20`;
@@ -64,11 +77,13 @@ export default function FormField({
 
   return (
     <div className="relative group">
-      <div className={`absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 transition-colors duration-300 z-10 ${getIconColor()}`}>
+      <div
+        className={`absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 transition-colors duration-300 z-10 ${getIconColor()}`}
+      >
         {getIcon()}
       </div>
-      
-      <input
+
+      <Input
         type={type === "password" && showPassword ? "text" : type}
         placeholder={placeholder}
         value={value}
@@ -77,7 +92,7 @@ export default function FormField({
         className={getInputClasses()}
         disabled={disabled}
       />
-      
+
       {type === "password" && onTogglePassword && (
         <button
           type="button"

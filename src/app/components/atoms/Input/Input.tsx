@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
+import { Input as ShadInput } from "@/app/components/ui/input";
+import { cn } from "@/app/lib/utils";
 
-export type InputVariant = 'default' | 'error' | 'success';
-export type InputSize = 'sm' | 'md' | 'lg';
+export type InputVariant = "default" | "error" | "success";
+export type InputSize = "sm" | "md" | "lg";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;
@@ -17,9 +19,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const variantStyles: Record<InputVariant, string> = {
-  default: `border-light-gray/50 focus:border-sage focus:ring-sage/30`,
-  error: `border-red-300 focus:border-red-500 focus:ring-red-500/20`,
-  success: `border-green-300 focus:border-green-500 focus:ring-green-500/20`,
+  default: `border-charcoal/20 focus-visible:border-sage focus-visible:ring-sage/30`,
+  error: `border-red-300 focus-visible:border-red-500 focus-visible:ring-red-500/20`,
+  success: `border-green-300 focus-visible:border-green-500 focus-visible:ring-green-500/20`,
 };
 
 const sizeStyles: Record<InputSize, string> = {
@@ -31,43 +33,30 @@ const sizeStyles: Record<InputSize, string> = {
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
-      variant = 'default',
-      inputSize = 'md',
+      variant = "default",
+      inputSize = "md",
       label,
       error,
       helperText,
       leftIcon,
       rightIcon,
       fullWidth = false,
-      className = '',
+      className = "",
       id,
       ...props
     },
     ref
   ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
-    const hasError = variant === 'error' || !!error;
-    const displayVariant = hasError ? 'error' : variant;
+    const hasError = variant === "error" || !!error;
+    const displayVariant = hasError ? "error" : variant;
 
-    const baseStyles = `
-      block w-full
-      border rounded-[12px]
-      bg-off-white
-      transition-all duration-200
-      focus:outline-none focus:ring-2
-      disabled:bg-light-gray disabled:cursor-not-allowed disabled:opacity-60
-      placeholder:text-charcoal/60
-    `;
-
-    const containerWidth = fullWidth ? 'w-full' : '';
+    const containerWidth = fullWidth ? "w-full" : "";
 
     return (
-      <div className={`${containerWidth}`}>
+      <div className={containerWidth}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-charcoal mb-1.5"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-charcoal mb-1.5">
             {label}
           </label>
         )}
@@ -79,17 +68,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
 
-          <input
+          <ShadInput
             ref={ref}
             id={inputId}
-            className={`
-              ${baseStyles}
-              ${variantStyles[displayVariant]}
-              ${sizeStyles[inputSize]}
-              ${leftIcon ? 'pl-10' : ''}
-              ${rightIcon ? 'pr-10' : ''}
-              ${className}
-            `}
+            className={cn(
+              variantStyles[displayVariant],
+              sizeStyles[inputSize],
+              leftIcon ? "pl-10" : "",
+              rightIcon ? "pr-10" : "",
+              className
+            )}
             {...props}
           />
 
@@ -100,16 +88,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        {error && (
-          <p className="mt-1.5 text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="mt-1.5 text-sm text-red-500">{error}</p>}
 
-        {helperText && !error && (
-          <p className="mt-1.5 text-sm text-charcoal/60">{helperText}</p>
-        )}
+        {helperText && !error && <p className="mt-1.5 text-sm text-charcoal/60">{helperText}</p>}
       </div>
     );
   }
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
