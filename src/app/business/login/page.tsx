@@ -9,6 +9,7 @@ import { useScrollReveal } from "../../hooks/useScrollReveal";
 import { usePredefinedPageTitle } from "../../hooks/usePageTitle";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 import { getClearAuthMessage } from "../../components/Auth/authFeedback";
+import { Lead } from "@/app/components/ui/typography";
 
 // Import shared components
 import { authStyles } from "../../components/Auth/Shared/authStyles";
@@ -17,7 +18,7 @@ import { PasswordInput } from "../../components/Auth/Shared/PasswordInput";
 // Note: SocialLoginButtons not imported - business accounts use email+password only
 
 export default function BusinessLoginPage() {
-  usePredefinedPageTitle('login');
+  usePredefinedPageTitle("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -76,7 +77,7 @@ export default function BusinessLoginPage() {
 
     if (!email || !password) {
       setError("Complete all fields");
-      showToast("All fields required", 'sage', 2500);
+      showToast("All fields required", "sage", 2500);
       setIsSubmitting(false);
       return;
     }
@@ -84,7 +85,7 @@ export default function BusinessLoginPage() {
     if (!validateEmail(email)) {
       const errorMsg = "Email invalid";
       setError(errorMsg);
-      showToast(errorMsg, 'sage', 2500);
+      showToast(errorMsg, "sage", 2500);
       setIsSubmitting(false);
       return;
     }
@@ -93,19 +94,25 @@ export default function BusinessLoginPage() {
       const normalizedEmail = email.trim().toLowerCase();
 
       // Login as business owner
-      const loggedInUser = await login(normalizedEmail, password, 'business_owner');
+      const loggedInUser = await login(normalizedEmail, password, "business_owner");
 
       if (loggedInUser) {
-        showToast("Welcome back", 'sage', 2000);
+        showToast("Welcome back", "sage", 2000);
       } else {
-        const errorMsg = getClearAuthMessage(authError || "Email or password is incorrect", "login");
+        const errorMsg = getClearAuthMessage(
+          authError || "Email or password is incorrect",
+          "login"
+        );
         setError(errorMsg);
-        showToast(errorMsg, 'sage', 3000);
+        showToast(errorMsg, "sage", 3000);
       }
     } catch (error: unknown) {
-      const errorMsg = getClearAuthMessage(error instanceof Error ? error.message : 'Login failed', "login");
+      const errorMsg = getClearAuthMessage(
+        error instanceof Error ? error.message : "Login failed",
+        "login"
+      );
       setError(errorMsg);
-      showToast(errorMsg, 'sage', 4000);
+      showToast(errorMsg, "sage", 4000);
     } finally {
       setIsSubmitting(false);
     }
@@ -115,11 +122,17 @@ export default function BusinessLoginPage() {
     <>
       <style dangerouslySetInnerHTML={{ __html: authStyles }} />
       {/* Let the document handle scrolling to avoid nested scroll containers on mobile. */}
-      <div ref={containerRef} className="  bg-off-white flex flex-col relative safe-area-full" style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
-
+      <div
+        ref={containerRef}
+        className="  bg-off-white flex flex-col relative safe-area-full"
+        style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
+      >
         {/* Back button with entrance animation */}
         <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 animate-slide-in-left animate-delay-200">
-          <Link href="/onboarding" className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm">
+          <Link
+            href="/onboarding"
+            className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm"
+          >
             <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
           </Link>
         </div>
@@ -139,64 +152,66 @@ export default function BusinessLoginPage() {
               enableScrollTrigger={false}
             />
           </div>
-          <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700">
+          <Lead className="mb-4 px-2 mx-auto animate-fade-in-up animate-delay-700">
             Sign in to manage your business on sayso
-          </p>
+          </Lead>
         </div>
 
         <div className="w-full sm:max-w-md lg:max-w-lg sm:mx-auto relative z-10 flex-1 flex flex-col justify-center py-8 sm:py-12 px-0 sm:px-2">
           {/* Form Card */}
           <section data-section>
-          <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md shadow-md px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12">
+            <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md shadow-md px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12">
+              <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                {/* Error Message */}
+                {error && (
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    className="bg-orange-50 border border-orange-200 rounded-[12px] p-4 text-center"
+                  >
+                    <p className="text-caption font-bold text-orange-700 mb-1">Sign in failed</p>
+                    <p className="text-caption font-semibold text-orange-600">{error}</p>
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
-              {/* Error Message */}
-              {error && (
-                <div role="alert" aria-live="assertive" className="bg-orange-50 border border-orange-200 rounded-[12px] p-4 text-center">
-                  <p className="text-caption font-bold text-orange-700 mb-1">Sign in failed</p>
-                  <p className="text-caption font-semibold text-orange-600">{error}</p>
+                {/* Email Input */}
+                <EmailInput
+                  value={email}
+                  onChange={(value) => {
+                    setEmail(value);
+                    if (!emailTouched) setEmailTouched(true);
+                  }}
+                  onBlur={() => setEmailTouched(true)}
+                  error={getEmailError()}
+                  touched={emailTouched}
+                  disabled={isSubmitting}
+                  placeholder="you@example.com"
+                />
+
+                {/* Password Input */}
+                <PasswordInput
+                  value={password}
+                  onChange={(value) => {
+                    setPassword(value);
+                    if (!passwordTouched) setPasswordTouched(true);
+                  }}
+                  onBlur={() => setPasswordTouched(true)}
+                  disabled={isSubmitting}
+                  placeholder="Enter your password"
+                  showStrength={false}
+                  touched={passwordTouched}
+                  error={getPasswordError()}
+                />
+
+                {/* Forgot password link */}
+                <div className="text-right">
+                  <Link
+                    href="/forgot-password"
+                    className="font-urbanist text-body-sm text-white hover:text-coral transition-colors duration-300 font-semibold"
+                  >
+                    Forgot password?
+                  </Link>
                 </div>
-              )}
-
-              {/* Email Input */}
-              <EmailInput
-                value={email}
-                onChange={(value) => {
-                  setEmail(value);
-                  if (!emailTouched) setEmailTouched(true);
-                }}
-                onBlur={() => setEmailTouched(true)}
-                error={getEmailError()}
-                touched={emailTouched}
-                disabled={isSubmitting}
-                placeholder="you@example.com"
-              />
-
-              {/* Password Input */}
-              <PasswordInput
-                value={password}
-                onChange={(value) => {
-                  setPassword(value);
-                  if (!passwordTouched) setPasswordTouched(true);
-                }}
-                onBlur={() => setPasswordTouched(true)}
-                disabled={isSubmitting}
-                placeholder="Enter your password"
-                showStrength={false}
-                touched={passwordTouched}
-                error={getPasswordError()}
-              />
-
-              {/* Forgot password link */}
-              <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-body-sm text-white hover:text-coral transition-colors duration-300 font-medium"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-                >
-                  Forgot password?
-                </Link>
-              </div>
 
                 {/* Login Button */}
                 <div className="pt-2 flex flex-col items-center gap-2">
@@ -220,38 +235,38 @@ export default function BusinessLoginPage() {
                   <div className="mt-2 text-center">
                     <Link
                       href="/login"
-                      className="text-body-sm text-white/80 hover:text-coral font-medium underline-offset-2 hover:underline transition-colors duration-200"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
+                      className="font-urbanist text-body-sm text-white/80 hover:text-coral font-500 underline-offset-2 hover:underline transition-colors duration-200"
                     >
                       Log in to a Personal Account
                     </Link>
-                    <span className="mx-2 text-white/30" aria-hidden="true">|</span>
+                    <span className="mx-2 text-white/30" aria-hidden="true">
+                      |
+                    </span>
                     <Link
                       href="/register"
-                      className="text-body-sm text-white/80 hover:text-coral font-medium underline-offset-2 hover:underline transition-colors duration-200"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
+                      className="font-urbanist text-body-sm text-white/80 hover:text-coral font-500 underline-offset-2 hover:underline transition-colors duration-200"
                     >
                       Sign up for a Personal Account
                     </Link>
                   </div>
                 </div>
 
-              {/* Note: No OAuth for business accounts - email+password only */}
-            </form>
+                {/* Note: No OAuth for business accounts - email+password only */}
+              </form>
 
-            {/* Footer */}
-            <div className="text-center mt-6 pt-6 border-t border-white/20">
-              <div className="text-body-sm sm:text-body text-white">
-                Don&apos;t have a business account?{" "}
-                <Link
-                  href="/business/register"
-                  className="text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
-                >
-                  Sign up
-                </Link>
+              {/* Footer */}
+              <div className="text-center mt-6 pt-6 border-t border-white/20">
+                <div className="text-body-sm sm:text-body text-white">
+                  Don&apos;t have a business account?{" "}
+                  <Link
+                    href="/business/register"
+                    className="text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
+                  >
+                    Sign up
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
           </section>
         </div>
       </div>
