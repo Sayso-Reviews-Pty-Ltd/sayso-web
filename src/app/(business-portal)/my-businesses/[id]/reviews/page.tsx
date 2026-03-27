@@ -3,8 +3,16 @@
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { PageLoader } from "../../../../components/Loader";
-import { ArrowLeft } from "@/app/lib/icons";
 import Link from "next/link";
+import { ArrowLeft } from "@/app/lib/icons";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
 import ReviewsList from "../../../../components/Reviews/ReviewsList";
 import { useOwnerBusinessDashboard } from "../../../../hooks/useOwnerBusinessDashboard";
 import { useReviews } from "../../../../hooks/useReviews";
@@ -75,7 +83,7 @@ export default function OwnerReviewsPage() {
   }
 
   if (!user) {
-    router.push('/login');
+    router.push("/login");
     return null;
   }
 
@@ -83,7 +91,7 @@ export default function OwnerReviewsPage() {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 text-sm font-urbanist mb-4">
-          {error || 'Business not found'}
+          {error || "Business not found"}
         </div>
         <Link
           href={`/my-businesses/${businessId}`}
@@ -98,6 +106,26 @@ export default function OwnerReviewsPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto font-urbanist">
+      <Breadcrumb className="pt-4 sm:pt-6 pb-2">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/my-businesses">My Businesses</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/my-businesses/${businessId}`}>{business.name}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Reviews</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2.5 mb-1">
@@ -109,14 +137,6 @@ export default function OwnerReviewsPage() {
           Respond to customer feedback and manage your reputation
         </p>
       </div>
-
-      <Link
-        href={`/my-businesses/${businessId}`}
-        className="inline-flex items-center gap-2 mb-6 text-charcoal/60 hover:text-charcoal font-urbanist text-sm transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Dashboard
-      </Link>
 
       <div className="rounded-2xl border border-charcoal/10 bg-white shadow-premium p-6 sm:p-8">
         <ReviewsList
@@ -132,6 +152,3 @@ export default function OwnerReviewsPage() {
     </div>
   );
 }
-
-
-

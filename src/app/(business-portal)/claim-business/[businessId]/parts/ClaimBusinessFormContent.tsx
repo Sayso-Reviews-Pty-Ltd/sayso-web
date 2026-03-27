@@ -3,7 +3,6 @@
 import type { FormEvent, RefObject } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   Store,
   UserCheck,
   Mail,
@@ -13,6 +12,14 @@ import {
   AlertCircle,
   MapPin,
 } from "@/app/lib/icons";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
 import { Loader } from "../../../../components/Loader";
 import { FONT, ICON_CHIP_CLASS, SMALL_ICON_CHIP_CLASS } from "../claimBusiness.constants";
 import type { BusinessData, ClaimFormData } from "../claimBusiness.types";
@@ -60,15 +67,20 @@ export function ClaimBusinessFormContent({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
 
-        <div className="pt-4 pb-2 relative z-10">
-          <Link
-            href="/claim-business"
-            className="inline-flex items-center gap-1.5 text-sm text-charcoal/70 hover:text-charcoal transition-colors"
-            style={{ fontFamily: FONT }}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to search
-          </Link>
+        <div className="pt-4 sm:pt-6 pb-2 relative z-10">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/claim-business">Claim a Business</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{business.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
 
         <div className="max-w-[640px] mx-auto pb-12 relative z-10">
@@ -88,7 +100,10 @@ export function ClaimBusinessFormContent({
             <h2 className="text-base font-semibold text-white mb-1" style={{ fontFamily: FONT }}>
               {business.name}
             </h2>
-            <div className="flex items-center gap-1.5 text-sm text-white/90" style={{ fontFamily: FONT }}>
+            <div
+              className="flex items-center gap-1.5 text-sm text-white/90"
+              style={{ fontFamily: FONT }}
+            >
               <span>{business.category}</span>
               {business.location && (
                 <>

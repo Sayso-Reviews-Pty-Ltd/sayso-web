@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
 import { LogOut, Trash2, UserRound, Mail, ShieldAlert } from "@/app/lib/icons";
 import { animations } from "../add-business/components";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
 
 const FONT_STACK = "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 const ICON_CHIP_CLASS =
@@ -35,8 +44,8 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetch("/api/user/profile")
-      .then(r => (r.ok ? r.json() : null))
-      .then(data => {
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
         const prefs = data?.data?.notification_preferences;
         if (prefs && typeof prefs === "object") {
           setNotifPrefs({
@@ -46,7 +55,9 @@ export default function SettingsPage() {
           });
         }
       })
-      .catch(() => {/* keep defaults */});
+      .catch(() => {
+        /* keep defaults */
+      });
   }, []);
 
   const handleLogout = async () => {
@@ -124,21 +135,41 @@ export default function SettingsPage() {
     }
   };
 
-  const username = user?.profile?.username || user?.profile?.display_name || user?.email?.split("@")[0] || "User";
+  const username =
+    user?.profile?.username || user?.profile?.display_name || user?.email?.split("@")[0] || "User";
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: animations }} />
-      <div className="mx-auto w-full max-w-5xl p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-8">
+        <Breadcrumb className="pb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/my-businesses">My Businesses</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Settings</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="space-y-5">
           {/* Account Summary */}
           <section className="relative bg-white border border-charcoal/10 rounded-[16px] shadow-sm p-5 sm:p-6">
             <div className="relative flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-charcoal/10 flex items-center justify-center text-charcoal font-bold text-base shadow-sm" style={{ fontFamily: FONT_STACK }}>
+              <div
+                className="w-12 h-12 rounded-full bg-charcoal/10 flex items-center justify-center text-charcoal font-bold text-base shadow-sm"
+                style={{ fontFamily: FONT_STACK }}
+              >
                 {username.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-charcoal/55 uppercase tracking-wide mb-2" style={{ fontFamily: FONT_STACK }}>
+                <p
+                  className="text-xs font-semibold text-charcoal/55 uppercase tracking-wide mb-2"
+                  style={{ fontFamily: FONT_STACK }}
+                >
                   Account Profile
                 </p>
                 <div className="space-y-2.5">
@@ -146,13 +177,20 @@ export default function SettingsPage() {
                     <span className={SMALL_ICON_CHIP_CLASS}>
                       <UserRound className="w-3.5 h-3.5" />
                     </span>
-                    <span className="text-sm sm:text-base font-semibold truncate" style={{ fontFamily: FONT_STACK }}>{username}</span>
+                    <span
+                      className="text-sm sm:text-base font-semibold truncate"
+                      style={{ fontFamily: FONT_STACK }}
+                    >
+                      {username}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5 text-charcoal/75">
                     <span className={SMALL_ICON_CHIP_CLASS}>
                       <Mail className="w-3.5 h-3.5" />
                     </span>
-                    <span className="text-sm truncate" style={{ fontFamily: FONT_STACK }}>{user?.email}</span>
+                    <span className="text-sm truncate" style={{ fontFamily: FONT_STACK }}>
+                      {user?.email}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -161,18 +199,24 @@ export default function SettingsPage() {
 
           {/* Edit Profile */}
           <section className="bg-white border border-charcoal/10 rounded-[16px] shadow-sm p-5 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-charcoal mb-4" style={{ fontFamily: FONT_STACK }}>
+            <h2
+              className="text-base sm:text-lg font-semibold text-charcoal mb-4"
+              style={{ fontFamily: FONT_STACK }}
+            >
               Edit Profile
             </h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-charcoal/55 uppercase tracking-wide block mb-2" style={{ fontFamily: FONT_STACK }}>
+                <label
+                  className="text-xs font-semibold text-charcoal/55 uppercase tracking-wide block mb-2"
+                  style={{ fontFamily: FONT_STACK }}
+                >
                   Display Name
                 </label>
                 <input
                   type="text"
                   value={displayName}
-                  onChange={e => {
+                  onChange={(e) => {
                     setDisplayName(e.target.value);
                     setNameSuccess(false);
                     setNameError(null);
@@ -183,10 +227,17 @@ export default function SettingsPage() {
                 />
               </div>
               {nameError && (
-                <p className="text-xs text-coral" style={{ fontFamily: FONT_STACK }}>{nameError}</p>
+                <p className="text-xs text-coral" style={{ fontFamily: FONT_STACK }}>
+                  {nameError}
+                </p>
               )}
               {nameSuccess && (
-                <p className="text-xs font-semibold text-emerald-600" style={{ fontFamily: FONT_STACK }}>Name saved</p>
+                <p
+                  className="text-xs font-semibold text-emerald-600"
+                  style={{ fontFamily: FONT_STACK }}
+                >
+                  Name saved
+                </p>
               )}
               <button
                 onClick={handleSaveName}
@@ -202,11 +253,19 @@ export default function SettingsPage() {
           {/* Notification Preferences */}
           <section className="bg-white border border-charcoal/10 rounded-[16px] shadow-sm p-5 sm:p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base sm:text-lg font-semibold text-charcoal" style={{ fontFamily: FONT_STACK }}>
+              <h2
+                className="text-base sm:text-lg font-semibold text-charcoal"
+                style={{ fontFamily: FONT_STACK }}
+              >
                 Notifications
               </h2>
               {notifSaved && (
-                <span className="text-xs font-semibold text-emerald-600" style={{ fontFamily: FONT_STACK }}>Saved</span>
+                <span
+                  className="text-xs font-semibold text-emerald-600"
+                  style={{ fontFamily: FONT_STACK }}
+                >
+                  Saved
+                </span>
               )}
             </div>
             <div className="space-y-4">
@@ -218,7 +277,12 @@ export default function SettingsPage() {
                 ] as const
               ).map(({ key, label }) => (
                 <div key={key} className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-charcoal" style={{ fontFamily: FONT_STACK }}>{label}</span>
+                  <span
+                    className="text-sm font-semibold text-charcoal"
+                    style={{ fontFamily: FONT_STACK }}
+                  >
+                    {label}
+                  </span>
                   <button
                     role="switch"
                     aria-checked={notifPrefs[key]}
@@ -236,7 +300,10 @@ export default function SettingsPage() {
 
           {/* Session Actions */}
           <section className="bg-white border border-charcoal/10 rounded-[16px] shadow-sm p-5 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-charcoal mb-4" style={{ fontFamily: FONT_STACK }}>
+            <h2
+              className="text-base sm:text-lg font-semibold text-charcoal mb-4"
+              style={{ fontFamily: FONT_STACK }}
+            >
               Session
             </h2>
             <button
@@ -257,7 +324,10 @@ export default function SettingsPage() {
               <span className={SMALL_ICON_CHIP_CLASS}>
                 <ShieldAlert className="w-4 h-4" />
               </span>
-              <h2 className="text-base sm:text-lg font-semibold text-charcoal" style={{ fontFamily: FONT_STACK }}>
+              <h2
+                className="text-base sm:text-lg font-semibold text-charcoal"
+                style={{ fontFamily: FONT_STACK }}
+              >
                 Danger Zone
               </h2>
             </div>
@@ -280,12 +350,20 @@ export default function SettingsPage() {
             ) : (
               <div className="bg-white border border-coral/35 rounded-[12px] shadow-sm p-4 sm:p-5 space-y-4">
                 <div>
-                  <h3 className="font-semibold text-charcoal mb-2" style={{ fontFamily: FONT_STACK }}>Delete Account</h3>
+                  <h3
+                    className="font-semibold text-charcoal mb-2"
+                    style={{ fontFamily: FONT_STACK }}
+                  >
+                    Delete Account
+                  </h3>
                   <p className="text-sm text-charcoal/75 mb-3" style={{ fontFamily: FONT_STACK }}>
-                    This action cannot be undone. All your data, including your businesses, will be permanently deleted.
+                    This action cannot be undone. All your data, including your businesses, will be
+                    permanently deleted.
                   </p>
                   {deleteError && (
-                    <p className="text-sm text-coral mb-3" style={{ fontFamily: FONT_STACK }}>{deleteError}</p>
+                    <p className="text-sm text-coral mb-3" style={{ fontFamily: FONT_STACK }}>
+                      {deleteError}
+                    </p>
                   )}
                 </div>
 
