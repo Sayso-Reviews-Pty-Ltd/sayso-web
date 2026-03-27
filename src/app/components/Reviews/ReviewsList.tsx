@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AlertCircle, MessageCircle } from "@/app/lib/icons";
-import Link from 'next/link';
-import ReviewCard from './ReviewCard';
-import type { ReviewWithUser } from '../../lib/types/database';
-import { useRealtimeReviews, useRealtimeHelpfulVotes } from '../../hooks/useRealtime';
-import { LiveIndicator } from '../Realtime/RealtimeIndicators';
+import React, { useState, useMemo } from "react";
+import { AlertCircle, MessageCircle, ChevronDown, Star } from "@/app/lib/icons";
+import Link from "next/link";
+import { m, AnimatePresence } from "framer-motion";
+import ReviewCard from "./ReviewCard";
+import type { ReviewWithUser } from "../../lib/types/database";
+import { useRealtimeReviews, useRealtimeHelpfulVotes } from "../../hooks/useRealtime";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 interface ReviewsListProps {
   reviews: ReviewWithUser[];
@@ -20,8 +21,27 @@ interface ReviewsListProps {
     href: string;
     disabled?: boolean;
   };
-  isOwnerView?: boolean; // If true, pass to ReviewCard for owner-specific actions
-  businessId?: string; // For realtime subscriptions
+  isOwnerView?: boolean;
+  businessId?: string;
+  initiallyExpanded?: boolean;
+}
+
+function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          className={
+            star <= Math.round(rating)
+              ? "text-coral fill-coral"
+              : "text-charcoal/20 fill-charcoal/10"
+          }
+        />
+      ))}
+    </span>
+  );
 }
 
 export default function ReviewsList({
@@ -34,39 +54,35 @@ export default function ReviewsList({
   emptyStateAction,
   isOwnerView = false,
   businessId,
+  initiallyExpanded = false,
 }: ReviewsListProps) {
-  // Use realtime reviews if businessId is provided, otherwise use initial reviews
-  const { reviews: realtimeReviews, isLive } = useRealtimeReviews(businessId, initialReviews);
+  const [isExpanded, setIsExpanded] = useState(initiallyExpanded || isOwnerView);
+
+  const { reviews: realtimeReviews } = useRealtimeReviews(businessId, initialReviews);
   const reviews = businessId ? realtimeReviews : initialReviews;
-  
-  // Subscribe to helpful votes for all visible reviews
-  const reviewIds = reviews.map(r => r.id);
+
+  const reviewIds = reviews.map((r) => r.id);
   const { helpfulCounts } = useRealtimeHelpfulVotes(businessId, reviewIds);
+
+  const avgRating = useMemo(() => {
+    if (!reviews.length) return 0;
+    return reviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) / reviews.length;
+  }, [reviews]);
 
   if (loading) {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-lg p-2 border border-sage/5"
-          >
-            <div className="flex items-start space-x-4 animate-pulse">
-              <div className="w-12 h-12 bg-card-bg/20 rounded-full flex-shrink-0" />
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="h-5 bg-card-bg/20 rounded w-24" />
-                  <div className="flex space-x-1">
-                    {[...Array(5)].map((_, j) => (
-                      <div key={j} className="w-4 h-4 bg-card-bg/20 rounded" />
-                    ))}
-                  </div>
+          <div key={i} className="rounded-xl border border-charcoal/8 bg-white p-4">
+            <div className="flex items-start gap-3">
+              <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-20" />
                 </div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-card-bg/20 rounded w-full" />
-                  <div className="h-4 bg-card-bg/20 rounded w-3/4" />
-                  <div className="h-4 bg-card-bg/20 rounded w-1/2" />
-                </div>
+                <Skeleton className="h-3.5 w-full" />
+                <Skeleton className="h-3.5 w-3/4" />
               </div>
             </div>
           </div>
@@ -78,16 +94,12 @@ export default function ReviewsList({
   if (error) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <div className="flex items-center justify-center mb-3">
-            <AlertCircle size={24} className="text-red-500" />
-          </div>
-          <h3 className="font-urbanist text-lg font-600 text-red-800 mb-2">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+          <AlertCircle size={24} className="text-red-500 mx-auto mb-3" />
+          <h3 className="font-urbanist text-base font-semibold text-red-800 mb-1">
             Unable to load reviews
           </h3>
-          <p className="font-urbanist text-sm text-red-600">
-            {error}
-          </p>
+          <p className="font-urbanist text-sm text-red-600">{error}</p>
         </div>
       </div>
     );
@@ -95,45 +107,23 @@ export default function ReviewsList({
 
   if (!reviews || reviews.length === 0) {
     return (
-      <div
-        className="mx-auto w-full max-w-[2000px] px-2 font-urbanist flex flex-1 items-center justify-center"
-        style={{
-          fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-        }}
-      >
-        <div className="text-center w-full max-w-md">
-          <div className="w-20 h-20 mx-auto mb-3 bg-off-white/80 rounded-full flex items-center justify-center">
-            <MessageCircle className="w-8 h-8 text-charcoal/90" />
+      <div className="font-urbanist flex flex-1 items-center justify-center">
+        <div className="text-center w-full max-w-md py-8">
+          <div className="w-16 h-16 mx-auto mb-3 bg-off-white/80 rounded-full flex items-center justify-center">
+            <MessageCircle className="w-7 h-7 text-charcoal/50" />
           </div>
-          <h3 
-            className="text-h2 font-semibold text-charcoal mb-2"
-            style={{
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            }}
-          >
-            No reviews yet
-          </h3>
-          <p 
-            className="text-body-sm text-charcoal/60 mb-6 font-medium"
-            style={{
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            }}
-          >
-            {emptyMessage}
-          </p>
+          <h3 className="text-base font-semibold text-charcoal mb-1">No reviews yet</h3>
+          <p className="text-sm text-charcoal/60 mb-6">{emptyMessage}</p>
           {emptyStateAction && (
             <Link
               href={emptyStateAction.href}
-              className={`inline-block px-6 py-3 rounded-full text-body font-semibold transition-colors mb-6 ${
+              className={`inline-block px-6 py-3 rounded-full text-sm font-semibold transition-colors ${
                 emptyStateAction.disabled
-                  ? 'bg-charcoal/20 text-charcoal/70 cursor-not-allowed'
-                  : 'bg-coral text-white hover:bg-coral/90'
+                  ? "bg-charcoal/20 text-charcoal/70 cursor-not-allowed"
+                  : "bg-coral text-white hover:bg-coral/90"
               }`}
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
               onClick={(e) => {
-                if (emptyStateAction.disabled) {
-                  e.preventDefault();
-                }
+                if (emptyStateAction.disabled) e.preventDefault();
               }}
               aria-disabled={emptyStateAction.disabled}
             >
@@ -146,27 +136,59 @@ export default function ReviewsList({
   }
 
   return (
-    <div className="space-y-6">
-  
-      {reviews.map((review) => (
-        <div key={review.id}>
-          <ReviewCard
-            review={review}
-            onUpdate={onUpdate}
-            showBusinessInfo={showBusinessInfo}
-            isOwnerView={isOwnerView}
-            realtimeHelpfulCount={helpfulCounts[review.id]}
-          />
+    <div className="font-urbanist">
+      {/* Summary header — always visible */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded((v) => !v)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-charcoal/10 bg-white hover:bg-charcoal/[0.02] transition-colors"
+        aria-expanded={isExpanded}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <StarRating rating={avgRating} />
+          <span className="text-sm font-semibold text-charcoal tabular-nums">
+            {avgRating.toFixed(1)}
+          </span>
+          <span className="text-charcoal/30 text-xs">·</span>
+          <span className="text-sm text-charcoal/60">
+            {reviews.length} review{reviews.length !== 1 ? "s" : ""}
+          </span>
         </div>
-      ))}
+        <m.div
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="flex-shrink-0"
+        >
+          <ChevronDown className="w-4 h-4 text-charcoal/50" />
+        </m.div>
+      </button>
 
-      {reviews.length > 0 && (
-        <div className="text-center pt-4">
-          <p className="font-urbanist text-sm text-charcoal/60">
-            Showing {reviews.length} review{reviews.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-      )}
+      {/* Expandable list */}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <m.div
+            key="reviews-list"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3 space-y-3">
+              {reviews.map((review) => (
+                <ReviewCard
+                  key={review.id}
+                  review={review}
+                  onUpdate={onUpdate}
+                  showBusinessInfo={showBusinessInfo}
+                  isOwnerView={isOwnerView}
+                  realtimeHelpfulCount={helpfulCounts[review.id]}
+                />
+              ))}
+            </div>
+          </m.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
