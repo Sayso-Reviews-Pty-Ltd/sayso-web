@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Avatar, AvatarSize } from '@/components/atoms/Avatar';
-import { Text } from '@/components/atoms/Text';
-import { Badge, BadgeVariant } from '@/components/atoms/Badge';
+import React from "react";
+import { Avatar, AvatarSize } from "@/components/atoms/Avatar";
+import { Text } from "@/components/atoms/Text";
+import { Badge, BadgeVariant } from "@/app/components/ui/badge";
 
 export interface UserCardProps {
   avatarUrl?: string | null;
@@ -25,9 +25,9 @@ export const UserCard: React.FC<UserCardProps> = ({
   username,
   bio,
   badge,
-  avatarSize = 'md',
+  avatarSize = "md",
   onClick,
-  className = '',
+  className = "",
 }) => {
   const isClickable = !!onClick;
 
@@ -36,16 +36,11 @@ export const UserCard: React.FC<UserCardProps> = ({
       onClick={isClickable ? onClick : undefined}
       className={`
         flex items-start gap-3
-        ${isClickable ? 'cursor-pointer hover:bg-light-gray/50 rounded-[12px] p-3 -m-3 transition-colors' : ''}
+        ${isClickable ? "cursor-pointer hover:bg-light-gray/50 rounded-[12px] p-3 -m-3 transition-colors" : ""}
         ${className}
       `}
     >
-      <Avatar
-        src={avatarUrl}
-        alt={name}
-        size={avatarSize}
-        fallback={name}
-      />
+      <Avatar src={avatarUrl} alt={name} size={avatarSize} fallback={name} />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">

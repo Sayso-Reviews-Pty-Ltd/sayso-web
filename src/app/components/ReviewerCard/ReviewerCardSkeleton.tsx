@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 /**
  * Skeleton for ReviewerCard (variant="reviewer").
@@ -8,39 +9,38 @@ import React from "react";
  */
 export default function ReviewerCardSkeleton() {
   return (
-    <div
-      className="snap-center snap-always w-full sm:w-[240px] flex-shrink-0"
-      aria-hidden
-    >
+    <div className="snap-center snap-always w-full sm:w-[240px] flex-shrink-0" aria-hidden>
       <div className="relative bg-card-bg rounded-2xl overflow-hidden shadow-md">
         {/* Top accent */}
         <div className="h-[3px] w-full bg-gradient-to-r from-coral/20 via-sage/20 to-coral/10" />
 
         <div className="p-4 flex flex-col gap-3.5">
-
           {/* Identity row */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-charcoal/8 animate-pulse flex-shrink-0" />
+            <Skeleton className="w-12 h-12 rounded-full bg-charcoal/8 flex-shrink-0" />
             <div className="flex-1 min-w-0 space-y-1.5">
-              <div className="h-4 w-28 bg-charcoal/8 rounded-md animate-pulse" />
-              <div className="h-3 w-16 bg-charcoal/5 rounded-md animate-pulse" />
+              <Skeleton className="h-4 w-28 bg-charcoal/8 rounded-md" />
+              <Skeleton className="h-3 w-16 bg-charcoal/5 rounded-md" />
             </div>
           </div>
 
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-1.5">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex flex-col items-center px-2 py-2 rounded-full bg-off-white/60 border border-charcoal/[0.06] gap-1">
-                <div className="h-6 w-8 bg-charcoal/8 rounded-md animate-pulse" />
-                <div className="h-2 w-10 bg-charcoal/5 rounded-md animate-pulse" />
+              <div
+                key={i}
+                className="flex flex-col items-center px-2 py-2 rounded-full bg-off-white/60 border border-charcoal/[0.06] gap-1"
+              >
+                <Skeleton className="h-6 w-8 bg-charcoal/8 rounded-md" />
+                <Skeleton className="h-2 w-10 bg-charcoal/5 rounded-md" />
               </div>
             ))}
           </div>
 
           {/* Badges (max 2 visible, matching real card MAX_VISIBLE_BADGES) */}
           <div className="flex items-center gap-1">
-            <div className="h-5 w-16 bg-charcoal/8 rounded-full animate-pulse" />
-            <div className="h-5 w-14 bg-charcoal/8 rounded-full animate-pulse" />
+            <Skeleton className="h-5 w-16 bg-charcoal/8 rounded-full" />
+            <Skeleton className="h-5 w-14 bg-charcoal/8 rounded-full" />
           </div>
 
           {/* Latest review snippet */}
@@ -48,17 +48,16 @@ export default function ReviewerCardSkeleton() {
             <div className="flex items-center gap-1.5">
               <div className="flex gap-[2px]">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-2.5 h-2.5 rounded-sm bg-coral/20 animate-pulse" />
+                  <Skeleton key={i} className="w-2.5 h-2.5 rounded-sm bg-coral/20" />
                 ))}
               </div>
-              <div className="h-2 w-8 bg-charcoal/5 rounded animate-pulse" />
+              <Skeleton className="h-2 w-8 bg-charcoal/5 rounded" />
             </div>
             <div className="space-y-1.5">
-              <div className="h-3 w-full bg-charcoal/5 rounded animate-pulse" />
-              <div className="h-3 w-4/5 bg-charcoal/5 rounded animate-pulse" />
+              <Skeleton className="h-3 w-full bg-charcoal/5 rounded" />
+              <Skeleton className="h-3 w-4/5 bg-charcoal/5 rounded" />
             </div>
           </div>
-
         </div>
       </div>
     </div>

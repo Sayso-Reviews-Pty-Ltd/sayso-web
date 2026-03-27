@@ -1,3 +1,5 @@
+import { cn } from "@/app/lib/utils";
+import { Skeleton } from "@/app/components/ui/skeleton";
 import { authStyles } from "./Shared/authStyles";
 
 type AuthSkeletonVariant =
@@ -14,14 +16,8 @@ interface AuthPageSkeletonProps {
   variant: AuthSkeletonVariant;
 }
 
-function Block({
-  className,
-  rounded = "rounded-full",
-}: {
-  className: string;
-  rounded?: string;
-}) {
-  return <div aria-hidden="true" className={`animate-pulse bg-white/16 ${rounded} ${className}`} />;
+function Block({ className, rounded = "rounded-full" }: { className: string; rounded?: string }) {
+  return <Skeleton className={cn("bg-white/16", rounded, className)} />;
 }
 
 function CardBlock({
@@ -31,7 +27,7 @@ function CardBlock({
   className: string;
   rounded?: string;
 }) {
-  return <div aria-hidden="true" className={`animate-pulse bg-charcoal/10 ${rounded} ${className}`} />;
+  return <Skeleton className={cn("bg-charcoal/10", rounded, className)} />;
 }
 
 function BackgroundBlobs() {
@@ -131,11 +127,17 @@ function AuthFormCard({
           <div key={index} className="space-y-3">
             <Block className="h-4 w-24 bg-white/12" />
             <Block className="h-12 w-full rounded-2xl" rounded="rounded-2xl" />
-            {index === 0 && fieldCount > 2 && <Block className="h-3 w-32 bg-white/10" rounded="rounded-md" />}
+            {index === 0 && fieldCount > 2 && (
+              <Block className="h-3 w-32 bg-white/10" rounded="rounded-md" />
+            )}
           </div>
         ))}
 
-        {showSupportLink && <div className="flex justify-end"><Block className="h-4 w-28 bg-white/14" /></div>}
+        {showSupportLink && (
+          <div className="flex justify-end">
+            <Block className="h-4 w-28 bg-white/14" />
+          </div>
+        )}
 
         {showCheckbox && (
           <div className="pt-2 flex items-start gap-3">
@@ -308,12 +310,7 @@ export default function AuthPageSkeleton({ variant }: AuthPageSkeletonProps) {
     case "business-login":
       return (
         <SkeletonShell>
-          <AuthFormCard
-            fieldCount={2}
-            showSupportLink
-            showInlineLinks
-            footerWidth="w-64"
-          />
+          <AuthFormCard fieldCount={2} showSupportLink showInlineLinks footerWidth="w-64" />
         </SkeletonShell>
       );
     case "business-register":

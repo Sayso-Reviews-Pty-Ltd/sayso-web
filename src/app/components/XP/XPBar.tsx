@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { m } from 'framer-motion';
-import { useUserXP } from '@/app/hooks/useUserXP';
-import { LEVEL_PERKS, nextPerkAt } from '@/app/lib/xp/levels';
+import { m } from "framer-motion";
+import { useUserXP } from "@/app/hooks/useUserXP";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import { LEVEL_PERKS, nextPerkAt } from "@/app/lib/xp/levels";
 
 interface XPBarProps {
   userId?: string;
@@ -14,7 +15,7 @@ export default function XPBar({ compact = false }: XPBarProps) {
 
   if (xp.isLoading) {
     return (
-      <div className={`animate-pulse rounded-full bg-charcoal/10 ${compact ? 'h-5 w-32' : 'h-6 w-48'}`} />
+      <Skeleton className={`rounded-full bg-charcoal/10 ${compact ? "h-5 w-32" : "h-6 w-48"}`} />
     );
   }
 
@@ -25,8 +26,8 @@ export default function XPBar({ compact = false }: XPBarProps) {
 
   return (
     <div
-      className={`flex items-center gap-2 font-urbanist ${compact ? 'text-xs' : 'text-sm'}`}
-      title={perk ? `Next perk at Level ${perk.level}: ${perk.perk}` : 'Max level reached'}
+      className={`flex items-center gap-2 font-urbanist ${compact ? "text-xs" : "text-sm"}`}
+      title={perk ? `Next perk at Level ${perk.level}: ${perk.perk}` : "Max level reached"}
     >
       {/* Level badge */}
       <span className="inline-flex items-center justify-center rounded-full bg-navbar-bg text-white font-700 leading-none px-2 py-0.5 text-[11px] shrink-0">
@@ -40,7 +41,7 @@ export default function XPBar({ compact = false }: XPBarProps) {
             className="h-full rounded-full bg-navbar-bg"
             initial={{ width: 0 }}
             animate={{ width: `${xp.percentToNext}%` }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           />
         </div>
         {!compact && (

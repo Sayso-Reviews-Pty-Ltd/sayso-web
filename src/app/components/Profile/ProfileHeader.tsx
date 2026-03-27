@@ -19,6 +19,7 @@ import type { AuthUser } from "@/app/lib/types/database";
 import type { EnhancedProfile } from "@/app/lib/types/user";
 import XPBar from "@/app/components/XP/XPBar";
 import StreakCounter from "@/app/components/Profile/StreakCounter";
+import { Badge } from "@/app/components/ui/badge";
 
 interface UserProfile {
   user_id: string;
@@ -119,15 +120,19 @@ export function ProfileHeader({
                 <h2
                   id="profile-heading"
                   className="text-h1 sm:text-hero font-semibold text-charcoal"
-                  style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+                  style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
                 >
                   {displayLabel}
                 </h2>
                 {profile.is_top_reviewer && (
-                  <div className="px-2 py-1 rounded-full text-caption font-semibold flex items-center gap-1 bg-card-bg/20 text-sage">
+                  <Badge
+                    variant="sage"
+                    size="sm"
+                    className="bg-card-bg/20 border-transparent capitalize"
+                  >
                     <Award size={12} />
-                    <span className="capitalize">Top Reviewer</span>
-                  </div>
+                    Top Reviewer
+                  </Badge>
                 )}
                 {isRealtimeConnected && <LiveIndicator isLive={isRealtimeConnected} />}
               </div>
@@ -169,38 +174,37 @@ export function ProfileHeader({
               </div>
 
               {/* Social Links */}
-              {enhancedProfile?.social_links && Object.keys(enhancedProfile.social_links).length > 0 && (
-                <div className="flex items-center gap-3 mb-4">
-                  {Object.entries(enhancedProfile.social_links).map(([platform, url]) => {
-                    if (!url) return null;
-                    const platformIcons: Record<string, string> = {
-                      instagram: '📷',
-                      x: '𝕏',
-                      twitter: '🐦',
-                      tiktok: '🎵',
-                      facebook: '👤',
-                      linkedin: '💼',
-                      youtube: '▶️',
-                    };
-                    return (
-                      <a
-                        key={platform}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-charcoal/70 hover:text-coral transition-colors"
-                        aria-label={platform}
-                      >
-                        {platformIcons[platform.toLowerCase()] || '🔗'}
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
+              {enhancedProfile?.social_links &&
+                Object.keys(enhancedProfile.social_links).length > 0 && (
+                  <div className="flex items-center gap-3 mb-4">
+                    {Object.entries(enhancedProfile.social_links).map(([platform, url]) => {
+                      if (!url) return null;
+                      const platformIcons: Record<string, string> = {
+                        instagram: "📷",
+                        x: "𝕏",
+                        twitter: "🐦",
+                        tiktok: "🎵",
+                        facebook: "👤",
+                        linkedin: "💼",
+                        youtube: "▶️",
+                      };
+                      return (
+                        <a
+                          key={platform}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-charcoal/70 hover:text-coral transition-colors"
+                          aria-label={platform}
+                        >
+                          {platformIcons[platform.toLowerCase()] || "🔗"}
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
               <div className="flex items-center gap-6 mb-4 flex-wrap">
-                <div className="text-sm text-charcoal/70">
-                  {reviewsCount} reviews
-                </div>
+                <div className="text-sm text-charcoal/70">{reviewsCount} reviews</div>
               </div>
 
               {/* XP + Streak row */}

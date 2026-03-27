@@ -1,3 +1,7 @@
+import React from "react";
+import { cn } from "@/app/lib/utils";
+import { Skeleton } from "@/app/components/ui/skeleton";
+
 function SkeletonBlock({
   className,
   rounded = "rounded-full",
@@ -5,7 +9,7 @@ function SkeletonBlock({
   className: string;
   rounded?: string;
 }) {
-  return <div aria-hidden="true" className={`animate-pulse bg-charcoal/10 ${rounded} ${className}`} />;
+  return <Skeleton className={cn("bg-charcoal/10", rounded, className)} />;
 }
 
 function SkeletonCard({
@@ -16,7 +20,9 @@ function SkeletonCard({
   className?: string;
 }) {
   return (
-    <div className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6 ${className}`}>
+    <div
+      className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6 ${className}`}
+    >
       {children}
     </div>
   );
@@ -55,7 +61,10 @@ export default function SpecialDetailPageSkeleton() {
                 </div>
 
                 <div className="space-y-4">
-                  <SkeletonBlock className="h-10 w-full max-w-[28rem] rounded-2xl" rounded="rounded-2xl" />
+                  <SkeletonBlock
+                    className="h-10 w-full max-w-[28rem] rounded-2xl"
+                    rounded="rounded-2xl"
+                  />
                   <div className="flex items-center gap-4">
                     <SkeletonBlock className="h-4 w-16" />
                     <SkeletonBlock className="h-4 w-32" />
@@ -65,11 +74,26 @@ export default function SpecialDetailPageSkeleton() {
                 <SkeletonCard className="space-y-4">
                   <SkeletonBlock className="h-6 w-36 rounded-xl" rounded="rounded-xl" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                    <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                    <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                    <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                    <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8 sm:col-span-2" rounded="rounded-2xl" />
+                    <SkeletonBlock
+                      className="h-16 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
+                    <SkeletonBlock
+                      className="h-16 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
+                    <SkeletonBlock
+                      className="h-16 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
+                    <SkeletonBlock
+                      className="h-16 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
+                    <SkeletonBlock
+                      className="h-16 w-full rounded-2xl bg-charcoal/8 sm:col-span-2"
+                      rounded="rounded-2xl"
+                    />
                   </div>
                 </SkeletonCard>
 
@@ -111,7 +135,10 @@ export default function SpecialDetailPageSkeleton() {
                     <SkeletonBlock className="h-4 w-36" />
                   </div>
                   <div className="space-y-3 pt-2">
-                    <SkeletonBlock className="h-10 w-full rounded-xl bg-coral/18" rounded="rounded-xl" />
+                    <SkeletonBlock
+                      className="h-10 w-full rounded-xl bg-coral/18"
+                      rounded="rounded-xl"
+                    />
                     <SkeletonBlock className="h-4 w-32 bg-charcoal/8" />
                   </div>
                 </SkeletonCard>

@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { m } from 'framer-motion';
-import { useUserStreak } from '@/app/hooks/useUserStreak';
+import { m } from "framer-motion";
+import { useUserStreak } from "@/app/hooks/useUserStreak";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 interface StreakCounterProps {
   compact?: boolean;
@@ -12,7 +13,7 @@ export default function StreakCounter({ compact = false }: StreakCounterProps) {
 
   if (streak.isLoading) {
     return (
-      <div className={`animate-pulse rounded-full bg-charcoal/10 ${compact ? 'h-5 w-20' : 'h-6 w-32'}`} />
+      <Skeleton className={`rounded-full bg-charcoal/10 ${compact ? "h-5 w-20" : "h-6 w-32"}`} />
     );
   }
 
@@ -21,11 +22,11 @@ export default function StreakCounter({ compact = false }: StreakCounterProps) {
   const isPulsing = streak.currentStreak >= 3;
 
   return (
-    <div className={`flex items-center gap-2 font-urbanist ${compact ? 'text-xs' : 'text-sm'}`}>
+    <div className={`flex items-center gap-2 font-urbanist ${compact ? "text-xs" : "text-sm"}`}>
       {/* Fire icon */}
       <m.span
         animate={isPulsing ? { scale: [1, 1.15, 1] } : {}}
-        transition={isPulsing ? { repeat: Infinity, duration: 1.8, ease: 'easeInOut' } : {}}
+        transition={isPulsing ? { repeat: Infinity, duration: 1.8, ease: "easeInOut" } : {}}
         className="text-base leading-none select-none"
         aria-hidden
       >
@@ -35,7 +36,7 @@ export default function StreakCounter({ compact = false }: StreakCounterProps) {
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
           <span className="font-700 text-charcoal leading-none">
-            {streak.currentStreak} day{streak.currentStreak !== 1 ? 's' : ''}
+            {streak.currentStreak} day{streak.currentStreak !== 1 ? "s" : ""}
           </span>
 
           {streak.shieldActive && (
@@ -49,9 +50,7 @@ export default function StreakCounter({ compact = false }: StreakCounterProps) {
           )}
 
           {streak.isPersonalBest && (
-            <span className="text-[10px] font-600 text-navbar-bg leading-none">
-              Personal best!
-            </span>
+            <span className="text-[10px] font-600 text-navbar-bg leading-none">Personal best!</span>
           )}
         </div>
 
@@ -63,7 +62,7 @@ export default function StreakCounter({ compact = false }: StreakCounterProps) {
                 className="h-full rounded-full bg-amber-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${streak.percentToMilestone}%` }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               />
             </div>
             <span className="text-[10px] text-charcoal/50 leading-none">

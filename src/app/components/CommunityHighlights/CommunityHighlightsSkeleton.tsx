@@ -2,8 +2,12 @@
 
 import React from "react";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
+import { Skeleton } from "@/app/components/ui/skeleton";
 import ReviewerCardSkeleton from "../ReviewerCard/ReviewerCardSkeleton";
-import { HOME_SECTION_CONTAINER_INSET_CLASS, HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS } from "../HomeSectionRow/homeSectionLayout";
+import {
+  HOME_SECTION_CONTAINER_INSET_CLASS,
+  HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS,
+} from "../HomeSectionRow/homeSectionLayout";
 
 interface CommunityHighlightsSkeletonProps {
   reviewerCount?: number;
@@ -25,13 +29,13 @@ function BusinessOfTheMonthCardSkeleton() {
         </div>
         <div className="px-4 py-3 sm:px-5 sm:pt-1 md:pt-2 lg:pt-3 pb-0 flex-1 relative flex-shrink-0 flex flex-col justify-between bg-card-bg/10 z-10 rounded-b-[12px]">
           <div className="flex-1 flex flex-col items-center text-center space-y-1">
-            <div className="h-6 sm:h-7 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
-            <div className="h-4 w-1/2 bg-charcoal/5 rounded mx-auto" />
-            <div className="h-4 w-2/3 bg-charcoal/5 rounded mx-auto mt-2" />
-            <div className="h-4 w-20 bg-charcoal/5 rounded mx-auto mt-2" />
+            <Skeleton className="h-6 sm:h-7 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
+            <Skeleton className="h-4 w-1/2 bg-charcoal/5 rounded mx-auto" />
+            <Skeleton className="h-4 w-2/3 bg-charcoal/5 rounded mx-auto mt-2" />
+            <Skeleton className="h-4 w-20 bg-charcoal/5 rounded mx-auto mt-2" />
           </div>
           <div className="flex md:hidden items-center justify-center pt-4 border-t border-off-white/30">
-            <div className="h-12 w-24 bg-charcoal/10 rounded-full" />
+            <Skeleton className="h-12 w-24 bg-charcoal/10 rounded-full" />
           </div>
         </div>
       </div>
@@ -68,19 +72,21 @@ export default function CommunityHighlightsSkeleton({
       aria-busy="true"
       style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
     >
-      <div className={`mx-auto w-full max-w-[2000px] relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`}>
+      <div
+        className={`mx-auto w-full max-w-[2000px] relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`}
+      >
         {/* Main header */}
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
-          <div className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse px-3 sm:px-4 py-1" />
+          <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg px-3 sm:px-4 py-1" />
         </div>
 
         {/* Top Contributors */}
         <div className="mt-1">
           <div className="pb-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="h-5 w-56 sm:w-64 bg-charcoal/10 rounded-lg animate-pulse px-3 sm:px-4 py-1" />
+            <Skeleton className="h-5 w-56 sm:w-64 bg-charcoal/10 rounded-lg px-3 sm:px-4 py-1" />
             <div className="inline-flex items-center gap-1 px-4 py-2 -mx-2">
-              <div className="h-4 w-16 bg-charcoal/10 rounded-full animate-pulse" />
-              <div className="h-4 w-4 bg-charcoal/10 rounded-full animate-pulse" />
+              <Skeleton className="h-4 w-16 bg-charcoal/10 rounded-full" />
+              <Skeleton className="h-4 w-4 bg-charcoal/10 rounded-full" />
             </div>
           </div>
           <ScrollableSection items={reviewerSlides} />
@@ -89,20 +95,24 @@ export default function CommunityHighlightsSkeleton({
         {/* Featured Businesses */}
         <section className="relative m-0 p-0 w-full mt-3 list-none" aria-hidden>
           <div className="pb-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="h-5 w-48 sm:w-72 bg-charcoal/10 rounded-lg animate-pulse px-3 sm:px-4 py-1" />
+            <Skeleton className="h-5 w-48 sm:w-72 bg-charcoal/10 rounded-lg px-3 sm:px-4 py-1" />
             <div className="inline-flex items-center gap-1 px-4 py-2 -mx-2">
-              <div className="h-4 w-16 bg-charcoal/10 rounded-full animate-pulse" />
-              <div className="h-4 w-4 bg-charcoal/10 rounded-full animate-pulse" />
+              <Skeleton className="h-4 w-16 bg-charcoal/10 rounded-full" />
+              <Skeleton className="h-4 w-4 bg-charcoal/10 rounded-full" />
             </div>
           </div>
-          <style dangerouslySetInnerHTML={{ __html: `
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
             @media (max-width: 639px) {
               .business-month-card-full-width > div {
                 width: 100% !important;
                 max-width: 100% !important;
               }
             }
-          `}} />
+          `,
+            }}
+          />
           <ScrollableSection items={businessSlides} enableMobilePeek />
         </section>
       </div>

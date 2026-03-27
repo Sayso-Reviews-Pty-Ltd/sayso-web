@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { Edit, Trash2, ThumbsUp, ArrowRight } from "@/app/lib/icons";
-import { Text } from '@/components/atoms/Text';
-import { Badge } from '@/components/atoms/Badge';
-import { getCategoryPlaceholder } from '@/app/utils/categoryToPngMapping';
+import { Text } from "@/components/atoms/Text";
+import { Badge } from "@/app/components/ui/badge";
+import { getCategoryPlaceholder } from "@/app/utils/categoryToPngMapping";
 
 export interface ReviewItemProps {
   businessName: string;
@@ -35,7 +35,7 @@ const BusinessThumb: React.FC<{
   const [err, setErr] = useState(false);
 
   const placeholderSrc = getCategoryPlaceholder(category ?? null);
-  const src = (!imageUrl || err) ? placeholderSrc : imageUrl;
+  const src = !imageUrl || err ? placeholderSrc : imageUrl;
 
   return (
     <div
@@ -56,17 +56,17 @@ const BusinessThumb: React.FC<{
   );
 };
 
-const STAR_GRAD_ID = 'reviewItemStarGold';
+const STAR_GRAD_ID = "reviewItemStarGold";
 
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
   return (
     <div className="flex items-center gap-1">
       {/* Gradient definition — same gold pattern as BusinessCard star badge */}
-      <svg width="0" height="0" style={{ position: 'absolute', overflow: 'hidden' }} aria-hidden>
+      <svg width="0" height="0" style={{ position: "absolute", overflow: "hidden" }} aria-hidden>
         <defs>
           <linearGradient id={STAR_GRAD_ID} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#F5D547', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#E6A547', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#F5D547", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#E6A547", stopOpacity: 1 }} />
           </linearGradient>
         </defs>
       </svg>
@@ -76,8 +76,8 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
           <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
             <polygon
               points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-              fill={active ? `url(#${STAR_GRAD_ID})` : 'none'}
-              stroke={active ? `url(#${STAR_GRAD_ID})` : '#D1D5DB'}
+              fill={active ? `url(#${STAR_GRAD_ID})` : "none"}
+              stroke={active ? `url(#${STAR_GRAD_ID})` : "#D1D5DB"}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -104,17 +104,17 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
   onViewClick,
   onEdit,
   onDelete,
-  className = '',
+  className = "",
 }) => {
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const truncateText = (text: string, maxLength: number = 120) =>
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 
   // If we have a businessId, generate the business link
-  const businessLink = businessId ? `/business/${businessId}` : '#';
-  const BusinessNameComponent = businessId ? Link : 'span';
+  const businessLink = businessId ? `/business/${businessId}` : "#";
+  const BusinessNameComponent = businessId ? Link : "span";
 
   return (
     <div
@@ -123,13 +123,21 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
       {/* Header: Business info, rating, date */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <BusinessThumb name={businessName} imageUrl={businessImageUrl} category={businessCategory} size={48} />
+          <BusinessThumb
+            name={businessName}
+            imageUrl={businessImageUrl}
+            category={businessCategory}
+            size={48}
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <BusinessNameComponent 
+              <BusinessNameComponent
                 href={businessLink}
-                className={`text-lg font-semibold text-charcoal ${businessId ? 'hover:text-coral transition-colors cursor-pointer' : ''} truncate`}
-                style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                className={`text-lg font-semibold text-charcoal ${businessId ? "hover:text-coral transition-colors cursor-pointer" : ""} truncate`}
+                style={{
+                  fontFamily:
+                    '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+                }}
               >
                 {businessName}
               </BusinessNameComponent>
@@ -147,7 +155,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Action buttons */}
         <div className="flex items-center gap-2">
           {(onEdit || onDelete) && (
@@ -185,33 +193,41 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
 
       {/* Review content */}
       {(reviewTitle || reviewText) && (
-        <div className="pl-[60px]"> {/* Align with content below business thumb */}
+        <div className="pl-[60px]">
+          {" "}
+          {/* Align with content below business thumb */}
           {reviewTitle && (
-            <h4 className="text-base font-semibold text-charcoal mb-1" style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+            <h4
+              className="text-base font-semibold text-charcoal mb-1"
+              style={{
+                fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+              }}
+            >
               {reviewTitle}
             </h4>
           )}
           {reviewText && (
-            <p className="text-sm text-charcoal/80 leading-relaxed mb-2" style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+            <p
+              className="text-sm text-charcoal/80 leading-relaxed mb-2"
+              style={{
+                fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+              }}
+            >
               {truncateText(reviewText)}
             </p>
           )}
-          
           {/* Tags */}
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {tags.slice(0, 4).map((tag, index) => (
-                <span 
-                  key={index}
-                  className="px-2 py-1 bg-card-bg/15 text-sage text-xs rounded-full border border-sage/20"
-                >
+                <Badge key={index} variant="sage" size="sm">
                   {tag}
-                </span>
+                </Badge>
               ))}
               {tags.length > 4 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                <Badge variant="neutral" size="sm">
                   +{tags.length - 4} more
-                </span>
+                </Badge>
               )}
             </div>
           )}

@@ -1,5 +1,6 @@
-import React from 'react';
-import Skeleton from './Skeleton';
+import React from "react";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import { cn } from "@/app/lib/utils";
 
 interface SkeletonCardProps {
   className?: string;
@@ -7,8 +8,10 @@ interface SkeletonCardProps {
   width?: string;
 }
 
-const SkeletonCard: React.FC<SkeletonCardProps> = ({ className = '', height = 'h-32', width = 'w-full' }) => (
-  <Skeleton className={`block ${height} ${width} mb-4 ${className}`} radius="rounded-2xl" />
-);
+const SkeletonCard: React.FC<SkeletonCardProps> = ({
+  className = "",
+  height = "h-32",
+  width = "w-full",
+}) => <Skeleton className={cn("block rounded-2xl mb-4", height, width, className)} />;
 
 export default SkeletonCard;

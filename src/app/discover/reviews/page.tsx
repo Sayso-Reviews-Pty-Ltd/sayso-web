@@ -3,8 +3,19 @@
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Briefcase, Image as ImageIcon, ThumbsUp, FileText, Star, ChevronRight, ChevronLeft, TrendingUp } from "@/app/lib/icons";
+import {
+  ArrowLeft,
+  Briefcase,
+  Image as ImageIcon,
+  ThumbsUp,
+  FileText,
+  Star,
+  ChevronRight,
+  ChevronLeft,
+  TrendingUp,
+} from "@/app/lib/icons";
 import VerifiedBadge from "@/app/components/VerifiedBadge/VerifiedBadge";
+import { Badge } from "@/app/components/ui/badge";
 import FilterPillGroup from "@/app/components/Filters/FilterPillGroup";
 
 // Mock reviews data - in production this would come from API
@@ -15,16 +26,17 @@ const MOCK_REVIEWS = [
     businessId: "demo",
     author: "Jessica Martinez",
     avatar: "JM",
-    profilePic: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
     rating: 5,
     date: "2 days ago",
     text: "Absolutely amazing experience! The atmosphere was perfect, staff were incredibly friendly and attentive. The food came out fast and hot. Will definitely be coming back with friends!",
     helpful: 24,
     images: [
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
     ],
-    tags: ["trustworthy", "on time", "friendly", "great atmosphere"]
+    tags: ["trustworthy", "on time", "friendly", "great atmosphere"],
   },
   {
     id: 2,
@@ -32,12 +44,13 @@ const MOCK_REVIEWS = [
     businessId: "coffee-spot",
     author: "Michael Chen",
     avatar: "MC",
-    profilePic: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
     rating: 4,
     date: "1 week ago",
     text: "Really good coffee and service. The portions were generous and everything tasted fresh. Only minor complaint is it got a bit noisy during peak hours, but that's expected for a popular spot.",
     helpful: 18,
-    tags: ["on time", "quality food", "good value"]
+    tags: ["on time", "quality food", "good value"],
   },
   {
     id: 3,
@@ -45,15 +58,14 @@ const MOCK_REVIEWS = [
     businessId: "demo",
     author: "Sarah Williams",
     avatar: "SW",
-    profilePic: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces",
     rating: 5,
     date: "2 weeks ago",
     text: "One of the best dining experiences I've had in a while. The staff went above and beyond to accommodate our dietary restrictions. The presentation was beautiful and taste was phenomenal!",
     helpful: 32,
-    images: [
-      "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop"
-    ],
-    tags: ["trustworthy", "friendly", "accommodating", "excellent service"]
+    images: ["https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop"],
+    tags: ["trustworthy", "friendly", "accommodating", "excellent service"],
   },
   {
     id: 4,
@@ -61,12 +73,13 @@ const MOCK_REVIEWS = [
     businessId: "urban-bistro",
     author: "David Thompson",
     avatar: "DT",
-    profilePic: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
     rating: 3,
     date: "3 weeks ago",
     text: "Decent place overall. Food was good but nothing extraordinary. Service was a bit slow on the day we visited, but the staff were apologetic about it. Would give it another try during off-peak hours.",
     helpful: 9,
-    tags: ["average experience"]
+    tags: ["average experience"],
   },
   {
     id: 5,
@@ -74,12 +87,13 @@ const MOCK_REVIEWS = [
     businessId: "coffee-spot",
     author: "Emily Rodriguez",
     avatar: "ER",
-    profilePic: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces",
     rating: 5,
     date: "1 month ago",
     text: "Love this place! Been coming here for years and the quality never disappoints. The specials are always creative and delicious. Staff remembers regulars which makes you feel valued.",
     helpful: 45,
-    tags: ["trustworthy", "loyal customer", "consistent quality", "friendly"]
+    tags: ["trustworthy", "loyal customer", "consistent quality", "friendly"],
   },
   {
     id: 6,
@@ -87,12 +101,13 @@ const MOCK_REVIEWS = [
     businessId: "demo",
     author: "James Parker",
     avatar: "JP",
-    profilePic: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces",
     rating: 4,
     date: "1 month ago",
     text: "Great spot for a casual dinner. The menu has something for everyone. Prices are reasonable for the quality you get. The only downside is parking can be challenging during weekends.",
     helpful: 15,
-    tags: ["good value", "variety", "casual dining"]
+    tags: ["good value", "variety", "casual dining"],
   },
   {
     id: 7,
@@ -100,16 +115,17 @@ const MOCK_REVIEWS = [
     businessId: "sunset-grill",
     author: "Olivia Anderson",
     avatar: "OA",
-    profilePic: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=faces",
     rating: 5,
     date: "2 months ago",
     text: "Perfect for special occasions! The ambiance is romantic and intimate. We celebrated our anniversary here and the staff made it extra special with a complimentary dessert. Highly recommend!",
     helpful: 28,
     images: [
       "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop"
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop",
     ],
-    tags: ["romantic", "special occasion", "excellent service", "friendly"]
+    tags: ["romantic", "special occasion", "excellent service", "friendly"],
   },
   {
     id: 8,
@@ -117,27 +133,28 @@ const MOCK_REVIEWS = [
     businessId: "urban-bistro",
     author: "Ryan Mitchell",
     avatar: "RM",
-    profilePic: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
+    profilePic:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
     rating: 4,
     date: "2 months ago",
     text: "Solid choice for lunch meetings. Quick service, quiet atmosphere during daytime, and the lunch specials are a great deal. Coffee is excellent too!",
     helpful: 12,
-    tags: ["on time", "professional", "good value"]
-  }
+    tags: ["on time", "professional", "good value"],
+  },
 ];
 
 const FILTER_OPTIONS = [
   { id: "all", label: "All Reviews", icon: <FileText className="w-4 h-4" /> },
   { id: "5", label: "5 Stars", icon: <Star className="w-4 h-4" /> },
   { id: "4", label: "4 Stars", icon: <Star className="w-4 h-4" /> },
-  { id: "photos", label: "With Photos", icon: <ImageIcon className="w-4 h-4" /> }
+  { id: "photos", label: "With Photos", icon: <ImageIcon className="w-4 h-4" /> },
 ];
 
 const SORT_OPTIONS = [
   { id: "recent", label: "Most Recent" },
   { id: "helpful", label: "Most Helpful" },
   { id: "highest", label: "Highest Rated" },
-  { id: "lowest", label: "Lowest Rated" }
+  { id: "lowest", label: "Lowest Rated" },
 ];
 
 export default function GeneralReviewsPage() {
@@ -151,17 +168,17 @@ export default function GeneralReviewsPage() {
     const totalReviews = MOCK_REVIEWS.length;
     const avgRating = MOCK_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
     const ratingBreakdown = {
-      5: MOCK_REVIEWS.filter(r => r.rating === 5).length,
-      4: MOCK_REVIEWS.filter(r => r.rating === 4).length,
-      3: MOCK_REVIEWS.filter(r => r.rating === 3).length,
-      2: MOCK_REVIEWS.filter(r => r.rating === 2).length,
-      1: MOCK_REVIEWS.filter(r => r.rating === 1).length,
+      5: MOCK_REVIEWS.filter((r) => r.rating === 5).length,
+      4: MOCK_REVIEWS.filter((r) => r.rating === 4).length,
+      3: MOCK_REVIEWS.filter((r) => r.rating === 3).length,
+      2: MOCK_REVIEWS.filter((r) => r.rating === 2).length,
+      1: MOCK_REVIEWS.filter((r) => r.rating === 1).length,
     };
 
     return {
       totalReviews,
       avgRating: Number(avgRating.toFixed(1)),
-      ratingBreakdown
+      ratingBreakdown,
     };
   }, []);
 
@@ -171,11 +188,11 @@ export default function GeneralReviewsPage() {
 
     // Apply filter
     if (selectedFilter === "5") {
-      filtered = filtered.filter(r => r.rating === 5);
+      filtered = filtered.filter((r) => r.rating === 5);
     } else if (selectedFilter === "4") {
-      filtered = filtered.filter(r => r.rating === 4);
+      filtered = filtered.filter((r) => r.rating === 4);
     } else if (selectedFilter === "photos") {
-      filtered = filtered.filter(r => r.images && r.images.length > 0);
+      filtered = filtered.filter((r) => r.images && r.images.length > 0);
     }
 
     // Apply sort
@@ -192,7 +209,7 @@ export default function GeneralReviewsPage() {
   }, [selectedFilter, selectedSort]);
 
   const toggleExpanded = (reviewId: number) => {
-    setExpandedReviews(prev => {
+    setExpandedReviews((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(reviewId)) {
         newSet.delete(reviewId);
@@ -204,16 +221,16 @@ export default function GeneralReviewsPage() {
   };
 
   const nextImage = (reviewId: number, totalImages: number) => {
-    setCurrentImageIndex(prev => ({
+    setCurrentImageIndex((prev) => ({
       ...prev,
-      [reviewId]: ((prev[reviewId] || 0) + 1) % totalImages
+      [reviewId]: ((prev[reviewId] || 0) + 1) % totalImages,
     }));
   };
 
   const prevImage = (reviewId: number, totalImages: number) => {
-    setCurrentImageIndex(prev => ({
+    setCurrentImageIndex((prev) => ({
       ...prev,
-      [reviewId]: ((prev[reviewId] || 0) - 1 + totalImages) % totalImages
+      [reviewId]: ((prev[reviewId] || 0) - 1 + totalImages) % totalImages,
     }));
   };
 
@@ -260,7 +277,13 @@ export default function GeneralReviewsPage() {
         <nav className="pb-1" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm sm:text-base">
             <li>
-              <Link href="/home" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+              <Link
+                href="/home"
+                className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+                style={{
+                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                }}
+              >
                 Home
               </Link>
             </li>
@@ -268,7 +291,12 @@ export default function GeneralReviewsPage() {
               <ChevronRight className="w-4 h-4 text-charcoal/60" />
             </li>
             <li>
-              <span className="text-charcoal font-semibold" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+              <span
+                className="text-charcoal font-semibold"
+                style={{
+                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                }}
+              >
                 Reviews
               </span>
             </li>
@@ -326,9 +354,8 @@ export default function GeneralReviewsPage() {
             {filteredReviews.map((review, index) => {
               const isExpanded = expandedReviews.has(review.id);
               const shouldTruncate = review.text.length > 200;
-              const displayText = isExpanded || !shouldTruncate
-                ? review.text
-                : review.text.slice(0, 200) + "...";
+              const displayText =
+                isExpanded || !shouldTruncate ? review.text : review.text.slice(0, 200) + "...";
 
               const isNavy = index % 2 === 1;
               const cardClasses = isNavy
@@ -379,17 +406,20 @@ export default function GeneralReviewsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent pointer-events-none" />
 
                       {/* Business Name Badge - Floating on image */}
-                      <Link
-                        href={`/business/${review.businessId}`}
-                        className={`absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-premium shadow-premium-md hover:shadow-premium-lg hover:scale-105 z-20 ${
-                          isNavy ? "bg-white/10 text-white" : "bg-off-white/95 hover:bg-off-white"
+                      <Badge
+                        asChild
+                        size="md"
+                        className={`absolute top-4 left-4 z-20 gap-2 shadow-premium-md hover:shadow-premium-lg hover:scale-105 transition-all duration-premium font-urbanist font-600 tracking-[-0.015em] ${
+                          isNavy
+                            ? "bg-white/10 text-white border-white/20"
+                            : "bg-off-white/95 hover:bg-off-white text-sage border-transparent"
                         }`}
                       >
-                        <Briefcase className={`w-4 h-4 ${isNavy ? "text-white" : "text-sage"}`} />
-                        <span className={`font-urbanist text-sm font-600 tracking-[-0.015em] ${isNavy ? "text-white" : "text-sage"}`}>
+                        <Link href={`/business/${review.businessId}`}>
+                          <Briefcase className="w-4 h-4" />
                           {review.businessName}
-                        </span>
-                      </Link>
+                        </Link>
+                      </Badge>
 
                       {/* Gallery Icon with count (top right) */}
                       {review.images.length > 1 && (
@@ -409,12 +439,12 @@ export default function GeneralReviewsPage() {
                               key={idx}
                               onClick={(e) => {
                                 e.preventDefault();
-                                setCurrentImageIndex(prev => ({ ...prev, [review.id]: idx }));
+                                setCurrentImageIndex((prev) => ({ ...prev, [review.id]: idx }));
                               }}
                               className={`transition-all duration-premium ${
                                 idx === (currentImageIndex[review.id] || 0)
-                                  ? 'w-2 h-2 bg-off-white  '
-                                  : 'w-1.5 h-1.5 bg-off-white  /60 hover:bg-off-white  /80'
+                                  ? "w-2 h-2 bg-off-white  "
+                                  : "w-1.5 h-1.5 bg-off-white  /60 hover:bg-off-white  /80"
                               } rounded-full`}
                             />
                           ))}
@@ -430,15 +460,17 @@ export default function GeneralReviewsPage() {
 
                     {/* Business Name Badge for reviews without images */}
                     {(!review.images || review.images.length === 0) && (
-                      <Link
-                        href={`/business/${review.businessId}`}
-                        className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 bg-card-bg/10 hover:bg-card-bg/20 rounded-full transition-all duration-premium"
+                      <Badge
+                        asChild
+                        variant="sage"
+                        size="md"
+                        className="mb-4 gap-2 font-urbanist font-600 tracking-[-0.015em] hover:bg-card-bg/20 transition-all duration-premium border-transparent"
                       >
-                        <Briefcase className="w-4 h-4 text-sage" />
-                        <span className="font-urbanist text-sm font-600 text-sage tracking-[-0.015em]">
+                        <Link href={`/business/${review.businessId}`}>
+                          <Briefcase className="w-4 h-4" />
                           {review.businessName}
-                        </span>
-                      </Link>
+                        </Link>
+                      </Badge>
                     )}
 
                     {/* Review Header */}
@@ -447,7 +479,11 @@ export default function GeneralReviewsPage() {
                       <m.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2 + index * 0.05, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+                        transition={{
+                          delay: 0.2 + index * 0.05,
+                          duration: 0.5,
+                          ease: [0.34, 1.56, 0.64, 1],
+                        }}
                         className="relative flex-shrink-0"
                       >
                         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden shadow-premium-md ring-2 ring-sage/20 hover:ring-sage/40 transition-all duration-premium ease-premium hover:scale-110">
@@ -475,10 +511,14 @@ export default function GeneralReviewsPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                          <h3 className={`font-urbanist text-lg sm:text-xl font-600 tracking-[-0.02em] ${titleText}`}>
+                          <h3
+                            className={`font-urbanist text-lg sm:text-xl font-600 tracking-[-0.02em] ${titleText}`}
+                          >
                             {review.author}
                           </h3>
-                          <span className={`font-urbanist text-sm font-600 tracking-[-0.015em] ${subtleText}`}>
+                          <span
+                            className={`font-urbanist text-sm font-600 tracking-[-0.015em] ${subtleText}`}
+                          >
                             {review.date}
                           </span>
                         </div>
@@ -490,7 +530,9 @@ export default function GeneralReviewsPage() {
                               key={i}
                               className="w-[18px] h-[18px]"
                               fill={i < review.rating ? "var(--amber-500)" : "transparent"}
-                              stroke={i < review.rating ? "var(--amber-500)" : "var(--charcoal-300)"}
+                              stroke={
+                                i < review.rating ? "var(--amber-500)" : "var(--charcoal-300)"
+                              }
                             />
                           ))}
                         </div>
@@ -498,7 +540,9 @@ export default function GeneralReviewsPage() {
                     </div>
 
                     {/* Review Text */}
-                    <p className={`font-urbanist text-base font-600 leading-[1.65] mb-4 tracking-[-0.015em] ${bodyText}`}>
+                    <p
+                      className={`font-urbanist text-base font-600 leading-[1.65] mb-4 tracking-[-0.015em] ${bodyText}`}
+                    >
                       {displayText}
                     </p>
 
@@ -516,19 +560,22 @@ export default function GeneralReviewsPage() {
                     {review.tags && review.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {review.tags.map((tag, tagIdx) => (
-                          <span
+                          <Badge
                             key={tagIdx}
-                            className={`inline-flex items-center px-3 py-1 text-sm font-500 rounded-full font-urbanist tracking-[-0.015em] ${chipClasses}`}
+                            size="md"
+                            className={`font-urbanist font-500 tracking-[-0.015em] ${chipClasses}`}
                           >
-                            <span className="mr-1">@</span>
+                            <span>@</span>
                             {tag}
-                          </span>
+                          </Badge>
                         ))}
                       </div>
                     )}
 
                     {/* Helpful Button */}
-                    <div className={`flex items-center gap-3 pt-4 border-t ${isNavy ? "border-white/20" : "border-charcoal/10"}`}>
+                    <div
+                      className={`flex items-center gap-3 pt-4 border-t ${isNavy ? "border-white/20" : "border-charcoal/10"}`}
+                    >
                       <m.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -536,7 +583,9 @@ export default function GeneralReviewsPage() {
                       >
                         <ThumbsUp className="w-4 h-4" />
                         <span>Helpful</span>
-                        <span className={isNavy ? "text-white/60" : "text-charcoal/70"}>({review.helpful})</span>
+                        <span className={isNavy ? "text-white/60" : "text-charcoal/70"}>
+                          ({review.helpful})
+                        </span>
                       </m.button>
                     </div>
                   </div>

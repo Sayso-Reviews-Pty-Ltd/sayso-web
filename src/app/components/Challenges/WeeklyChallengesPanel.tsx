@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useWeeklyChallenges } from '@/app/hooks/useWeeklyChallenges';
-import WeeklyChallengeCard from './WeeklyChallengeCard';
+import { useWeeklyChallenges } from "@/app/hooks/useWeeklyChallenges";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import WeeklyChallengeCard from "./WeeklyChallengeCard";
 
 interface WeeklyChallengesPanelProps {
   userId: string | undefined;
@@ -19,7 +20,7 @@ export default function WeeklyChallengesPanel({ userId }: WeeklyChallengesPanelP
     return (
       <div className="space-y-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="animate-pulse rounded-xl bg-white/10 h-20" />
+          <Skeleton key={i} className="rounded-xl bg-white/10 h-20" />
         ))}
       </div>
     );
@@ -34,7 +35,7 @@ export default function WeeklyChallengesPanel({ userId }: WeeklyChallengesPanelP
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-700 text-white">This Week&apos;s Challenges</h3>
         <span className="text-xs text-white/60">
-          {resets === 0 ? 'Resets tonight' : `Resets in ${resets}d`}
+          {resets === 0 ? "Resets tonight" : `Resets in ${resets}d`}
         </span>
       </div>
 

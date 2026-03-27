@@ -1,4 +1,6 @@
 import React from "react";
+import { cn } from "@/app/lib/utils";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 function SkeletonBlock({
   className,
@@ -7,7 +9,7 @@ function SkeletonBlock({
   className: string;
   rounded?: string;
 }) {
-  return <div aria-hidden="true" className={`animate-pulse bg-charcoal/10 ${rounded} ${className}`} />;
+  return <Skeleton className={cn("bg-charcoal/10", rounded, className)} />;
 }
 
 function SkeletonCard({
@@ -51,13 +53,19 @@ export default function EventDetailPageSkeleton() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
                 <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
                   <SkeletonCard className="p-1 overflow-hidden">
-                    <div className="aspect-[16/10] w-full rounded-[12px] bg-off-white/80 animate-pulse" />
+                    <Skeleton className="aspect-[16/10] w-full rounded-[12px] bg-off-white/80" />
                   </SkeletonCard>
 
                   <SkeletonCard className="space-y-5">
                     <div className="space-y-3">
-                      <SkeletonBlock className="h-9 w-full max-w-[26rem] rounded-2xl" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-6 w-3/4 max-w-[18rem] rounded-xl" rounded="rounded-xl" />
+                      <SkeletonBlock
+                        className="h-9 w-full max-w-[26rem] rounded-2xl"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-6 w-3/4 max-w-[18rem] rounded-xl"
+                        rounded="rounded-xl"
+                      />
                     </div>
 
                     <div className="flex flex-wrap gap-2">
@@ -67,8 +75,14 @@ export default function EventDetailPageSkeleton() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
+                      <SkeletonBlock
+                        className="h-16 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-16 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
                     </div>
                   </SkeletonCard>
 
@@ -83,10 +97,22 @@ export default function EventDetailPageSkeleton() {
                   <SkeletonCard className="space-y-4">
                     <SkeletonBlock className="h-6 w-36 rounded-xl" rounded="rounded-xl" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <SkeletonBlock className="h-24 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-24 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-24 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-24 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
+                      <SkeletonBlock
+                        className="h-24 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-24 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-24 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-24 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
                     </div>
                   </SkeletonCard>
 
@@ -95,7 +121,10 @@ export default function EventDetailPageSkeleton() {
                     <div className="space-y-3">
                       {Array.from({ length: 3 }).map((_, index) => (
                         <div key={index} className="flex items-center gap-3">
-                          <SkeletonBlock className="h-12 w-12 rounded-lg bg-charcoal/12" rounded="rounded-lg" />
+                          <SkeletonBlock
+                            className="h-12 w-12 rounded-lg bg-charcoal/12"
+                            rounded="rounded-lg"
+                          />
                           <div className="min-w-0 flex-1 space-y-2">
                             <SkeletonBlock className="h-4 w-3/4" />
                             <SkeletonBlock className="h-3 w-1/2 bg-charcoal/8" />
@@ -120,10 +149,19 @@ export default function EventDetailPageSkeleton() {
 
                   <SkeletonCard className="space-y-4">
                     <SkeletonBlock className="h-6 w-48 rounded-xl" rounded="rounded-xl" />
-                    <SkeletonBlock className="h-28 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
+                    <SkeletonBlock
+                      className="h-28 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
                     <div className="grid grid-cols-2 gap-3">
-                      <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
-                      <SkeletonBlock className="h-16 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
+                      <SkeletonBlock
+                        className="h-16 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                      <SkeletonBlock
+                        className="h-16 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
                     </div>
                   </SkeletonCard>
 
@@ -131,7 +169,10 @@ export default function EventDetailPageSkeleton() {
                     <SkeletonBlock className="h-6 w-32 rounded-xl" rounded="rounded-xl" />
                     <SkeletonBlock className="h-4 w-full" />
                     <SkeletonBlock className="h-4 w-5/6" />
-                    <SkeletonBlock className="h-24 w-full rounded-2xl bg-charcoal/8" rounded="rounded-2xl" />
+                    <SkeletonBlock
+                      className="h-24 w-full rounded-2xl bg-charcoal/8"
+                      rounded="rounded-2xl"
+                    />
                   </SkeletonCard>
                 </div>
               </div>
