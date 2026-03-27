@@ -3,6 +3,7 @@
 import { m } from "framer-motion";
 import { useMemo, useState } from "react";
 import { Check, Copy, Loader2 } from "@/app/lib/icons";
+import { Card } from "@/app/components/ui/card";
 
 interface BusinessContactCardProps {
   businessId: string;
@@ -62,7 +63,11 @@ function validateMessage(value: string): string | null {
   return null;
 }
 
-export default function BusinessContactCard({ businessId, businessName, phone }: BusinessContactCardProps) {
+export default function BusinessContactCard({
+  businessId,
+  businessName,
+  phone,
+}: BusinessContactCardProps) {
   const contactPhone = useMemo(() => {
     if (typeof phone !== "string") return null;
     const trimmed = phone.trim();
@@ -182,7 +187,11 @@ export default function BusinessContactCard({ businessId, businessName, phone }:
         if (response.status >= 500) {
           throw new Error("Could not send your inquiry right now. Please try again later.");
         }
-        throw new Error(typeof data?.error === "string" ? data.error : "Could not send inquiry. Please check your details.");
+        throw new Error(
+          typeof data?.error === "string"
+            ? data.error
+            : "Could not send inquiry. Please check your details."
+        );
       }
 
       setSubmitState("success");
@@ -206,189 +215,215 @@ export default function BusinessContactCard({ businessId, businessName, phone }:
   };
 
   return (
-    <m.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.55, duration: 0.6 }}
-      className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6"
-    >
-      <h3
-        className="text-h3 font-semibold text-charcoal mb-3"
-        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+    <Card asChild variant="detail" className="p-4 sm:p-6">
+      <m.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.55, duration: 0.6 }}
       >
-        Contact
-      </h3>
-
-      <div className="space-y-3">
-        <button
-          type="button"
-          disabled={!contactPhone}
-          onClick={() => setShowPhone(true)}
-          className="w-full rounded-full border border-white/40 bg-off-white/80 px-4 py-2.5 text-body-sm font-semibold text-charcoal transition-colors hover:bg-off-white disabled:cursor-not-allowed disabled:opacity-60"
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+        <h3
+          className="text-h3 font-semibold text-charcoal mb-3"
+          style={{
+            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+          }}
         >
-          Show Contact Number
-        </button>
+          Contact
+        </h3>
 
-        {showPhone && contactPhone && (
-          <div className="flex items-center gap-2 rounded-full bg-white/40 px-4 py-2.5">
-            <a
-              href={`tel:${contactPhone}`}
-              className="min-w-0 flex-1 truncate text-body-sm text-charcoal/80 hover:text-charcoal transition-colors"
-              style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-            >
-              {contactPhone}
-            </a>
-            <button
-              type="button"
-              onClick={handleCopyPhone}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-off-white/80 text-charcoal/80 transition-colors hover:bg-off-white"
-              aria-label="Copy contact number"
-            >
-              {copiedPhone ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </div>
-        )}
-
-        {!contactPhone && (
-          <p
-            className="text-xs text-charcoal/60 italic"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          >
-            Contact number unavailable for this business.
-          </p>
-        )}
-
-        {whatsappHref ? (
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center rounded-full bg-navbar-bg px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-navbar-bg/90"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          >
-            WhatsApp
-          </a>
-        ) : (
+        <div className="space-y-3">
           <button
             type="button"
-            disabled
-            className="w-full rounded-full border border-white/40 bg-off-white/50 px-4 py-2.5 text-body-sm font-semibold text-charcoal/60"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+            disabled={!contactPhone}
+            onClick={() => setShowPhone(true)}
+            className="w-full rounded-full border border-white/40 bg-off-white/80 px-4 py-2.5 text-body-sm font-semibold text-charcoal transition-colors hover:bg-off-white disabled:cursor-not-allowed disabled:opacity-60"
+            style={{
+              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            }}
           >
-            WhatsApp
+            Show Contact Number
           </button>
-        )}
 
-        {!whatsappHref && (
-          <p
-            className="text-xs text-charcoal/60 italic"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          >
-            WhatsApp is unavailable for this business.
-          </p>
-        )}
-      </div>
-
-      <form className="mt-4 space-y-3" onSubmit={handleSubmit} noValidate>
-        <div>
-          <input
-            type="text"
-            value={form.name}
-            onChange={(event) => handleInputChange("name", event.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-            maxLength={NAME_MAX}
-            placeholder="Name"
-            disabled={!isFormEnabled}
-            className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          />
-          {isFormEnabled && touched.name && errors.name && (
-            <p className="mt-1 text-xs text-red-700">{errors.name}</p>
+          {showPhone && contactPhone && (
+            <div className="flex items-center gap-2 rounded-full bg-white/40 px-4 py-2.5">
+              <a
+                href={`tel:${contactPhone}`}
+                className="min-w-0 flex-1 truncate text-body-sm text-charcoal/80 hover:text-charcoal transition-colors"
+                style={{
+                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                }}
+              >
+                {contactPhone}
+              </a>
+              <button
+                type="button"
+                onClick={handleCopyPhone}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-off-white/80 text-charcoal/80 transition-colors hover:bg-off-white"
+                aria-label="Copy contact number"
+              >
+                {copiedPhone ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
           )}
-        </div>
 
-        <div>
-          <input
-            type="email"
-            value={form.email}
-            onChange={(event) => handleInputChange("email", event.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-            maxLength={EMAIL_MAX}
-            placeholder="Email"
-            disabled={!isFormEnabled}
-            className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          />
-          {isFormEnabled && touched.email && errors.email && (
-            <p className="mt-1 text-xs text-red-700">{errors.email}</p>
+          {!contactPhone && (
+            <p
+              className="text-xs text-charcoal/60 italic"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              Contact number unavailable for this business.
+            </p>
           )}
-        </div>
 
-        <div>
-          <input
-            type="tel"
-            value={form.mobile}
-            onChange={(event) => handleInputChange("mobile", event.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, mobile: true }))}
-            maxLength={32}
-            placeholder="Mobile"
-            disabled={!isFormEnabled}
-            className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          />
-          {isFormEnabled && touched.mobile && errors.mobile && (
-            <p className="mt-1 text-xs text-red-700">{errors.mobile}</p>
-          )}
-        </div>
-
-        <div>
-          <textarea
-            value={form.message}
-            onChange={(event) => handleInputChange("message", event.target.value)}
-            onBlur={() => setTouched((prev) => ({ ...prev, message: true }))}
-            minLength={MESSAGE_MIN}
-            maxLength={MESSAGE_MAX}
-            rows={4}
-            placeholder="Message"
-            disabled={!isFormEnabled}
-            className="w-full rounded-[12px] border border-white/25 bg-white/70 px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none resize-none disabled:cursor-not-allowed disabled:opacity-60"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          />
-          {isFormEnabled && touched.message && errors.message && (
-            <p className="mt-1 text-xs text-red-700">{errors.message}</p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          disabled={!isFormEnabled || submitState === "loading"}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-coral px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-coral/90 disabled:cursor-not-allowed disabled:opacity-70"
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-        >
-          {submitState === "loading" ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Sending...
-            </>
+          {whatsappHref ? (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center rounded-full bg-navbar-bg px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-navbar-bg/90"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              WhatsApp
+            </a>
           ) : (
-            "Submit"
+            <button
+              type="button"
+              disabled
+              className="w-full rounded-full border border-white/40 bg-off-white/50 px-4 py-2.5 text-body-sm font-semibold text-charcoal/60"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              WhatsApp
+            </button>
           )}
-        </button>
 
-        {!isFormEnabled && (
-          <p className="text-xs text-charcoal/60 italic">
-            Inquiry form is unavailable because this business has no contact number.
-          </p>
-        )}
+          {!whatsappHref && (
+            <p
+              className="text-xs text-charcoal/60 italic"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              WhatsApp is unavailable for this business.
+            </p>
+          )}
+        </div>
 
-        {submitMessage && (
-          <p className={`text-xs ${submitState === "success" ? "text-emerald-700" : "text-red-700"}`}>
-            {submitMessage}
-          </p>
-        )}
-      </form>
-    </m.div>
+        <form className="mt-4 space-y-3" onSubmit={handleSubmit} noValidate>
+          <div>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(event) => handleInputChange("name", event.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
+              maxLength={NAME_MAX}
+              placeholder="Name"
+              disabled={!isFormEnabled}
+              className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            />
+            {isFormEnabled && touched.name && errors.name && (
+              <p className="mt-1 text-xs text-red-700">{errors.name}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(event) => handleInputChange("email", event.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+              maxLength={EMAIL_MAX}
+              placeholder="Email"
+              disabled={!isFormEnabled}
+              className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            />
+            {isFormEnabled && touched.email && errors.email && (
+              <p className="mt-1 text-xs text-red-700">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="tel"
+              value={form.mobile}
+              onChange={(event) => handleInputChange("mobile", event.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, mobile: true }))}
+              maxLength={32}
+              placeholder="Mobile"
+              disabled={!isFormEnabled}
+              className="w-full rounded-full border border-white/25 bg-white/70 px-4 py-2.5 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            />
+            {isFormEnabled && touched.mobile && errors.mobile && (
+              <p className="mt-1 text-xs text-red-700">{errors.mobile}</p>
+            )}
+          </div>
+
+          <div>
+            <textarea
+              value={form.message}
+              onChange={(event) => handleInputChange("message", event.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, message: true }))}
+              minLength={MESSAGE_MIN}
+              maxLength={MESSAGE_MAX}
+              rows={4}
+              placeholder="Message"
+              disabled={!isFormEnabled}
+              className="w-full rounded-[12px] border border-white/25 bg-white/70 px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/50 focus:border-white/50 focus:outline-none resize-none disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            />
+            {isFormEnabled && touched.message && errors.message && (
+              <p className="mt-1 text-xs text-red-700">{errors.message}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={!isFormEnabled || submitState === "loading"}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-coral px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-coral/90 disabled:cursor-not-allowed disabled:opacity-70"
+            style={{
+              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            }}
+          >
+            {submitState === "loading" ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Submit"
+            )}
+          </button>
+
+          {!isFormEnabled && (
+            <p className="text-xs text-charcoal/60 italic">
+              Inquiry form is unavailable because this business has no contact number.
+            </p>
+          )}
+
+          {submitMessage && (
+            <p
+              className={`text-xs ${submitState === "success" ? "text-emerald-700" : "text-red-700"}`}
+            >
+              {submitMessage}
+            </p>
+          )}
+        </form>
+      </m.div>
+    </Card>
   );
 }
-

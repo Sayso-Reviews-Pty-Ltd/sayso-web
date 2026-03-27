@@ -3,6 +3,7 @@
 import { Clock, Smile, Shield } from "@/app/lib/icons";
 import { memo } from "react";
 import { m } from "framer-motion";
+import { Card } from "@/app/components/ui/card";
 
 interface PercentileChipsSectionProps {
   punctuality?: number;
@@ -45,96 +46,91 @@ function PercentileChipsSection({
   ];
 
   return (
-    <m.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="w-full rounded-[12px] border-none backdrop-blur-xl bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 shadow-md p-5 sm:p-6 space-y-4"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-charcoal flex items-center gap-2.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-card-bg"></span>
-          Performance Insights
-        </h3>
-        <span className="text-xs text-charcoal/50 font-medium">Based on reviews</span>
-      </div>
+    <Card asChild variant="detail" className="w-full p-5 sm:p-6 space-y-4">
+      <m.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-charcoal flex items-center gap-2.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-card-bg"></span>
+            Performance Insights
+          </h3>
+          <span className="text-xs text-charcoal/50 font-medium">Based on reviews</span>
+        </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-        {metrics.map((metric, index) => {
-          const Icon = metric.icon;
-          const isPlaceholder = metric.value === 0;
-          
-          // Calculate color intensity based on value
-          const getColor = (value: number) => {
-            if (value === 0) return "text-charcoal/30";
-            if (value >= 80) return "text-navbar-bg";
-            if (value >= 60) return "text-navbar-bg/70";
-            if (value >= 40) return "text-amber-600";
-            return "text-coral";
-          };
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+          {metrics.map((metric, index) => {
+            const Icon = metric.icon;
+            const isPlaceholder = metric.value === 0;
 
-          return (
-            <m.div
-              key={metric.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              aria-label={
-                isPlaceholder
-                  ? `${metric.label} insights coming soon`
-                  : metric.tooltip
-              }
-              className="group relative flex flex-col items-center justify-center gap-2 p-4 sm:p-3.5 rounded-[16px] bg-white/40 hover:bg-white/60 transition-all duration-200 cursor-help border border-white/30"
-            >
-              {Icon ? (
-                <Icon
-                  className={`w-6 h-6 sm:w-5 sm:h-5 transition-colors ${
-                    getColor(metric.value)
-                  }`}
-                />
-              ) : (
-                <span className={`text-2xl sm:text-xl font-bold transition-colors ${
-                  getColor(metric.value)
-                }`}>
-                  R
-                </span>
-              )}
-              <div className="text-center">
-                <p className="text-xs font-medium text-charcoal/70 leading-snug">
-                  {metric.label}
-                </p>
-                <p
-                  className={`text-base sm:text-lg font-bold tracking-tight ${
-                    isPlaceholder ? "text-charcoal/30" : "text-charcoal"
-                  }`}
-                >
-                  {isPlaceholder ? "—" : `${metric.value}%`}
-                </p>
-              </div>
+            // Calculate color intensity based on value
+            const getColor = (value: number) => {
+              if (value === 0) return "text-charcoal/30";
+              if (value >= 80) return "text-navbar-bg";
+              if (value >= 60) return "text-navbar-bg/70";
+              if (value >= 40) return "text-amber-600";
+              return "text-coral";
+            };
 
-              {/* Premium Tooltip */}
-              {!isPlaceholder && (
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-50 w-max max-w-[min(24rem,calc(100vw-2rem))] bg-charcoal text-white text-xs font-medium rounded-lg px-3 py-2 whitespace-normal break-words [overflow-wrap:anywhere] leading-snug text-center pointer-events-none shadow-lg">
-                  <span className="block">
-                    {metric.tooltip}
+            return (
+              <m.div
+                key={metric.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                aria-label={isPlaceholder ? `${metric.label} insights coming soon` : metric.tooltip}
+                className="group relative flex flex-col items-center justify-center gap-2 p-4 sm:p-3.5 rounded-[16px] bg-white/40 hover:bg-white/60 transition-all duration-200 cursor-help border border-white/30"
+              >
+                {Icon ? (
+                  <Icon
+                    className={`w-6 h-6 sm:w-5 sm:h-5 transition-colors ${getColor(metric.value)}`}
+                  />
+                ) : (
+                  <span
+                    className={`text-2xl sm:text-xl font-bold transition-colors ${getColor(
+                      metric.value
+                    )}`}
+                  >
+                    R
                   </span>
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-charcoal transform rotate-45" />
+                )}
+                <div className="text-center">
+                  <p className="text-xs font-medium text-charcoal/70 leading-snug">
+                    {metric.label}
+                  </p>
+                  <p
+                    className={`text-base sm:text-lg font-bold tracking-tight ${
+                      isPlaceholder ? "text-charcoal/30" : "text-charcoal"
+                    }`}
+                  >
+                    {isPlaceholder ? "—" : `${metric.value}%`}
+                  </p>
                 </div>
-              )}
-            </m.div>
-          );
-        })}
-      </div>
 
-      {/* Footer Info */}
-      <div className="flex items-center justify-center pt-2 border-t border-white/30">
-        <p className="text-xs text-charcoal/60 font-medium">
-          ✓ Community verified metrics from verified reviews
-        </p>
-      </div>
-    </m.div>
+                {/* Premium Tooltip */}
+                {!isPlaceholder && (
+                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-50 w-max max-w-[min(24rem,calc(100vw-2rem))] bg-charcoal text-white text-xs font-medium rounded-lg px-3 py-2 whitespace-normal break-words [overflow-wrap:anywhere] leading-snug text-center pointer-events-none shadow-lg">
+                    <span className="block">{metric.tooltip}</span>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-charcoal transform rotate-45" />
+                  </div>
+                )}
+              </m.div>
+            );
+          })}
+        </div>
+
+        {/* Footer Info */}
+        <div className="flex items-center justify-center pt-2 border-t border-white/30">
+          <p className="text-xs text-charcoal/60 font-medium">
+            ✓ Community verified metrics from verified reviews
+          </p>
+        </div>
+      </m.div>
+    </Card>
   );
 }
 

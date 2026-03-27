@@ -12,6 +12,7 @@ import { resolveCtaTarget } from "../../lib/events/cta";
 import { downloadICS } from "../../lib/events/generateICS";
 import { useEventRsvp } from "../../hooks/useEventRsvp";
 import { useEventReminder, type RemindBefore } from "../../hooks/useEventReminder";
+import { Card } from "@/app/components/ui/card";
 
 interface EventActionCardProps {
   eventId?: string;
@@ -79,12 +80,12 @@ export default function EventActionCard({
   const { user } = useAuth();
   const [showReminderPicker, setShowReminderPicker] = useState(false);
 
-  const { count: rsvpCount, isGoing, toggle: toggleRsvp } = useEventRsvp(eventId ?? '');
-  const { hasReminder, toggle: toggleReminder, loading: reminderLoading } = useEventReminder(
-    eventId ?? '',
-    eventData?.title ?? '',
-    eventData?.startDateISO
-  );
+  const { count: rsvpCount, isGoing, toggle: toggleRsvp } = useEventRsvp(eventId ?? "");
+  const {
+    hasReminder,
+    toggle: toggleReminder,
+    loading: reminderLoading,
+  } = useEventReminder(eventId ?? "", eventData?.title ?? "", eventData?.startDateISO);
 
   const isLikelyPhone = (value?: string) => {
     if (!value) return false;
@@ -94,7 +95,11 @@ export default function EventActionCard({
     return digits.length >= 7 && /^[\d+()\-\s]+$/.test(trimmed);
   };
 
-  const logCtaClick = (payload: { ctaKind: "external_url" | "whatsapp"; ctaSource?: string | null; targetUrl: string }) => {
+  const logCtaClick = (payload: {
+    ctaKind: "external_url" | "whatsapp";
+    ctaSource?: string | null;
+    targetUrl: string;
+  }) => {
     if (!eventId) return;
     void fetch(`/api/events-and-specials/${eventId}/cta-click`, {
       method: "POST",
@@ -119,16 +124,27 @@ export default function EventActionCard({
       });
       if (resolved.url) {
         window.open(resolved.url, "_blank", "noopener,noreferrer");
-        logCtaClick({ ctaKind: resolved.ctaKind, ctaSource: resolved.ctaSource, targetUrl: resolved.url });
+        logCtaClick({
+          ctaKind: resolved.ctaKind,
+          ctaSource: resolved.ctaSource,
+          targetUrl: resolved.url,
+        });
         return;
       }
     }
     if (fallbackUrl) {
       window.open(fallbackUrl, "_blank", "noopener,noreferrer");
-      logCtaClick({ ctaKind: "external_url", ctaSource: eventData?.ctaSource ?? null, targetUrl: fallbackUrl });
+      logCtaClick({
+        ctaKind: "external_url",
+        ctaSource: eventData?.ctaSource ?? null,
+        targetUrl: fallbackUrl,
+      });
       return;
     }
-    if (bookingContact) { showToast?.(bookingContact, "info"); return; }
+    if (bookingContact) {
+      showToast?.(bookingContact, "info");
+      return;
+    }
     showToast?.("Booking link not available yet.", "info");
   };
 
@@ -150,7 +166,10 @@ export default function EventActionCard({
     const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}${eventData?.href ?? `/event/${eventId}`}`;
     const shareText = `Check out ${eventData?.title ?? "this event"} on sayso!`;
     try {
-      if (navigator.share && navigator.canShare?.({ title: eventData?.title, text: shareText, url: shareUrl })) {
+      if (
+        navigator.share &&
+        navigator.canShare?.({ title: eventData?.title, text: shareText, url: shareUrl })
+      ) {
         await navigator.share({ title: eventData?.title, text: shareText, url: shareUrl });
         showToast?.("Shared successfully!", "success", 2000);
       } else {
@@ -175,167 +194,180 @@ export default function EventActionCard({
     }
     try {
       const isNowActive = await toggleReminder(option);
-      const label = option === '1_day' ? '1 day before' : '2 hours before';
-      showToast?.(
-        isNowActive ? `Reminder set for ${label}` : `Reminder removed`,
-        "success",
-        2500
-      );
+      const label = option === "1_day" ? "1 day before" : "2 hours before";
+      showToast?.(isNowActive ? `Reminder set for ${label}` : `Reminder removed`, "success", 2500);
     } catch (e: any) {
       showToast?.(e?.message ?? "Could not set reminder", "info", 3000);
     }
     setShowReminderPicker(false);
   };
 
-  const fontStyle = { fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' };
+  const fontStyle = {
+    fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+  };
 
   return (
-    <m.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5, duration: 0.6 }}
-      className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6 relative overflow-visible"
-    >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg" />
+    <Card asChild variant="detail" className="p-4 sm:p-6 relative overflow-visible">
+      <m.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg" />
 
-      <div className="relative z-10">
-        <h3 className="text-h3 font-semibold text-charcoal mb-3" style={fontStyle}>
-          Join This Event
-        </h3>
+        <div className="relative z-10">
+          <h3 className="text-h3 font-semibold text-charcoal mb-3" style={fontStyle}>
+            Join This Event
+          </h3>
 
-        <div className="space-y-3">
-          {/* Primary CTA */}
-          <m.button
-            type="button"
-            onClick={handleReserveClick}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:bg-navbar-bg border border-white/30 shadow-md text-body-sm"
-            style={fontStyle}
-          >
-            {!isLikelyPhone(bookingContact) && bookingContact?.trim() ? bookingContact.trim() : "Reserve Your Spot"}
-          </m.button>
-
-          {/* Write Review */}
-          {eventId && (
-            <m.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                href={`/write-review/event/${eventId}`}
-                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-br from-coral to-coral/90 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-md text-body-sm"
-                style={fontStyle}
-              >
-                Write Review
-              </Link>
-            </m.div>
-          )}
-
-          <div className="mt-2 rounded-[16px] border border-white/70 bg-off-white/70 p-3 sm:p-4">
-            <p
-              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal/55"
+          <div className="space-y-3">
+            {/* Primary CTA */}
+            <m.button
+              type="button"
+              onClick={handleReserveClick}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:bg-navbar-bg border border-white/30 shadow-md text-body-sm"
               style={fontStyle}
             >
-              Quick Actions
-            </p>
+              {!isLikelyPhone(bookingContact) && bookingContact?.trim()
+                ? bookingContact.trim()
+                : "Reserve Your Spot"}
+            </m.button>
 
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <EventQuickActionButton
-                onClick={() => eventId && toggleRsvp()}
-                active={isGoing}
-                activeClassName="border-coral/35 text-coral"
-                idleHoverClassName="hover:border-coral/25 hover:text-coral"
-                ariaLabel={isGoing ? "Remove Going" : "Mark as Going"}
-                label={rsvpCount > 0 ? String(rsvpCount) : "Going"}
-                icon={<Users className="h-5 w-5" strokeWidth={isGoing ? 2.2 : 1.9} />}
+            {/* Write Review */}
+            {eventId && (
+              <m.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href={`/write-review/event/${eventId}`}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-br from-coral to-coral/90 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-md text-body-sm"
+                  style={fontStyle}
+                >
+                  Write Review
+                </Link>
+              </m.div>
+            )}
+
+            <div className="mt-2 rounded-[16px] border border-white/70 bg-off-white/70 p-3 sm:p-4">
+              <p
+                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal/55"
                 style={fontStyle}
-              />
+              >
+                Quick Actions
+              </p>
 
-              <div className={`relative ${showReminderPicker ? "z-[210]" : "z-10"}`}>
+              <div className="mt-3 grid grid-cols-2 gap-3">
                 <EventQuickActionButton
-                  onClick={() => setShowReminderPicker((p) => !p)}
-                  active={hasReminder('1_day') || hasReminder('2_hours')}
-                  activeClassName="border-amber-300/70 text-amber-600"
-                  idleHoverClassName="hover:border-amber-300/40 hover:text-amber-600"
-                  ariaLabel="Set reminder"
-                  label="Remind"
-                  icon={<Bell className="h-5 w-5" strokeWidth={(hasReminder('1_day') || hasReminder('2_hours')) ? 2.2 : 1.9} />}
+                  onClick={() => eventId && toggleRsvp()}
+                  active={isGoing}
+                  activeClassName="border-coral/35 text-coral"
+                  idleHoverClassName="hover:border-coral/25 hover:text-coral"
+                  ariaLabel={isGoing ? "Remove Going" : "Mark as Going"}
+                  label={rsvpCount > 0 ? String(rsvpCount) : "Going"}
+                  icon={<Users className="h-5 w-5" strokeWidth={isGoing ? 2.2 : 1.9} />}
                   style={fontStyle}
                 />
 
-                <AnimatePresence>
-                  {showReminderPicker && (
-                    <m.div
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.12 }}
-                      className="absolute bottom-full left-1/2 z-[220] mb-3 min-w-[196px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-off-white/95 p-2.5 shadow-[0_20px_40px_rgba(35,39,34,0.16)] backdrop-blur-xl"
-                    >
-                      <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.22em] text-charcoal/45" style={fontStyle}>Remind me</p>
-                      <button
-                        type="button"
-                        onClick={() => handleReminderOption('1_day')}
-                        disabled={reminderLoading}
-                        className={`w-full flex items-center justify-between gap-2 rounded-2xl px-3 py-3 text-sm font-semibold transition-colors duration-150 ${
-                          hasReminder('1_day')
-                            ? 'border border-amber-200 bg-amber-50/90 text-amber-700'
-                            : 'text-charcoal/75 hover:bg-charcoal/5'
-                        }`}
-                        style={fontStyle}
+                <div className={`relative ${showReminderPicker ? "z-[210]" : "z-10"}`}>
+                  <EventQuickActionButton
+                    onClick={() => setShowReminderPicker((p) => !p)}
+                    active={hasReminder("1_day") || hasReminder("2_hours")}
+                    activeClassName="border-amber-300/70 text-amber-600"
+                    idleHoverClassName="hover:border-amber-300/40 hover:text-amber-600"
+                    ariaLabel="Set reminder"
+                    label="Remind"
+                    icon={
+                      <Bell
+                        className="h-5 w-5"
+                        strokeWidth={hasReminder("1_day") || hasReminder("2_hours") ? 2.2 : 1.9}
+                      />
+                    }
+                    style={fontStyle}
+                  />
+
+                  <AnimatePresence>
+                    {showReminderPicker && (
+                      <m.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.12 }}
+                        className="absolute bottom-full left-1/2 z-[220] mb-3 min-w-[196px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-off-white/95 p-2.5 shadow-[0_20px_40px_rgba(35,39,34,0.16)] backdrop-blur-xl"
                       >
-                        1 day before
-                        {hasReminder('1_day') && <Check className="h-3.5 w-3.5 text-amber-700" />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleReminderOption('2_hours')}
-                        disabled={reminderLoading}
-                        className={`w-full flex items-center justify-between gap-2 rounded-2xl px-3 py-3 text-sm font-semibold transition-colors duration-150 ${
-                          hasReminder('2_hours')
-                            ? 'border border-amber-200 bg-amber-50/90 text-amber-700'
-                            : 'text-charcoal/75 hover:bg-charcoal/5'
-                        }`}
-                        style={fontStyle}
-                      >
-                        2 hours before
-                        {hasReminder('2_hours') && <Check className="h-3.5 w-3.5 text-amber-700" />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowReminderPicker(false)}
-                        className="mt-1 flex w-full items-center justify-center rounded-xl px-3 py-2 text-xs text-charcoal/40 transition-colors hover:text-charcoal/60"
-                        style={fontStyle}
-                      >
-                        <X className="mr-1 h-3 w-3" /> Close
-                      </button>
-                    </m.div>
-                  )}
-                </AnimatePresence>
+                        <p
+                          className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.22em] text-charcoal/45"
+                          style={fontStyle}
+                        >
+                          Remind me
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => handleReminderOption("1_day")}
+                          disabled={reminderLoading}
+                          className={`w-full flex items-center justify-between gap-2 rounded-2xl px-3 py-3 text-sm font-semibold transition-colors duration-150 ${
+                            hasReminder("1_day")
+                              ? "border border-amber-200 bg-amber-50/90 text-amber-700"
+                              : "text-charcoal/75 hover:bg-charcoal/5"
+                          }`}
+                          style={fontStyle}
+                        >
+                          1 day before
+                          {hasReminder("1_day") && <Check className="h-3.5 w-3.5 text-amber-700" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReminderOption("2_hours")}
+                          disabled={reminderLoading}
+                          className={`w-full flex items-center justify-between gap-2 rounded-2xl px-3 py-3 text-sm font-semibold transition-colors duration-150 ${
+                            hasReminder("2_hours")
+                              ? "border border-amber-200 bg-amber-50/90 text-amber-700"
+                              : "text-charcoal/75 hover:bg-charcoal/5"
+                          }`}
+                          style={fontStyle}
+                        >
+                          2 hours before
+                          {hasReminder("2_hours") && (
+                            <Check className="h-3.5 w-3.5 text-amber-700" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowReminderPicker(false)}
+                          className="mt-1 flex w-full items-center justify-center rounded-xl px-3 py-2 text-xs text-charcoal/40 transition-colors hover:text-charcoal/60"
+                          style={fontStyle}
+                        >
+                          <X className="mr-1 h-3 w-3" /> Close
+                        </button>
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <EventQuickActionButton
+                  onClick={handleCalendar}
+                  activeClassName="border-sage/35 text-sage"
+                  idleHoverClassName="hover:border-sage/30 hover:text-sage"
+                  ariaLabel="Add to calendar"
+                  label="Calendar"
+                  icon={<Calendar className="h-5 w-5" strokeWidth={1.9} />}
+                  style={fontStyle}
+                />
+
+                <EventQuickActionButton
+                  onClick={handleShare}
+                  activeClassName="border-navbar-bg/30 text-navbar-bg"
+                  idleHoverClassName="hover:border-navbar-bg/30 hover:text-navbar-bg"
+                  ariaLabel="Share event"
+                  label="Share"
+                  icon={<Share2 className="h-5 w-5" strokeWidth={1.9} />}
+                  style={fontStyle}
+                />
               </div>
-
-              <EventQuickActionButton
-                onClick={handleCalendar}
-                activeClassName="border-sage/35 text-sage"
-                idleHoverClassName="hover:border-sage/30 hover:text-sage"
-                ariaLabel="Add to calendar"
-                label="Calendar"
-                icon={<Calendar className="h-5 w-5" strokeWidth={1.9} />}
-                style={fontStyle}
-              />
-
-              <EventQuickActionButton
-                onClick={handleShare}
-                activeClassName="border-navbar-bg/30 text-navbar-bg"
-                idleHoverClassName="hover:border-navbar-bg/30 hover:text-navbar-bg"
-                ariaLabel="Share event"
-                label="Share"
-                icon={<Share2 className="h-5 w-5" strokeWidth={1.9} />}
-                style={fontStyle}
-              />
             </div>
           </div>
         </div>
-      </div>
-    </m.div>
+      </m.div>
+    </Card>
   );
 }

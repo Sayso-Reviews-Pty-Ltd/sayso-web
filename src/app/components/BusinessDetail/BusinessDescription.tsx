@@ -1,11 +1,9 @@
 // src/components/BusinessDetail/BusinessDescription.tsx
 "use client";
 
-type Description = 
-  | string 
-  | { raw: string; friendly: string }
-  | null 
-  | undefined;
+import { Card } from "@/app/components/ui/card";
+
+type Description = string | { raw: string; friendly: string } | null | undefined;
 
 interface BusinessDescriptionProps {
   description: Description;
@@ -17,11 +15,14 @@ export default function BusinessDescription({ description }: BusinessDescription
     if (!description) {
       return "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!";
     }
-    
+
     if (typeof description === "string") {
-      return description || "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!";
+      return (
+        description ||
+        "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!"
+      );
     }
-    
+
     // Handle object shape { raw, friendly }
     if (typeof description === "object" && description !== null) {
       const descObj = description as { raw?: string; friendly?: string };
@@ -31,27 +32,26 @@ export default function BusinessDescription({ description }: BusinessDescription
       if (raw) return raw;
       return "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!";
     }
-    
+
     return "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!";
   };
 
   const descriptionText = getDescriptionText();
 
   return (
-    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px]  shadow-md p-4 sm:p-6">
-        <h2
-          className="text-h3 font-semibold text-charcoal mb-3"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
-          About This Business
-        </h2>
-        <p
-          className="text-body text-charcoal/70 leading-relaxed"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
-          {descriptionText}
-        </p>
-    </div>
+    <Card variant="detail" className="p-4 sm:p-6">
+      <h2
+        className="text-h3 font-semibold text-charcoal mb-3"
+        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+      >
+        About This Business
+      </h2>
+      <p
+        className="text-body text-charcoal/70 leading-relaxed"
+        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+      >
+        {descriptionText}
+      </p>
+    </Card>
   );
 }
-

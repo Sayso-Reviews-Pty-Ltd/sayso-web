@@ -4,6 +4,7 @@
 import { m } from "framer-motion";
 import { Facebook, Instagram, Twitter } from "@/app/lib/icons";
 import Link from "next/link";
+import { Card } from "@/app/components/ui/card";
 
 interface BusinessActionCardProps {
   businessSlug: string;
@@ -13,17 +14,25 @@ interface BusinessActionCardProps {
   ownerId?: string | null;
 }
 
-export default function BusinessActionCard({ businessSlug, businessId, isBusinessOwner = false, hasReviewed = false, ownerId }: BusinessActionCardProps) {
+export default function BusinessActionCard({
+  businessSlug,
+  businessId,
+  isBusinessOwner = false,
+  hasReviewed = false,
+  ownerId,
+}: BusinessActionCardProps) {
   return (
-    <m.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5, duration: 0.6 }}
-      className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px]  shadow-md p-4 sm:p-6"
-    >
+    <Card asChild variant="detail" className="p-4 sm:p-6">
+      <m.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+      >
         <h3
           className="text-h3 font-semibold text-charcoal mb-3"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+          style={{
+            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+          }}
         >
           Take Action
         </h3>
@@ -32,8 +41,10 @@ export default function BusinessActionCard({ businessSlug, businessId, isBusines
           <Link
             href={`/business/${businessSlug}/review`}
             className="block w-full font-semibold py-3 px-5 rounded-full transition-all duration-300 border text-body-sm text-center bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white hover:bg-navbar-bg border-white/30 shadow-md"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            title={'Leave a Review'}
+            style={{
+              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            }}
+            title={"Leave a Review"}
           >
             Leave a Review
           </Link>
@@ -42,13 +53,15 @@ export default function BusinessActionCard({ businessSlug, businessId, isBusines
             <Link
               href={`/business/${businessSlug}/edit`}
               className="block w-full bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm text-charcoal font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:bg-charcoal hover:text-white border-none shadow-md text-body-sm text-center"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
             >
               Edit Business
             </Link>
           )}
         </div>
-    </m.div>
+      </m.div>
+    </Card>
   );
 }
-

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { m } from "framer-motion";
 import type { Event } from "../../lib/types/Event";
 import { normalizeDescriptionText } from "../../lib/utils/descriptionText";
+import { Card } from "@/app/components/ui/card";
 
 interface EventDescriptionProps {
   event: Event;
@@ -53,51 +54,57 @@ export default function EventDescription({ event }: EventDescriptionProps) {
   }, [normalizedDescription]);
 
   return (
-    <m.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4, duration: 0.6 }}
-      className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px]  shadow-md p-4 sm:p-6 relative"
-    >
-      {/* Gradient overlays matching user profile */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg"></div>
-      
-      <div className="relative z-10">
-        <h2
-          className="text-h3 font-semibold text-charcoal mb-3"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
-          About This Event
-        </h2>
+    <Card asChild variant="detail" className="p-4 sm:p-6 relative">
+      <m.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.6 }}
+      >
+        {/* Gradient overlays matching user profile */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sage/10 to-transparent rounded-full blur-lg"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg"></div>
 
-        <m.div
-          initial={false}
-          animate={{ height: animatedHeight }}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="relative overflow-hidden"
-        >
-          <p
-            ref={contentRef}
-            className="text-body text-charcoal/70 leading-7 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+        <div className="relative z-10">
+          <h2
+            className="text-h3 font-semibold text-charcoal mb-3"
+            style={{
+              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            }}
           >
-            {normalizedDescription}
-          </p>
+            About This Event
+          </h2>
 
-        </m.div>
-
-        {isCollapsible && (
-          <button
-            type="button"
-            onClick={() => setIsExpanded((prev) => !prev)}
-            className="mt-3 text-sm font-semibold text-coral hover:text-coral/80 transition-colors duration-200"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+          <m.div
+            initial={false}
+            animate={{ height: animatedHeight }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden"
           >
-            {isExpanded ? "Read less" : "Read more"}
-          </button>
-        )}
-      </div>
-    </m.div>
+            <p
+              ref={contentRef}
+              className="text-body text-charcoal/70 leading-7 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              {normalizedDescription}
+            </p>
+          </m.div>
+
+          {isCollapsible && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded((prev) => !prev)}
+              className="mt-3 text-sm font-semibold text-coral hover:text-coral/80 transition-colors duration-200"
+              style={{
+                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              }}
+            >
+              {isExpanded ? "Read less" : "Read more"}
+            </button>
+          )}
+        </div>
+      </m.div>
+    </Card>
   );
 }

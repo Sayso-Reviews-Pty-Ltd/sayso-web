@@ -10,6 +10,7 @@ import {
 } from "../../lib/services/personalizationService";
 import { CheckCircle, Info, Lock } from "@/app/lib/icons";
 import PercentileChipsSection from "./PercentileChipsSection";
+import { Card } from "@/app/components/ui/card";
 
 interface PersonalizationInsightsProps {
   business: {
@@ -49,7 +50,10 @@ export default function PersonalizationInsights({ business }: PersonalizationIns
 
     return (
       <div className="space-y-4">
-        <div className="bg-gradient-to-br from-sage/10 via-sage/5 to-transparent border border-sage/20 rounded-[12px] p-4 space-y-3">
+        <Card
+          variant="detail"
+          className="from-sage/10 via-sage/5 to-transparent border border-sage/20 p-4 space-y-3"
+        >
           <div className="flex items-center gap-2">
             <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
               <Info className="w-3 h-3 text-charcoal/85" />
@@ -71,11 +75,13 @@ export default function PersonalizationInsights({ business }: PersonalizationIns
           <Link
             href="/login"
             className="inline-flex w-full items-center justify-center rounded-full border border-white/30 bg-gradient-to-br from-navbar-bg to-navbar-bg/90 px-4 py-2.5 text-body-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-navbar-bg"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+            style={{
+              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            }}
           >
             Sign in
           </Link>
-        </div>
+        </Card>
 
         <PercentileChipsSection
           punctuality={business.percentiles?.punctuality || 0}
@@ -124,7 +130,10 @@ export default function PersonalizationInsights({ business }: PersonalizationIns
   return (
     <div className="space-y-4">
       {/* Personalization Insights */}
-      <div className="bg-gradient-to-br from-sage/10 via-sage/5 to-transparent border border-sage/20 rounded-[12px] p-4 space-y-3">
+      <Card
+        variant="detail"
+        className="from-sage/10 via-sage/5 to-transparent border border-sage/20 p-4 space-y-3"
+      >
         <div className="flex items-center gap-2">
           <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
             <Info className="w-3 h-3 text-charcoal/85" />
@@ -142,12 +151,12 @@ export default function PersonalizationInsights({ business }: PersonalizationIns
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Performance Metrics */}
       <PercentileChipsSection
         punctuality={business.percentiles?.punctuality || 0}
-        costEffectiveness={business.percentiles?.['cost-effectiveness'] || 0}
+        costEffectiveness={business.percentiles?.["cost-effectiveness"] || 0}
         friendliness={business.percentiles?.friendliness || 0}
         trustworthiness={business.percentiles?.trustworthiness || 0}
       />
