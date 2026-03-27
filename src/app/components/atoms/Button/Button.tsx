@@ -8,7 +8,7 @@ import {
 import { Spinner } from "@/app/components/atoms/Spinner";
 import { cn } from "@/app/lib/utils";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger" | "bare";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends Omit<ShadButtonProps, "variant" | "size"> {

@@ -10,6 +10,8 @@ import { usePredefinedPageTitle } from "../../hooks/usePageTitle";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 import { getClearAuthMessage } from "../../components/Auth/authFeedback";
 import { Lead } from "@/app/components/ui/typography";
+import { Card } from "@/app/components/ui/card";
+import { Button } from "@/app/components/atoms/Button";
 
 // Import shared components
 import { authStyles } from "../../components/Auth/Shared/authStyles";
@@ -160,7 +162,10 @@ export default function BusinessLoginPage() {
         <div className="w-full sm:max-w-md lg:max-w-lg sm:mx-auto relative z-10 flex-1 flex flex-col justify-center py-8 sm:py-12 px-0 sm:px-2">
           {/* Form Card */}
           <section data-section>
-            <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md shadow-md px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12">
+            <Card
+              variant="detail"
+              className="relative overflow-hidden px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12"
+            >
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 {/* Error Message */}
                 {error && (
@@ -216,20 +221,16 @@ export default function BusinessLoginPage() {
                 {/* Login Button */}
                 <div className="pt-2 flex flex-col items-center gap-2">
                   <div className="w-full">
-                    <button
+                    <Button
                       type="submit"
+                      variant="bare"
+                      fullWidth
+                      isLoading={isSubmitting}
                       disabled={isSubmitting || !email || !password}
-                      className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-target btn-press"
+                      className="bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 btn-target btn-press"
                     >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Signing in...
-                        </>
-                      ) : (
-                        "Sign in"
-                      )}
-                    </button>
+                      {isSubmitting ? "Signing in..." : "Sign in"}
+                    </Button>
                   </div>
                   {/* Personal Account Links */}
                   <div className="mt-2 text-center">
@@ -266,7 +267,7 @@ export default function BusinessLoginPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
           </section>
         </div>
       </div>
