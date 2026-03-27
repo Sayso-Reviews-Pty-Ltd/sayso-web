@@ -9,6 +9,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/app/components/ui/breadcrumb";
+import { Card } from "@/app/components/ui/card";
+import { Button } from "@/app/components/atoms/Button";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { getBrowserSupabase } from "@/app/lib/supabase/client";
@@ -294,13 +296,14 @@ export default function MyBusinessesPage() {
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 text-sm font-urbanist mb-6">
           {businessesError}
         </div>
-        <button
+        <Button
           type="button"
+          variant="bare"
           onClick={() => refetchBusinesses()}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-navbar-bg text-white text-sm font-semibold rounded-xl hover:bg-navbar-bg/90 transition-colors font-urbanist"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-navbar-bg text-white text-sm font-semibold rounded-full hover:bg-navbar-bg/90 transition-colors font-urbanist"
         >
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
@@ -337,20 +340,23 @@ export default function MyBusinessesPage() {
               Manage your business listings and events
             </p>
           </div>
-          <Link
-            href="/add-business"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-card-bg text-white px-4 py-2 text-sm font-semibold font-urbanist hover:bg-card-bg/90 transition-colors"
+          <Button
+            asChild
+            variant="bare"
+            className="inline-flex items-center gap-1.5 rounded-full bg-card-bg text-white px-4 py-2 text-sm font-semibold font-urbanist hover:bg-card-bg/90 transition-colors"
           >
-            <span className="w-6 h-6 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
-              <Plus className="w-3.5 h-3.5" />
-            </span>
-            Add Business
-          </Link>
+            <Link href="/add-business">
+              <span className="w-6 h-6 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
+                <Plus className="w-3.5 h-3.5" />
+              </span>
+              Add Business
+            </Link>
+          </Button>
         </div>
 
         {/* Empty state */}
         {businesses.length === 0 && ownerListings.length === 0 && (
-          <div className="rounded-2xl border border-charcoal/10 bg-white shadow-premium flex flex-col items-center justify-center py-20 gap-3">
+          <Card className="bg-white border-charcoal/10 shadow-sm flex flex-col items-center justify-center py-20 gap-3">
             <div className={`w-16 h-16 ${ICON_CHIP_BASE_CLASS}`}>
               <Store className="w-8 h-8" />
             </div>
@@ -361,20 +367,22 @@ export default function MyBusinessesPage() {
               Add your business or create an event to get started
             </p>
             <div className="flex gap-3 mt-2">
-              <Link
-                href="/add-business"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-card-bg text-white text-sm font-semibold rounded-xl hover:bg-card-bg/90 transition-colors font-urbanist"
+              <Button
+                asChild
+                variant="bare"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-card-bg text-white text-sm font-semibold rounded-full hover:bg-card-bg/90 transition-colors font-urbanist"
               >
-                Add Business
-              </Link>
-              <Link
-                href="/add-event"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-navbar-bg text-white text-sm font-semibold rounded-xl hover:bg-navbar-bg/90 transition-colors font-urbanist"
+                <Link href="/add-business">Add Business</Link>
+              </Button>
+              <Button
+                asChild
+                variant="bare"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-navbar-bg text-white text-sm font-semibold rounded-full hover:bg-navbar-bg/90 transition-colors font-urbanist"
               >
-                Create Event
-              </Link>
+                <Link href="/add-event">Create Event</Link>
+              </Button>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Main content: businesses table + events sidebar */}
@@ -402,7 +410,7 @@ export default function MyBusinessesPage() {
               }
               aria-label="My Events & Specials"
             >
-              <div className="rounded-2xl border border-charcoal/10 bg-white shadow-premium flex flex-col min-h-0 overflow-hidden">
+              <Card className="bg-white border-charcoal/10 shadow-sm flex flex-col min-h-0 overflow-hidden">
                 {/* Header */}
                 <div className="flex-shrink-0 px-5 py-4 border-b border-charcoal/8 space-y-3">
                   <div>
@@ -415,24 +423,30 @@ export default function MyBusinessesPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Link
-                      href="/add-event"
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-navbar-bg text-white text-xs font-semibold hover:bg-navbar-bg/90 transition-colors flex-1 font-urbanist"
+                    <Button
+                      asChild
+                      variant="bare"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-navbar-bg text-white text-xs font-semibold hover:bg-navbar-bg/90 transition-colors flex-1 font-urbanist"
                     >
-                      <span className="w-5 h-5 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
-                        <Plus className="w-3 h-3" />
-                      </span>
-                      Event
-                    </Link>
-                    <Link
-                      href="/add-special"
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-coral text-white text-xs font-semibold hover:bg-coral/90 transition-colors flex-1 font-urbanist"
+                      <Link href="/add-event">
+                        <span className="w-5 h-5 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
+                          <Plus className="w-3 h-3" />
+                        </span>
+                        Event
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="bare"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-coral text-white text-xs font-semibold hover:bg-coral/90 transition-colors flex-1 font-urbanist"
                     >
-                      <span className="w-5 h-5 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
-                        <Plus className="w-3 h-3" />
-                      </span>
-                      Special
-                    </Link>
+                      <Link href="/add-special">
+                        <span className="w-5 h-5 rounded-full bg-off-white/90 text-charcoal flex items-center justify-center">
+                          <Plus className="w-3 h-3" />
+                        </span>
+                        Special
+                      </Link>
+                    </Button>
                   </div>
                 </div>
 
@@ -516,9 +530,9 @@ export default function MyBusinessesPage() {
                   ) : (
                     <div className="space-y-3">
                       {filteredOwnerListings.map((listing) => (
-                        <article
+                        <Card
                           key={listing.id}
-                          className="rounded-xl border border-charcoal/8 bg-white p-3 flex flex-col gap-2"
+                          className="bg-white border-charcoal/8 p-3 flex flex-col gap-2"
                         >
                           <div className="flex items-center justify-between gap-2">
                             <span
@@ -563,18 +577,19 @@ export default function MyBusinessesPage() {
                               <span className="line-clamp-1">{listing.location}</span>
                             </div>
                           </div>
-                          <Link
-                            href={getListingDetailHref(listing)}
-                            className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl bg-charcoal text-white text-xs font-semibold hover:bg-charcoal/90 transition-colors mt-1 font-urbanist"
+                          <Button
+                            asChild
+                            variant="bare"
+                            className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-full bg-charcoal text-white text-xs font-semibold hover:bg-charcoal/90 transition-colors mt-1 font-urbanist"
                           >
-                            View details
-                          </Link>
-                        </article>
+                            <Link href={getListingDetailHref(listing)}>View details</Link>
+                          </Button>
+                        </Card>
                       ))}
                     </div>
                   )}
                 </div>
-              </div>
+              </Card>
             </aside>
           </div>
         )}
