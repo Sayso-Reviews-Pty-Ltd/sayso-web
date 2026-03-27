@@ -3,7 +3,7 @@
 import React from "react";
 import { m } from "framer-motion";
 import { X, User, Upload } from "@/app/lib/icons";
-import Image from "next/image";
+import { Avatar, AvatarImage, AvatarFallback } from '@/app/components/ui/avatar';
 
 interface EditProfileFormProps {
   username: string;
@@ -67,21 +67,21 @@ export function EditProfileForm({
         </label>
         <div className="flex items-center gap-4">
           <m.div layoutId="profile-avatar" className="relative">
-            {avatarPreview && !imgError ? (
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-sage/20">
-                <Image
+            <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-white shadow-lg ring-2 ring-sage/20">
+              {avatarPreview && !imgError && (
+                <AvatarImage
                   src={avatarPreview}
                   alt="Profile preview"
-                  fill
-                  className="object-cover"
                   onError={onImgError}
                 />
-              </div>
-            ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center bg-navbar-bg/90 rounded-full border-4 border-white shadow-lg ring-2 ring-sage/20">
+              )}
+              <AvatarFallback
+                delayMs={avatarPreview ? 200 : 0}
+                className="bg-navbar-bg/90"
+              >
                 <User className="text-white/80" size={32} strokeWidth={2.5} />
-              </div>
-            )}
+              </AvatarFallback>
+            </Avatar>
           </m.div>
           <div className="flex-1 flex gap-2">
             <button

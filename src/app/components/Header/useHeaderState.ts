@@ -3,7 +3,7 @@
  * Consolidates all modal states, dropdown states, active states, and handlers
  */
 
-import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FilterState } from "../FilterModal/FilterModal";
 import { useSavedItems } from "../../contexts/SavedItemsContext";
@@ -38,10 +38,7 @@ export interface HeaderModalStates {
   isFilterVisible: boolean;
   isFilterOpen: boolean;
   isMobileMenuOpen: boolean;
-  isDiscoverDropdownOpen: boolean;
-  isDiscoverDropdownClosing: boolean;
   showSearchBar: boolean;
-  discoverMenuPos: { left: number; top: number } | null;
 }
 
 export interface HeaderHandlers {
@@ -50,10 +47,6 @@ export interface HeaderHandlers {
   handleFiltersChange: (f: FilterState) => void;
   handleSubmitQuery: (query: string) => void;
   handleNavClick: (href: string, e?: React.MouseEvent) => void;
-  openDiscoverDropdown: () => void;
-  closeDiscoverDropdown: () => void;
-  scheduleDiscoverDropdownClose: () => void;
-  clearDiscoverHoverTimeout: () => void;
   setShowSearchBar: (show: boolean) => void;
   setIsMobileMenuOpen: (open: boolean) => void;
 }
@@ -78,19 +71,12 @@ export const useHeaderState = ({
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDiscoverDropdownOpen, setIsDiscoverDropdownOpen] = useState(false);
-  const [isDiscoverDropdownClosing, setIsDiscoverDropdownClosing] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(() => {
     if (forceSearchOpen || isStackedLayout) {
       return true;
     }
     return false;
   });
-  const [discoverMenuPos, setDiscoverMenuPos] = useState<{
-    left: number;
-    top: number;
-  } | null>(null);
-
   // ============================================================================
   // CONTEXT DATA
   // ============================================================================
@@ -145,16 +131,9 @@ export const useHeaderState = ({
   // ============================================================================
 
   const isFilterVisibleRef = useRef(isFilterVisible);
-  const isDiscoverDropdownOpenRef = useRef(isDiscoverDropdownOpen);
   const showSearchBarRef = useRef(showSearchBar);
   const headerRef = useRef<HTMLElement>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
-  const discoverDropdownRef = useRef<HTMLDivElement>(null);
-  const discoverMenuPortalRef = useRef<HTMLDivElement>(null);
-  const discoverBtnRef = useRef<HTMLButtonElement>(null);
-  const discoverHoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
 
   // ============================================================================
   // REF SYNC EFFECTS
@@ -163,10 +142,6 @@ export const useHeaderState = ({
   useEffect(() => {
     isFilterVisibleRef.current = isFilterVisible;
   }, [isFilterVisible]);
-
-  useEffect(() => {
-    isDiscoverDropdownOpenRef.current = isDiscoverDropdownOpen;
-  }, [isDiscoverDropdownOpen]);
 
   useEffect(() => {
     showSearchBarRef.current = showSearchBar;
@@ -219,43 +194,12 @@ export const useHeaderState = ({
     isFilterVisible,
     isFilterOpen,
     isMobileMenuOpen,
-    isDiscoverDropdownOpen,
-    isDiscoverDropdownClosing,
     showSearchBar,
-    discoverMenuPos,
   };
 
   // ============================================================================
   // HANDLERS - Memoized callbacks
   // ============================================================================
-
-  const clearDiscoverHoverTimeout = useCallback(() => {
-    if (discoverHoverTimeoutRef.current) {
-      clearTimeout(discoverHoverTimeoutRef.current);
-      discoverHoverTimeoutRef.current = null;
-    }
-  }, []);
-
-  const openDiscoverDropdown = useCallback(() => {
-    clearDiscoverHoverTimeout();
-    setIsDiscoverDropdownClosing(false);
-    setIsDiscoverDropdownOpen(true);
-  }, [clearDiscoverHoverTimeout]);
-
-  const closeDiscoverDropdown = useCallback(() => {
-    setIsDiscoverDropdownClosing(true);
-    setTimeout(() => {
-      setIsDiscoverDropdownOpen(false);
-      setIsDiscoverDropdownClosing(false);
-    }, 200);
-  }, []);
-
-  const scheduleDiscoverDropdownClose = useCallback(() => {
-    clearDiscoverHoverTimeout();
-    discoverHoverTimeoutRef.current = setTimeout(() => {
-      closeDiscoverDropdown();
-    }, 100);
-  }, [clearDiscoverHoverTimeout, closeDiscoverDropdown]);
 
   const openFilters = useCallback(() => {
     if (isFilterVisible) return;
@@ -339,10 +283,6 @@ export const useHeaderState = ({
   // ============================================================================
 
   const closeModalsOnScroll = useCallback(() => {
-    if (isDiscoverDropdownOpenRef.current) {
-      clearDiscoverHoverTimeout();
-      closeDiscoverDropdown();
-    }
     if (showSearchBarRef.current && !(forceSearchOpen || isStackedLayout)) {
       setShowSearchBar(false);
     }
@@ -350,12 +290,7 @@ export const useHeaderState = ({
       setIsFilterOpen(false);
       setTimeout(() => setIsFilterVisible(false), 150);
     }
-  }, [
-    clearDiscoverHoverTimeout,
-    closeDiscoverDropdown,
-    forceSearchOpen,
-    isStackedLayout,
-  ]);
+  }, [forceSearchOpen, isStackedLayout]);
 
   useEffect(() => {
     const options: AddEventListenerOptions = { passive: true };
@@ -365,70 +300,6 @@ export const useHeaderState = ({
       window.removeEventListener("scroll", closeModalsOnScroll, options);
     };
   }, [closeModalsOnScroll]);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const clickedInsideButtonWrap = discoverDropdownRef.current?.contains(
-        target
-      );
-      const clickedInsidePortalMenu = discoverMenuPortalRef.current?.contains(
-        target
-      );
-
-      if (!clickedInsideButtonWrap && !clickedInsidePortalMenu) {
-        clearDiscoverHoverTimeout();
-        closeDiscoverDropdown();
-      }
-    };
-
-    if (isDiscoverDropdownOpen) {
-      document.addEventListener("click", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [
-    isDiscoverDropdownOpen,
-    clearDiscoverHoverTimeout,
-    closeDiscoverDropdown,
-  ]);
-
-  // Position dropdown menu
-  useLayoutEffect(() => {
-    if (
-      isDiscoverDropdownOpen &&
-      discoverBtnRef.current &&
-      headerRef.current
-    ) {
-      const buttonRect = discoverBtnRef.current.getBoundingClientRect();
-      const headerRect = headerRef.current.getBoundingClientRect();
-      const dropdownWidth = 320;
-      const viewportWidth = window.innerWidth;
-      const padding = 16;
-      const center = buttonRect.left + buttonRect.width / 2;
-      let leftPos = center - dropdownWidth / 2;
-      const maxLeft = viewportWidth - dropdownWidth - padding;
-      leftPos = Math.max(padding, Math.min(leftPos, maxLeft));
-
-      const gap = 8;
-      setDiscoverMenuPos({
-        left: leftPos,
-        top: headerRect.bottom + gap,
-      });
-    } else {
-      setDiscoverMenuPos(null);
-    }
-  }, [isDiscoverDropdownOpen]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      clearDiscoverHoverTimeout();
-    };
-  }, [clearDiscoverHoverTimeout]);
 
   // ============================================================================
   // HANDLERS OBJECT
@@ -440,10 +311,6 @@ export const useHeaderState = ({
     handleFiltersChange,
     handleSubmitQuery,
     handleNavClick,
-    openDiscoverDropdown,
-    closeDiscoverDropdown,
-    scheduleDiscoverDropdownClose,
-    clearDiscoverHoverTimeout,
     setShowSearchBar,
     setIsMobileMenuOpen,
   };
@@ -484,9 +351,6 @@ export const useHeaderState = ({
     // Refs
     headerRef,
     searchWrapRef,
-    discoverDropdownRef,
-    discoverMenuPortalRef,
-    discoverBtnRef,
 
     // Handlers
     ...handlers,

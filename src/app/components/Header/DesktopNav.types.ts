@@ -1,4 +1,4 @@
-import type { CSSProperties, MouseEvent as ReactMouseEvent, RefObject } from "react";
+import type { CSSProperties, MouseEvent as ReactMouseEvent } from "react";
 
 export type NavLink = {
   key: string;
@@ -42,17 +42,6 @@ export interface DesktopNavProps {
   unreadCount: number;
   messageUnreadCount: number;
   handleNavClick: (href: string, e?: ReactMouseEvent) => void;
-
-  discoverDropdownRef: RefObject<HTMLDivElement>;
-  discoverMenuPortalRef: RefObject<HTMLDivElement>;
-  discoverBtnRef: RefObject<HTMLButtonElement>;
-  discoverMenuPos: { left: number; top: number } | null;
-  isDiscoverDropdownOpen: boolean;
-  isDiscoverDropdownClosing: boolean;
-  clearDiscoverHoverTimeout: () => void;
-  openDiscoverDropdown: () => void;
-  closeDiscoverDropdown: () => void;
-  scheduleDiscoverDropdownClose: () => void;
 
   sf: CSSProperties;
   mode?: "full" | "navOnly" | "iconsOnly";

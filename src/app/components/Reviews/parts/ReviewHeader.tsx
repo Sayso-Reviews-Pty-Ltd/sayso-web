@@ -1,8 +1,9 @@
 'use client';
 
 import { m } from 'framer-motion';
-import Image from 'next/image';
 import { Edit, Trash2 } from "@/app/lib/icons";
+import { Avatar, AvatarImage, AvatarFallback } from '@/app/components/ui/avatar';
+import { getInitials } from '../../atoms/Avatar/Avatar';
 import type { ReviewWithUser } from '../../../lib/types/database';
 import BadgePill, { BadgePillData } from '../../Badges/BadgePill';
 import VerifiedBadge from '../../VerifiedBadge/VerifiedBadge';
@@ -39,37 +40,28 @@ export function ReviewHeader({
         transition={isDesktop ? undefined : { duration: 0.3 }}
         className="flex-shrink-0"
       >
-        {review.user.avatar_url ? (
-          <div className="relative">
+        {(() => {
+          const displayName = review.user?.name || getDisplayUsername(
+            review.user?.username,
+            review.user?.display_name,
+            review.user?.email,
+            review.user_id
+          );
+          const src = review.user.avatar_url?.trim() || undefined;
+          return (
             <div className="w-12 h-12 rounded-full p-0.5 bg-off-white ring-2 ring-white/40">
-              <Image
-                src={review.user.avatar_url}
-                alt={review.user?.name || getDisplayUsername(
-                  review.user?.username,
-                  review.user?.display_name,
-                  review.user?.email,
-                  review.user_id
-                )}
-                width={48}
-                height={48}
-                className={`w-full h-full rounded-full object-cover ${
-                  isDesktop ? '' : 'group-hover:ring-2 group-hover:ring-sage/40 transition-all duration-300'
-                }`}
-              />
+              <Avatar className={`w-full h-full ${isDesktop ? '' : 'group-hover:ring-2 group-hover:ring-sage/40 transition-all duration-300'}`}>
+                {src && <AvatarImage src={src} alt={displayName} />}
+                <AvatarFallback
+                  delayMs={src ? 200 : 0}
+                  className="bg-gradient-to-br from-sage/20 to-sage/10 font-urbanist text-lg font-bold text-sage"
+                >
+                  {getInitials(displayName)}
+                </AvatarFallback>
+              </Avatar>
             </div>
-          </div>
-        ) : (
-          <div className="w-12 h-12 bg-gradient-to-br from-sage/20 to-sage/10 rounded-full flex items-center justify-center ring-2 ring-white/40 transition-shadow duration-300">
-            <span className="font-urbanist text-lg font-700 text-sage">
-              {(review.user?.name || getDisplayUsername(
-                review.user?.username,
-                review.user?.display_name,
-                review.user?.email,
-                review.user_id
-              ))?.[0]?.toUpperCase() || 'U'}
-            </span>
-          </div>
-        )}
+          );
+        })()}
       </m.div>
 
       <div className="flex-1 min-w-0">
