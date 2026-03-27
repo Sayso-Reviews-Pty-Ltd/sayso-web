@@ -68,7 +68,7 @@ export function ClaimBusinessFormContent({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
 
         <div className="pt-4 sm:pt-6 pb-2 relative z-10">
-          <Breadcrumb>
+          <Breadcrumb className="pt-4 sm:pt-6 pb-2">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
