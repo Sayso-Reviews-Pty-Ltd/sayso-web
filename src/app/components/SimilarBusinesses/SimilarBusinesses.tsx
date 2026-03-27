@@ -62,7 +62,7 @@ export default function SimilarBusinesses({
         const response = await fetch(
           `/api/businesses/${currentBusinessId}/similar?limit=${limit}&radius_km=50`,
           {
-            cache: 'no-store', // Always fetch fresh data
+            cache: "no-store", // Always fetch fresh data
           }
         );
 
@@ -81,7 +81,7 @@ export default function SimilarBusinesses({
           try {
             const errorJson = JSON.parse(errorText);
             errorMessage = errorJson.details || errorJson.message || errorMessage;
-            console.error('[SimilarBusinesses] API error details:', errorJson);
+            console.error("[SimilarBusinesses] API error details:", errorJson);
           } catch {
             // If response isn't JSON, use the text as-is
             errorMessage = errorText || errorMessage;
@@ -90,7 +90,7 @@ export default function SimilarBusinesses({
         }
 
         const data = await response.json();
-        
+
         if (isMounted) {
           const businesses = (data.businesses || []) as SimilarBusiness[];
           setSimilarBusinesses(businesses);
@@ -116,7 +116,8 @@ export default function SimilarBusinesses({
                   });
                   if (!r.ok) return { id: b.id, address: undefined as string | undefined };
                   const j = (await r.json()) as { success?: boolean; address?: string };
-                  if (!j?.success || !j.address) return { id: b.id, address: undefined as string | undefined };
+                  if (!j?.success || !j.address)
+                    return { id: b.id, address: undefined as string | undefined };
                   return { id: b.id, address: j.address as string };
                 } catch {
                   return { id: b.id, address: undefined as string | undefined };
@@ -126,7 +127,9 @@ export default function SimilarBusinesses({
               if (!isMounted) return;
               setSimilarBusinesses((prev) => {
                 if (!prev?.length) return prev;
-                const map = new Map(resolved.filter((x) => x.address).map((x) => [x.id, x.address!] as const));
+                const map = new Map(
+                  resolved.filter((x) => x.address).map((x) => [x.id, x.address!] as const)
+                );
                 if (map.size === 0) return prev;
                 return prev.map((b) => {
                   const addr = map.get(b.id);
@@ -138,9 +141,9 @@ export default function SimilarBusinesses({
           }
         }
       } catch (err: any) {
-        console.error('[SimilarBusinesses] Error fetching similar businesses:', err);
+        console.error("[SimilarBusinesses] Error fetching similar businesses:", err);
         if (isMounted) {
-          setError(err.message || 'Failed to load similar businesses');
+          setError(err.message || "Failed to load similar businesses");
           setSimilarBusinesses([]);
           setLoading(false);
         }
@@ -153,7 +156,6 @@ export default function SimilarBusinesses({
       isMounted = false;
     };
   }, [currentBusinessId, limit]);
-
 
   if (loading) {
     return (
@@ -168,41 +170,46 @@ export default function SimilarBusinesses({
           <div className="flex flex-col gap-4 items-center">
             <div className="inline-flex flex-col items-center gap-2">
               <div className="flex items-center gap-2">
-                <p className="text-[11px] uppercase tracking-[0.15em] text-charcoal/70 font-bold">Similar Businesses</p>
+                <p className="text-[11px] uppercase tracking-[0.15em] text-charcoal/70 font-bold">
+                  Similar Businesses
+                </p>
               </div>
-              <h3 id="similar-businesses-heading" className="sr-only">You Might Also Like</h3>
-            <WavyTypedTitle
-              text="You Might Also Like"
-              as="h3"
-              className="font-urbanist text-xl sm:text-2xl md:text-3xl font-bold text-charcoal"
+              <h3 id="similar-businesses-heading" className="sr-only">
+                You Might Also Like
+              </h3>
+              <WavyTypedTitle
+                text="You Might Also Like"
+                as="h3"
+                className="font-urbanist text-xl sm:text-2xl md:text-3xl font-bold text-charcoal"
                 typingSpeedMs={40}
                 startDelayMs={300}
                 waveVariant="subtle"
                 loopWave={true}
                 disableWave={true}
                 style={{
-                  fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                  fontFamily:
+                    "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               />
             </div>
           </div>
         </div>
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-6">
           <ul className="list-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {[...Array(limit)].map((_, i) => (
               <li key={i}>
-              <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden w-full flex flex-col border-none backdrop-blur-xl shadow-md animate-pulse h-full min-h-[416px]">
-                {/* Image Section Skeleton */}
-                <div className="relative w-full h-[300px] lg:h-[260px] overflow-hidden rounded-t-[12px] bg-gradient-to-br from-off-white/90 via-off-white/85 to-off-white/90" />
-                {/* Content Section Skeleton */}
-                <div className="px-4 py-4 bg-gradient-to-b from-card-bg/95 to-card-bg flex flex-col gap-2 rounded-b-[12px]">
-                  <div className="h-5 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
-                  <div className="h-4 w-full bg-charcoal/5 rounded mt-1" />
-                  <div className="h-4 w-2/3 bg-charcoal/5 rounded" />
-                  <div className="h-3 w-1/2 bg-charcoal/5 rounded mt-1" />
-                  <div className="mt-3 h-10 w-full bg-charcoal/10 rounded-full" />
+                <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden w-full flex flex-col border-none backdrop-blur-xl shadow-md animate-pulse h-full min-h-[416px]">
+                  {/* Image Section Skeleton */}
+                  <div className="relative w-full h-[300px] lg:h-[260px] overflow-hidden rounded-t-[12px] bg-gradient-to-br from-off-white/90 via-off-white/85 to-off-white/90" />
+                  {/* Content Section Skeleton */}
+                  <div className="px-4 py-4 bg-gradient-to-b from-card-bg/95 to-card-bg flex flex-col gap-2 rounded-b-[12px]">
+                    <div className="h-5 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
+                    <div className="h-4 w-full bg-charcoal/5 rounded mt-1" />
+                    <div className="h-4 w-2/3 bg-charcoal/5 rounded" />
+                    <div className="h-3 w-1/2 bg-charcoal/5 rounded mt-1" />
+                    <div className="mt-3 h-10 w-full bg-charcoal/10 rounded-full" />
+                  </div>
                 </div>
-              </div>
               </li>
             ))}
           </ul>
@@ -210,7 +217,6 @@ export default function SimilarBusinesses({
       </section>
     );
   }
-
 
   // Don't render if no results
   if (!loading && (!similarBusinesses || similarBusinesses.length === 0)) {
@@ -229,9 +235,13 @@ export default function SimilarBusinesses({
         <div className="flex flex-col gap-4 items-center">
           <div className="inline-flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-charcoal/70 font-bold">Similar Businesses</p>
+              <p className="text-[11px] uppercase tracking-[0.15em] text-charcoal/70 font-bold">
+                Similar Businesses
+              </p>
             </div>
-            <h3 id="similar-businesses-heading" className="sr-only">You Might Also Like</h3>
+            <h3 id="similar-businesses-heading" className="sr-only">
+              You Might Also Like
+            </h3>
             <WavyTypedTitle
               text="You Might Also Like"
               as="h3"
@@ -251,7 +261,7 @@ export default function SimilarBusinesses({
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-6">
         <ul className="list-none grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {similarBusinesses.map((business) => (
             <li key={business.id}>
