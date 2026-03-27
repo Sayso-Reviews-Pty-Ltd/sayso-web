@@ -1,17 +1,24 @@
-'use client';
+"use client";
 
-import MessagingWorkspace from '@/app/components/Messaging/MessagingWorkspace';
-import { useAuth } from '@/app/contexts/AuthContext';
-import { useOwnerBusinessesList } from '@/app/hooks/useOwnerBusinessesList';
-import { useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import MessagingWorkspace from "@/app/components/Messaging/MessagingWorkspace";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useOwnerBusinessesList } from "@/app/hooks/useOwnerBusinessesList";
+import { useSearchParams } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
 
 export default function BusinessMessagesPage() {
   const { user, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
 
-  const { businesses, isLoading: businessesLoading } = useOwnerBusinessesList(
-    user?.id || null
-  );
+  const { businesses, isLoading: businessesLoading } = useOwnerBusinessesList(user?.id || null);
 
   if (authLoading || businessesLoading) {
     return (
@@ -28,7 +35,10 @@ export default function BusinessMessagesPage() {
             {/* Conversation items */}
             <div className="flex-1 overflow-hidden">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="flex items-start gap-3 px-4 py-3.5 border-b border-charcoal/6">
+                <div
+                  key={i}
+                  className="flex items-start gap-3 px-4 py-3.5 border-b border-charcoal/6"
+                >
                   <div className="h-10 w-10 rounded-full bg-charcoal/8 flex-shrink-0" />
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center justify-between">
@@ -62,21 +72,38 @@ export default function BusinessMessagesPage() {
     image_url: business.image_url || null,
   }));
 
-  const initialConversationId = searchParams?.get('conversation') || null;
-  const initialBusinessId = searchParams?.get('business_id') || null;
-  const startUserId = searchParams?.get('user_id') || null;
+  const initialConversationId = searchParams?.get("conversation") || null;
+  const initialBusinessId = searchParams?.get("business_id") || null;
+  const startUserId = searchParams?.get("user_id") || null;
 
   return (
-    <MessagingWorkspace
-      role="business"
-      title="Inbox"
-      subtitle="All customer conversations"
-      viewportClassName="h-[calc(100dvh-3.5rem)] lg:h-[100dvh]"
-      businessOptions={businessOptions}
-      initialBusinessId={initialBusinessId}
-      initialConversationId={initialConversationId}
-      startBusinessId={initialBusinessId}
-      startUserId={startUserId}
-    />
+    <div className="flex flex-col h-[calc(100dvh-3.5rem)] lg:h-[100dvh]">
+      <div className="flex-shrink-0 px-4 sm:px-6">
+        <Breadcrumb className="pt-4 sm:pt-6 pb-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/my-businesses">My Businesses</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Inbox</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <MessagingWorkspace
+        role="business"
+        title="Inbox"
+        subtitle="All customer conversations"
+        viewportClassName="flex-1 min-h-0"
+        businessOptions={businessOptions}
+        initialBusinessId={initialBusinessId}
+        initialConversationId={initialConversationId}
+        startBusinessId={initialBusinessId}
+        startUserId={startUserId}
+      />
+    </div>
   );
 }
