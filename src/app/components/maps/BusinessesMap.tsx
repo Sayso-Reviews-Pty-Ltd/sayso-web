@@ -1,12 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { useRouter } from 'next/navigation';
-
-// Mapbox access token
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
+import { useEffect, useRef, useState, useCallback } from "react";
+// mapbox-gl is dynamically imported inside useEffect to avoid 1.6MB in the initial bundle
+import { useRouter } from "next/navigation";
 
 export type BusinessMapItem = {
   id: string;
@@ -26,15 +22,15 @@ interface BusinessesMapProps {
 const CAPE_TOWN_CENTER: [number, number] = [18.4241, -33.9249];
 
 // Brand colors
-const CLUSTER_COLOR = '#8BA888';
+const CLUSTER_COLOR = "#8BA888";
 
 /** Inject marker CSS once (hover effects) */
 const injectMarkerStyles = () => {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('sayso-businesses-marker-styles')) return;
+  if (typeof document === "undefined") return;
+  if (document.getElementById("sayso-businesses-marker-styles")) return;
 
-  const style = document.createElement('style');
-  style.id = 'sayso-businesses-marker-styles';
+  const style = document.createElement("style");
+  style.id = "sayso-businesses-marker-styles";
   style.textContent = `
     .sayso-biz-marker {
       cursor: pointer;
@@ -55,8 +51,8 @@ const injectMarkerStyles = () => {
 function createPinMarker(): HTMLDivElement {
   injectMarkerStyles();
 
-  const el = document.createElement('div');
-  el.className = 'sayso-biz-marker';
+  const el = document.createElement("div");
+  el.className = "sayso-biz-marker";
 
   el.innerHTML = `
     <div style="
@@ -117,77 +113,100 @@ function createHoverPopupHTML(name: string, category: string): string {
         font-weight: 700;
         font-size: 14px;
         color: #2D3436;
-        margin-bottom: ${category ? '4px' : '0'};
+        margin-bottom: ${category ? "4px" : "0"};
         line-height: 1.3;
       ">${name}</div>
-      ${category ? `<div style="
+      ${
+        category
+          ? `<div style="
         font-size: 12px;
         color: #666;
         font-weight: 500;
-      ">${category}</div>` : ''}
+      ">${category}</div>`
+          : ""
+      }
     </div>
   `;
 }
 
-export default function BusinessesMap({ businesses, className = '' }: BusinessesMapProps) {
+export default function BusinessesMap({ businesses, className = "" }: BusinessesMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const domMarkersRef = useRef<Record<string, mapboxgl.Marker>>({});
-  const domMarkersOnScreenRef = useRef<Record<string, mapboxgl.Marker>>({});
+  const mapRef = useRef<any | null>(null);
+  const mapboxRef = useRef<any | null>(null);
+  const domMarkersRef = useRef<Record<string, any>>({});
+  const domMarkersOnScreenRef = useRef<Record<string, any>>({});
   const router = useRouter();
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Stable navigate callback
-  const navigateToBusiness = useCallback((id: string, slug: string | null) => {
-    const path = slug ? `/business/${slug}` : `/business/${id}`;
-    router.push(path);
-  }, [router]);
+  const navigateToBusiness = useCallback(
+    (id: string, slug: string | null) => {
+      const path = slug ? `/business/${slug}` : `/business/${id}`;
+      router.push(path);
+    },
+    [router]
+  );
 
   // Initialize map once
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: CAPE_TOWN_CENTER,
-      zoom: 11,
-    });
+    let cancelled = false;
 
-    map.on('load', () => {
-      setMapLoaded(true);
-    });
+    import("mapbox-gl").then((mod) => {
+      if (cancelled || !mapContainerRef.current) return;
+      const mapboxgl = mod.default;
+      import("mapbox-gl/dist/mapbox-gl.css" as any);
 
-    mapRef.current = map;
+      mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
+      mapboxRef.current = mapboxgl;
+
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current!,
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: CAPE_TOWN_CENTER,
+        zoom: 11,
+      });
+
+      map.on("load", () => {
+        setMapLoaded(true);
+      });
+
+      mapRef.current = map;
+    });
 
     return () => {
-      map.remove();
-      mapRef.current = null;
+      cancelled = true;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 
   // Update source + layers when businesses change
   useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
+    if (!mapRef.current || !mapLoaded || !mapboxRef.current) return;
 
     const map = mapRef.current;
+    const mapboxgl = mapboxRef.current;
 
     // Clean all DOM markers
-    Object.values(domMarkersRef.current).forEach(m => m.remove());
+    Object.values(domMarkersRef.current).forEach((m) => m.remove());
     domMarkersRef.current = {};
     domMarkersOnScreenRef.current = {};
 
     // Filter valid businesses with coordinates
     const validBusinesses = businesses.filter(
-      b => b.lat != null && b.lng != null && !isNaN(b.lat) && !isNaN(b.lng)
+      (b) => b.lat != null && b.lng != null && !isNaN(b.lat) && !isNaN(b.lng)
     );
 
     if (validBusinesses.length === 0) {
       // Remove source if it exists
-      if (map.getSource('businesses')) {
-        if (map.getLayer('clusters')) map.removeLayer('clusters');
-        if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
-        map.removeSource('businesses');
+      if (map.getSource("businesses")) {
+        if (map.getLayer("clusters")) map.removeLayer("clusters");
+        if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
+        map.removeSource("businesses");
       }
       map.flyTo({ center: CAPE_TOWN_CENTER, zoom: 11 });
       return;
@@ -195,33 +214,33 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
 
     // Create GeoJSON
     const geojson: GeoJSON.FeatureCollection = {
-      type: 'FeatureCollection',
-      features: validBusinesses.map(b => ({
-        type: 'Feature',
+      type: "FeatureCollection",
+      features: validBusinesses.map((b) => ({
+        type: "Feature",
         properties: {
           id: b.id,
           name: b.name,
-          category: b.category ?? '',
-          slug: b.slug ?? '',
-          image_url: b.image_url ?? '',
+          category: b.category ?? "",
+          slug: b.slug ?? "",
+          image_url: b.image_url ?? "",
         },
         geometry: {
-          type: 'Point',
+          type: "Point",
           coordinates: [b.lng, b.lat],
         },
       })),
     };
 
     // Remove existing source and layers if they exist
-    if (map.getSource('businesses')) {
-      if (map.getLayer('clusters')) map.removeLayer('clusters');
-      if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
-      map.removeSource('businesses');
+    if (map.getSource("businesses")) {
+      if (map.getLayer("clusters")) map.removeLayer("clusters");
+      if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
+      map.removeSource("businesses");
     }
 
     // Add source with clustering
-    map.addSource('businesses', {
-      type: 'geojson',
+    map.addSource("businesses", {
+      type: "geojson",
       data: geojson,
       cluster: true,
       clusterMaxZoom: 14,
@@ -230,61 +249,53 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
 
     // Cluster circles with white ring
     map.addLayer({
-      id: 'clusters',
-      type: 'circle',
-      source: 'businesses',
-      filter: ['has', 'point_count'],
+      id: "clusters",
+      type: "circle",
+      source: "businesses",
+      filter: ["has", "point_count"],
       paint: {
-        'circle-color': [
-          'step',
-          ['get', 'point_count'],
+        "circle-color": [
+          "step",
+          ["get", "point_count"],
           CLUSTER_COLOR,
           10,
-          '#6B8E68',
+          "#6B8E68",
           30,
-          '#4A6E47',
+          "#4A6E47",
         ],
-        'circle-opacity': 0.9,
-        'circle-radius': [
-          'step',
-          ['get', 'point_count'],
-          20,
-          10,
-          30,
-          30,
-          40,
-        ],
-        'circle-stroke-width': 3,
-        'circle-stroke-color': '#ffffff',
+        "circle-opacity": 0.9,
+        "circle-radius": ["step", ["get", "point_count"], 20, 10, 30, 30, 40],
+        "circle-stroke-width": 3,
+        "circle-stroke-color": "#ffffff",
       },
     });
 
     // Cluster count labels
     map.addLayer({
-      id: 'cluster-count',
-      type: 'symbol',
-      source: 'businesses',
-      filter: ['has', 'point_count'],
+      id: "cluster-count",
+      type: "symbol",
+      source: "businesses",
+      filter: ["has", "point_count"],
       layout: {
-        'text-field': '{point_count_abbreviated}',
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        'text-size': 13,
+        "text-field": "{point_count_abbreviated}",
+        "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+        "text-size": 13,
       },
       paint: {
-        'text-color': '#ffffff',
+        "text-color": "#ffffff",
       },
     });
 
     // Click handler for clusters - zoom in
-    map.on('click', 'clusters', (e) => {
+    map.on("click", "clusters", (e) => {
       const features = map.queryRenderedFeatures(e.point, {
-        layers: ['clusters'],
+        layers: ["clusters"],
       });
 
       if (!features.length) return;
 
       const clusterId = features[0].properties?.cluster_id;
-      const source = map.getSource('businesses') as mapboxgl.GeoJSONSource;
+      const source = map.getSource("businesses") as any;
 
       source.getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err) return;
@@ -298,20 +309,20 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
     });
 
     // Cursor changes for clusters
-    map.on('mouseenter', 'clusters', () => {
-      map.getCanvas().style.cursor = 'pointer';
+    map.on("mouseenter", "clusters", () => {
+      map.getCanvas().style.cursor = "pointer";
     });
-    map.on('mouseleave', 'clusters', () => {
-      map.getCanvas().style.cursor = '';
+    map.on("mouseleave", "clusters", () => {
+      map.getCanvas().style.cursor = "";
     });
 
     // --- DOM markers for unclustered points ---
     // On each render, sync DOM markers with unclustered source features
     const updateDOMMarkers = () => {
-      if (!map.getSource('businesses')) return;
+      if (!map.getSource("businesses")) return;
 
-      const features = map.querySourceFeatures('businesses');
-      const newMarkers: Record<string, mapboxgl.Marker> = {};
+      const features = map.querySourceFeatures("businesses");
+      const newMarkers: Record<string, any> = {};
 
       for (const feature of features) {
         const props = feature.properties;
@@ -331,28 +342,27 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
             closeButton: false,
             closeOnClick: false,
             offset: 25,
-            maxWidth: '250px',
-          }).setHTML(createHoverPopupHTML(props.name || '', props.category || ''));
+            maxWidth: "250px",
+          }).setHTML(createHoverPopupHTML(props.name || "", props.category || ""));
 
-          el.addEventListener('mouseenter', () => {
+          el.addEventListener("mouseenter", () => {
             if (map && !popup.isOpen()) {
               popup.setLngLat(marker.getLngLat()).addTo(map);
             }
           });
-          el.addEventListener('mouseleave', () => {
+          el.addEventListener("mouseleave", () => {
             setTimeout(() => {
-              if (!el.matches(':hover')) popup.remove();
+              if (!el.matches(":hover")) popup.remove();
             }, 100);
           });
 
           // Click → navigate
           const slug = props.slug || null;
-          el.addEventListener('click', () => {
+          el.addEventListener("click", () => {
             navigateToBusiness(id, slug);
           });
 
-          marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-            .setLngLat(coords);
+          marker = new mapboxgl.Marker({ element: el, anchor: "bottom" }).setLngLat(coords);
 
           domMarkersRef.current[id] = marker;
         }
@@ -375,7 +385,7 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
       domMarkersOnScreenRef.current = newMarkers;
     };
 
-    map.on('render', updateDOMMarkers);
+    map.on("render", updateDOMMarkers);
 
     // Fit bounds to show all markers
     if (validBusinesses.length === 1) {
@@ -385,14 +395,14 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
       });
     } else {
       const bounds = new mapboxgl.LngLatBounds();
-      validBusinesses.forEach(b => {
+      validBusinesses.forEach((b) => {
         bounds.extend([b.lng, b.lat]);
       });
       map.fitBounds(bounds, { padding: 60, maxZoom: 14 });
     }
 
     return () => {
-      map.off('render', updateDOMMarkers);
+      map.off("render", updateDOMMarkers);
     };
   }, [businesses, mapLoaded, navigateToBusiness]);
 
@@ -419,8 +429,8 @@ export default function BusinessesMap({ businesses, className = '' }: Businesses
         .mapboxgl-popup-content {
           padding: 0 !important;
           border-radius: 12px !important;
-          box-shadow: 0 6px 24px rgba(0,0,0,0.12) !important;
-          border: 1px solid rgba(255,255,255,0.8) !important;
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important;
+          border: 1px solid rgba(255, 255, 255, 0.8) !important;
           overflow: hidden;
         }
         .mapboxgl-popup-tip {

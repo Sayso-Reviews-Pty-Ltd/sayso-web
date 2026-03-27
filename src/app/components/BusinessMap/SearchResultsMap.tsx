@@ -1,43 +1,42 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+// mapbox-gl is dynamically imported inside useEffect to avoid 1.6MB in the initial bundle
 import BusinessCard from "../BusinessCard/BusinessCard";
 
 interface Business {
-    id: string;
-    slug?: string;
-    name: string;
-    lat?: number | null;
-    lng?: number | null;
-    location?: string;
-    address?: string;
-    category?: string;
-    rating?: number;
-    alt: string; // Required by BusinessCard
-    reviews: number; // Required by BusinessCard (number, not array)
-    image?: string;
-    image_url?: string;
-    uploaded_images?: string[];
-    [key: string]: any;
+  id: string;
+  slug?: string;
+  name: string;
+  lat?: number | null;
+  lng?: number | null;
+  location?: string;
+  address?: string;
+  category?: string;
+  rating?: number;
+  alt: string; // Required by BusinessCard
+  reviews: number; // Required by BusinessCard (number, not array)
+  image?: string;
+  image_url?: string;
+  uploaded_images?: string[];
+  [key: string]: any;
 }
 
 interface SearchResultsMapProps {
-    businesses: Business[];
-    onBusinessClick?: (business: Business) => void;
-    userLocation?: { lat: number; lng: number } | null;
-    className?: string;
+  businesses: Business[];
+  onBusinessClick?: (business: Business) => void;
+  userLocation?: { lat: number; lng: number } | null;
+  className?: string;
 }
 
 /** Inject marker CSS once (hover effects + pulse animation) */
 const injectSearchMarkerStyles = () => {
-    if (typeof document === 'undefined') return;
-    if (document.getElementById('sayso-search-marker-styles')) return;
+  if (typeof document === "undefined") return;
+  if (document.getElementById("sayso-search-marker-styles")) return;
 
-    const style = document.createElement('style');
-    style.id = 'sayso-search-marker-styles';
-    style.textContent = `
+  const style = document.createElement("style");
+  style.id = "sayso-search-marker-styles";
+  style.textContent = `
         @keyframes saysoSearchPulse {
             0% { transform: scale(1); opacity: 0.6; }
             50% { transform: scale(2.5); opacity: 0.2; }
@@ -58,17 +57,17 @@ const injectSearchMarkerStyles = () => {
             transform: rotate(-45deg) scale(1.05) !important;
         }
     `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 };
 
 /** Create a premium pin-shaped marker element */
 function createSearchMarker(): HTMLDivElement {
-    injectSearchMarkerStyles();
+  injectSearchMarkerStyles();
 
-    const el = document.createElement('div');
-    el.className = 'sayso-search-marker';
+  const el = document.createElement("div");
+  el.className = "sayso-search-marker";
 
-    el.innerHTML = `
+  el.innerHTML = `
         <div style="
             position: relative;
             display: flex;
@@ -130,13 +129,13 @@ function createSearchMarker(): HTMLDivElement {
         </div>
     `;
 
-    return el;
+  return el;
 }
 
 /** Premium popup HTML */
 function createSearchPopupHTML(business: Business): string {
-    const ratingHTML = business.rating
-        ? `<div style="
+  const ratingHTML = business.rating
+    ? `<div style="
             display: flex;
             align-items: center;
             gap: 4px;
@@ -150,9 +149,9 @@ function createSearchPopupHTML(business: Business): string {
             </svg>
             ${business.rating.toFixed(1)}
           </div>`
-        : '';
+    : "";
 
-    return `
+  return `
         <div style="
             padding: 14px 18px;
             font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -165,12 +164,16 @@ function createSearchPopupHTML(business: Business): string {
                 margin-bottom: 4px;
                 line-height: 1.3;
             ">${business.name}</div>
-            ${business.category ? `<div style="
+            ${
+              business.category
+                ? `<div style="
                 font-size: 12px;
                 color: #888;
                 font-weight: 500;
-                margin-bottom: ${business.rating ? '4px' : '6px'};
-            ">${business.category}</div>` : ''}
+                margin-bottom: ${business.rating ? "4px" : "6px"};
+            ">${business.category}</div>`
+                : ""
+            }
             ${ratingHTML}
             <div style="
                 font-size: 12px;
@@ -191,223 +194,244 @@ function createSearchPopupHTML(business: Business): string {
 }
 
 export default function SearchResultsMap({
-    businesses,
-    onBusinessClick,
-    userLocation,
-    className = "",
+  businesses,
+  onBusinessClick,
+  userLocation,
+  className = "",
 }: SearchResultsMapProps) {
-    const mapContainer = useRef<HTMLDivElement>(null);
-    const map = useRef<mapboxgl.Map | null>(null);
-    const markersRef = useRef<mapboxgl.Marker[]>([]);
-    const markerElementsRef = useRef<Map<string, HTMLDivElement>>(new Map());
-    const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
-    const [isLoaded, setIsLoaded] = useState(false);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<any | null>(null);
+  const mapboxRef = useRef<any | null>(null);
+  const markersRef = useRef<any[]>([]);
+  const markerElementsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    useEffect(() => {
-        if (!mapContainer.current || map.current) return;
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
 
-        const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-        if (!mapboxToken) {
-            console.warn("Mapbox token not found");
-            return;
-        }
-
-        mapboxgl.accessToken = mapboxToken;
-
-        // Get center from businesses with coordinates or use default
-        const businessesWithCoords = businesses.filter(b => b.lat && b.lng);
-        let center: [number, number] = [-18.4241, 33.9249]; // Default to Cape Town
-        let zoom = 12;
-
-        if (businessesWithCoords.length > 0) {
-            const avgLat = businessesWithCoords.reduce((sum, b) => sum + (b.lat || 0), 0) / businessesWithCoords.length;
-            const avgLng = businessesWithCoords.reduce((sum, b) => sum + (b.lng || 0), 0) / businessesWithCoords.length;
-            center = [avgLng, avgLat];
-
-            if (businessesWithCoords.length === 1) {
-                zoom = 15;
-            } else if (businessesWithCoords.length <= 5) {
-                zoom = 13;
-            }
-        } else if (userLocation) {
-            center = [userLocation.lng, userLocation.lat];
-            zoom = 13;
-        }
-
-        map.current = new mapboxgl.Map({
-            container: mapContainer.current,
-            style: "mapbox://styles/mapbox/streets-v12",
-            center: center,
-            zoom: zoom,
-            interactive: true,
-            attributionControl: false,
-        });
-
-        map.current.on("load", () => {
-            setIsLoaded(true);
-        });
-
-        return () => {
-            if (map.current) {
-                map.current.remove();
-                map.current = null;
-            }
-        };
-    }, [businesses.length, userLocation]);
-
-    // Update markers when businesses change
-    useEffect(() => {
-        if (!map.current || !isLoaded) return;
-
-        // Clear existing markers
-        markersRef.current.forEach(marker => marker.remove());
-        markersRef.current = [];
-        markerElementsRef.current.clear();
-
-        // Deduplicate businesses by address/coordinates (keep first occurrence)
-        const seen = new Set<string>();
-        const uniqueBusinesses = businesses.filter((business) => {
-            if (!business.lat || !business.lng) return false;
-
-            const coordKey = `${business.lat.toFixed(5)},${business.lng.toFixed(5)}`;
-            const addressKey = business.address || business.location || '';
-            const key = addressKey || coordKey;
-
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        });
-
-        // Add markers for businesses with coordinates
-        uniqueBusinesses.forEach((business) => {
-            if (!business.lat || !business.lng) return;
-
-            const markerElement = createSearchMarker();
-
-            const marker = new mapboxgl.Marker({
-                element: markerElement,
-                anchor: 'bottom',
-            })
-                .setLngLat([business.lng, business.lat])
-                .setPopup(
-                    new mapboxgl.Popup({
-                        offset: 25,
-                        closeButton: false,
-                        closeOnClick: true,
-                        maxWidth: '280px',
-                    }).setHTML(createSearchPopupHTML(business))
-                )
-                .addTo(map.current!);
-
-            // Show popup on hover (desktop)
-            markerElement.addEventListener('mouseenter', () => {
-                if (map.current && !marker.getPopup().isOpen()) {
-                    marker.getPopup().addTo(map.current);
-                }
-            });
-            markerElement.addEventListener('mouseleave', () => {
-                setTimeout(() => {
-                    if (!markerElement.matches(':hover')) {
-                        marker.getPopup().remove();
-                    }
-                }, 150);
-            });
-
-            markerElement.addEventListener('click', () => {
-                // Deselect previous
-                markerElementsRef.current.forEach((el) => {
-                    el.classList.remove('sayso-selected');
-                    const pulseRings = el.querySelectorAll('.sayso-pulse-ring, .sayso-pulse-ring-delayed');
-                    pulseRings.forEach(ring => {
-                        (ring as HTMLElement).style.display = 'none';
-                        (ring as HTMLElement).style.animation = 'none';
-                    });
-                });
-
-                // Select current
-                markerElement.classList.add('sayso-selected');
-                const pulseRing = markerElement.querySelector('.sayso-pulse-ring') as HTMLElement;
-                const pulseRingDelayed = markerElement.querySelector('.sayso-pulse-ring-delayed') as HTMLElement;
-                if (pulseRing) {
-                    pulseRing.style.display = 'block';
-                    pulseRing.style.animation = 'saysoSearchPulse 2s ease-out infinite';
-                }
-                if (pulseRingDelayed) {
-                    pulseRingDelayed.style.display = 'block';
-                    pulseRingDelayed.style.animation = 'saysoSearchPulse 2s ease-out infinite 0.5s';
-                }
-
-                setSelectedBusiness(business);
-                if (onBusinessClick) {
-                    onBusinessClick(business);
-                }
-            });
-
-            markerElementsRef.current.set(business.id, markerElement);
-            markersRef.current.push(marker);
-        });
-
-        // Fit bounds to show all markers if we have businesses
-        if (markersRef.current.length > 0) {
-            const bounds = new mapboxgl.LngLatBounds();
-            markersRef.current.forEach(marker => {
-                bounds.extend(marker.getLngLat());
-            });
-
-            map.current.fitBounds(bounds, {
-                padding: { top: 80, bottom: 80, left: 50, right: 50 },
-                maxZoom: 15,
-                duration: 400,
-            });
-        }
-    }, [businesses, isLoaded, onBusinessClick]);
-
-    if (!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN) {
-        return (
-            <div className={`w-full h-full flex items-center justify-center bg-off-white/50 ${className}`}>
-                <div className="text-center p-4">
-                    <p className="text-sm text-charcoal/60 mb-2">Map unavailable</p>
-                    <p className="text-sm text-charcoal/60">Mapbox token not configured</p>
-                </div>
-            </div>
-        );
+    const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    if (!mapboxToken) {
+      console.warn("Mapbox token not found");
+      return;
     }
 
-    return (
-        <div className={`relative w-full h-full ${className}`}>
-            <div ref={mapContainer} className="w-full h-full" style={{ minHeight: "280px" }} />
-            {selectedBusiness && (
-                <div className="absolute bottom-3 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 z-10 max-w-md mx-auto">
-                    <div className="bg-white rounded-[12px] shadow-xl border border-white/30 p-3">
-                        <BusinessCard
-                            business={{
-                                ...selectedBusiness,
-                                alt: selectedBusiness.alt || selectedBusiness.name || '',
-                                reviews: selectedBusiness.reviews || 0,
-                                category: selectedBusiness.category || '',
-                            } as any}
-                            compact={true}
-                        />
-                    </div>
-                </div>
-            )}
+    let cancelled = false;
 
-            {/* Premium popup styles */}
-            <style jsx global>{`
-                .mapboxgl-popup-content {
-                    padding: 0 !important;
-                    border-radius: 12px !important;
-                    box-shadow: 0 6px 24px rgba(0,0,0,0.12) !important;
-                    border: 1px solid rgba(255,255,255,0.8) !important;
-                    overflow: hidden;
-                }
-                .mapboxgl-popup-tip {
-                    border-top-color: white !important;
-                }
-                .mapboxgl-ctrl-attrib {
-                    display: none !important;
-                }
-            `}</style>
+    import("mapbox-gl").then((mod) => {
+      if (cancelled || !mapContainer.current) return;
+      const mapboxgl = mod.default;
+      import("mapbox-gl/dist/mapbox-gl.css" as any);
+
+      mapboxgl.accessToken = mapboxToken;
+      mapboxRef.current = mapboxgl;
+
+      const businessesWithCoords = businesses.filter((b) => b.lat && b.lng);
+      let center: [number, number] = [-18.4241, 33.9249];
+      let zoom = 12;
+
+      if (businessesWithCoords.length > 0) {
+        const avgLat =
+          businessesWithCoords.reduce((sum, b) => sum + (b.lat || 0), 0) /
+          businessesWithCoords.length;
+        const avgLng =
+          businessesWithCoords.reduce((sum, b) => sum + (b.lng || 0), 0) /
+          businessesWithCoords.length;
+        center = [avgLng, avgLat];
+
+        if (businessesWithCoords.length === 1) {
+          zoom = 15;
+        } else if (businessesWithCoords.length <= 5) {
+          zoom = 13;
+        }
+      } else if (userLocation) {
+        center = [userLocation.lng, userLocation.lat];
+        zoom = 13;
+      }
+
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current!,
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: center,
+        zoom: zoom,
+        interactive: true,
+        attributionControl: false,
+      });
+
+      map.current.on("load", () => {
+        setIsLoaded(true);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [businesses.length, userLocation]);
+
+  // Update markers when businesses change
+  useEffect(() => {
+    if (!map.current || !isLoaded || !mapboxRef.current) return;
+    const mapboxgl = mapboxRef.current;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+    markerElementsRef.current.clear();
+
+    // Deduplicate businesses by address/coordinates (keep first occurrence)
+    const seen = new Set<string>();
+    const uniqueBusinesses = businesses.filter((business) => {
+      if (!business.lat || !business.lng) return false;
+
+      const coordKey = `${business.lat.toFixed(5)},${business.lng.toFixed(5)}`;
+      const addressKey = business.address || business.location || "";
+      const key = addressKey || coordKey;
+
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // Add markers for businesses with coordinates
+    uniqueBusinesses.forEach((business) => {
+      if (!business.lat || !business.lng) return;
+
+      const markerElement = createSearchMarker();
+
+      const marker = new mapboxgl.Marker({
+        element: markerElement,
+        anchor: "bottom",
+      })
+        .setLngLat([business.lng, business.lat])
+        .setPopup(
+          new mapboxgl.Popup({
+            offset: 25,
+            closeButton: false,
+            closeOnClick: true,
+            maxWidth: "280px",
+          }).setHTML(createSearchPopupHTML(business))
+        )
+        .addTo(map.current!);
+
+      // Show popup on hover (desktop)
+      markerElement.addEventListener("mouseenter", () => {
+        if (map.current && !marker.getPopup().isOpen()) {
+          marker.getPopup().addTo(map.current);
+        }
+      });
+      markerElement.addEventListener("mouseleave", () => {
+        setTimeout(() => {
+          if (!markerElement.matches(":hover")) {
+            marker.getPopup().remove();
+          }
+        }, 150);
+      });
+
+      markerElement.addEventListener("click", () => {
+        // Deselect previous
+        markerElementsRef.current.forEach((el) => {
+          el.classList.remove("sayso-selected");
+          const pulseRings = el.querySelectorAll(".sayso-pulse-ring, .sayso-pulse-ring-delayed");
+          pulseRings.forEach((ring) => {
+            (ring as HTMLElement).style.display = "none";
+            (ring as HTMLElement).style.animation = "none";
+          });
+        });
+
+        // Select current
+        markerElement.classList.add("sayso-selected");
+        const pulseRing = markerElement.querySelector(".sayso-pulse-ring") as HTMLElement;
+        const pulseRingDelayed = markerElement.querySelector(
+          ".sayso-pulse-ring-delayed"
+        ) as HTMLElement;
+        if (pulseRing) {
+          pulseRing.style.display = "block";
+          pulseRing.style.animation = "saysoSearchPulse 2s ease-out infinite";
+        }
+        if (pulseRingDelayed) {
+          pulseRingDelayed.style.display = "block";
+          pulseRingDelayed.style.animation = "saysoSearchPulse 2s ease-out infinite 0.5s";
+        }
+
+        setSelectedBusiness(business);
+        if (onBusinessClick) {
+          onBusinessClick(business);
+        }
+      });
+
+      markerElementsRef.current.set(business.id, markerElement);
+      markersRef.current.push(marker);
+    });
+
+    // Fit bounds to show all markers if we have businesses
+    if (markersRef.current.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      markersRef.current.forEach((marker) => {
+        bounds.extend(marker.getLngLat());
+      });
+
+      map.current.fitBounds(bounds, {
+        padding: { top: 80, bottom: 80, left: 50, right: 50 },
+        maxZoom: 15,
+        duration: 400,
+      });
+    }
+  }, [businesses, isLoaded, onBusinessClick]);
+
+  if (!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN) {
+    return (
+      <div
+        className={`w-full h-full flex items-center justify-center bg-off-white/50 ${className}`}
+      >
+        <div className="text-center p-4">
+          <p className="text-sm text-charcoal/60 mb-2">Map unavailable</p>
+          <p className="text-sm text-charcoal/60">Mapbox token not configured</p>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className={`relative w-full h-full ${className}`}>
+      <div ref={mapContainer} className="w-full h-full" style={{ minHeight: "280px" }} />
+      {selectedBusiness && (
+        <div className="absolute bottom-3 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 z-10 max-w-md mx-auto">
+          <div className="bg-white rounded-[12px] shadow-xl border border-white/30 p-3">
+            <BusinessCard
+              business={
+                {
+                  ...selectedBusiness,
+                  alt: selectedBusiness.alt || selectedBusiness.name || "",
+                  reviews: selectedBusiness.reviews || 0,
+                  category: selectedBusiness.category || "",
+                } as any
+              }
+              compact={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Premium popup styles */}
+      <style jsx global>{`
+        .mapboxgl-popup-content {
+          padding: 0 !important;
+          border-radius: 12px !important;
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important;
+          border: 1px solid rgba(255, 255, 255, 0.8) !important;
+          overflow: hidden;
+        }
+        .mapboxgl-popup-tip {
+          border-top-color: white !important;
+        }
+        .mapboxgl-ctrl-attrib {
+          display: none !important;
+        }
+      `}</style>
+    </div>
+  );
 }

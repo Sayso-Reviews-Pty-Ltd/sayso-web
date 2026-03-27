@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import { MapPin, X, Search, Loader } from "@/app/lib/icons";
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// mapbox-gl is dynamically imported inside useEffect to avoid 1.6MB in the initial bundle
 
 interface LocationPickerProps {
   address?: string;
@@ -23,13 +22,14 @@ export default function LocationPicker({
   onClose,
 }: LocationPickerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const map = useRef<any | null>(null);
+  const mapboxRef = useRef<any | null>(null);
+  const marker = useRef<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [selectedLat, setSelectedLat] = useState<number | null>(initialLat || null);
   const [selectedLng, setSelectedLng] = useState<number | null>(initialLng || null);
-  const [formattedAddress, setFormattedAddress] = useState<string>('');
+  const [formattedAddress, setFormattedAddress] = useState<string>("");
 
   // Initialize map
   useEffect(() => {
@@ -37,57 +37,60 @@ export default function LocationPicker({
 
     const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
     if (!mapboxToken) {
-      console.warn('Mapbox token not found');
+      console.warn("Mapbox token not found");
       return;
     }
 
-    mapboxgl.accessToken = mapboxToken;
+    let cancelled = false;
 
-    // Default center (Cape Town)
-    let center: [number, number] = [18.4241, -33.9249];
-    let zoom = 12;
+    import("mapbox-gl").then((mod) => {
+      if (cancelled || !mapContainer.current) return;
+      const mapboxgl = mod.default;
+      import("mapbox-gl/dist/mapbox-gl.css" as any);
 
-    // Use existing coordinates if available
-    if (initialLat && initialLng) {
-      center = [initialLng, initialLat];
-      zoom = 15;
-    }
+      mapboxgl.accessToken = mapboxToken;
+      mapboxRef.current = mapboxgl;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: center,
-      zoom: zoom,
-      interactive: true,
-    });
+      let center: [number, number] = [18.4241, -33.9249];
+      let zoom = 12;
 
-    // Add click handler to map
-    map.current.on('click', (e) => {
-      const { lng, lat } = e.lngLat;
-      setSelectedLat(lat);
-      setSelectedLng(lng);
-      
-      // Reverse geocode to get address
-      reverseGeocode(lat, lng);
-      
-      // Update marker
-      if (marker.current) {
-        marker.current.setLngLat([lng, lat]);
-      } else {
-        marker.current = new mapboxgl.Marker({ color: '#722F37' })
-          .setLngLat([lng, lat])
-          .addTo(map.current!);
+      if (initialLat && initialLng) {
+        center = [initialLng, initialLat];
+        zoom = 15;
+      }
+
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current!,
+        style: "mapbox://styles/mapbox/light-v11",
+        center: center,
+        zoom: zoom,
+        interactive: true,
+      });
+
+      map.current.on("click", (e) => {
+        const { lng, lat } = e.lngLat;
+        setSelectedLat(lat);
+        setSelectedLng(lng);
+        reverseGeocode(lat, lng);
+
+        if (marker.current) {
+          marker.current.setLngLat([lng, lat]);
+        } else if (mapboxRef.current) {
+          marker.current = new mapboxRef.current.Marker({ color: "#722F37" })
+            .setLngLat([lng, lat])
+            .addTo(map.current!);
+        }
+      });
+
+      if (initialLat && initialLng) {
+        marker.current = new mapboxgl.Marker({ color: "#722F37" })
+          .setLngLat([initialLng, initialLat])
+          .addTo(map.current);
       }
     });
 
-    // Add initial marker if coordinates exist
-    if (initialLat && initialLng) {
-      marker.current = new mapboxgl.Marker({ color: '#722F37' })
-        .setLngLat([initialLng, initialLat])
-        .addTo(map.current);
-    }
-
     return () => {
+      cancelled = true;
       if (map.current) {
         map.current.remove();
         map.current = null;
@@ -102,12 +105,12 @@ export default function LocationPicker({
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}`
       );
       const data = await response.json();
-      
+
       if (data.features && data.features.length > 0) {
         setFormattedAddress(data.features[0].place_name);
       }
     } catch (error) {
-      console.error('Reverse geocoding error:', error);
+      console.error("Reverse geocoding error:", error);
     }
   };
 
@@ -138,15 +141,15 @@ export default function LocationPicker({
 
           if (marker.current) {
             marker.current.setLngLat([lng, lat]);
-          } else {
-            marker.current = new mapboxgl.Marker({ color: '#722F37' })
+          } else if (mapboxRef.current) {
+            marker.current = new mapboxRef.current.Marker({ color: "#722F37" })
               .setLngLat([lng, lat])
               .addTo(map.current);
           }
         }
       }
     } catch (error) {
-      console.error('Geocoding error:', error);
+      console.error("Geocoding error:", error);
     } finally {
       setIsGeocoding(false);
     }
@@ -160,7 +163,7 @@ export default function LocationPicker({
   };
 
   const handleGeocodeAddress = async () => {
-    const fullAddress = address || location || '';
+    const fullAddress = address || location || "";
     if (!fullAddress.trim()) return;
 
     setIsGeocoding(true);
@@ -186,15 +189,15 @@ export default function LocationPicker({
 
           if (marker.current) {
             marker.current.setLngLat([lng, lat]);
-          } else {
-            marker.current = new mapboxgl.Marker({ color: '#722F37' })
+          } else if (mapboxRef.current) {
+            marker.current = new mapboxRef.current.Marker({ color: "#722F37" })
               .setLngLat([lng, lat])
               .addTo(map.current);
           }
         }
       }
     } catch (error) {
-      console.error('Geocoding error:', error);
+      console.error("Geocoding error:", error);
     } finally {
       setIsGeocoding(false);
     }
@@ -205,7 +208,10 @@ export default function LocationPicker({
       <div className="bg-white rounded-[12px] w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="text-lg font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+          <h3
+            className="text-lg font-semibold text-charcoal"
+            style={{ fontFamily: "Urbanist, sans-serif" }}
+          >
             Select Location
           </h3>
           <button
@@ -225,17 +231,17 @@ export default function LocationPicker({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Search for an address..."
                 className="w-full pl-10 pr-4 py-2 border border-charcoal/20 rounded-full focus:outline-none focus:ring-2 focus:ring-sage/30"
-                style={{ fontFamily: 'Urbanist, sans-serif' }}
+                style={{ fontFamily: "Urbanist, sans-serif" }}
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={isGeocoding || !searchQuery.trim()}
               className="px-4 py-2 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              style={{ fontFamily: 'Urbanist, sans-serif' }}
+              style={{ fontFamily: "Urbanist, sans-serif" }}
             >
               {isGeocoding ? (
                 <>
@@ -243,18 +249,18 @@ export default function LocationPicker({
                   Searching...
                 </>
               ) : (
-                'Search'
+                "Search"
               )}
             </button>
           </div>
-          
+
           {/* Geocode from address button */}
           {(address || location) && (
             <button
               onClick={handleGeocodeAddress}
               disabled={isGeocoding}
               className="mt-2 w-full px-4 py-2 bg-charcoal/10 text-charcoal rounded-full hover:bg-charcoal/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-              style={{ fontFamily: 'Urbanist, sans-serif' }}
+              style={{ fontFamily: "Urbanist, sans-serif" }}
             >
               {isGeocoding ? (
                 <>
@@ -277,17 +283,23 @@ export default function LocationPicker({
         </div>
 
         {/* Selected Location Info */}
-        {(selectedLat && selectedLng) && (
+        {selectedLat && selectedLng && (
           <div className="p-4 border-t bg-card-bg/5">
-            <p className="text-sm text-charcoal/70 mb-2" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+            <p
+              className="text-sm text-charcoal/70 mb-2"
+              style={{ fontFamily: "Urbanist, sans-serif" }}
+            >
               Selected Location:
             </p>
             {formattedAddress && (
-              <p className="text-sm font-semibold text-charcoal mb-2" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+              <p
+                className="text-sm font-semibold text-charcoal mb-2"
+                style={{ fontFamily: "Urbanist, sans-serif" }}
+              >
                 {formattedAddress}
               </p>
             )}
-            <p className="text-xs text-charcoal/60" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+            <p className="text-xs text-charcoal/60" style={{ fontFamily: "Urbanist, sans-serif" }}>
               Coordinates: {selectedLat.toFixed(6)}, {selectedLng.toFixed(6)}
             </p>
           </div>
@@ -298,7 +310,7 @@ export default function LocationPicker({
           <button
             onClick={onClose}
             className="flex-1 px-4 py-3 border border-charcoal/20 text-charcoal rounded-full hover:bg-charcoal/5 transition-colors"
-            style={{ fontFamily: 'Urbanist, sans-serif' }}
+            style={{ fontFamily: "Urbanist, sans-serif" }}
           >
             Cancel
           </button>
@@ -306,7 +318,7 @@ export default function LocationPicker({
             onClick={handleConfirm}
             disabled={!selectedLat || !selectedLng}
             className="flex-1 px-4 py-3 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ fontFamily: 'Urbanist, sans-serif' }}
+            style={{ fontFamily: "Urbanist, sans-serif" }}
           >
             Confirm Location
           </button>
@@ -315,4 +327,3 @@ export default function LocationPicker({
     </div>
   );
 }
-
