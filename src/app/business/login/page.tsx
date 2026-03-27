@@ -227,7 +227,7 @@ export default function BusinessLoginPage() {
                       fullWidth
                       isLoading={isSubmitting}
                       disabled={isSubmitting || !email || !password}
-                      className="bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 btn-target btn-press"
+                      className="bg-gradient-to-r from-coral to-coral/80 text-body text-white font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 btn-target btn-press"
                     >
                       {isSubmitting ? "Signing in..." : "Sign in"}
                     </Button>
