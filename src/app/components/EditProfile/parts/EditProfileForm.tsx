@@ -6,6 +6,7 @@ import { X, User, Upload } from "@/app/lib/icons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/app/components/ui/avatar";
 import { H2, Small } from "@/app/components/ui/typography";
 import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/atoms/Button";
 
 interface EditProfileFormProps {
   username: string;
@@ -71,25 +72,27 @@ export function EditProfileForm({
             </Avatar>
           </m.div>
           <div className="flex-1 flex gap-2">
-            <button
+            <Button
               type="button"
+              variant="bare"
               onClick={onUploadClick}
               disabled={saving}
-              className="font-urbanist flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/20"
+              leftIcon={<Upload className="w-4 h-4" />}
+              className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-semibold transition-all duration-200 border border-white/20 font-urbanist"
             >
-              <Upload className="w-4 h-4" />
-              <span>Upload</span>
-            </button>
+              Upload
+            </Button>
             {avatarPreview && (
-              <button
+              <Button
                 type="button"
+                variant="bare"
                 onClick={onRemoveAvatar}
                 disabled={saving}
-                className="font-urbanist px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/20"
+                leftIcon={<X className="w-4 h-4" />}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full text-sm font-semibold transition-all duration-200 border border-white/20 font-urbanist"
               >
-                <X className="w-4 h-4" />
                 <span className="hidden sm:inline">Remove</span>
-              </button>
+              </Button>
             )}
           </div>
           <input
@@ -154,29 +157,25 @@ export function EditProfileForm({
       {/* Buttons */}
       <div className="pt-2 flex justify-center">
         <div className="w-full flex gap-3">
-          <button
+          <Button
             type="button"
+            variant="bare"
             onClick={onClose}
             disabled={saving}
-            className="font-urbanist flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/20 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20"
+            className="flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/20 text-white transition-all duration-200 border border-white/20 font-urbanist"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="bare"
             onClick={onSave}
             disabled={saving || !username.trim()}
-            className="font-urbanist flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-coral to-coral/80 hover:from-coral/90 hover:to-coral text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-target btn-press"
+            isLoading={saving}
+            className="flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-coral to-coral/80 hover:from-coral/90 hover:to-coral text-white transition-all duration-300 btn-target btn-press font-urbanist"
           >
-            {saving ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </button>
+            {saving ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </div>
     </div>
