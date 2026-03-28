@@ -6,6 +6,7 @@ interface EventCardCountdownProps {
   minutes: number;
   show: boolean;
   status: "upcoming" | "live" | "ended" | "unknown";
+  availabilityStatus?: "sold_out" | "limited" | null;
 }
 
 export function EventCardCountdown({
@@ -14,7 +15,24 @@ export function EventCardCountdown({
   minutes,
   show,
   status,
+  availabilityStatus,
 }: EventCardCountdownProps) {
+  if (availabilityStatus === "sold_out" || availabilityStatus === "limited") {
+    return (
+      <div
+        className={`absolute left-3 bottom-3 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] font-urbanist font-semibold ${
+          availabilityStatus === "sold_out"
+            ? "bg-coral/95 text-white"
+            : "bg-amber-500/95 text-white"
+        }`}
+      >
+        <span className="text-xs font-semibold leading-none">
+          {availabilityStatus === "sold_out" ? "Sold Out" : "Limited Spots"}
+        </span>
+      </div>
+    );
+  }
+
   if (!show) return null;
 
   const statusColors = {

@@ -271,51 +271,64 @@ function EventCard({
               </div>
 
               {/* Countdown / Status Badge */}
-              {countdown.show && (
+              {event.availabilityStatus === "sold_out" || event.availabilityStatus === "limited" ? (
                 <div
                   className={`absolute left-4 bottom-4 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] ${
-                    countdown.status === "live"
-                      ? "bg-sage/95 text-white"
-                      : countdown.status === "ended"
-                        ? "bg-charcoal/85 text-white"
-                        : countdown.status === "unknown"
-                          ? "bg-off-white/95 text-charcoal/90"
-                          : "bg-off-white/95 text-charcoal/90"
+                    event.availabilityStatus === "sold_out"
+                      ? "bg-coral/95 text-white"
+                      : "bg-amber-500/95 text-white"
                   }`}
                 >
-                  {countdown.status === "upcoming" && (
-                    <>
-                      {countdown.days > 0 && (
-                        <div className="flex items-baseline gap-0.5">
-                          <span className="text-xs font-bold leading-none">{countdown.days}</span>
-                          <span className="text-[10px] font-medium leading-none">d</span>
-                        </div>
-                      )}
-                      {(countdown.days > 0 || countdown.hours > 0) && (
-                        <div className="flex items-baseline gap-0.5">
-                          <span className="text-xs font-bold leading-none">{countdown.hours}</span>
-                          <span className="text-[10px] font-medium leading-none">h</span>
-                        </div>
-                      )}
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xs font-bold leading-none">{countdown.minutes}</span>
-                        <span className="text-[10px] font-medium leading-none">m</span>
-                      </div>
-                    </>
-                  )}
-
-                  {countdown.status === "live" && (
-                    <span className="text-xs font-semibold leading-none">Live now</span>
-                  )}
-
-                  {countdown.status === "ended" && (
-                    <span className="text-xs font-semibold leading-none">Ended</span>
-                  )}
-
-                  {countdown.status === "unknown" && (
-                    <span className="text-xs font-semibold leading-none">Date TBA</span>
-                  )}
+                  <span className="text-xs font-semibold leading-none">
+                    {event.availabilityStatus === "sold_out" ? "Sold Out" : "Limited Spots"}
+                  </span>
                 </div>
+              ) : (
+                countdown.show && (
+                  <div
+                    className={`absolute left-4 bottom-4 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] ${
+                      countdown.status === "live"
+                        ? "bg-sage/95 text-white"
+                        : countdown.status === "ended"
+                          ? "bg-charcoal/85 text-white"
+                          : "bg-off-white/95 text-charcoal/90"
+                    }`}
+                  >
+                    {countdown.status === "upcoming" && (
+                      <>
+                        {countdown.days > 0 && (
+                          <div className="flex items-baseline gap-0.5">
+                            <span className="text-xs font-bold leading-none">{countdown.days}</span>
+                            <span className="text-[10px] font-medium leading-none">d</span>
+                          </div>
+                        )}
+                        {(countdown.days > 0 || countdown.hours > 0) && (
+                          <div className="flex items-baseline gap-0.5">
+                            <span className="text-xs font-bold leading-none">
+                              {countdown.hours}
+                            </span>
+                            <span className="text-[10px] font-medium leading-none">h</span>
+                          </div>
+                        )}
+                        <div className="flex items-baseline gap-0.5">
+                          <span className="text-xs font-bold leading-none">
+                            {countdown.minutes}
+                          </span>
+                          <span className="text-[10px] font-medium leading-none">m</span>
+                        </div>
+                      </>
+                    )}
+                    {countdown.status === "live" && (
+                      <span className="text-xs font-semibold leading-none">Live now</span>
+                    )}
+                    {countdown.status === "ended" && (
+                      <span className="text-xs font-semibold leading-none">Ended</span>
+                    )}
+                    {countdown.status === "unknown" && (
+                      <span className="text-xs font-semibold leading-none">Date TBA</span>
+                    )}
+                  </div>
+                )
               )}
             </m.div>
 
@@ -371,16 +384,6 @@ function EventCard({
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold w-fit ${"bg-coral/10 text-coral"}`}
               >
                 Community-hosted event
-              </span>
-            )}
-            {event.availabilityStatus === "sold_out" && (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-coral/15 text-coral text-sm font-semibold w-fit">
-                Sold Out
-              </span>
-            )}
-            {event.availabilityStatus === "limited" && (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 text-sm font-semibold w-fit">
-                Limited Spots
               </span>
             )}
             {/* Review count - same styling as Business Card */}
