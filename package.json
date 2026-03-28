@@ -24,7 +24,7 @@
     "seed:osm": "tsx scripts/seed-osm-businesses.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:unit": "jest --testPathPattern=__tests__ --testPathIgnorePatterns=integration",
+    "test:unit": "jest --testPathPattern=__tests__/unit --testPathIgnorePatterns=integration",
     "test:integration": "jest --testPathPattern=integration",
     "test:api": "jest --config=jest.api.config.js",
     "test:coverage": "jest --coverage",

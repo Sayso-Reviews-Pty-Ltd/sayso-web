@@ -17,6 +17,7 @@ const eslintConfig = [
     ignores: [
       "node_modules/**",
       ".next/**",
+      ".claude/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
@@ -41,6 +42,14 @@ const eslintConfig = [
       "@typescript-eslint/no-require-imports": "off",
       "no-unused-expressions": "off",
       "no-console": "off",
+      "react/display-name": "off",
+    },
+  },
+  // Playwright e2e specs use a `use()` fixture API that ESLint mistakes for React's use() hook
+  {
+    files: ["e2e/**/*.ts", "e2e/**/*.tsx"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
     },
   },
 ];

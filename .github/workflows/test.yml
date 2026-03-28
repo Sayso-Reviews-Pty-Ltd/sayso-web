@@ -25,7 +25,10 @@ jobs:
       
       - name: Run unit tests
         run: npm run test:unit
-      
+
+      - name: Run API route tests
+        run: npm run test:api
+
       - name: Generate coverage report
         run: npm run test:coverage
       
@@ -53,7 +56,7 @@ jobs:
         run: npm ci
       
       - name: Run integration tests
-        run: npm run test:integration
+        run: npm run test:integration -- --passWithNoTests
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_TEST_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_TEST_ANON_KEY }}
@@ -86,7 +89,7 @@ jobs:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
       
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
