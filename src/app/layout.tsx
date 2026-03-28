@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { BRAND_POSITIONING, DEFAULT_SITE_DESCRIPTION, generateSEOMetadata, SITE_NAME } from "./lib/utils/seoMetadata";
-import { 
-  Urbanist, 
-  Dancing_Script, 
-  Permanent_Marker, 
-  Changa_One, 
-  Cormorant, 
-  Livvic, 
-  Playfair_Display, 
-  Barrio 
+import {
+  BRAND_POSITIONING,
+  DEFAULT_SITE_DESCRIPTION,
+  generateSEOMetadata,
+  SITE_NAME,
+} from "./lib/utils/seoMetadata";
+import {
+  Urbanist,
+  Dancing_Script,
+  Permanent_Marker,
+  Changa_One,
+  Cormorant,
+  Livvic,
+  Playfair_Display,
+  Barrio,
 } from "next/font/google";
 import localFont from "next/font/local";
 import dynamicImport from "next/dynamic";
@@ -18,6 +23,7 @@ import "./globals.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import { Toaster } from "./components/ui/sonner";
 import { SavedItemsProvider } from "./contexts/SavedItemsContext";
 import { NotificationsProvider } from "./contexts/NotificationsContext";
 import NotificationToasts from "./components/Notifications/NotificationToasts";
@@ -26,7 +32,11 @@ import { LazyMotionProvider } from "./lib/lazy-motion-provider";
 import { RealtimeProvider } from "./contexts/RealtimeContext";
 import GlobalHeader from "./components/Header/GlobalHeader";
 import SchemaMarkup from "./components/SEO/SchemaMarkup";
-import { generateOrganizationSchema, generateWebSiteSchema, generateSiteNavigationSchema } from "./lib/utils/schemaMarkup";
+import {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  generateSiteNavigationSchema,
+} from "./lib/utils/schemaMarkup";
 import ScrollToTopButton from "./components/Navigation/ScrollToTopButton";
 import BreadcrumbTitleSync from "./components/Navigation/BreadcrumbTitleSync";
 import SWRProvider from "./components/Providers/SWRProvider";
@@ -34,7 +44,9 @@ import { getServerAuthSnapshot } from "./lib/serverAuthSnapshot";
 
 // Lazy load non-critical components for faster initial load
 const WebVitals = dynamicImport(() => import("./components/Performance/WebVitals"));
-const ClientLayoutWrapper = dynamicImport(() => import("./components/Performance/ClientLayoutWrapper"));
+const ClientLayoutWrapper = dynamicImport(
+  () => import("./components/Performance/ClientLayoutWrapper")
+);
 
 // Primary font - Urbanist (preloaded, critical)
 const urbanist = Urbanist({
@@ -42,7 +54,14 @@ const urbanist = Urbanist({
   // Only include weights that are actually used across the app.
   weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
   variable: "--font-urbanist",
 });
 
@@ -57,7 +76,14 @@ const monarchParadox = localFont({
   ],
   preload: true,
   display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
   variable: "--font-monarch-paradox",
 });
 
@@ -126,7 +152,13 @@ export const metadata: Metadata = {
   ...generateSEOMetadata({
     title: `${SITE_NAME} | ${BRAND_POSITIONING}`,
     description: DEFAULT_SITE_DESCRIPTION,
-    keywords: ["sayso", "sayso reviews", "cape town business reviews", "cape town events", "hyper-local discovery"],
+    keywords: [
+      "sayso",
+      "sayso reviews",
+      "cape town business reviews",
+      "cape town events",
+      "hyper-local discovery",
+    ],
     url: "/",
   }),
   icons: {
@@ -157,7 +189,10 @@ export default async function RootLayout({
       className={`${urbanist.variable} ${monarchParadox.variable} ${dancingScript.variable} ${permanentMarker.variable} ${changaOne.variable} ${cormorant.variable} ${livvic.variable} ${playfairDisplay.variable} ${barrio.variable} scroll-smooth bg-off-white`}
     >
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, viewport-fit=cover, user-scalable=no, shrink-to-fit=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, viewport-fit=cover, user-scalable=no, shrink-to-fit=no"
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -192,13 +227,15 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://api.mapbox.com" />
         <link rel="preconnect" href="https://api.mapbox.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        
+
         {/* Canonical tag removed - set per page via metadata */}
-        <SchemaMarkup schemas={[
-          generateOrganizationSchema(),
-          generateWebSiteSchema(),
-          generateSiteNavigationSchema(),
-        ]} />
+        <SchemaMarkup
+          schemas={[
+            generateOrganizationSchema(),
+            generateWebSiteSchema(),
+            generateSiteNavigationSchema(),
+          ]}
+        />
       </head>
       <body className="no-layout-shift scroll-smooth bg-off-white">
         <WebVitals />
@@ -238,28 +275,27 @@ export default async function RootLayout({
           }}
         />
         <SWRProvider>
-        <ToastProvider>
-          <AuthProvider initialSnapshot={initialAuthSnapshot}>
-            <OnboardingProvider>
-              <SavedItemsProvider>
-                <NotificationsProvider>
-                  <NotificationToasts />
-                  <LazyMotionProvider>
-                    <Suspense fallback={null}>
-                      <GlobalHeader />
-                    </Suspense>
-                    <RealtimeProvider>
-                      <DeferredProviders>
-                        {children}
-                      </DeferredProviders>
-                    </RealtimeProvider>
-                    <ScrollToTopButton threshold={360} desktopThreshold={100} />
-                  </LazyMotionProvider>
-                </NotificationsProvider>
-              </SavedItemsProvider>
-            </OnboardingProvider>
-          </AuthProvider>
-        </ToastProvider>
+          <Toaster position="top-center" richColors />
+          <ToastProvider>
+            <AuthProvider initialSnapshot={initialAuthSnapshot}>
+              <OnboardingProvider>
+                <SavedItemsProvider>
+                  <NotificationsProvider>
+                    <NotificationToasts />
+                    <LazyMotionProvider>
+                      <Suspense fallback={null}>
+                        <GlobalHeader />
+                      </Suspense>
+                      <RealtimeProvider>
+                        <DeferredProviders>{children}</DeferredProviders>
+                      </RealtimeProvider>
+                      <ScrollToTopButton threshold={360} desktopThreshold={100} />
+                    </LazyMotionProvider>
+                  </NotificationsProvider>
+                </SavedItemsProvider>
+              </OnboardingProvider>
+            </AuthProvider>
+          </ToastProvider>
         </SWRProvider>
       </body>
     </html>

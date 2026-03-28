@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/app/components/ui/alert-dialog";
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { m } from "framer-motion";
 import { AlertTriangle } from "@/app/lib/icons";
 
@@ -72,30 +79,27 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   const styles = variantStyles[variant];
 
   return (
-    <DialogPrimitive.Root
+    <AlertDialog
       open={isOpen}
       onOpenChange={(open) => {
         if (!open && !isLoading) onClose();
       }}
     >
-      <DialogPrimitive.Portal>
+      <AlertDialogPortal>
         {/* Backdrop — Radix handles scroll lock and focus trap */}
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[9998] bg-charcoal/40 backdrop-blur-sm" />
+        <AlertDialogOverlay className="fixed inset-0 z-[9998] bg-charcoal/40 backdrop-blur-sm" />
 
         {/* Content wrapper — Radix manages ARIA, ESC, and portal */}
-        <DialogPrimitive.Content
+        <AlertDialogPrimitive.Content
           className="fixed left-[50%] top-[50%] z-[9999] w-full max-w-md translate-x-[-50%] translate-y-[-50%] p-4 focus:outline-none"
           onEscapeKeyDown={(e) => {
-            if (isLoading) e.preventDefault();
-          }}
-          onInteractOutside={(e) => {
             if (isLoading) e.preventDefault();
           }}
           aria-describedby={undefined}
         >
           {/* Accessible title and description (visually hidden) */}
-          <DialogPrimitive.Title className="sr-only">{title}</DialogPrimitive.Title>
-          <DialogPrimitive.Description className="sr-only">{message}</DialogPrimitive.Description>
+          <AlertDialogTitle className="sr-only">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">{message}</AlertDialogDescription>
 
           <m.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -204,8 +208,8 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               </m.div>
             </div>
           </m.div>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+        </AlertDialogPrimitive.Content>
+      </AlertDialogPortal>
+    </AlertDialog>
   );
 };
