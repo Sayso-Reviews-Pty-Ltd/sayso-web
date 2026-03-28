@@ -1,6 +1,6 @@
 /**
  * Image File Validation Utility
- * 
+ *
  * Validates uploaded files to ensure they are actual images
  * with proper MIME types, sizes, and extensions.
  */
@@ -11,67 +11,57 @@ export interface ImageValidationResult {
 }
 
 const VALID_MIME_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-  'image/gif',
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
 ] as const;
 
-const VALID_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'] as const;
+const VALID_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "gif"] as const;
 
 const MIME_TO_EXTENSIONS: Record<string, string[]> = {
-  'image/jpeg': ['jpg', 'jpeg'],
-  'image/jpg': ['jpg', 'jpeg'],
-  'image/png': ['png'],
-  'image/webp': ['webp'],
-  'image/gif': ['gif'],
+  "image/jpeg": ["jpg", "jpeg"],
+  "image/jpg": ["jpg", "jpeg"],
+  "image/png": ["png"],
+  "image/webp": ["webp"],
+  "image/gif": ["gif"],
 };
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 /**
  * Validates that a file is a valid image
- * 
+ * Size is not checked here — callers compress before uploading.
+ *
  * @param file - The file to validate
  * @returns Validation result with error message if invalid
  */
 export function validateImageFile(file: File): ImageValidationResult {
   // Check if file exists
   if (!file) {
-    return { valid: false, error: 'No file provided' };
+    return { valid: false, error: "No file provided" };
   }
 
   // Check MIME type
   if (!VALID_MIME_TYPES.includes(file.type as any)) {
     return {
       valid: false,
-      error: `Invalid file type. Only ${VALID_EXTENSIONS.join(', ')} images are allowed.`,
-    };
-  }
-
-  // Check file size
-  if (file.size > MAX_FILE_SIZE) {
-    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-    return {
-      valid: false,
-      error: `File size (${sizeMB}MB) exceeds the 5MB limit.`,
+      error: `Invalid file type. Only ${VALID_EXTENSIONS.join(", ")} images are allowed.`,
     };
   }
 
   // Check file extension matches MIME type
-  const ext = file.name.split('.').pop()?.toLowerCase();
+  const ext = file.name.split(".").pop()?.toLowerCase();
   if (!ext) {
     return {
       valid: false,
-      error: 'File must have an extension.',
+      error: "File must have an extension.",
     };
   }
 
   if (!VALID_EXTENSIONS.includes(ext as any)) {
     return {
       valid: false,
-      error: `Invalid file extension. Only ${VALID_EXTENSIONS.join(', ')} are allowed.`,
+      error: `Invalid file extension. Only ${VALID_EXTENSIONS.join(", ")} are allowed.`,
     };
   }
 
@@ -88,7 +78,7 @@ export function validateImageFile(file: File): ImageValidationResult {
   if (file.size === 0) {
     return {
       valid: false,
-      error: 'File is empty.',
+      error: "File is empty.",
     };
   }
 
@@ -97,27 +87,27 @@ export function validateImageFile(file: File): ImageValidationResult {
 
 /**
  * Validates multiple image files
- * 
+ *
  * @param files - Array of files to validate
  * @returns Array of validation results
  */
 export function validateImageFiles(files: File[]): ImageValidationResult[] {
-  return files.map(file => validateImageFile(file));
+  return files.map((file) => validateImageFile(file));
 }
 
 /**
  * Checks if all files are valid
- * 
+ *
  * @param files - Array of files to validate
  * @returns true if all files are valid, false otherwise
  */
 export function areAllImagesValid(files: File[]): boolean {
-  return validateImageFiles(files).every(result => result.valid);
+  return validateImageFiles(files).every((result) => result.valid);
 }
 
 /**
  * Gets the first validation error from a set of files
- * 
+ *
  * @param files - Array of files to validate
  * @returns First error message, or undefined if all valid
  */
@@ -130,4 +120,3 @@ export function getFirstValidationError(files: File[]): string | undefined {
   }
   return undefined;
 }
-

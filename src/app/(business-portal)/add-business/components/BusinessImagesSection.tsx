@@ -69,7 +69,7 @@ const BusinessImagesSection: React.FC<BusinessImagesSectionProps> = ({
                   {imagePreviews.length === 0 ? "Add Photos" : "Add More Photos"}
                 </span>
                 <span className="text-xs text-charcoal/60 font-urbanist">
-                  {imagePreviews.length}/10 images Max 5MB each
+                  {imagePreviews.length}/10 images · any size, auto-compressed
                 </span>
               </div>
             </div>

@@ -10,6 +10,7 @@ import {
   Maximize2,
 } from "@/app/lib/icons";
 import Image from "next/image";
+import { ImageUploadService } from "@/app/lib/services/imageUploadService";
 
 interface ImageUploadProps {
   onImagesChange: (images: File[]) => void;
@@ -37,6 +38,7 @@ export default function ImageUpload({
   const [files, setFiles] = useState<File[]>([]);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>(existingImages);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
@@ -47,39 +49,41 @@ export default function ImageUpload({
   }, [existingImages]);
 
   const handleFileSelect = useCallback(
-    (selectedFiles: FileList | null) => {
+    async (selectedFiles: FileList | null) => {
       if (!selectedFiles) return;
 
-      const newFiles: File[] = [];
-      const newPreviews: string[] = [];
-
-      Array.from(selectedFiles).forEach((file) => {
-        if (existingImageUrls.length + files.length + newFiles.length >= maxImages) return;
-
-        // Validate file type
+      const candidates = Array.from(selectedFiles).filter((file) => {
+        if (existingImageUrls.length + files.length >= maxImages) return false;
         if (!file.type.startsWith("image/")) {
           alert(`${file.name} is not an image file`);
-          return;
+          return false;
         }
-
-        // Validate file size (2MB max per image)
-        const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-        if (file.size > MAX_FILE_SIZE) {
-          alert(`${file.name} is too large. Maximum size is 2MB per image`);
-          return;
-        }
-
-        newFiles.push(file);
-        const preview = URL.createObjectURL(file);
-        newPreviews.push(preview);
+        return true;
       });
 
-      if (newFiles.length > 0) {
-        const updatedFiles = [...files, ...newFiles];
-        const updatedPreviews = [...previews, ...newPreviews];
-        setFiles(updatedFiles);
-        setPreviews(updatedPreviews);
-        onImagesChange(updatedFiles);
+      if (candidates.length === 0) return;
+
+      setIsCompressing(true);
+      try {
+        const newFiles: File[] = [];
+        const newPreviews: string[] = [];
+
+        for (const file of candidates) {
+          if (existingImageUrls.length + files.length + newFiles.length >= maxImages) break;
+          const compressed = await ImageUploadService.compressForUpload(file);
+          newFiles.push(compressed);
+          newPreviews.push(URL.createObjectURL(compressed));
+        }
+
+        if (newFiles.length > 0) {
+          const updatedFiles = [...files, ...newFiles];
+          const updatedPreviews = [...previews, ...newPreviews];
+          setFiles(updatedFiles);
+          setPreviews(updatedPreviews);
+          onImagesChange(updatedFiles);
+        }
+      } finally {
+        setIsCompressing(false);
       }
     },
     [files, previews, maxImages, existingImageUrls, onImagesChange]
@@ -424,11 +428,11 @@ export default function ImageUpload({
             </p>
 
             <p className="text-sm text-charcoal/60 text-center">
-              {existingImageUrls.length + files.length > 0
-                ? `${existingImageUrls.length + files.length}/${maxImages} added`
-                : maxImages === 2
-                  ? "Up to 2 images only, max 2MB each"
-                  : `Up to ${maxImages} images, max 2MB each`}
+              {isCompressing
+                ? "Compressing…"
+                : existingImageUrls.length + files.length > 0
+                  ? `${existingImageUrls.length + files.length}/${maxImages} added`
+                  : `Up to ${maxImages} images · any size`}
             </p>
           </div>
         </div>

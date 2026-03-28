@@ -1,12 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  BusinessFormData,
-  DUPLICATE_NAME_ERROR,
-  Subcategory,
-  getFieldLabel,
-} from "../components";
+import { BusinessFormData, DUPLICATE_NAME_ERROR, Subcategory, getFieldLabel } from "../components";
 
 interface UseAddBusinessFormLogicParams {
   showToast: (message: string, variant?: string, durationMs?: number) => void;
@@ -65,9 +60,9 @@ export function useAddBusinessFormLogic({
   const nameDuplicateDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestNameCheckRef = useRef(0);
   const [, setIsGeocoding] = useState(false);
-  const [geocodeStatus, setGeocodeStatus] = useState<"idle" | "searching" | "found" | "not_found" | "error">(
-    "idle"
-  );
+  const [geocodeStatus, setGeocodeStatus] = useState<
+    "idle" | "searching" | "found" | "not_found" | "error"
+  >("idle");
   const geocodeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAttemptedLocationRef = useRef("");
   const lastResolvedLocationRef = useRef("");
@@ -352,44 +347,48 @@ export function useAddBusinessFormLogic({
     }));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
 
-    const newFiles: File[] = [];
-    const newPreviews: string[] = [];
+    const { ImageUploadService } = await import("@/app/lib/services/imageUploadService");
 
-    Array.from(files).forEach((file) => {
-      // Validate file type
+    const candidates = Array.from(files).filter((file) => {
       if (!file.type.startsWith("image/")) {
         showToast(`${file.name} is not an image file`, "sage", 3000);
-        return;
+        return false;
       }
-
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        showToast(`${file.name} is too large. Maximum size is 5MB`, "sage", 3000);
-        return;
-      }
-
-      // Check total image limit (10 images max)
-      if (images.length + newFiles.length >= 10) {
+      if (images.length >= 10) {
         showToast("Maximum 10 images allowed", "sage", 3000);
-        return;
+        return false;
       }
-
-      newFiles.push(file);
-      newPreviews.push(URL.createObjectURL(file));
+      return true;
     });
 
-    if (newFiles.length > 0) {
-      setImages((prev) => [...prev, ...newFiles]);
-      setImagePreviews((prev) => [...prev, ...newPreviews]);
+    if (candidates.length === 0) {
+      if (event.target) event.target.value = "";
+      return;
     }
 
-    // Reset input
-    if (event.target) {
-      event.target.value = "";
+    setUploadingImages(true);
+    try {
+      const newFiles: File[] = [];
+      const newPreviews: string[] = [];
+
+      for (const file of candidates) {
+        if (images.length + newFiles.length >= 10) break;
+        const compressed = await ImageUploadService.compressForUpload(file);
+        newFiles.push(compressed);
+        newPreviews.push(URL.createObjectURL(compressed));
+      }
+
+      if (newFiles.length > 0) {
+        setImages((prev) => [...prev, ...newFiles]);
+        setImagePreviews((prev) => [...prev, ...newPreviews]);
+      }
+    } finally {
+      setUploadingImages(false);
+      if (event.target) event.target.value = "";
     }
   };
 
@@ -429,12 +428,10 @@ export function useAddBusinessFormLogic({
           if (formData.businessType === "service-area") {
             error = "Please enter the service area where your business operates";
           } else {
-            error =
-              "Please enter the location of your business (e.g., Cape Town, South Africa)";
+            error = "Please enter the location of your business (e.g., Cape Town, South Africa)";
           }
         } else if (value && value.trim().length < 2) {
-          error =
-            "Location is too short. Please enter a complete location (e.g., City, Country)";
+          error = "Location is too short. Please enter a complete location (e.g., City, Country)";
         }
         break;
       case "email":
@@ -567,7 +564,9 @@ export function useAddBusinessFormLogic({
       // Scroll to first error field
       const firstErrorField = errorFields[0];
       if (firstErrorField) {
-        const errorElement = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`);
+        const errorElement = document.querySelector(
+          `[name="${firstErrorField}"], [id="${firstErrorField}"]`
+        );
         if (errorElement) {
           errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
           (errorElement as HTMLElement).focus();
@@ -694,7 +693,9 @@ export function useAddBusinessFormLogic({
           5000
         );
       } else if (data.images && data.images.length > 0) {
-        console.log(`[Add Business] Successfully uploaded ${data.images.length} images server-side`);
+        console.log(
+          `[Add Business] Successfully uploaded ${data.images.length} images server-side`
+        );
       }
 
       if (announcement) {
@@ -718,7 +719,8 @@ export function useAddBusinessFormLogic({
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (error instanceof TypeError && (error as Error).message.includes("fetch")) {
-        errorMessage = "Unable to connect to our servers. Please check your internet connection and try again.";
+        errorMessage =
+          "Unable to connect to our servers. Please check your internet connection and try again.";
       }
 
       showToast(errorMessage, "error", 6000);

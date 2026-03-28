@@ -194,7 +194,8 @@ export function useBusinessEditPage() {
 
     setUploadingImages(true);
     try {
-      const { validateImageFiles, getFirstValidationError } = await import("@/app/lib/utils/imageValidation");
+      const { validateImageFiles, getFirstValidationError } =
+        await import("@/app/lib/utils/imageValidation");
       const validationResults = validateImageFiles(Array.from(files));
       const invalidFiles = validationResults.filter((result) => !result.valid);
 
@@ -202,7 +203,7 @@ export function useBusinessEditPage() {
         const firstError = getFirstValidationError(Array.from(files));
         showToast(
           firstError ||
-            "Some image files are invalid. Please upload only JPG, PNG, WebP, or GIF images under 5MB each.",
+            "Some image files are invalid. Please upload only JPG, PNG, WebP, or GIF images.",
           "error",
           6000
         );
@@ -211,6 +212,7 @@ export function useBusinessEditPage() {
         return;
       }
 
+      const { ImageUploadService } = await import("@/app/lib/services/imageUploadService");
       const supabase = getBrowserSupabase();
       const uploadedUrls: string[] = [];
       const { STORAGE_BUCKETS } = await import("../../../lib/utils/storageBucketConfig");
@@ -220,13 +222,14 @@ export function useBusinessEditPage() {
       for (let index = 0; index < filesToUpload.length; index += 1) {
         const file = filesToUpload[index];
         try {
-          const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+          const compressed = await ImageUploadService.compressForUpload(file);
+          const fileExt = compressed.name.split(".").pop()?.toLowerCase() || "jpg";
           const timestamp = Date.now();
           const filePath = `${businessId}/${timestamp}_${index}.${fileExt}`;
 
           const { error: uploadError } = await supabase.storage
             .from(STORAGE_BUCKETS.BUSINESS_IMAGES)
-            .upload(filePath, file, {
+            .upload(filePath, compressed, {
               contentType: file.type,
               upsert: false,
             });
@@ -252,7 +255,9 @@ export function useBusinessEditPage() {
           }
         } catch (fileError: any) {
           console.error(`[Edit Business] Error processing image ${index + 1}:`, fileError);
-          uploadErrors.push(`Error processing image ${index + 1}: ${fileError.message || "Unknown error"}`);
+          uploadErrors.push(
+            `Error processing image ${index + 1}: ${fileError.message || "Unknown error"}`
+          );
         }
       }
 

@@ -1,30 +1,16 @@
-import { supabase } from '../supabase';
+import { supabase } from "../supabase";
 
 export class ImageUploadService {
-  private static readonly ALLOWED_TYPES = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp'
-  ];
+  private static readonly ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   private static readonly MAX_IMAGES_PER_REVIEW = 5;
 
   static validateImage(file: File): { isValid: boolean; error?: string } {
-    // Check file type
+    // Check file type only — size is handled by compressForUpload before this is called
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       return {
         isValid: false,
-        error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.'
-      };
-    }
-
-    // Check file size
-    if (file.size > this.MAX_FILE_SIZE) {
-      return {
-        isValid: false,
-        error: 'File size too large. Maximum size is 5MB.'
+        error: "Invalid file type. Only JPEG, PNG, and WebP images are allowed.",
       };
     }
 
@@ -35,7 +21,7 @@ export class ImageUploadService {
     if (files.length > this.MAX_IMAGES_PER_REVIEW) {
       return {
         isValid: false,
-        error: `Too many images. Maximum ${this.MAX_IMAGES_PER_REVIEW} images per review.`
+        error: `Too many images. Maximum ${this.MAX_IMAGES_PER_REVIEW} images per review.`,
       };
     }
 
@@ -55,39 +41,40 @@ export class ImageUploadService {
     path: string
   ): Promise<{ url: string; error?: string }> {
     try {
-      // Validate image first
+      // Validate type before compressing
       const validation = this.validateImage(file);
       if (!validation.isValid) {
-        return { url: '', error: validation.error };
+        return { url: "", error: validation.error };
       }
 
+      // Compress to ≤1 MB before sending to the bucket
+      const compressed = await this.compressForUpload(file);
+
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(path, compressed, {
+        cacheControl: "3600",
+        upsert: false,
+      });
 
       if (uploadError) {
-        console.error('Upload error:', uploadError);
+        console.error("Upload error:", uploadError);
         return {
-          url: '',
-          error: uploadError.message || 'Failed to upload image'
+          url: "",
+          error: uploadError.message || "Failed to upload image",
         };
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(path);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(bucket).getPublicUrl(path);
 
       return { url: publicUrl };
     } catch (error) {
-      console.error('Image upload error:', error);
+      console.error("Image upload error:", error);
       return {
-        url: '',
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        url: "",
+        error: error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -103,12 +90,12 @@ export class ImageUploadService {
     // Validate array first
     const arrayValidation = this.validateImageArray(files);
     if (!arrayValidation.isValid) {
-      return { urls: [], errors: [arrayValidation.error || 'Validation failed'] };
+      return { urls: [], errors: [arrayValidation.error || "Validation failed"] };
     }
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${pathPrefix}_${i}_${Date.now()}.${fileExt}`;
 
       const result = await this.uploadImage(file, bucket, fileName);
@@ -125,18 +112,16 @@ export class ImageUploadService {
 
   static async deleteImage(bucket: string, path: string): Promise<boolean> {
     try {
-      const { error } = await supabase.storage
-        .from(bucket)
-        .remove([path]);
+      const { error } = await supabase.storage.from(bucket).remove([path]);
 
       if (error) {
-        console.error('Delete error:', error);
+        console.error("Delete error:", error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Image delete error:', error);
+      console.error("Image delete error:", error);
       return false;
     }
   }
@@ -163,7 +148,7 @@ export class ImageUploadService {
 
   // Compress an array of files for upload (convenience wrapper around compressForUpload)
   static async compressFilesForUpload(files: File[]): Promise<File[]> {
-    return Promise.all(files.map(f => this.compressForUpload(f)));
+    return Promise.all(files.map((f) => this.compressForUpload(f)));
   }
 
   // Utility function to compress images on the client side
@@ -174,8 +159,8 @@ export class ImageUploadService {
     quality: number = 0.8
   ): Promise<File> {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       const img = new Image();
 
       img.onload = () => {
@@ -206,11 +191,11 @@ export class ImageUploadService {
             if (blob) {
               const compressedFile = new File([blob], file.name, {
                 type: file.type,
-                lastModified: Date.now()
+                lastModified: Date.now(),
               });
               resolve(compressedFile);
             } else {
-              reject(new Error('Failed to compress image'));
+              reject(new Error("Failed to compress image"));
             }
           },
           file.type,
@@ -219,7 +204,7 @@ export class ImageUploadService {
       };
 
       img.onerror = () => {
-        reject(new Error('Failed to load image for compression'));
+        reject(new Error("Failed to load image for compression"));
       };
 
       img.src = URL.createObjectURL(file);
@@ -227,14 +212,18 @@ export class ImageUploadService {
   }
 
   // Generate optimized image paths
-  static generateImagePath(type: 'review' | 'business' | 'avatar', id: string, index?: number): string {
+  static generateImagePath(
+    type: "review" | "business" | "avatar",
+    id: string,
+    index?: number
+  ): string {
     const timestamp = Date.now();
     switch (type) {
-      case 'review':
+      case "review":
         return `review-images/${id}_${index || 0}_${timestamp}.webp`;
-      case 'business':
+      case "business":
         return `business_images/${id}_${timestamp}.webp`;
-      case 'avatar':
+      case "avatar":
         return `avatars/${id}_${timestamp}.webp`;
       default:
         return `uploads/${id}_${timestamp}.webp`;
@@ -249,7 +238,7 @@ export class ImageUploadService {
         resolve({ width: img.naturalWidth, height: img.naturalHeight });
       };
       img.onerror = () => {
-        reject(new Error('Failed to load image'));
+        reject(new Error("Failed to load image"));
       };
       img.src = URL.createObjectURL(file);
     });
