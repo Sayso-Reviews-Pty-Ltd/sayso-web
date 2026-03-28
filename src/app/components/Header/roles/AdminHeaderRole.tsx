@@ -26,12 +26,7 @@ interface AdminHeaderRoleProps {
   onSignOut: () => void;
 }
 
-export function AdminHeaderRole({
-  pathname,
-  logoScaleClass,
-  sf,
-  onSignOut,
-}: AdminHeaderRoleProps) {
+export function AdminHeaderRole({ pathname, logoScaleClass, sf, onSignOut }: AdminHeaderRoleProps) {
   const isAdminNavActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname?.startsWith(href);
 
@@ -136,4 +131,3 @@ export function AdminHeaderRole({
     </div>
   );
 }
-

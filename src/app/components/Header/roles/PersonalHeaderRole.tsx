@@ -1,7 +1,13 @@
 "use client";
 
 import { type ComponentProps, type ReactNode, type RefObject } from "react";
-import { Bell, BellOutline, MessageSquare, MessageSquareOutline, SearchOutline } from "@/app/lib/icons";
+import {
+  Bell,
+  BellOutline,
+  MessageSquare,
+  MessageSquareOutline,
+  SearchOutline,
+} from "@/app/lib/icons";
 import { m, AnimatePresence } from "framer-motion";
 import Logo from "../../Logo/Logo";
 import OptimizedLink from "../../Navigation/OptimizedLink";
@@ -69,7 +75,11 @@ export function PersonalHeaderRole({
         }`}
       >
         <div className="flex items-center">
-          <OptimizedLink href={logoHref} className="group flex items-center" aria-label="sayso Home">
+          <OptimizedLink
+            href={logoHref}
+            className="group flex items-center"
+            aria-label="sayso Home"
+          >
             <Logo
               variant="default"
               showMark={false}
@@ -86,7 +96,10 @@ export function PersonalHeaderRole({
 
         <div className="flex items-center justify-end gap-3 min-w-0">
           {showSearch && isHomePage && renderDesktopSearchInput(desktopSearchExpandedWidth)}
-          <div ref={isHomePage ? homeDesktopIconsRef : null} className="flex items-center justify-end">
+          <div
+            ref={isHomePage ? homeDesktopIconsRef : null}
+            className="flex items-center justify-end"
+          >
             <DesktopNav {...desktopNavProps} mode="iconsOnly" />
           </div>
         </div>
@@ -151,9 +164,11 @@ export function PersonalHeaderRole({
                 }`}
                 aria-label={isGuest ? "Sign in for notifications" : "Notifications"}
               >
-                {isNotificationsActive
-                  ? <Bell className="w-5 h-5 pointer-events-none" />
-                  : <BellOutline className="w-5 h-5 pointer-events-none" />}
+                {isNotificationsActive ? (
+                  <Bell className="w-5 h-5 pointer-events-none" />
+                ) : (
+                  <BellOutline className="w-5 h-5 pointer-events-none" />
+                )}
               </OptimizedLink>
               {unreadCount > 0 && (
                 <span className="pointer-events-none absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[10px] leading-none font-extrabold tracking-tight rounded-full bg-coral text-white ring-[1.5px] ring-white/85 shadow-sm">
@@ -176,9 +191,11 @@ export function PersonalHeaderRole({
                 }`}
                 aria-label={isGuest ? "Sign in for messages" : "Messages"}
               >
-                {isMessagesActive
-                  ? <MessageSquare className="w-5 h-5 pointer-events-none" />
-                  : <MessageSquareOutline className="w-5 h-5 pointer-events-none" />}
+                {isMessagesActive ? (
+                  <MessageSquare className="w-5 h-5 pointer-events-none" />
+                ) : (
+                  <MessageSquareOutline className="w-5 h-5 pointer-events-none" />
+                )}
               </OptimizedLink>
               {messageUnreadCount > 0 && (
                 <span className="pointer-events-none absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[10px] leading-none font-extrabold tracking-tight rounded-full bg-coral text-white ring-[1.5px] ring-white/85 shadow-sm">
@@ -207,4 +224,3 @@ export function PersonalHeaderRole({
     </div>
   );
 }
-

@@ -62,12 +62,16 @@ export default function MobileMenu({
     discoverLinks.find((link) => link.href === "/for-you"),
     discoverLinks.find((link) => link.href === "/trending"),
     discoverLinks.find((link) => link.href === "/events-specials"),
-  ].filter(Boolean).filter((link) => !isSignupNavLink(link.href)) as NavLink[];
+  ]
+    .filter(Boolean)
+    .filter((link) => !isSignupNavLink(link.href)) as NavLink[];
 
   const orderedSecondaryLinks: readonly NavLink[] = [
     primaryLinks.find((link) => link.href === "/leaderboard"),
     { key: "saved", label: "Saved", href: "/saved", requiresAuth: true },
-  ].filter(Boolean).filter((link) => !isSignupNavLink(link.href)) as NavLink[];
+  ]
+    .filter(Boolean)
+    .filter((link) => !isSignupNavLink(link.href)) as NavLink[];
 
   const mobileRevealClass = `transform transition-all duration-500 ease-out ${
     isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
@@ -103,7 +107,10 @@ export default function MobileMenu({
             <OptimizedLink
               key={key}
               href={href}
-              onClick={(e) => { handleNavClick(href, e); onClose(); }}
+              onClick={(e) => {
+                handleNavClick(href, e);
+                onClose();
+              }}
               className={`px-3 py-2 rounded-[12px] text-base font-normal relative min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass} ${isActive ? "text-sage bg-white/5" : "text-white hover:text-white"}`}
               style={{ ...sf, transitionDelay: `${index * 60}ms` }}
             >
@@ -125,7 +132,9 @@ export default function MobileMenu({
             aria-controls="mobile-add-nav"
           >
             <span className="text-center uppercase tracking-wide">Add</span>
-            <ChevronDown className={`absolute right-3 w-4 h-4 transition-transform duration-300 ${isAddSectionOpen ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`absolute right-3 w-4 h-4 transition-transform duration-300 ${isAddSectionOpen ? "rotate-180" : ""}`}
+            />
           </Button>
 
           <div
@@ -136,16 +145,23 @@ export default function MobileMenu({
               <div className="pl-3 pr-2 pb-2 space-y-1">
                 {addMenuItems.map((item) => {
                   const itemActive = isRouteActive(item.href);
-                  const targetHref = shouldShowLockIndicator(isGuest, item.requiresAuth) ? "/onboarding" : item.href;
+                  const targetHref = shouldShowLockIndicator(isGuest, item.requiresAuth)
+                    ? "/onboarding"
+                    : item.href;
                   return (
                     <OptimizedLink
                       key={item.key}
                       href={targetHref}
-                      onClick={(e) => { handleNavClick(item.href, e); onClose(); }}
+                      onClick={(e) => {
+                        handleNavClick(item.href, e);
+                        onClose();
+                      }}
                       className={`block rounded-lg px-3 py-2 text-sm font-semibold ${mobileTapFeedbackClass} ${itemActive ? "text-sage bg-gradient-to-r from-sage/15 to-sage/5" : "text-white/90 hover:text-white"}`}
                       style={sf}
                     >
-                      <span className="block text-center uppercase tracking-wide">{item.label}</span>
+                      <span className="block text-center uppercase tracking-wide">
+                        {item.label}
+                      </span>
                     </OptimizedLink>
                   );
                 })}
@@ -163,9 +179,14 @@ export default function MobileMenu({
               href={showLockIndicator ? "/onboarding" : item.href}
               onClick={() => onClose()}
               className={`px-3 py-2 rounded-full text-base font-normal text-white hover:text-white flex items-center justify-center min-h-[44px] ${mobileTapFeedbackClass} ${mobileRevealClass}`}
-              style={{ ...sf, transitionDelay: `${(businessTopLinks.length + 1 + (item.delay ?? idx)) * 60}ms` }}
+              style={{
+                ...sf,
+                transitionDelay: `${(businessTopLinks.length + 1 + (item.delay ?? idx)) * 60}ms`,
+              }}
             >
-              <span className="text-center uppercase tracking-wide flex items-center gap-1.5">{item.label}</span>
+              <span className="text-center uppercase tracking-wide flex items-center gap-1.5">
+                {item.label}
+              </span>
             </OptimizedLink>
           );
         })}
@@ -181,12 +202,22 @@ export default function MobileMenu({
               <OptimizedLink
                 key={key}
                 href={showLockIndicator ? "/onboarding" : href}
-                onClick={(e) => { handleNavClick(href, e); onClose(); }}
+                onClick={(e) => {
+                  handleNavClick(href, e);
+                  onClose();
+                }}
                 className={`px-3 py-2 rounded-[12px] text-base font-normal text-white hover:text-white relative min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass}`}
                 style={{ ...sf, transitionDelay: `${index * 60}ms` }}
-                aria-label={showLockIndicator ? `${label.toUpperCase()} (sign in required)` : label.toUpperCase()}
+                aria-label={
+                  showLockIndicator
+                    ? `${label.toUpperCase()} (sign in required)`
+                    : label.toUpperCase()
+                }
               >
-                <span className={`text-center uppercase flex items-center gap-1.5 ${showLockIndicator ? "opacity-85" : ""}`} style={showLockIndicator ? protectedLabelStyle : undefined}>
+                <span
+                  className={`text-center uppercase flex items-center gap-1.5 ${showLockIndicator ? "opacity-85" : ""}`}
+                  style={showLockIndicator ? protectedLabelStyle : undefined}
+                >
                   {label}
                 </span>
               </OptimizedLink>
@@ -201,12 +232,22 @@ export default function MobileMenu({
               <OptimizedLink
                 key={key}
                 href={showLockIndicator ? "/onboarding" : href}
-                onClick={(e) => { handleNavClick(href, e); onClose(); }}
+                onClick={(e) => {
+                  handleNavClick(href, e);
+                  onClose();
+                }}
                 className={`px-3 py-2 rounded-[12px] text-base font-normal text-white/90 hover:text-white min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass}`}
                 style={{ ...sf, transitionDelay: `${(orderedPrimaryLinks.length + index) * 60}ms` }}
-                aria-label={showLockIndicator ? `${label.toUpperCase()} (sign in required)` : label.toUpperCase()}
+                aria-label={
+                  showLockIndicator
+                    ? `${label.toUpperCase()} (sign in required)`
+                    : label.toUpperCase()
+                }
               >
-                <span className={`text-center uppercase flex items-center gap-1.5 ${showLockIndicator ? "opacity-85" : ""}`} style={showLockIndicator ? protectedLabelStyle : undefined}>
+                <span
+                  className={`text-center uppercase flex items-center gap-1.5 ${showLockIndicator ? "opacity-85" : ""}`}
+                  style={showLockIndicator ? protectedLabelStyle : undefined}
+                >
                   {label}
                 </span>
               </OptimizedLink>
@@ -221,9 +262,14 @@ export default function MobileMenu({
                 href={profileAction.href}
                 onClick={() => onClose()}
                 className={`px-3 py-2 rounded-lg text-base font-normal text-white hover:text-white flex items-center justify-center min-h-[44px] ${mobileTapFeedbackClass} ${mobileRevealClass}`}
-                style={{ ...sf, transitionDelay: `${(orderedPrimaryLinks.length + orderedSecondaryLinks.length + 1) * 60}ms` }}
+                style={{
+                  ...sf,
+                  transitionDelay: `${(orderedPrimaryLinks.length + orderedSecondaryLinks.length + 1) * 60}ms`,
+                }}
               >
-                <span className="text-center uppercase flex items-center gap-1.5">{profileAction.label}</span>
+                <span className="text-center uppercase flex items-center gap-1.5">
+                  {profileAction.label}
+                </span>
               </OptimizedLink>
             </div>
           </>
@@ -240,7 +286,10 @@ export default function MobileMenu({
               <OptimizedLink
                 key={key}
                 href={showLockIndicator ? "/onboarding" : href}
-                onClick={(e) => { handleNavClick(href, e); onClose(); }}
+                onClick={(e) => {
+                  handleNavClick(href, e);
+                  onClose();
+                }}
                 className={`px-3 py-2 rounded-[12px] text-base font-normal text-white hover:text-white relative min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass}`}
                 style={{ ...sf, transitionDelay: `${index * 60}ms` }}
               >
@@ -257,7 +306,10 @@ export default function MobileMenu({
               <OptimizedLink
                 key={key}
                 href={showLockIndicator ? "/onboarding" : href}
-                onClick={(e) => { handleNavClick(href, e); onClose(); }}
+                onClick={(e) => {
+                  handleNavClick(href, e);
+                  onClose();
+                }}
                 className={`px-3 py-2 rounded-[12px] text-base font-normal text-white/90 hover:text-white min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass}`}
                 style={{ ...sf, transitionDelay: `${(orderedPrimaryLinks.length + index) * 60}ms` }}
               >
@@ -271,7 +323,12 @@ export default function MobileMenu({
   }
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <SheetContent side="right" hideClose className="flex flex-col p-0 lg:hidden">
         {/* Accessible title/description (visually hidden) */}
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
@@ -306,7 +363,10 @@ export default function MobileMenu({
                 href="/onboarding"
                 onClick={() => onClose()}
                 className={`px-3 py-2 rounded-[12px] text-xs font-normal text-white/80 hover:text-white min-h-[44px] flex items-center justify-center ${mobileTapFeedbackClass} ${mobileRevealClass}`}
-                style={{ ...sf, transitionDelay: `${(orderedPrimaryLinks.length + orderedSecondaryLinks.length + 1) * 60}ms` }}
+                style={{
+                  ...sf,
+                  transitionDelay: `${(orderedPrimaryLinks.length + orderedSecondaryLinks.length + 1) * 60}ms`,
+                }}
               >
                 <span className="text-center uppercase tracking-wide">Sign in</span>
               </OptimizedLink>
