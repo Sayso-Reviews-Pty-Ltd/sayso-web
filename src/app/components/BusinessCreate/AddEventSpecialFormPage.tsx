@@ -94,7 +94,7 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
               '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
           }}
         >
-          <div className="mx-auto max-w-[920px] px-4 pt-16 pb-16">
+          <div className="max-w-[920px] mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16">
             <div className="rounded-[12px] border border-coral/20 bg-coral/5 p-6">
               <h1 className="text-2xl font-semibold text-charcoal mb-3" style={fontStyle}>
                 Special creation is restricted
@@ -126,7 +126,7 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
             '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
         }}
       >
-        <div className="container mx-auto max-w-[1300px] px-4 sm:px-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <Breadcrumb className="pt-4 sm:pt-6 pb-2">
             <BreadcrumbList>
               <BreadcrumbItem>

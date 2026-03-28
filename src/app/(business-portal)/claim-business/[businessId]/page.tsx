@@ -11,7 +11,7 @@ import { ClaimBusinessFormContent } from "./parts/ClaimBusinessFormContent";
 function ClaimBusinessNotFound() {
   return (
     <div className="min-h-dvh bg-off-white">
-      <div className="mx-auto max-w-[640px] px-4 py-12 text-center">
+      <div className="max-w-[640px] mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
         <span className={`${ICON_CHIP_CLASS} w-14 h-14 mx-auto mb-4`}>
           <Store className="w-6 h-6" />
         </span>

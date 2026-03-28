@@ -343,7 +343,7 @@ export default function OwnerBusinessDashboard() {
   if (authLoading || isLoading) {
     return (
       <div className="font-urbanist">
-        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
+        <div className="px-4 sm:px-6 lg:px-8 py-6">
           {/* Breadcrumb skeleton */}
           <div className="pt-4 sm:pt-6 pb-2 flex items-center gap-2">
             <Skeleton className="h-4 w-24" />
@@ -468,7 +468,7 @@ export default function OwnerBusinessDashboard() {
 
   if (error || !business) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 text-sm font-urbanist mb-4">
           {error || "Business not found"}
         </div>
@@ -487,7 +487,7 @@ export default function OwnerBusinessDashboard() {
 
   return (
     <div className="font-urbanist">
-      <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
         <Breadcrumb className="pt-4 sm:pt-6 pb-2">
           <BreadcrumbList>
             <BreadcrumbItem>

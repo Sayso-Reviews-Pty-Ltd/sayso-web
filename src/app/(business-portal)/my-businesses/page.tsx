@@ -275,7 +275,7 @@ export default function MyBusinessesPage() {
 
   if (isLoading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-2.5 mb-6">
           <div className="w-5 h-5 rounded bg-charcoal/15 animate-pulse" />
           <span className="font-urbanist text-sm text-charcoal/50">Loading…</span>
@@ -292,7 +292,7 @@ export default function MyBusinessesPage() {
 
   if (businessesError) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 text-sm font-urbanist mb-6">
           {businessesError}
         </div>
@@ -311,7 +311,7 @@ export default function MyBusinessesPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: animations }} />
-      <div className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8">
         <Breadcrumb className="pt-4 sm:pt-6 pb-2">
           <BreadcrumbList>
             <BreadcrumbItem>

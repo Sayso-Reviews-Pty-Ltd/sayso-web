@@ -1,7 +1,7 @@
-// src/components/BusinessDetail/BusinessDescription.tsx
 "use client";
 
 import { Card } from "@/app/components/ui/card";
+import { H3, P } from "@/app/components/ui/typography";
 
 type Description = string | { raw: string; friendly: string } | null | undefined;
 
@@ -10,7 +10,6 @@ interface BusinessDescriptionProps {
 }
 
 export default function BusinessDescription({ description }: BusinessDescriptionProps) {
-  // Extract the text to display - handle both string and object shapes
   const getDescriptionText = (): string => {
     if (!description) {
       return "Discover this exceptional business offering quality services and experiences. Visit us to see what makes us special!";
@@ -23,7 +22,6 @@ export default function BusinessDescription({ description }: BusinessDescription
       );
     }
 
-    // Handle object shape { raw, friendly }
     if (typeof description === "object" && description !== null) {
       const descObj = description as { raw?: string; friendly?: string };
       const friendly = descObj.friendly?.trim();
@@ -40,18 +38,8 @@ export default function BusinessDescription({ description }: BusinessDescription
 
   return (
     <Card variant="detail" className="p-4 sm:p-6">
-      <h2
-        className="text-h3 font-semibold text-charcoal mb-3"
-        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-      >
-        About This Business
-      </h2>
-      <p
-        className="text-body text-charcoal/70 leading-relaxed"
-        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-      >
-        {descriptionText}
-      </p>
+      <H3 className="mb-3">About This Business</H3>
+      <P className="leading-relaxed">{descriptionText}</P>
     </Card>
   );
 }

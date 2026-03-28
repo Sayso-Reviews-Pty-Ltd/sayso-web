@@ -24,7 +24,7 @@ export default function BusinessMessagesPage() {
   if (authLoading || businessesLoading) {
     return (
       <div className="bg-off-white">
-        <div className="mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm h-[calc(100dvh-3.5rem)] lg:h-[100dvh]">
+        <div className="flex w-full overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm h-[calc(100dvh-3.5rem)] lg:h-[100dvh]">
           {/* Conversation list sidebar skeleton */}
           <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border-r border-charcoal/8 bg-white">
             {/* Sidebar header */}

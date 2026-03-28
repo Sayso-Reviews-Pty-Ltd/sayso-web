@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState, memo } from 'react';
-import { useReviewHelpful } from '../../hooks/useReviewHelpful';
-import { useReviewReplies } from '../../hooks/useReviewReplies';
-import { useUserBadgesById } from '../../hooks/useUserBadges';
-import { m } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
-import { useToast } from '../../contexts/ToastContext';
-import { useReviewSubmission } from '../../hooks/useReviews';
-import { useIsDesktop } from '../../hooks/useIsDesktop';
-import { ConfirmationDialog } from '@/app/components/molecules/ConfirmationDialog/ConfirmationDialog';
-import type { BadgePillData } from '../Badges/BadgePill';
-import { isOptimisticId, isValidUUID } from '../../lib/utils/validation';
-import { ReviewFlagModal, type FlagReason } from './ReviewFlagModal';
-import { ReviewReplies } from './ReviewReplies';
-import { ReviewHeader } from './parts/ReviewHeader';
-import { ReviewContent } from './parts/ReviewContent';
-import { ReviewActions } from './parts/ReviewActions';
-import { ReviewMessageModal } from './parts/ReviewMessageModal';
-import { useReviewOwnerCheck, useReviewFlagStatus } from './hooks/useReviewCardLogic';
-import type { ReviewCardProps } from './ReviewCard.types';
+import React, { useState, memo } from "react";
+import { useReviewHelpful } from "../../hooks/useReviewHelpful";
+import { useReviewReplies } from "../../hooks/useReviewReplies";
+import { useUserBadgesById } from "../../hooks/useUserBadges";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
+import { useToast } from "../../contexts/ToastContext";
+import { useReviewSubmission } from "../../hooks/useReviews";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
+import { ConfirmationDialog } from "@/app/components/molecules/ConfirmationDialog/ConfirmationDialog";
+import { Card } from "@/app/components/ui/card";
+import type { BadgePillData } from "../Badges/BadgePill";
+import { isOptimisticId, isValidUUID } from "../../lib/utils/validation";
+import { ReviewFlagModal, type FlagReason } from "./ReviewFlagModal";
+import { ReviewReplies } from "./ReviewReplies";
+import { ReviewHeader } from "./parts/ReviewHeader";
+import { ReviewContent } from "./parts/ReviewContent";
+import { ReviewActions } from "./parts/ReviewActions";
+import { ReviewMessageModal } from "./parts/ReviewMessageModal";
+import { useReviewOwnerCheck, useReviewFlagStatus } from "./hooks/useReviewCardLogic";
+import type { ReviewCardProps } from "./ReviewCard.types";
 import {
   formatReviewRelativeDate,
   sendReviewDirectMessage,
   submitReviewFlagRequest,
-} from './reviewCard.utils';
+} from "./reviewCard.utils";
 
 function ReviewCard({
   review,
@@ -51,7 +51,7 @@ function ReviewCard({
   const [flagging, setFlagging] = useState(false);
   const [showFlagModal, setShowFlagModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState("");
   const [isSendingMessage, setIsSendingMessage] = useState(false);
 
   // SWR-backed badges for the review author
@@ -65,7 +65,10 @@ function ReviewCard({
     isHelpful: isLiked,
     loading: loadingHelpful,
     toggle: toggleHelpful,
-  } = useReviewHelpful(review.id, typeof review.helpful_count === 'number' ? review.helpful_count : 0);
+  } = useReviewHelpful(
+    review.id,
+    typeof review.helpful_count === "number" ? review.helpful_count : 0
+  );
 
   // SWR-backed replies (only need count for the Reply button label)
   const { replies } = useReviewReplies(review.id);
@@ -77,8 +80,8 @@ function ReviewCard({
 
   const handleEdit = () => {
     if (!review.id) return;
-    const pathParts = window.location.pathname.split('/');
-    const businessSlugOrId = pathParts[pathParts.indexOf('business') + 1] || review.business_id;
+    const pathParts = window.location.pathname.split("/");
+    const businessSlugOrId = pathParts[pathParts.indexOf("business") + 1] || review.business_id;
     router.push(`/business/${businessSlugOrId}/review?edit=${review.id}`);
   };
 
@@ -104,14 +107,14 @@ function ReviewCard({
         content: modalMessage.trim(),
       });
       if (!result.ok) {
-        throw new Error(result.error || 'Failed to send message');
+        throw new Error(result.error || "Failed to send message");
       }
-      showToast('Message sent', 'success', 2500);
+      showToast("Message sent", "success", 2500);
       setShowMessageModal(false);
-      setModalMessage('');
+      setModalMessage("");
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to send message';
-      showToast(message, 'error', 3500);
+      const message = error instanceof Error ? error.message : "Failed to send message";
+      showToast(message, "error", 3500);
     } finally {
       setIsSendingMessage(false);
     }
@@ -127,7 +130,7 @@ function ReviewCard({
     if (reportButtonDisabled) return;
 
     if (!user) {
-      showToast('Please log in to report reviews.', 'error');
+      showToast("Please log in to report reviews.", "error");
       return;
     }
 
@@ -146,26 +149,27 @@ function ReviewCard({
       });
       if (result.ok) {
         setShowFlagModal(false);
-        showToast('Review reported. Thank you for your feedback.', 'success');
+        showToast("Review reported. Thank you for your feedback.", "success");
         return;
       }
       if (result.alreadyFlagged) {
         setShowFlagModal(false);
       }
-      showToast(result.error || 'Failed to report review', 'error');
+      showToast(result.error || "Failed to report review", "error");
     } catch (error) {
-      console.error('Error reporting review:', error);
-      showToast('Failed to report review', 'error');
+      console.error("Error reporting review:", error);
+      showToast("Failed to report review", "error");
     } finally {
       setFlagging(false);
     }
   };
 
   return (
-    <m.div
-      whileHover={isDesktop ? undefined : { scale: 1.01, x: 5 }}
-      className={`relative bg-gradient-to-br from-off-white via-off-white to-off-white/95 backdrop-blur-sm rounded-lg p-6 border-none ${
-        isDesktop ? '' : 'transition-all duration-300 group hover:border-white/80 hover:-translate-y-1'
+    <Card
+      className={`relative bg-gradient-to-br from-off-white via-off-white to-off-white/95 backdrop-blur-sm p-6 border-none shadow-none ${
+        isDesktop
+          ? ""
+          : "transition-all duration-300 group hover:scale-[1.01] hover:translate-x-1 hover:-translate-y-1"
       }`}
     >
       <ReviewHeader
@@ -181,11 +185,7 @@ function ReviewCard({
       />
 
       <div className="flex-1 min-w-0">
-        <ReviewContent
-          review={review}
-          showBusinessInfo={showBusinessInfo}
-          isDesktop={isDesktop}
-        />
+        <ReviewContent review={review} showBusinessInfo={showBusinessInfo} isDesktop={isDesktop} />
 
         <ReviewActions
           isDesktop={isDesktop}
@@ -247,11 +247,11 @@ function ReviewCard({
         message={modalMessage}
         onMessageChange={setModalMessage}
         isSending={isSendingMessage}
-        customerName={review.user?.display_name || review.user?.username || 'Customer'}
-        reviewUserId={review.user_id || ''}
-        businessId={review.business_id || ''}
+        customerName={review.user?.display_name || review.user?.username || "Customer"}
+        reviewUserId={review.user_id || ""}
+        businessId={review.business_id || ""}
       />
-    </m.div>
+    </Card>
   );
 }
 

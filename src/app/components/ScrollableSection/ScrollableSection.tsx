@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Default visible card count — kept for external references
 export const DEFAULT_VISIBLE_CARD_COUNT = 4;
 
 interface ScrollableSectionProps {
-  /** Preferred API — each item is rendered inside the scroll row. */
   items?: React.ReactNode[];
-  /** Compat path — children (e.g. CardRail) are passed directly as scroll content. */
   children?: React.ReactNode;
   className?: string;
   showArrows?: boolean;
   enableMobilePeek?: boolean;
   hideArrowsOnDesktop?: boolean;
-  /** Retained for API compatibility — opacity fade is no longer applied. */
   disablePeekFade?: boolean;
 }
 
@@ -32,6 +28,31 @@ export default function ScrollableSection({
   const shouldEnableMobilePeek = enableMobilePeek || isHomeRoute;
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateArrows = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const threshold = 4;
+    setCanScrollLeft(el.scrollLeft > threshold);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - threshold);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !showArrows) return;
+
+    updateArrows();
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    const ro = new ResizeObserver(updateArrows);
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener("scroll", updateArrows);
+      ro.disconnect();
+    };
+  }, [showArrows, updateArrows]);
 
   const scroll = useCallback((dir: 1 | -1) => {
     const el = scrollRef.current;
@@ -53,7 +74,6 @@ export default function ScrollableSection({
   `;
 
   const desktopHide = hideArrowsOnDesktop ? "lg:hidden" : "";
-  // On mobile peek routes, hide arrows — swiping handles navigation
   const mobileHide = shouldEnableMobilePeek ? "hidden sm:flex" : "flex";
 
   return (
@@ -61,16 +81,17 @@ export default function ScrollableSection({
       <div
         ref={scrollRef}
         className="rail-scroll overflow-x-auto px-2 pb-2"
-        style={{
-          scrollbarWidth: "none",
-          WebkitOverflowScrolling: "touch",
-          scrollSnapType: "x mandatory",
-        } as React.CSSProperties}
+        style={
+          {
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+            scrollSnapType: "x mandatory",
+          } as React.CSSProperties
+        }
       >
         {items ? (
           <div className="flex gap-3">
             {items.map((item, i) => (
-              // eslint-disable-next-line react/no-array-index-key
               <React.Fragment key={i}>{item}</React.Fragment>
             ))}
           </div>
@@ -79,27 +100,28 @@ export default function ScrollableSection({
         )}
       </div>
 
-      {showArrows && (
-        <>
-          <button
-            onClick={() => scroll(-1)}
-            className={`${arrowBase} left-2 ${mobileHide} ${desktopHide}`}
-            aria-label="Scroll left"
-          >
-            <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll(1)}
-            className={`${arrowBase} right-2 ${mobileHide} ${desktopHide}`}
-            aria-label="Scroll right"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </>
+      {showArrows && canScrollLeft && (
+        <button
+          onClick={() => scroll(-1)}
+          className={`${arrowBase} left-2 ${mobileHide} ${desktopHide}`}
+          aria-label="Scroll left"
+        >
+          <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
+
+      {showArrows && canScrollRight && (
+        <button
+          onClick={() => scroll(1)}
+          className={`${arrowBase} right-2 ${mobileHide} ${desktopHide}`}
+          aria-label="Scroll right"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       )}
 
       <style jsx>{`

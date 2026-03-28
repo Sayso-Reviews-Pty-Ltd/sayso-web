@@ -21,7 +21,7 @@ function SkeletonCard({
 }) {
   return (
     <div
-      className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6 ${className}`}
+      className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-3 sm:p-6 ${className}`}
     >
       {children}
     </div>
@@ -42,104 +42,110 @@ export default function SpecialDetailPageSkeleton() {
         <section className="relative min-h-[100dvh]">
           <div className="mx-auto w-full max-w-[2000px] px-2 relative z-10 pt-20 sm:pt-24 py-4 sm:py-6 md:py-8 pb-12 sm:pb-16">
             <nav className="pb-1" aria-label="Breadcrumb">
-              <div className="flex items-center gap-2">
-                <SkeletonBlock className="h-4 w-32" />
-                <SkeletonBlock className="h-4 w-4 rounded-md" rounded="rounded-md" />
-                <SkeletonBlock className="h-4 w-28" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <SkeletonBlock className="h-3.5 sm:h-4 w-24 sm:w-32" />
+                <SkeletonBlock className="h-3 sm:h-4 w-3 sm:w-4 rounded-md" rounded="rounded-md" />
+                <SkeletonBlock className="h-3.5 sm:h-4 w-20 sm:w-28" />
               </div>
             </nav>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+              <div className="lg:col-span-2 space-y-3 sm:space-y-6 lg:space-y-8">
                 <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] rounded-none overflow-hidden border-none bg-off-white/80 animate-pulse">
-                  <div className="absolute top-6 left-6">
-                    <SkeletonBlock className="h-9 w-28 rounded-full bg-white/40" />
+                  <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+                    <SkeletonBlock className="h-7 sm:h-9 w-24 sm:w-28 rounded-full bg-white/40" />
                   </div>
-                  <div className="absolute top-6 right-6">
-                    <SkeletonBlock className="h-12 w-12 rounded-full bg-white/30" />
+                  <div className="absolute top-4 sm:top-6 right-4 sm:right-6">
+                    <SkeletonBlock className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white/30" />
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <SkeletonBlock
-                    className="h-10 w-full max-w-[28rem] rounded-2xl"
+                    className="h-8 sm:h-10 w-full max-w-[22rem] sm:max-w-[28rem] rounded-2xl"
                     rounded="rounded-2xl"
                   />
-                  <div className="flex items-center gap-4">
-                    <SkeletonBlock className="h-4 w-16" />
-                    <SkeletonBlock className="h-4 w-32" />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-14 sm:w-16" />
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-24 sm:w-32" />
                   </div>
                 </div>
 
-                <SkeletonCard className="space-y-4">
-                  <SkeletonBlock className="h-6 w-36 rounded-xl" rounded="rounded-xl" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <SkeletonCard className="space-y-3 sm:space-y-4">
+                  <SkeletonBlock
+                    className="h-5 sm:h-6 w-28 sm:w-36 rounded-xl"
+                    rounded="rounded-xl"
+                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <SkeletonBlock
+                        key={i}
+                        className="h-14 sm:h-16 w-full rounded-2xl bg-charcoal/8"
+                        rounded="rounded-2xl"
+                      />
+                    ))}
                     <SkeletonBlock
-                      className="h-16 w-full rounded-2xl bg-charcoal/8"
-                      rounded="rounded-2xl"
-                    />
-                    <SkeletonBlock
-                      className="h-16 w-full rounded-2xl bg-charcoal/8"
-                      rounded="rounded-2xl"
-                    />
-                    <SkeletonBlock
-                      className="h-16 w-full rounded-2xl bg-charcoal/8"
-                      rounded="rounded-2xl"
-                    />
-                    <SkeletonBlock
-                      className="h-16 w-full rounded-2xl bg-charcoal/8"
-                      rounded="rounded-2xl"
-                    />
-                    <SkeletonBlock
-                      className="h-16 w-full rounded-2xl bg-charcoal/8 sm:col-span-2"
+                      className="h-14 sm:h-16 w-full rounded-2xl bg-charcoal/8 sm:col-span-2"
                       rounded="rounded-2xl"
                     />
                   </div>
                 </SkeletonCard>
 
-                <SkeletonCard className="space-y-3">
-                  <SkeletonBlock className="h-6 w-40 rounded-xl" rounded="rounded-xl" />
-                  <SkeletonBlock className="h-4 w-full" />
-                  <SkeletonBlock className="h-4 w-full" />
-                  <SkeletonBlock className="h-4 w-11/12" />
-                  <SkeletonBlock className="h-4 w-4/5" />
-                  <SkeletonBlock className="h-4 w-2/3" />
+                <SkeletonCard className="space-y-2.5 sm:space-y-3">
+                  <SkeletonBlock
+                    className="h-5 sm:h-6 w-32 sm:w-40 rounded-xl"
+                    rounded="rounded-xl"
+                  />
+                  <SkeletonBlock className="h-3.5 sm:h-4 w-full" />
+                  <SkeletonBlock className="h-3.5 sm:h-4 w-full" />
+                  <SkeletonBlock className="h-3.5 sm:h-4 w-11/12" />
+                  <SkeletonBlock className="h-3.5 sm:h-4 w-4/5" />
+                  <SkeletonBlock className="h-3.5 sm:h-4 w-2/3" />
                 </SkeletonCard>
               </div>
 
-              <div className="space-y-6">
-                <SkeletonCard className="space-y-4">
-                  <SkeletonBlock className="h-6 w-40 rounded-xl" rounded="rounded-xl" />
-                  <div className="space-y-3">
-                    <SkeletonBlock className="h-12 w-full rounded-full bg-coral/20" />
-                    <SkeletonBlock className="h-12 w-full rounded-full bg-charcoal/8" />
+              <div className="space-y-3 sm:space-y-6">
+                <SkeletonCard className="space-y-3 sm:space-y-4">
+                  <SkeletonBlock
+                    className="h-5 sm:h-6 w-32 sm:w-40 rounded-xl"
+                    rounded="rounded-xl"
+                  />
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <SkeletonBlock className="h-10 sm:h-12 w-full rounded-full bg-coral/20" />
+                    <SkeletonBlock className="h-10 sm:h-12 w-full rounded-full bg-charcoal/8" />
                   </div>
                 </SkeletonCard>
 
-                <SkeletonCard className="space-y-3">
-                  <SkeletonBlock className="h-6 w-24 rounded-xl" rounded="rounded-xl" />
+                <SkeletonCard className="space-y-2.5 sm:space-y-3">
+                  <SkeletonBlock
+                    className="h-5 sm:h-6 w-20 sm:w-24 rounded-xl"
+                    rounded="rounded-xl"
+                  />
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="flex items-center justify-between gap-3">
-                      <SkeletonBlock className="h-4 w-24" />
-                      <SkeletonBlock className="h-4 w-10 bg-charcoal/8" />
+                    <div key={index} className="flex items-center justify-between gap-2 sm:gap-3">
+                      <SkeletonBlock className="h-3.5 sm:h-4 w-20 sm:w-24" />
+                      <SkeletonBlock className="h-3.5 sm:h-4 w-8 sm:w-10 bg-charcoal/8" />
                     </div>
                   ))}
                 </SkeletonCard>
 
-                <SkeletonCard className="space-y-4">
-                  <SkeletonBlock className="h-6 w-36 rounded-xl" rounded="rounded-xl" />
-                  <div className="space-y-3">
-                    <SkeletonBlock className="h-4 w-40" />
-                    <SkeletonBlock className="h-4 w-48" />
-                    <SkeletonBlock className="h-4 w-full" />
-                    <SkeletonBlock className="h-4 w-36" />
+                <SkeletonCard className="space-y-3 sm:space-y-4">
+                  <SkeletonBlock
+                    className="h-5 sm:h-6 w-28 sm:w-36 rounded-xl"
+                    rounded="rounded-xl"
+                  />
+                  <div className="space-y-2 sm:space-y-3">
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-32 sm:w-40" />
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-36 sm:w-48" />
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-full" />
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-28 sm:w-36" />
                   </div>
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
                     <SkeletonBlock
-                      className="h-10 w-full rounded-xl bg-coral/18"
+                      className="h-9 sm:h-10 w-full rounded-xl bg-coral/18"
                       rounded="rounded-xl"
                     />
-                    <SkeletonBlock className="h-4 w-32 bg-charcoal/8" />
+                    <SkeletonBlock className="h-3.5 sm:h-4 w-24 sm:w-32 bg-charcoal/8" />
                   </div>
                 </SkeletonCard>
               </div>

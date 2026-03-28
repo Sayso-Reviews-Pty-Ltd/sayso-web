@@ -142,7 +142,7 @@ export default function SettingsPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: animations }} />
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pb-6">
         <Breadcrumb className="pt-4 sm:pt-6 pb-2">
           <BreadcrumbList>
             <BreadcrumbItem>

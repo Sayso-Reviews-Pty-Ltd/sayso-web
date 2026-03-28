@@ -14,7 +14,7 @@ interface EventCardSkeletonProps {
 export default function EventCardSkeleton({ fullWidth = false }: EventCardSkeletonProps) {
   return (
     <div
-      className={fullWidth ? "flex w-full" : "flex w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px]"}
+      className={fullWidth ? "flex w-full" : "flex w-full sm:w-auto sm:w-[260px] md:w-[340px]"}
       style={{
         fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}
@@ -31,7 +31,7 @@ export default function EventCardSkeleton({ fullWidth = false }: EventCardSkelet
             className="relative w-full overflow-hidden rounded-[12px] flex items-center justify-center bg-gradient-to-br from-off-white/95 to-off-white/85"
             style={{ aspectRatio: "4 / 3" }}
           >
-            <Skeleton className="w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 bg-charcoal/10 rounded-lg" />
+            <Skeleton className="w-20 h-20 sm:w-36 sm:h-36 md:w-32 md:h-32 bg-charcoal/10 rounded-lg" />
           </div>
 
           {/* Badge skeleton */}
@@ -54,16 +54,16 @@ export default function EventCardSkeleton({ fullWidth = false }: EventCardSkelet
         </div>
 
         {/* CONTENT */}
-        <div className="px-4 py-4 bg-gradient-to-b from-card-bg/95 to-card-bg flex flex-col gap-2 rounded-b-[12px]">
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-5 sm:h-6 w-3/4 bg-charcoal/10 rounded-lg" />
-            <div className="w-full flex flex-col gap-1.5">
-              <Skeleton className="h-4 w-full bg-charcoal/5 rounded" />
-              <Skeleton className="h-4 w-4/5 bg-charcoal/5 rounded" />
+        <div className="px-3 py-3 sm:px-4 sm:py-4 bg-gradient-to-b from-card-bg/95 to-card-bg flex flex-col gap-2 rounded-b-[12px]">
+          <div className="flex flex-col gap-1.5 sm:gap-2">
+            <Skeleton className="h-4 sm:h-6 w-3/4 bg-charcoal/10 rounded-lg" />
+            <div className="w-full flex flex-col gap-1">
+              <Skeleton className="h-3.5 sm:h-4 w-full bg-charcoal/5 rounded" />
+              <Skeleton className="h-3.5 sm:h-4 w-4/5 bg-charcoal/5 rounded" />
             </div>
           </div>
 
-          <Skeleton className="mt-1 w-full h-10 px-4 py-2.5 bg-charcoal/10 rounded-full" />
+          <Skeleton className="mt-1 w-full h-9 sm:h-10 px-4 py-2.5 bg-charcoal/10 rounded-full" />
         </div>
       </article>
     </div>

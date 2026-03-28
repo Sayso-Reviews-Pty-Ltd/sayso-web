@@ -111,7 +111,7 @@ export default function AddBusinessPage() {
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
 
-              <div className="container mx-auto max-w-[1300px] px-4 sm:px-6 relative z-10">
+              <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
                 <Breadcrumb className="pt-4 sm:pt-6 pb-2">
                   <BreadcrumbList>
                     <BreadcrumbItem>

@@ -169,7 +169,6 @@ export default function BusinessProfilePage() {
 
   usePageTitle(business?.name || "Loading...", getDescriptionForTitle(business?.description));
 
-  // Loading state - show skeleton components with proper layout matching actual page
   if (isLoading) {
     return (
       <div className="min-h-dvh bg-off-white">
@@ -181,151 +180,133 @@ export default function BusinessProfilePage() {
             }}
           >
             <div className="mx-auto w-full max-w-[2000px] px-2 relative z-10">
-              {/* Breadcrumb Skeleton */}
-              <nav className="pt-2 px-2">
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-5 w-12 bg-charcoal/10 rounded" />
-                  <Skeleton className="h-4 w-4 bg-charcoal/5 rounded" />
-                  <Skeleton className="h-5 w-32 bg-charcoal/10 rounded" />
+              <nav className="pt-2 px-1 sm:px-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Skeleton className="h-4 sm:h-5 w-10 sm:w-12 bg-charcoal/10 rounded" />
+                  <Skeleton className="h-3 sm:h-4 w-3 sm:w-4 bg-charcoal/5 rounded" />
+                  <Skeleton className="h-4 sm:h-5 w-24 sm:w-32 bg-charcoal/10 rounded" />
                 </div>
               </nav>
 
               <div className="pt-2">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-                  {/* Left Column - Main Content */}
-                  <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
-                    {/* Hero Image Skeleton */}
+                  <div className="lg:col-span-2 space-y-3 sm:space-y-6 lg:space-y-8">
                     <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden border-none backdrop-blur-xl shadow-md animate-pulse">
-                      {/* Rating badge skeleton */}
-                      <div className="absolute right-4 top-4 z-20 h-8 w-16 rounded-full bg-off-white/40" />
-                      {/* Verified badge skeleton */}
-                      <div className="absolute left-4 top-4 z-20 h-8 w-24 rounded-full bg-card-bg/30" />
-                      {/* Gallery indicators skeleton */}
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      <div className="absolute right-3 sm:right-4 top-3 sm:top-4 z-20 h-6 sm:h-8 w-14 sm:w-16 rounded-full bg-off-white/40" />
+                      <div className="absolute left-3 sm:left-4 top-3 sm:top-4 z-20 h-6 sm:h-8 w-20 sm:w-24 rounded-full bg-card-bg/30" />
+                      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
                         {[1, 2, 3].map((i) => (
                           <div
                             key={i}
-                            className={`h-1.5 rounded-full bg-white/50 ${i === 1 ? "w-6" : "w-1.5"}`}
+                            className={`h-1.5 rounded-full bg-white/50 ${i === 1 ? "w-5 sm:w-6" : "w-1.5"}`}
                           />
                         ))}
                       </div>
                     </div>
 
-                    {/* Business Info Skeleton */}
-                    <div className="space-y-3 px-2">
-                      <div className="h-8 sm:h-10 w-3/4 bg-charcoal/10 rounded-lg animate-pulse" />
-                      <div className="flex items-center gap-3">
-                        <div className="h-5 w-20 bg-charcoal/5 rounded animate-pulse" />
-                        <div className="h-5 w-32 bg-charcoal/5 rounded animate-pulse" />
+                    <div className="space-y-2 sm:space-y-3 px-1 sm:px-2">
+                      <Skeleton className="h-6 sm:h-10 w-3/4 bg-charcoal/10 rounded-lg" />
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Skeleton className="h-4 sm:h-5 w-16 sm:w-20 bg-charcoal/5 rounded" />
+                        <Skeleton className="h-4 sm:h-5 w-24 sm:w-32 bg-charcoal/5 rounded" />
                       </div>
                     </div>
 
-                    {/* Description Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="space-y-3">
-                        <div className="h-4 bg-white/30 rounded animate-pulse" />
-                        <div className="h-4 bg-white/30 rounded animate-pulse" />
-                        <div className="h-4 bg-white/30 rounded w-3/4 animate-pulse" />
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <Skeleton className="h-3.5 sm:h-4 bg-white/30 rounded w-full" />
+                        <Skeleton className="h-3.5 sm:h-4 bg-white/30 rounded w-full" />
+                        <Skeleton className="h-3.5 sm:h-4 bg-white/30 rounded w-3/4" />
                       </div>
                     </div>
 
-                    {/* Details Cards Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="space-y-2">
-                            <div className="h-4 w-16 bg-white/20 rounded animate-pulse" />
-                            <div className="h-6 w-24 bg-white/30 rounded animate-pulse" />
+                          <div key={i} className="space-y-1.5 sm:space-y-2">
+                            <Skeleton className="h-3.5 sm:h-4 w-14 sm:w-16 bg-white/20 rounded" />
+                            <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 bg-white/30 rounded" />
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Photo Grid Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="h-6 w-24 bg-white/30 rounded animate-pulse mb-4" />
-                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                        {Array.from({ length: 9 }).map((_, i) => (
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 bg-white/30 rounded mb-3 sm:mb-4" />
+                      <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
+                        {Array.from({ length: 6 }).map((_, i) => (
                           <div
                             key={i}
-                            className="aspect-square rounded-[10px] bg-white/25 animate-pulse"
+                            className="aspect-square rounded-[8px] sm:rounded-[10px] bg-white/25 animate-pulse"
                           />
                         ))}
                       </div>
-                      <div className="mt-4 h-10 w-full rounded-full bg-navbar-bg/40 animate-pulse" />
+                      <Skeleton className="mt-3 sm:mt-4 h-9 sm:h-10 w-full rounded-full bg-navbar-bg/40" />
                     </div>
 
-                    {/* Map Skeleton */}
                     <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md overflow-hidden">
-                      <div className="h-[200px] sm:h-[300px] bg-card-bg/10 animate-pulse" />
-                      <div className="p-4 space-y-2">
-                        <div className="h-5 w-48 bg-white/30 rounded animate-pulse" />
-                        <div className="h-4 w-32 bg-white/20 rounded animate-pulse" />
+                      <div className="h-[160px] sm:h-[300px] bg-card-bg/10 animate-pulse" />
+                      <div className="p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+                        <Skeleton className="h-4 sm:h-5 w-36 sm:w-48 bg-white/30 rounded" />
+                        <Skeleton className="h-3.5 sm:h-4 w-24 sm:w-32 bg-white/20 rounded" />
                       </div>
                     </div>
 
-                    {/* Contact Info Skeleton - Mobile */}
-                    <div className="lg:hidden bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="space-y-4">
+                    <div className="lg:hidden bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4">
+                      <div className="space-y-3">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/20 animate-pulse" />
-                            <div className="h-5 w-32 bg-white/30 rounded animate-pulse" />
+                          <div key={i} className="flex items-center gap-2.5">
+                            <Skeleton className="w-8 h-8 rounded-full bg-white/20" />
+                            <Skeleton className="h-4 w-28 bg-white/30 rounded" />
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Column - Sidebar */}
-                  <div className="space-y-4 sm:space-y-6">
-                    {/* Action Card Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="space-y-4">
-                        <div className="h-12 w-full bg-card-bg/40 rounded-full animate-pulse" />
-                        <div className="h-12 w-full bg-coral/40 rounded-full animate-pulse" />
-                        <div className="flex gap-3">
-                          <div className="h-10 flex-1 bg-white/30 rounded-full animate-pulse" />
-                          <div className="h-10 flex-1 bg-white/30 rounded-full animate-pulse" />
+                  <div className="space-y-3 sm:space-y-6">
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <div className="space-y-3 sm:space-y-4">
+                        <Skeleton className="h-10 sm:h-12 w-full bg-card-bg/40 rounded-full" />
+                        <Skeleton className="h-10 sm:h-12 w-full bg-coral/40 rounded-full" />
+                        <div className="flex gap-2 sm:gap-3">
+                          <Skeleton className="h-9 sm:h-10 flex-1 bg-white/30 rounded-full" />
+                          <Skeleton className="h-9 sm:h-10 flex-1 bg-white/30 rounded-full" />
                         </div>
                       </div>
                     </div>
 
-                    {/* Personalization Insights Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="h-6 w-40 bg-white/30 rounded animate-pulse mb-4" />
-                      <div className="space-y-3">
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <Skeleton className="h-5 sm:h-6 w-32 sm:w-40 bg-white/30 rounded mb-3 sm:mb-4" />
+                      <div className="space-y-2.5 sm:space-y-3">
                         {[1, 2, 3].map((i) => (
                           <div key={i} className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-white/20 animate-pulse" />
-                            <div className="h-4 flex-1 bg-white/20 rounded animate-pulse" />
+                            <Skeleton className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-white/20" />
+                            <Skeleton className="h-3.5 sm:h-4 flex-1 bg-white/20 rounded" />
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Contact Info Skeleton - Desktop */}
                     <div className="hidden lg:block bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
                       <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
                           <div key={i} className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/20 animate-pulse" />
-                            <div className="h-5 w-32 bg-white/30 rounded animate-pulse" />
+                            <Skeleton className="w-10 h-10 rounded-full bg-white/20" />
+                            <Skeleton className="h-5 w-32 bg-white/30 rounded" />
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Contact Card Skeleton */}
-                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6">
-                      <div className="h-6 w-24 bg-white/30 rounded animate-pulse mb-4" />
-                      <div className="space-y-3">
-                        <div className="h-10 w-full bg-white/30 rounded-full animate-pulse" />
-                        <div className="h-10 w-full bg-white/30 rounded-full animate-pulse" />
-                        <div className="h-10 w-full bg-white/30 rounded-full animate-pulse" />
-                        <div className="h-10 w-full bg-white/30 rounded-full animate-pulse" />
-                        <div className="h-24 w-full bg-white/25 rounded-[12px] animate-pulse" />
-                        <div className="h-10 w-full bg-coral/40 rounded-full animate-pulse" />
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
+                      <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 bg-white/30 rounded mb-3 sm:mb-4" />
+                      <div className="space-y-2.5 sm:space-y-3">
+                        <Skeleton className="h-9 sm:h-10 w-full bg-white/30 rounded-full" />
+                        <Skeleton className="h-9 sm:h-10 w-full bg-white/30 rounded-full" />
+                        <Skeleton className="h-9 sm:h-10 w-full bg-white/30 rounded-full" />
+                        <Skeleton className="h-20 sm:h-24 w-full bg-white/25 rounded-[12px]" />
+                        <Skeleton className="h-9 sm:h-10 w-full bg-coral/40 rounded-full" />
                       </div>
                     </div>
                   </div>
@@ -334,30 +315,35 @@ export default function BusinessProfilePage() {
             </div>
           </section>
 
-          {/* Reviews Section Skeleton */}
-          <section className="mx-auto w-full max-w-[2000px] px-2 relative z-10 mt-8">
-            <div className="text-center mb-6">
-              <div className="h-7 w-48 bg-charcoal/10 rounded-lg mx-auto animate-pulse" />
+          <section className="mx-auto w-full max-w-[2000px] px-2 relative z-10 mt-6 sm:mt-8">
+            <div className="text-center mb-4 sm:mb-6">
+              <Skeleton className="h-6 sm:h-7 w-36 sm:w-48 bg-charcoal/10 rounded-lg mx-auto" />
             </div>
-            <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8">
-              <div className="space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="border-b border-white/20 pb-6 last:border-0 last:pb-0">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-white/20 animate-pulse flex-shrink-0" />
-                      <div className="flex-1 space-y-3">
+            <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-8">
+              <div className="space-y-4 sm:space-y-6">
+                {[1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="border-b border-white/20 pb-4 sm:pb-6 last:border-0 last:pb-0"
+                  >
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 flex-shrink-0" />
+                      <div className="flex-1 space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2">
-                          <div className="h-5 w-24 bg-white/30 rounded animate-pulse" />
-                          <div className="h-4 w-16 bg-white/20 rounded animate-pulse" />
+                          <Skeleton className="h-4 sm:h-5 w-20 sm:w-24 bg-white/30 rounded" />
+                          <Skeleton className="h-3.5 sm:h-4 w-12 sm:w-16 bg-white/20 rounded" />
                         </div>
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((s) => (
-                            <div key={s} className="w-4 h-4 bg-white/20 rounded animate-pulse" />
+                            <Skeleton
+                              key={s}
+                              className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-white/20 rounded"
+                            />
                           ))}
                         </div>
-                        <div className="space-y-2">
-                          <div className="h-4 bg-white/20 rounded animate-pulse" />
-                          <div className="h-4 bg-white/20 rounded w-3/4 animate-pulse" />
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <Skeleton className="h-3.5 sm:h-4 bg-white/20 rounded w-full" />
+                          <Skeleton className="h-3.5 sm:h-4 bg-white/20 rounded w-3/4" />
                         </div>
                       </div>
                     </div>

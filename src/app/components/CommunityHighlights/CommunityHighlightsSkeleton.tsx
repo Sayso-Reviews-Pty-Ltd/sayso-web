@@ -17,25 +17,25 @@ interface CommunityHighlightsSkeletonProps {
 function BusinessOfTheMonthCardSkeleton() {
   return (
     <div
-      className="snap-center snap-always flex-shrink-0 w-[100vw] sm:w-auto sm:w-[260px] md:w-[340px] list-none"
+      className="snap-center snap-always flex-shrink-0 w-full sm:w-[260px] md:w-[340px] list-none"
       style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
     >
       <div
         className="relative px-1 pt-1 pb-2 sm:pb-0 bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-visible w-full flex flex-col border-none backdrop-blur-xl shadow-md sm:h-auto animate-pulse"
         style={{ maxWidth: "540px" } as React.CSSProperties}
       >
-        <div className="relative overflow-hidden z-10 rounded-t-[12px] h-[280px] sm:h-[220px] md:h-[240px]">
+        <div className="relative overflow-hidden z-10 rounded-t-[12px] h-[200px] sm:h-[220px] md:h-[240px]">
           <div className="absolute inset-0 bg-gradient-to-br from-off-white/90 via-off-white/80 to-off-white/70" />
         </div>
-        <div className="px-4 py-3 sm:px-5 sm:pt-1 md:pt-2 lg:pt-3 pb-0 flex-1 relative flex-shrink-0 flex flex-col justify-between bg-card-bg/10 z-10 rounded-b-[12px]">
-          <div className="flex-1 flex flex-col items-center text-center space-y-1">
-            <Skeleton className="h-6 sm:h-7 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
-            <Skeleton className="h-4 w-1/2 bg-charcoal/5 rounded mx-auto" />
-            <Skeleton className="h-4 w-2/3 bg-charcoal/5 rounded mx-auto mt-2" />
-            <Skeleton className="h-4 w-20 bg-charcoal/5 rounded mx-auto mt-2" />
+        <div className="px-3 py-2.5 sm:px-5 sm:pt-1 md:pt-2 lg:pt-3 pb-0 flex-1 relative flex-shrink-0 flex flex-col justify-between bg-card-bg/10 z-10 rounded-b-[12px]">
+          <div className="flex-1 flex flex-col items-center text-center space-y-1.5 sm:space-y-1">
+            <Skeleton className="h-5 sm:h-7 w-3/4 bg-charcoal/10 rounded-lg mx-auto" />
+            <Skeleton className="h-3.5 sm:h-4 w-1/2 bg-charcoal/5 rounded mx-auto" />
+            <Skeleton className="h-3.5 sm:h-4 w-2/3 bg-charcoal/5 rounded mx-auto" />
+            <Skeleton className="h-3.5 sm:h-4 w-20 bg-charcoal/5 rounded mx-auto" />
           </div>
-          <div className="flex md:hidden items-center justify-center pt-4 border-t border-off-white/30">
-            <Skeleton className="h-12 w-24 bg-charcoal/10 rounded-full" />
+          <div className="flex md:hidden items-center justify-center pt-3 pb-1 border-t border-off-white/30">
+            <Skeleton className="h-10 w-24 bg-charcoal/10 rounded-full" />
           </div>
         </div>
       </div>

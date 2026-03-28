@@ -44,8 +44,8 @@ function PortalSidebarShell({ onClose }: { onClose?: () => void }) {
 
 function PortalMainContentSkeleton() {
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="max-w-5xl space-y-4">
+    <div className="px-4 sm:px-6 lg:px-8 py-6">
+      <div className="space-y-4">
         <div className="h-8 w-48 rounded-lg bg-charcoal/10 animate-pulse" />
         <div className="h-28 rounded-[12px] bg-charcoal/8 animate-pulse" />
         <div className="h-28 rounded-[12px] bg-charcoal/8 animate-pulse" />
@@ -103,7 +103,9 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
           >
             <MobileMenuToggleIcon isOpen={mobileOpen} />
           </button>
-          <span className="font-urbanist font-bold text-white text-base tracking-tight">My Portal</span>
+          <span className="font-urbanist font-bold text-white text-base tracking-tight">
+            My Portal
+          </span>
         </header>
 
         {/* Page content */}

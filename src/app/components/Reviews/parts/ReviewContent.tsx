@@ -1,6 +1,5 @@
 "use client";
 
-import { m } from "framer-motion";
 import type { ReviewWithUser } from "../../../lib/types/database";
 import { Badge } from "@/app/components/ui/badge";
 import { ReviewGallery } from "../ReviewGallery";
@@ -14,7 +13,6 @@ interface ReviewContentProps {
 export function ReviewContent({ review, showBusinessInfo, isDesktop }: ReviewContentProps) {
   return (
     <>
-      {/* Review Title */}
       {review.title && (
         <h4
           className={`font-urbanist text-xl font-600 text-charcoal mb-2 ${
@@ -25,7 +23,6 @@ export function ReviewContent({ review, showBusinessInfo, isDesktop }: ReviewCon
         </h4>
       )}
 
-      {/* Business Info (if showing) */}
       {showBusinessInfo && "business" in review && (
         <div className="mb-3 p-2 bg-card-bg/10 rounded-lg">
           <span className="font-urbanist text-sm font-500 text-sage">
@@ -34,28 +31,27 @@ export function ReviewContent({ review, showBusinessInfo, isDesktop }: ReviewCon
         </div>
       )}
 
-      {/* Review Text */}
       <p className="font-urbanist text-base font-600 text-charcoal/90 leading-relaxed mb-4">
         {review.content}
       </p>
 
-      {/* Tags */}
       {review.tags && review.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {review.tags.map((tag) => (
-            <Badge key={tag} asChild variant="sage" size="md">
-              <m.span
-                whileHover={isDesktop ? undefined : { scale: 1.05 }}
-                className={isDesktop ? "" : "hover:bg-card-bg/20 transition-colors duration-300"}
-              >
-                {tag}
-              </m.span>
+            <Badge
+              key={tag}
+              variant="sage"
+              size="md"
+              className={
+                isDesktop ? "" : "hover:bg-card-bg/20 hover:scale-105 transition-all duration-200"
+              }
+            >
+              {tag}
             </Badge>
           ))}
         </div>
       )}
 
-      {/* Images */}
       <ReviewGallery images={review.images || []} isDesktop={isDesktop} />
     </>
   );
