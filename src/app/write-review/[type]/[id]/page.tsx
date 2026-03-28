@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ChevronRight } from "@/app/lib/icons";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useToast } from "../../../contexts/ToastContext";
-import { PageLoader } from "../../../components/Loader";
+import WriteReviewPageSkeleton from "../../../components/ReviewForm/WriteReviewPageSkeleton";
 import Footer from "../../../components/Footer/Footer";
 import ReviewForm from "../../../components/ReviewForm/ReviewForm";
 import OptimizedImage from "../../../components/Performance/OptimizedImage";
@@ -326,7 +326,7 @@ function WriteReviewContent() {
   };
 
   if (loading) {
-    return <PageLoader />;
+    return <WriteReviewPageSkeleton />;
   }
 
   if (!target) {
@@ -576,7 +576,7 @@ function WriteReviewContent() {
 
 export default function WriteReviewPage() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<WriteReviewPageSkeleton />}>
       <WriteReviewContent />
     </Suspense>
   );

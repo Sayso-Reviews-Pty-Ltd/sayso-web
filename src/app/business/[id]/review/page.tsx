@@ -11,7 +11,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useToast } from "../../../contexts/ToastContext";
 import { useReviewForm } from "../../../hooks/useReviewForm";
 import { useReviewSubmission, useReviews } from "../../../hooks/useReviews";
-import { PageLoader } from "../../../components/Loader";
+import BusinessReviewPageSkeleton from "../../../components/ReviewForm/BusinessReviewPageSkeleton";
 import ReviewForm from "../../../components/ReviewForm/ReviewForm";
 import BusinessInfoAside from "../../../components/BusinessInfo/BusinessInfoAside";
 import BusinessInfoModal, {
@@ -474,7 +474,7 @@ function WriteReviewContent() {
 
   // Loading state
   if (loading) {
-    return <PageLoader size="lg" variant="wavy" color="sage" />;
+    return <BusinessReviewPageSkeleton />;
   }
 
   // Error state
@@ -669,7 +669,7 @@ function WriteReviewContent() {
 // Wrapper component with Suspense for useSearchParams
 export default function WriteReviewPage() {
   return (
-    <Suspense fallback={<PageLoader size="xl" variant="wavy" color="sage" />}>
+    <Suspense fallback={<BusinessReviewPageSkeleton />}>
       <WriteReviewContent />
     </Suspense>
   );
