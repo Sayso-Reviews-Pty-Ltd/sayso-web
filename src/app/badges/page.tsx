@@ -5,13 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { m } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  ChevronLeft,
-  Sparkles,
-  Star,
-  Search,
-  X
-} from "@/app/lib/icons";
+import { ChevronLeft, Sparkles, Star, Search, X } from "@/app/lib/icons";
 import Footer from "../components/Footer/Footer";
 import { BADGE_MAPPINGS } from "../lib/badgeMappings";
 import { useAuth } from "../contexts/AuthContext";
@@ -29,14 +23,14 @@ export default function BadgesPage() {
 
   // Group badges by category
   const badgesByGroup = useMemo(() => {
-    const groups: Record<string, typeof BADGE_MAPPINGS[keyof typeof BADGE_MAPPINGS][]> = {
+    const groups: Record<string, (typeof BADGE_MAPPINGS)[keyof typeof BADGE_MAPPINGS][]> = {
       explorer: [],
       specialist: [],
       milestone: [],
       community: [],
     };
 
-    Object.values(BADGE_MAPPINGS).forEach(badge => {
+    Object.values(BADGE_MAPPINGS).forEach((badge) => {
       if (groups[badge.badgeGroup]) {
         groups[badge.badgeGroup].push(badge);
       }
@@ -50,7 +44,7 @@ export default function BadgesPage() {
     if (!searchQuery.trim()) return null;
 
     const query = searchQuery.toLowerCase();
-    return Object.values(BADGE_MAPPINGS).filter(badge => {
+    return Object.values(BADGE_MAPPINGS).filter((badge) => {
       const details = BADGE_DETAILS[badge.id];
       return (
         badge.name.toLowerCase().includes(query) ||
@@ -61,7 +55,7 @@ export default function BadgesPage() {
   }, [searchQuery]);
 
   return (
-    <div className="min-h-dvh bg-off-white">
+    <div className="min-h-dvh bg-off-white font-urbanist">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background Gradient */}
@@ -86,7 +80,6 @@ export default function BadgesPage() {
                 }
               }}
               className="inline-flex items-center gap-2 text-charcoal/70 hover:text-charcoal transition-colors mb-8 group"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span className="text-sm font-medium">back</span>
@@ -102,10 +95,7 @@ export default function BadgesPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-sage/20 shadow-sm mb-6"
             >
               <Sparkles className="w-4 h-4 text-sage" />
-              <span
-                className="text-sm font-medium text-charcoal"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
+              <span className="text-sm font-medium text-charcoal">
                 {Object.keys(BADGE_MAPPINGS).length} Badges to Collect
               </span>
             </m.div>
@@ -115,9 +105,9 @@ export default function BadgesPage() {
               animate={isDesktop ? { opacity: 1, y: 0 } : undefined}
               transition={isDesktop ? { duration: 0.6, delay: 0.2 } : undefined}
               className="text-4xl sm:text-5xl md:text-6xl font-bold text-charcoal mb-6 leading-tight"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             >
-              Earn Badges.<br />
+              Earn Badges.
+              <br />
               <span className="text-sage">Show Your Expertise.</span>
             </m.h1>
 
@@ -126,9 +116,10 @@ export default function BadgesPage() {
               animate={isDesktop ? { opacity: 1, y: 0 } : undefined}
               transition={isDesktop ? { duration: 0.6, delay: 0.3 } : undefined}
               className="text-lg sm:text-xl text-charcoal/70 mb-8 leading-relaxed"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             >
-              Every review, photo, and helpful action earns you recognition. Collect badges that showcase your unique journey and expertise across Cape Town&apos;s best local businesses.
+              Every review, photo, and helpful action earns you recognition. Collect badges that
+              showcase your unique journey and expertise across Cape Town&apos;s best local
+              businesses.
             </m.p>
 
             {/* Search */}
@@ -145,7 +136,6 @@ export default function BadgesPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-10 py-3.5 rounded-full bg-white border border-charcoal/10 shadow-sm focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage/50 transition-all text-charcoal placeholder:text-charcoal/40"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
               />
               {searchQuery && (
                 <button
@@ -183,12 +173,7 @@ export default function BadgesPage() {
                     transition={isDesktop ? { delay: 0.6 + i * 0.1 } : undefined}
                     className="w-16 h-16 relative"
                   >
-                    <Image
-                      src={src}
-                      alt=""
-                      fill
-                      className="object-contain"
-                    />
+                    <Image src={src} alt="" fill className="object-contain" />
                   </m.div>
                 ))}
               </div>
@@ -203,16 +188,12 @@ export default function BadgesPage() {
         {filteredBadges ? (
           <section className="mb-16">
             <div className="flex items-center justify-between mb-8">
-              <h2
-                className="text-xl sm:text-2xl font-semibold text-charcoal"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
-                {filteredBadges.length} {filteredBadges.length === 1 ? 'badge' : 'badges'} found
+              <h2 className="text-xl sm:text-2xl font-semibold text-charcoal">
+                {filteredBadges.length} {filteredBadges.length === 1 ? "badge" : "badges"} found
               </h2>
               <button
                 onClick={() => setSearchQuery("")}
                 className="text-sm text-sage hover:text-sage/80 font-medium transition-colors"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
               >
                 Clear search
               </button>
@@ -238,7 +219,7 @@ export default function BadgesPage() {
               )
             ) : (
               <div className="text-center py-16">
-                <p className="text-charcoal/60" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                <p className="text-charcoal/60">
                   No badges match your search. Try a different term.
                 </p>
               </div>
@@ -270,22 +251,16 @@ export default function BadgesPage() {
 
           <div className="relative z-10">
             <Star className="w-12 h-12 text-white/80 mx-auto mb-6" />
-            <h2
-              className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Start Collecting?
             </h2>
-            <p
-              className="text-lg text-white/80 mb-8 max-w-xl mx-auto"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
-              Every badge tells a story. Begin your journey by sharing your experiences at local businesses.
+            <p className="text-lg text-white/80 mb-8 max-w-xl mx-auto">
+              Every badge tells a story. Begin your journey by sharing your experiences at local
+              businesses.
             </p>
             <Link
               href={discoverBusinessesHref}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-sage font-semibold hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             >
               <span>Discover Businesses</span>
               <Sparkles className="w-5 h-5" />

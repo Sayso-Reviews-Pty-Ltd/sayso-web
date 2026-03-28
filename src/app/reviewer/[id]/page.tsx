@@ -204,12 +204,7 @@ export default function ReviewerProfilePage() {
             "calt" 1;
         }
       `}</style>
-      <div
-        className="min-h-dvh bg-gradient-to-br from-off-white via-off-white/98 to-sage/5 relative overflow-hidden font-urbanist"
-        style={{
-          fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        }}
-      >
+      <div className="min-h-dvh bg-gradient-to-br from-off-white via-off-white/98 to-sage/5 relative overflow-hidden font-urbanist">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
@@ -291,11 +286,7 @@ export default function ReviewerProfilePage() {
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <h2
                                 id="profile-heading"
-                                className="text-h1 sm:text-hero font-semibold text-charcoal"
-                                style={{
-                                  fontFamily: "Urbanist, system-ui, sans-serif",
-                                  letterSpacing: "-0.02em",
-                                }}
+                                className="text-h1 sm:text-hero font-semibold text-charcoal tracking-tight"
                               >
                                 {reviewer.name}
                                 {isRealtimeConnected && (
@@ -323,13 +314,7 @@ export default function ReviewerProfilePage() {
                                 </div>
                               )}
                             </div>
-                            <div
-                              className="flex items-center gap-3 mb-4 text-sm text-charcoal/70 flex-wrap"
-                              style={{
-                                fontFamily:
-                                  "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              }}
-                            >
+                            <div className="flex items-center gap-3 mb-4 text-sm text-charcoal/70 flex-wrap">
                               <div className="flex items-center gap-1.5">
                                 <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                                   <MapPin className="w-3 h-3 text-charcoal/85" />
@@ -346,24 +331,11 @@ export default function ReviewerProfilePage() {
                             <div className="flex items-center gap-6 mb-4 flex-wrap">
                               <div className="flex items-center gap-1">
                                 <Star className="w-5 h-5 fill-coral text-coral" />
-                                <span
-                                  className="text-lg font-bold text-charcoal"
-                                  style={{
-                                    fontFamily:
-                                      "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                    fontWeight: 700,
-                                  }}
-                                >
+                                <span className="text-lg font-bold text-charcoal">
                                   {reviewer.averageRating.toFixed(1)}
                                 </span>
                               </div>
-                              <div
-                                className="text-sm text-charcoal/70"
-                                style={{
-                                  fontFamily:
-                                    "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                }}
-                              >
+                              <div className="text-sm text-charcoal/70">
                                 {reviewer.reviewCount} reviews
                               </div>
                             </div>
@@ -383,24 +355,9 @@ export default function ReviewerProfilePage() {
                         <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                           <ThumbsUp className="w-4 h-4 text-charcoal/85" />
                         </span>
-                        <span
-                          className="text-sm text-charcoal/70"
-                          style={{
-                            fontFamily:
-                              "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          Helpful
-                        </span>
+                        <span className="text-sm text-charcoal/70">Helpful</span>
                       </div>
-                      <div
-                        className="text-2xl font-bold text-charcoal"
-                        style={{
-                          fontFamily:
-                            "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-charcoal">
                         {reviewer.helpfulVotes.toLocaleString("en-US")}
                       </div>
                     </div>
@@ -409,24 +366,9 @@ export default function ReviewerProfilePage() {
                         <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                           <Award className="w-4 h-4 text-charcoal/85" />
                         </span>
-                        <span
-                          className="text-sm text-charcoal/70"
-                          style={{
-                            fontFamily:
-                              "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          Badges
-                        </span>
+                        <span className="text-sm text-charcoal/70">Badges</span>
                       </div>
-                      <div
-                        className="text-2xl font-bold text-charcoal"
-                        style={{
-                          fontFamily:
-                            "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-charcoal">
                         {reviewer.badgesCount.toLocaleString("en-US")}
                       </div>
                     </div>
@@ -435,24 +377,9 @@ export default function ReviewerProfilePage() {
                         <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                           <TrendingUp className="w-4 h-4 text-charcoal/85" />
                         </span>
-                        <span
-                          className="text-sm text-charcoal/70"
-                          style={{
-                            fontFamily:
-                              "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          Impact
-                        </span>
+                        <span className="text-sm text-charcoal/70">Impact</span>
                       </div>
-                      <div
-                        className="text-2xl font-bold text-charcoal"
-                        style={{
-                          fontFamily:
-                            "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-charcoal">
                         {reviewer.impactScore.toLocaleString("en-US")}
                       </div>
                     </div>
@@ -461,24 +388,9 @@ export default function ReviewerProfilePage() {
                         <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                           <TrendingUp className="w-4 h-4 text-charcoal/85" />
                         </span>
-                        <span
-                          className="text-sm text-charcoal/70"
-                          style={{
-                            fontFamily:
-                              "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          Rating
-                        </span>
+                        <span className="text-sm text-charcoal/70">Rating</span>
                       </div>
-                      <div
-                        className="text-2xl font-bold text-charcoal"
-                        style={{
-                          fontFamily:
-                            "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-charcoal">
                         {reviewer.averageRating.toFixed(1)}
                       </div>
                     </div>
@@ -490,14 +402,7 @@ export default function ReviewerProfilePage() {
                       className="bg-gradient-to-br bg-card-bg backdrop-blur-xl   rounded-[12px] shadow-2xl p-8 sm:p-10 animate-fade-in-up hover:shadow-2xl transition-all duration-500"
                       aria-label="Reviewer badges"
                     >
-                      <h3
-                        className="text-lg font-bold text-charcoal mb-4"
-                        style={{
-                          fontFamily:
-                            "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <h3 className="text-lg font-bold text-charcoal mb-4">
                         Badges & Achievements ({reviewer.badges?.length || 0})
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -519,36 +424,15 @@ export default function ReviewerProfilePage() {
                                     />
                                   </div>
                                   <div>
-                                    <div
-                                      className="text-sm font-bold text-charcoal"
-                                      style={{
-                                        fontFamily:
-                                          "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                        fontWeight: 700,
-                                      }}
-                                    >
+                                    <div className="text-sm font-bold text-charcoal">
                                       {badge.name}
                                     </div>
-                                    <div
-                                      className="text-xs text-charcoal/60"
-                                      style={{
-                                        fontFamily:
-                                          "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                      }}
-                                    >
+                                    <div className="text-xs text-charcoal/60">
                                       Earned {badge.earnedDate}
                                     </div>
                                   </div>
                                 </div>
-                                <p
-                                  className="text-xs text-charcoal/70"
-                                  style={{
-                                    fontFamily:
-                                      "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                  }}
-                                >
-                                  {badge.description}
-                                </p>
+                                <p className="text-xs text-charcoal/70">{badge.description}</p>
                               </div>
                             </GoldBanner>
                           </div>

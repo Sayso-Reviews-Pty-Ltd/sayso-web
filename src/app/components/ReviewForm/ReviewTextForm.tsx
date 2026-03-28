@@ -56,15 +56,12 @@ export default function ReviewTextForm({
   const isNearLimit = charCount > 4500;
 
   return (
-    <div className="mb-6 space-y-4">
+    <div className="mb-6 space-y-4 font-urbanist">
       {/* Review Title */}
       <div>
         <div className="flex items-center gap-2 mb-2 px-1">
           <Type className="w-4 h-4 text-charcoal/60" />
-          <label
-            className="text-base font-semibold text-charcoal"
-            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
-          >
+          <label className="text-base font-semibold text-charcoal">
             Title
             <span className="ml-1 text-sm font-normal text-charcoal/40">(optional)</span>
           </label>
@@ -98,7 +95,6 @@ export default function ReviewTextForm({
                   : "border-white/60 hover:border-white/80"
               }
             `}
-            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           />
         </m.div>
       </div>
@@ -108,12 +104,7 @@ export default function ReviewTextForm({
         <div className="flex items-center justify-between mb-2 px-1">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-charcoal/60" />
-            <label
-              className="text-base font-semibold text-charcoal"
-              style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
-            >
-              Your review
-            </label>
+            <label className="text-base font-semibold text-charcoal">Your review</label>
           </div>
 
           {/* Character counter */}
@@ -126,7 +117,6 @@ export default function ReviewTextForm({
                   : "rgba(45,52,54,0.6)",
             }}
             className="text-sm font-medium"
-            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           >
             {charCount}/{maxChars}
           </m.span>
@@ -171,7 +161,6 @@ export default function ReviewTextForm({
                   : "border-white/60 hover:border-white/80"
               }
             `}
-            style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
           />
 
           {/* Smart writing prompt */}
@@ -186,10 +175,7 @@ export default function ReviewTextForm({
                 className="absolute bottom-4 left-4 right-4 flex items-center gap-2 pointer-events-none"
               >
                 <Lightbulb className="w-4 h-4 text-coral/60 flex-shrink-0" />
-                <span
-                  className="text-sm text-charcoal/60"
-                  style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
-                >
+                <span className="text-sm text-charcoal/60">
                   Tip: {writingPrompts[currentPrompt]}
                 </span>
               </m.div>
@@ -205,7 +191,6 @@ export default function ReviewTextForm({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="mt-2 px-1 text-sm text-coral/80"
-              style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
             >
               {minChars - charCount} more character{minChars - charCount !== 1 ? "s" : ""} needed
             </m.p>

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { m, AnimatePresence } from 'framer-motion';
+import { useState } from "react";
+import { m, AnimatePresence } from "framer-motion";
 import { Edit, Trash2, Send } from "@/app/lib/icons";
-import type { AuthUser } from '../../lib/types/database';
-import { useReviewReplies } from '../../hooks/useReviewReplies';
-import { ConfirmationDialog } from '@/app/components/molecules/ConfirmationDialog/ConfirmationDialog';
-import { isOptimisticId, isValidUUID } from '../../lib/utils/validation';
+import type { AuthUser } from "../../lib/types/database";
+import { useReviewReplies } from "../../hooks/useReviewReplies";
+import { ConfirmationDialog } from "@/app/components/molecules/ConfirmationDialog/ConfirmationDialog";
+import { isOptimisticId, isValidUUID } from "../../lib/utils/validation";
 
 interface ReviewRepliesProps {
   reviewId: string;
@@ -27,15 +27,20 @@ export function ReviewReplies({
   showReplyForm,
   onCloseReplyForm,
 }: ReviewRepliesProps) {
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [editReplyText, setEditReplyText] = useState('');
+  const [editReplyText, setEditReplyText] = useState("");
   const [deletingReplyId, setDeletingReplyId] = useState<string | null>(null);
   const [showDeleteReplyDialog, setShowDeleteReplyDialog] = useState(false);
   const [replyToDelete, setReplyToDelete] = useState<string | null>(null);
 
-  const { replies, addReply, updateReply, deleteReply: deleteReplyById } = useReviewReplies(reviewId);
+  const {
+    replies,
+    addReply,
+    updateReply,
+    deleteReply: deleteReplyById,
+  } = useReviewReplies(reviewId);
 
   const handleSubmitReply = async () => {
     if (!replyText.trim() || !user || submittingReply) return;
@@ -44,10 +49,10 @@ export function ReviewReplies({
     setSubmittingReply(true);
     const result = await addReply(replyText.trim());
     if (result) {
-      setReplyText('');
+      setReplyText("");
       onCloseReplyForm();
     } else {
-      alert('Failed to submit reply');
+      alert("Failed to submit reply");
     }
     setSubmittingReply(false);
   };
@@ -59,7 +64,7 @@ export function ReviewReplies({
 
   const handleCancelEdit = () => {
     setEditingReplyId(null);
-    setEditReplyText('');
+    setEditReplyText("");
   };
 
   const handleSaveEdit = async (replyId: string) => {
@@ -67,9 +72,9 @@ export function ReviewReplies({
     const success = await updateReply(replyId, editReplyText.trim());
     if (success) {
       setEditingReplyId(null);
-      setEditReplyText('');
+      setEditReplyText("");
     } else {
-      alert('Failed to update reply');
+      alert("Failed to update reply");
     }
   };
 
@@ -85,7 +90,7 @@ export function ReviewReplies({
     setReplyToDelete(null);
     setDeletingReplyId(replyId);
     const success = await deleteReplyById(replyId);
-    if (!success) alert('Failed to delete reply');
+    if (!success) alert("Failed to delete reply");
     setDeletingReplyId(null);
   };
 
@@ -108,12 +113,14 @@ export function ReviewReplies({
                 <m.button
                   whileHover={isDesktop ? undefined : { scale: 1.05 }}
                   whileTap={isDesktop ? undefined : { scale: 0.95 }}
-                  onClick={() => { onCloseReplyForm(); setReplyText(''); }}
+                  onClick={() => {
+                    onCloseReplyForm();
+                    setReplyText("");
+                  }}
                   className={`px-4 py-2 text-sm font-semibold bg-charcoal/10 text-charcoal rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isDesktop ? '' : 'hover:bg-charcoal/20 transition-colors'
+                    isDesktop ? "" : "hover:bg-charcoal/20 transition-colors"
                   }`}
                   disabled={submittingReply}
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                 >
                   Cancel
                 </m.button>
@@ -123,12 +130,11 @@ export function ReviewReplies({
                   onClick={handleSubmitReply}
                   disabled={!replyText.trim() || submittingReply}
                   className={`px-4 py-2 text-sm font-semibold bg-card-bg text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
-                    isDesktop ? '' : 'hover:bg-card-bg/90 transition-colors'
+                    isDesktop ? "" : "hover:bg-card-bg/90 transition-colors"
                   }`}
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                 >
                   <Send size={16} />
-                  <span>{submittingReply ? 'Sending...' : 'Save Reply'}</span>
+                  <span>{submittingReply ? "Sending..." : "Save Reply"}</span>
                 </m.button>
               </div>
             </div>
@@ -139,16 +145,13 @@ export function ReviewReplies({
       {/* Replies List */}
       {replies.length > 0 && (
         <div className="mt-4 pt-4 border-t border-sage/10 space-y-3">
-          <h5
-            className="font-urbanist text-sm font-semibold text-charcoal/70 mb-3"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
-            {replies.length === 1 ? '1 Reply' : `${replies.length} Replies`}
+          <h5 className="font-urbanist text-sm font-semibold text-charcoal/70 mb-3">
+            {replies.length === 1 ? "1 Reply" : `${replies.length} Replies`}
           </h5>
           {replies.map((reply) => {
             const isEditing = editingReplyId === reply.id;
             const isDeleting = deletingReplyId === reply.id;
-            const replyDisplayName = reply.user?.name || 'Anonymous';
+            const replyDisplayName = reply.user?.name || "Anonymous";
             const canEdit = !isEditing && (isOwnerView || reply.user_id === user?.id);
 
             const actionButtons = canEdit ? (
@@ -158,7 +161,7 @@ export function ReviewReplies({
                   whileTap={isDesktop ? undefined : { scale: 0.9 }}
                   onClick={() => handleEditReply(reply)}
                   className={`w-7 h-7 bg-card-bg rounded-full flex items-center justify-center ${
-                    isDesktop ? '' : 'hover:bg-card-bg/90 transition-colors'
+                    isDesktop ? "" : "hover:bg-card-bg/90 transition-colors"
                   }`}
                   aria-label="Edit reply"
                   title="Edit reply"
@@ -171,7 +174,7 @@ export function ReviewReplies({
                   onClick={() => handleDeleteReply(reply.id)}
                   disabled={isDeleting}
                   className={`w-7 h-7 bg-coral rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isDesktop ? '' : 'hover:bg-coral/90 transition-colors'
+                    isDesktop ? "" : "hover:bg-coral/90 transition-colors"
                   }`}
                   aria-label="Delete reply"
                   title="Delete reply"
@@ -188,7 +191,10 @@ export function ReviewReplies({
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-1">
                   <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-initial">
-                    <span className="font-urbanist text-sm font-semibold text-charcoal-700 truncate min-w-0" title={replyDisplayName}>
+                    <span
+                      className="font-urbanist text-sm font-semibold text-charcoal-700 truncate min-w-0"
+                      title={replyDisplayName}
+                    >
                       {replyDisplayName}
                     </span>
                     <span className="font-urbanist text-xs font-semibold text-charcoal/70 flex-shrink-0">
@@ -213,7 +219,7 @@ export function ReviewReplies({
                         whileTap={isDesktop ? undefined : { scale: 0.95 }}
                         onClick={handleCancelEdit}
                         className={`px-3 py-1.5 text-xs font-medium text-charcoal/70 ${
-                          isDesktop ? '' : 'hover:text-charcoal transition-colors'
+                          isDesktop ? "" : "hover:text-charcoal transition-colors"
                         }`}
                       >
                         Cancel
@@ -224,7 +230,7 @@ export function ReviewReplies({
                         onClick={() => handleSaveEdit(reply.id)}
                         disabled={!editReplyText.trim()}
                         className={`px-3 py-1.5 text-xs font-medium bg-navbar-bg text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ${
-                          isDesktop ? '' : 'hover:bg-navbar-bg/90 transition-colors'
+                          isDesktop ? "" : "hover:bg-navbar-bg/90 transition-colors"
                         }`}
                       >
                         Save
@@ -250,7 +256,10 @@ export function ReviewReplies({
 
       <ConfirmationDialog
         isOpen={showDeleteReplyDialog}
-        onClose={() => { setShowDeleteReplyDialog(false); setReplyToDelete(null); }}
+        onClose={() => {
+          setShowDeleteReplyDialog(false);
+          setReplyToDelete(null);
+        }}
         onConfirm={confirmDeleteReply}
         title="Delete Reply"
         message="Are you sure you want to delete this reply? This action cannot be undone."

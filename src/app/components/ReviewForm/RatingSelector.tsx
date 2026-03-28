@@ -24,15 +24,10 @@ export default function RatingSelector({ overallRating, onRatingChange }: Rating
   const gradientId = `goldStarRating-${useId().replace(/:/g, "")}`;
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 font-urbanist">
       {/* Header with smart feedback */}
       <div className="flex flex-col items-center gap-2 mb-4">
-        <h3
-          className="text-base font-semibold text-charcoal"
-          style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-        >
-          How was your experience?
-        </h3>
+        <h3 className="text-base font-semibold text-charcoal">How was your experience?</h3>
 
         {/* Smart rating feedback */}
         <AnimatePresence mode="wait">
@@ -46,19 +41,13 @@ export default function RatingSelector({ overallRating, onRatingChange }: Rating
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-charcoal/10 backdrop-blur-sm ${currentLabel.color}`}
             >
               <span className="text-lg">{currentLabel.emoji}</span>
-              <span
-                className="text-base font-bold"
-                style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-              >
-                {currentLabel.text}
-              </span>
+              <span className="text-base font-bold">{currentLabel.text}</span>
             </m.div>
           ) : (
             <m.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-sm text-charcoal/60"
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
             >
               Tap a star to rate
             </m.p>
@@ -94,7 +83,7 @@ export default function RatingSelector({ overallRating, onRatingChange }: Rating
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.95 }}
               className="relative p-2 sm:p-3 focus:outline-none rounded-full transition-colors duration-200 touch-manipulation"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: "transparent" }}
               aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
             >
               {/* Glow effect for selected stars */}
@@ -114,7 +103,7 @@ export default function RatingSelector({ overallRating, onRatingChange }: Rating
                 }}
                 transition={{
                   scale: { duration: 0.2 },
-                  rotate: { duration: 0.3, delay: 0.1 }
+                  rotate: { duration: 0.3, delay: 0.1 },
                 }}
               >
                 <svg

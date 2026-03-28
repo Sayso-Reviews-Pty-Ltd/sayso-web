@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { Check, Copy } from "@/app/lib/icons";
-import { useReverseGeocode } from '../../hooks/useReverseGeocode';
+import { useReverseGeocode } from "../../hooks/useReverseGeocode";
 
 interface AddressPillProps {
   address?: string | null;
@@ -24,7 +24,7 @@ export default function AddressPill({
   latitude,
   longitude,
   isUserUploaded = false,
-  className = '',
+  className = "",
 }: AddressPillProps) {
   const [copied, setCopied] = useState(false);
 
@@ -32,14 +32,15 @@ export default function AddressPill({
   const shouldGeocode = !isUserUploaded && !address && !!latitude && !!longitude;
   const { address: geocodedAddress, isLoading } = useReverseGeocode(
     shouldGeocode ? latitude : null,
-    shouldGeocode ? longitude : null,
+    shouldGeocode ? longitude : null
   );
 
   // Determine what to display
   const displayAddress =
     isUserUploaded || address
       ? address || null
-      : geocodedAddress ?? (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : null);
+      : (geocodedAddress ??
+        (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : null));
 
   const handleCopy = async () => {
     if (!displayAddress) return;
@@ -49,7 +50,7 @@ export default function AddressPill({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('[AddressPill] Copy failed:', error);
+      console.error("[AddressPill] Copy failed:", error);
     }
   };
 
@@ -71,14 +72,11 @@ export default function AddressPill({
         select-text cursor-pointer
         ${className}
       `}
-      title={displayAddress || 'Copy address'}
+      title={displayAddress || "Copy address"}
       aria-label="Copy address"
-      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
     >
       {/* Address Text */}
-      <span className="truncate max-w-[300px]">
-        {isLoading ? '...' : displayAddress}
-      </span>
+      <span className="truncate max-w-[300px]">{isLoading ? "..." : displayAddress}</span>
 
       {/* Copy Icon */}
       {!isLoading && (
@@ -86,7 +84,10 @@ export default function AddressPill({
           {copied ? (
             <Check className="w-3.5 h-3.5 text-sage" strokeWidth={3} />
           ) : (
-            <Copy className="w-3.5 h-3.5 text-charcoal/40 group-hover:text-charcoal/60" strokeWidth={2} />
+            <Copy
+              className="w-3.5 h-3.5 text-charcoal/40 group-hover:text-charcoal/60"
+              strokeWidth={2}
+            />
           )}
         </span>
       )}

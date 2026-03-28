@@ -134,10 +134,6 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
               <BusinessNameComponent
                 href={businessLink}
                 className={`text-lg font-semibold text-charcoal ${businessId ? "hover:text-coral transition-colors cursor-pointer" : ""} truncate`}
-                style={{
-                  fontFamily:
-                    '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                }}
               >
                 {businessName}
               </BusinessNameComponent>
@@ -197,22 +193,10 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
           {" "}
           {/* Align with content below business thumb */}
           {reviewTitle && (
-            <h4
-              className="text-base font-semibold text-charcoal mb-1"
-              style={{
-                fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              }}
-            >
-              {reviewTitle}
-            </h4>
+            <h4 className="text-base font-semibold text-charcoal mb-1">{reviewTitle}</h4>
           )}
           {reviewText && (
-            <p
-              className="text-sm text-charcoal/80 leading-relaxed mb-2"
-              style={{
-                fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              }}
-            >
+            <p className="text-sm text-charcoal/80 leading-relaxed mb-2">
               {truncateText(reviewText)}
             </p>
           )}

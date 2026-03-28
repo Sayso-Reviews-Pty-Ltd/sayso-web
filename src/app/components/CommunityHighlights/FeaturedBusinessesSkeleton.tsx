@@ -10,12 +10,9 @@ interface FeaturedBusinessesSkeletonProps {
 export default function FeaturedBusinessesSkeleton({ count = 4 }: FeaturedBusinessesSkeletonProps) {
   return (
     <section
-      className="relative m-0 p-0 w-full mt-3 list-none"
+      className="relative m-0 p-0 w-full mt-3 list-none font-urbanist"
       aria-label="Featured Businesses loading"
       aria-busy="true"
-      style={{
-        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
     >
       <div className="mx-auto w-full max-w-[2000px] relative z-10">
         {/* Header Skeleton */}

@@ -32,7 +32,8 @@ export const COPY: Record<
     heroSubtitle: "Publish a business-linked event or a community-hosted event",
     submitLabel: "Publish Event",
     successLabel: "Event published successfully",
-    emptyBusinessesCopy: "No linked businesses found. You can still publish a community-hosted event.",
+    emptyBusinessesCopy:
+      "No linked businesses found. You can still publish a community-hosted event.",
   },
   special: {
     pageTitle: "Add Special",
@@ -44,18 +45,14 @@ export const COPY: Record<
   },
 };
 
-export const fontStyle = {
-  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-};
-
 export const sectionClassName =
-  "relative bg-white rounded-[12px] overflow-hidden border border-charcoal/10 shadow-md px-4 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12";
+  "relative bg-white rounded-[12px] overflow-hidden border border-charcoal/10 shadow-md px-4 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12 font-urbanist";
 
 export const inputClassName =
-  "w-full bg-white border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full border-charcoal/15 focus:ring-navbar-bg/30 focus:border-navbar-bg";
+  "w-full bg-white border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold font-urbanist text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full border-charcoal/15 focus:ring-navbar-bg/30 focus:border-navbar-bg";
 
 export const textareaClassName =
-  "w-full bg-white border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-[12px] border-charcoal/15 focus:ring-navbar-bg/30 focus:border-navbar-bg resize-none";
+  "w-full bg-white border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold font-urbanist text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-[12px] border-charcoal/15 focus:ring-navbar-bg/30 focus:border-navbar-bg resize-none";
 
 export const ICON_CHIP_CLASS =
   "grid h-10 w-10 place-items-center rounded-full bg-off-white/70 text-charcoal/85 transition-colors duration-200 hover:bg-off-white/90";

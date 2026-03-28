@@ -19,7 +19,7 @@ const BusinessCardReviews: React.FC<BusinessCardReviewsProps> = ({
   onWriteReview,
   compact = false,
 }) => (
-  <div className="flex flex-col items-center gap-1 mb-0.5">
+  <div className="flex flex-col items-center gap-1 mb-0.5 font-urbanist">
     <div className="inline-flex items-center justify-center gap-1 min-h-[12px]">
       {hasRating && displayRating !== undefined ? (
         <>
@@ -29,7 +29,6 @@ const BusinessCardReviews: React.FC<BusinessCardReviewsProps> = ({
             onClick={onCardClick}
             onKeyDown={onCardClick}
             className="inline-flex items-center justify-center text-body-sm sm:text-base font-bold leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 700 }}
           >
             {reviews}
           </span>
@@ -38,8 +37,7 @@ const BusinessCardReviews: React.FC<BusinessCardReviewsProps> = ({
             tabIndex={0}
             onClick={onCardClick}
             onKeyDown={onCardClick}
-            className="inline-flex items-center justify-center text-sm leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
+            className="inline-flex items-center justify-center text-sm font-normal leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
           >
             Reviews
           </span>
@@ -50,12 +48,11 @@ const BusinessCardReviews: React.FC<BusinessCardReviewsProps> = ({
           tabIndex={hasReviewed ? -1 : 0}
           onClick={onWriteReview}
           onKeyDown={onWriteReview}
-          className={`inline-flex items-center justify-center text-sm font-normal underline-offset-2 min-w-[92px] text-center transition-colors duration-200 ${hasReviewed ? 'text-charcoal/70 cursor-not-allowed' : 'text-charcoal cursor-pointer hover:text-coral'} ${compact ? 'lg:order-1 lg:mb-1' : ''}`}
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
+          className={`inline-flex items-center justify-center text-sm font-normal underline-offset-2 min-w-[92px] text-center transition-colors duration-200 ${hasReviewed ? "text-charcoal/70 cursor-not-allowed" : "text-charcoal cursor-pointer hover:text-coral"} ${compact ? "lg:order-1 lg:mb-1" : ""}`}
           aria-disabled={hasReviewed}
-          title={hasReviewed ? 'You have already reviewed this business' : 'Be the first to review'}
+          title={hasReviewed ? "You have already reviewed this business" : "Be the first to review"}
         >
-          {hasReviewed ? 'Already reviewed' : 'Be the first to review'}
+          {hasReviewed ? "Already reviewed" : "Be the first to review"}
         </span>
       )}
     </div>

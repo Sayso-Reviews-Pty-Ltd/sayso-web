@@ -79,7 +79,9 @@ export default function BusinessHeroImage({
     const onSelect = () => setCurrentIndex(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
-    return () => { emblaApi.off("select", onSelect); };
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
   }, [emblaApi]);
 
   // Clamp index when failedUrls removes a slide
@@ -102,11 +104,7 @@ export default function BusinessHeroImage({
       className="relative w-full h-[50vh] sm:h-auto sm:aspect-[16/9] lg:aspect-[21/9] rounded-none overflow-hidden"
     >
       {hasImage ? (
-        <Carousel
-          setApi={setEmblaApi}
-          opts={{ loop: true }}
-          className="w-full h-full"
-        >
+        <Carousel setApi={setEmblaApi} opts={{ loop: true }} className="w-full h-full">
           <CarouselContent>
             {validImages.map((src, i) => (
               <CarouselItem key={src}>
@@ -155,7 +153,9 @@ export default function BusinessHeroImage({
                     type="button"
                     onClick={() => emblaApi?.scrollTo(i)}
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      i === currentIndex ? "w-8 bg-white shadow-md" : "w-2 bg-white/60 hover:bg-white/80"
+                      i === currentIndex
+                        ? "w-8 bg-white shadow-md"
+                        : "w-2 bg-white/60 hover:bg-white/80"
                     }`}
                     aria-label={`Go to image ${i + 1}`}
                   />
@@ -164,10 +164,7 @@ export default function BusinessHeroImage({
 
               {/* Image counter */}
               <div className="absolute bottom-6 right-6 z-30 px-3 py-1.5 rounded-full bg-charcoal/80 backdrop-blur-xl">
-                <span
-                  className="text-sm font-semibold text-white"
-                  style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-                >
+                <span className="text-sm font-semibold text-white">
                   {currentIndex + 1} / {totalImages}
                 </span>
               </div>
@@ -191,10 +188,7 @@ export default function BusinessHeroImage({
       {/* Verified Badge */}
       {verified && (
         <div className="absolute top-6 left-6 z-20">
-          <span
-            className="px-4 py-2 rounded-full text-body-sm font-600 backdrop-blur-xl border bg-card-bg/90 text-white border-sage/50"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-          >
+          <span className="px-4 py-2 rounded-full text-body-sm font-600 backdrop-blur-xl border bg-card-bg/90 text-white border-sage/50">
             Verified
           </span>
         </div>
@@ -203,10 +197,7 @@ export default function BusinessHeroImage({
       {/* Rating Badge */}
       <div className="absolute top-6 right-6 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal border-none">
         <GoldStar size={14} className="w-3.5 h-3.5" />
-        <span
-          className="text-body-sm font-semibold text-charcoal"
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
-        >
+        <span className="text-body-sm font-semibold text-charcoal">
           {Number(rating).toFixed(1)}
         </span>
       </div>

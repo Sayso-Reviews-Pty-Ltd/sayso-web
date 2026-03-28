@@ -24,18 +24,13 @@ export default function OnboardingButton({
   variant = "continue",
   text,
 }: OnboardingButtonProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 600,
-  };
-
   const isProcessing = isNavigating || isLoading;
 
   const getButtonText = () => {
     if (isProcessing) {
       return variant === "complete" ? "Completing..." : "Loading...";
     }
-    
+
     if (text) {
       return text;
     }
@@ -50,29 +45,29 @@ export default function OnboardingButton({
   const getButtonColor = () => {
     if (variant === "complete") {
       return canProceed
-        ? 'bg-gradient-to-r from-sage to-sage/80 text-white hover:from-sage/90 hover:to-sage'
-        : 'bg-charcoal/10 text-charcoal/60 cursor-not-allowed';
+        ? "bg-gradient-to-r from-sage to-sage/80 text-white hover:from-sage/90 hover:to-sage"
+        : "bg-charcoal/10 text-charcoal/60 cursor-not-allowed";
     }
-    
+
     // Continue button matches EventCard "Learn more" styling
     return canProceed
-      ? 'bg-navbar-bg/90 text-off-white border border-navbar-bg/70 shadow-sm hover:bg-navbar-bg'
-      : 'bg-charcoal/10 text-charcoal/60 border border-charcoal/20 cursor-not-allowed shadow-none';
+      ? "bg-navbar-bg/90 text-off-white border border-navbar-bg/70 shadow-sm hover:bg-navbar-bg"
+      : "bg-charcoal/10 text-charcoal/60 border border-charcoal/20 cursor-not-allowed shadow-none";
   };
 
   const handleClick = () => {
-    console.log('[OnboardingButton] Button clicked', {
+    console.log("[OnboardingButton] Button clicked", {
       canProceed,
       isProcessing,
       disabled: !canProceed || isProcessing,
-      variant
+      variant,
     });
     if (canProceed && !isProcessing) {
       onClick();
     } else {
-      console.warn('[OnboardingButton] Button click ignored - disabled:', {
+      console.warn("[OnboardingButton] Button click ignored - disabled:", {
         canProceed,
-        isProcessing
+        isProcessing,
       });
     }
   };
@@ -82,12 +77,11 @@ export default function OnboardingButton({
       type="button"
       className={cn(
         buttonVariants({ variant: "bare", size: "sm" }),
-        "w-full min-h-[44px] btn-target btn-press",
+        "w-full min-h-[44px] btn-target btn-press font-urbanist font-semibold",
         getButtonColor()
       )}
       onClick={handleClick}
       disabled={!canProceed || isProcessing}
-      style={sfPro}
       whileHover={canProceed && !isProcessing ? { scale: 1.02, y: -2 } : {}}
       whileTap={canProceed && !isProcessing ? { scale: 0.98 } : {}}
       animate={isProcessing ? { opacity: 0.9 } : { opacity: 1 }}
@@ -121,4 +115,3 @@ export default function OnboardingButton({
     </m.button>
   );
 }
-

@@ -87,8 +87,7 @@ export default function Header({
     isGuest: effectiveIsGuest,
   });
 
-  const isHomepageHeroOverlay =
-    isHomePage && searchController.urlSearchQuery.trim().length === 0;
+  const isHomepageHeroOverlay = isHomePage && searchController.urlSearchQuery.trim().length === 0;
   const [isHomepageAtTop, setIsHomepageAtTop] = useState(true);
 
   useEffect(() => {
@@ -182,7 +181,11 @@ export default function Header({
 
   return (
     <>
-      <header ref={headerRef} className={`${headerClassName} ${headerSurfaceClass}`} style={sf}>
+      <header
+        ref={headerRef}
+        className={`${headerClassName} ${headerSurfaceClass} font-urbanist`}
+        style={sf}
+      >
         <div
           className={`relative z-[1] w-full ${horizontalPaddingClass} flex items-center h-full ${wrapperSizeClass}`}
         >

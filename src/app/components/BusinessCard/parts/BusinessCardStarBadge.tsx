@@ -19,7 +19,7 @@ export default function BusinessCardStarBadge({
 }: BusinessCardStarBadgeProps) {
   const starGradientId = useMemo(() => {
     if (!displayRating) return null;
-    return displayRating > 4.0 ? 'Gold' : displayRating > 2.0 ? 'Bronze' : 'Low';
+    return displayRating > 4.0 ? "Gold" : displayRating > 2.0 ? "Bronze" : "Low";
   }, [displayRating]);
 
   const gradientSuffix = businessId ?? index;
@@ -39,7 +39,7 @@ export default function BusinessCardStarBadge({
           aria-hidden
         >
           <defs>
-            {starGradientId === 'Gold' && (
+            {starGradientId === "Gold" && (
               <linearGradient
                 id={`starGradient${starGradientId}-${gradientSuffix}`}
                 x1="0%"
@@ -47,11 +47,11 @@ export default function BusinessCardStarBadge({
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" style={{ stopColor: '#F5D547', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#E6A547', stopOpacity: 1 }} />
+                <stop offset="0%" style={{ stopColor: "#F5D547", stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: "#E6A547", stopOpacity: 1 }} />
               </linearGradient>
             )}
-            {starGradientId === 'Bronze' && (
+            {starGradientId === "Bronze" && (
               <linearGradient
                 id={`starGradient${starGradientId}-${gradientSuffix}`}
                 x1="0%"
@@ -59,11 +59,11 @@ export default function BusinessCardStarBadge({
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" style={{ stopColor: '#D4915C', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#8B6439', stopOpacity: 1 }} />
+                <stop offset="0%" style={{ stopColor: "#D4915C", stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: "#8B6439", stopOpacity: 1 }} />
               </linearGradient>
             )}
-            {starGradientId === 'Low' && (
+            {starGradientId === "Low" && (
               <linearGradient
                 id={`starGradient${starGradientId}-${gradientSuffix}`}
                 x1="0%"
@@ -71,8 +71,8 @@ export default function BusinessCardStarBadge({
                 x2="100%"
                 y2="100%"
               >
-                <stop offset="0%" style={{ stopColor: '#D66B6B', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#6B5C5C', stopOpacity: 1 }} />
+                <stop offset="0%" style={{ stopColor: "#D66B6B", stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: "#6B5C5C", stopOpacity: 1 }} />
               </linearGradient>
             )}
           </defs>
@@ -85,13 +85,7 @@ export default function BusinessCardStarBadge({
             strokeLinejoin="round"
           />
         </svg>
-        <span
-          className="text-sm font-semibold text-charcoal"
-          style={{
-            fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            fontWeight: 600,
-          }}
-        >
+        <span className="text-sm font-semibold text-charcoal">
           {Number(displayRating).toFixed(1)}
         </span>
       </div>
@@ -100,15 +94,7 @@ export default function BusinessCardStarBadge({
 
   return (
     <div className="absolute right-4 top-4 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal shadow-md">
-      <span
-        className="text-sm font-semibold text-charcoal"
-        style={{
-          fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-          fontWeight: 600,
-        }}
-      >
-        New
-      </span>
+      <span className="text-sm font-semibold text-charcoal">New</span>
     </div>
   );
 }

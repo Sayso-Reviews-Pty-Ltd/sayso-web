@@ -4,7 +4,11 @@ import type { CSSProperties, ChangeEvent, FormEvent, KeyboardEvent, RefObject } 
 import { SearchOutline, XOutline } from "@/app/lib/icons";
 import { AnimatePresence, m } from "framer-motion";
 
-import type { LiveSearchResult, EventSearchResult, SpecialSearchResult } from "../../hooks/useLiveSearch";
+import type {
+  LiveSearchResult,
+  EventSearchResult,
+  SpecialSearchResult,
+} from "../../hooks/useLiveSearch";
 import type { QuerySuggestion } from "../../hooks/useSearchSuggestions";
 import { Search } from "@/app/lib/icons";
 
@@ -175,7 +179,10 @@ function HeaderSuggestionsDropdown({
             ) : (
               suggestions.map((item, index) => {
                 const isActive = index === activeSuggestionIndex;
-                const label = (item as LiveSearchResult & { category_label?: string }).category_label ?? item.category ?? "";
+                const label =
+                  (item as LiveSearchResult & { category_label?: string }).category_label ??
+                  item.category ??
+                  "";
 
                 return (
                   <button
@@ -211,7 +218,10 @@ function HeaderSuggestionsDropdown({
           {eventResults.length > 0 && (
             <div className="border-t border-charcoal/6">
               <div className="px-4 pt-2.5 pb-1">
-                <span className="text-[11px] font-semibold text-charcoal/50 uppercase tracking-wide" style={sf}>
+                <span
+                  className="text-[11px] font-semibold text-charcoal/50 uppercase tracking-wide"
+                  style={sf}
+                >
                   Events
                 </span>
               </div>
@@ -232,7 +242,10 @@ function HeaderSuggestionsDropdown({
                         {item.location ? ` · ${item.location}` : ""}
                       </div>
                     </div>
-                    <span className="flex-shrink-0 text-[10px] font-medium text-charcoal/40 bg-charcoal/8 rounded-full px-2 py-0.5" style={sf}>
+                    <span
+                      className="flex-shrink-0 text-[10px] font-medium text-charcoal/40 bg-charcoal/8 rounded-full px-2 py-0.5"
+                      style={sf}
+                    >
                       Event
                     </span>
                   </button>
@@ -245,7 +258,10 @@ function HeaderSuggestionsDropdown({
           {specialResults.length > 0 && (
             <div className="border-t border-charcoal/6">
               <div className="px-4 pt-2.5 pb-1">
-                <span className="text-[11px] font-semibold text-charcoal/50 uppercase tracking-wide" style={sf}>
+                <span
+                  className="text-[11px] font-semibold text-charcoal/50 uppercase tracking-wide"
+                  style={sf}
+                >
                   Specials
                 </span>
               </div>
@@ -266,7 +282,10 @@ function HeaderSuggestionsDropdown({
                         {item.location ? ` · ${item.location}` : ""}
                       </div>
                     </div>
-                    <span className="flex-shrink-0 text-[10px] font-medium text-charcoal/40 bg-charcoal/8 rounded-full px-2 py-0.5" style={sf}>
+                    <span
+                      className="flex-shrink-0 text-[10px] font-medium text-charcoal/40 bg-charcoal/8 rounded-full px-2 py-0.5"
+                      style={sf}
+                    >
                       Special
                     </span>
                   </button>
@@ -310,7 +329,11 @@ export function DesktopHeaderSearch({
   onViewAll,
 }: DesktopHeaderSearchProps) {
   return (
-    <div ref={wrapperRef} className="relative h-10 flex justify-end shrink-0" style={{ width: expandedWidth }}>
+    <div
+      ref={wrapperRef}
+      className="relative h-10 flex justify-end shrink-0"
+      style={{ width: expandedWidth }}
+    >
       <m.form
         onSubmit={onSubmit}
         initial={false}
@@ -376,17 +399,14 @@ export function DesktopHeaderSearch({
                     }, 90);
                   }}
                   placeholder={headerPlaceholder}
-                  className={`h-10 rounded-full bg-off-white text-charcoal placeholder:text-charcoal/50
+                  className={`h-10 rounded-full bg-off-white font-urbanist text-charcoal placeholder:text-charcoal/50
                     border text-sm
                     focus:outline-none focus:bg-white focus:border-sage focus:ring-1 focus:ring-sage/30
                     hover:bg-white/90 transition-all duration-200
                     pl-9 pr-10
                     ${isSearchActive ? "border-sage bg-white" : "border-charcoal/10"}
                   `}
-                  style={{
-                    width: expandedWidth,
-                    fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
+                  style={{ width: expandedWidth }}
                   aria-label="Search businesses"
                   autoComplete="off"
                 />
@@ -520,7 +540,6 @@ export function MobileHeaderSearch({
               pl-12 pr-12 py-3
               ${isSearchActive ? "border-sage bg-white" : "border-charcoal/10"}
             `}
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
             aria-label="Search businesses"
             autoComplete="off"
           />

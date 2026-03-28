@@ -1,15 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import {
-  X,
-  Sliders,
-  Star,
-  Move,
-  Truck,
-  Navigation,
-  MapPin,
-} from "@/app/lib/icons";
+import { H2, H3 } from "@/app/components/ui/typography";
+import { X, Sliders, Star, Move, Truck, Navigation, MapPin } from "@/app/lib/icons";
 
 export interface FilterState {
   categories?: string[];
@@ -18,8 +11,8 @@ export interface FilterState {
 }
 
 interface FilterModalProps {
-  isOpen: boolean;          // controls enter/exit transition
-  isVisible: boolean;       // mount/unmount
+  isOpen: boolean; // controls enter/exit transition
+  isVisible: boolean; // mount/unmount
   onClose: () => void;
   /** Callback fired when modal closes with the current filter state */
   onFiltersChange?: (filters: FilterState) => void;
@@ -29,11 +22,6 @@ interface FilterModalProps {
   initialFilters?: FilterState;
 }
 
-const sf = {
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-} as const;
-
 export default function FilterModal({
   isOpen,
   isVisible,
@@ -42,8 +30,12 @@ export default function FilterModal({
   anchorRef,
   initialFilters,
 }: FilterModalProps) {
-  const [selectedRating, setSelectedRating] = useState<number | null>(initialFilters?.minRating || null);
-  const [selectedDistance, setSelectedDistance] = useState<string | null>(initialFilters?.distance || null);
+  const [selectedRating, setSelectedRating] = useState<number | null>(
+    initialFilters?.minRating || null
+  );
+  const [selectedDistance, setSelectedDistance] = useState<string | null>(
+    initialFilters?.distance || null
+  );
 
   // Track if user has made any changes in this session
   const hasChangesRef = useRef(false);
@@ -72,14 +64,14 @@ export default function FilterModal({
 
     const rect = anchor.getBoundingClientRect();
     const isMobile = window.innerWidth < 768; // Use md breakpoint (768px)
-    
+
     // On mobile, use negative gap to account for border and eliminate visual space
     const gap = isMobile ? -2 : 8; // Negative gap on mobile to overlap border, small gap on desktop
     const horizontalPadding = isMobile ? 16 : 16; // Consistent padding on both sides
 
     // Always use full device width minus padding
     const left = horizontalPadding;
-    const width = window.innerWidth - (horizontalPadding * 2);
+    const width = window.innerWidth - horizontalPadding * 2;
 
     // Place directly under the anchor (account for page scroll)
     const top = rect.bottom + gap;
@@ -114,7 +106,7 @@ export default function FilterModal({
         const scrollTop = window.scrollY + rect.top - 20; // 20px padding from top
         window.scrollTo({
           top: scrollTop,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       }
     }, 100);
@@ -131,15 +123,15 @@ export default function FilterModal({
     const originalPosition = document.body.style.position;
     const originalTop = document.body.style.top;
     const originalWidth = document.body.style.width;
-    
+
     // Get current scroll position
     const scrollY = window.scrollY;
 
     // Lock body scroll - prevent both scroll and touch scrolling
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
+    document.body.style.width = "100%";
 
     return () => {
       // Restore original styles
@@ -147,7 +139,7 @@ export default function FilterModal({
       document.body.style.position = originalPosition;
       document.body.style.top = originalTop;
       document.body.style.width = originalWidth;
-      
+
       // Restore scroll position
       window.scrollTo(0, scrollY);
     };
@@ -216,11 +208,7 @@ export default function FilterModal({
   ];
 
   return (
-    <div
-      className="fixed inset-0 z-[500] pointer-events-none"
-      aria-hidden={!isOpen}
-      style={sf}
-    >
+    <div className="fixed inset-0 z-[500] pointer-events-none font-urbanist" aria-hidden={!isOpen}>
       {/* Anchored panel */}
       <div
         ref={panelRef}
@@ -238,12 +226,12 @@ export default function FilterModal({
           position: "fixed",
           top: style.top,
           left: style.left,
-          width: style.width || (typeof window !== 'undefined' ? `calc(100vw - 32px)` : 400),
+          width: style.width || (typeof window !== "undefined" ? `calc(100vw - 32px)` : 400),
           maxWidth: "calc(100vw - 32px)", // 16px padding on each side
           height: "50dvh",
           maxHeight: "50dvh",
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           outline: "none",
         }}
       >
@@ -251,12 +239,9 @@ export default function FilterModal({
         <div className="relative flex items-center justify-between px-4 sm:px-5 md:px-6 pt-4 pb-3 border-b border-white/30 bg-off-white shadow-sm transition-all duration-300 flex-shrink-0">
           <div className="relative z-10 flex items-center gap-2">
             <Sliders className="w-4 h-4 sm:w-4 sm:h-4 text-warning-600" />
-            <h2
-              className="text-base sm:text-sm font-semibold text-charcoal"
-              style={{ fontFamily: '"Urbanist", system-ui, sans-serif', letterSpacing: '-0.01em' }}
-            >
+            <H2 className="text-base sm:text-sm font-semibold text-charcoal tracking-tight">
               Filters
-            </h2>
+            </H2>
           </div>
           <button
             onClick={handleClose}
@@ -271,7 +256,7 @@ export default function FilterModal({
         <div
           className="px-4 sm:px-5 md:px-6 py-4 space-y-3 sm:space-y-4 overflow-y-auto overscroll-contain flex-1 min-h-0"
           style={{
-            WebkitOverflowScrolling: 'touch',
+            WebkitOverflowScrolling: "touch",
           }}
           onWheel={(e) => {
             // Prevent scroll propagation to body
@@ -284,13 +269,10 @@ export default function FilterModal({
         >
           {/* Rating */}
           <section className="rounded-[12px] bg-off-white/70 border border-charcoal/10 p-3 sm:p-4 animate-fade-in-up [animation-delay:0.05s]">
-            <h3
-              className="text-base sm:text-sm font-semibold text-charcoal mb-3 sm:mb-3 flex items-center gap-2"
-              style={{ fontFamily: '"Urbanist", system-ui, sans-serif', letterSpacing: '-0.01em' }}
-            >
+            <H3 className="text-base sm:text-sm font-semibold text-charcoal mb-3 sm:mb-3 flex items-center gap-2 tracking-tight">
               <Star className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-warning-600" />
               Minimum Rating
-            </h3>
+            </H3>
             <div className="flex flex-wrap gap-2 sm:gap-2">
               {[5, 4, 3, 2, 1].map((r) => {
                 const active = selectedRating === r;
@@ -311,7 +293,10 @@ export default function FilterModal({
                   >
                     <div className="flex">
                       {[...Array(r)].map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 sm:w-4 sm:h-4 ${active ? "text-white" : "text-sage"}`} />
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 sm:w-4 sm:h-4 ${active ? "text-white" : "text-sage"}`}
+                        />
                       ))}
                     </div>
                     <span>{r}+</span>
@@ -323,13 +308,10 @@ export default function FilterModal({
 
           {/* Distance */}
           <section className="rounded-[12px] bg-off-white/70 border border-charcoal/10 p-3 sm:p-4 animate-fade-in-up [animation-delay:0.1s]">
-            <h3
-              className="text-base sm:text-sm font-semibold text-charcoal mb-3 sm:mb-3 flex items-center gap-2"
-              style={{ fontFamily: '"Urbanist", system-ui, sans-serif', letterSpacing: '-0.01em' }}
-            >
+            <H3 className="text-base sm:text-sm font-semibold text-charcoal mb-3 sm:mb-3 flex items-center gap-2 tracking-tight">
               <MapPin className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-warning-600" />
               Distance
-            </h3>
+            </H3>
             <div className="flex flex-wrap gap-2 sm:gap-2">
               {distanceOptions.map(({ distance, Icon }) => {
                 const active = selectedDistance === distance;
@@ -347,7 +329,9 @@ export default function FilterModal({
                     focus:outline-none focus:ring-2 focus:ring-coral/30`}
                     aria-pressed={active}
                   >
-                    <Icon className={`w-4 h-4 sm:w-4 sm:h-4 flex-shrink-0 ${active ? "text-white" : "text-coral"}`} />
+                    <Icon
+                      className={`w-4 h-4 sm:w-4 sm:h-4 flex-shrink-0 ${active ? "text-white" : "text-coral"}`}
+                    />
                     <span>{distance}</span>
                   </button>
                 );

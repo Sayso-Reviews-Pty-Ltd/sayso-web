@@ -4,29 +4,29 @@ import Link from "next/link";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { useEffect } from "react";
 import { Loader } from "../Loader/Loader";
-import { 
-  Utensils, 
-  Sparkles, 
-  Home, 
+import {
+  Utensils,
+  Sparkles,
+  Home,
   Plane,
-  Mountain, 
-  Music, 
-  Palette, 
-  Heart, 
-  ShoppingBag 
+  Mountain,
+  Music,
+  Palette,
+  Heart,
+  ShoppingBag,
 } from "@/app/lib/icons";
 
 // Map interest IDs to Lucide React icons
 const INTEREST_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  'food-drink': Utensils,
-  'beauty-wellness': Sparkles,
-  'professional-services': Home,
+  "food-drink": Utensils,
+  "beauty-wellness": Sparkles,
+  "professional-services": Home,
   travel: Plane,
-  'outdoors-adventure': Mountain,
-  'experiences-entertainment': Music,
-  'arts-culture': Palette,
-  'family-pets': Heart,
-  'shopping-lifestyle': ShoppingBag,
+  "outdoors-adventure": Mountain,
+  "experiences-entertainment": Music,
+  "arts-culture": Palette,
+  "family-pets": Heart,
+  "shopping-lifestyle": ShoppingBag,
 };
 
 interface CategoryGridProps {
@@ -44,7 +44,7 @@ export default function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
 
   if (interests.length === 0) {
     return (
-      <div className="text-center py-12 text-charcoal/60" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+      <div className="text-center py-12 text-charcoal/60 font-urbanist">
         No categories available
       </div>
     );
@@ -58,7 +58,7 @@ export default function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
   };
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 font-urbanist">
       {interests.map((interest) => (
         <Link
           key={interest.id}
@@ -78,21 +78,13 @@ export default function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
                 <span className="text-2xl sm:text-3xl">📍</span>
               )}
             </div>
-            
-            <h3 
-              className="text-body font-semibold text-charcoal mb-2 group-hover:text-navbar-bg transition-colors duration-300"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
+
+            <h3 className="text-body font-semibold text-charcoal mb-2 group-hover:text-navbar-bg transition-colors duration-300">
               {interest.name}
             </h3>
-            
+
             {interest.description && (
-              <p 
-                className="text-body-sm text-charcoal/60 line-clamp-2"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
-                {interest.description}
-              </p>
+              <p className="text-body-sm text-charcoal/60 line-clamp-2">{interest.description}</p>
             )}
           </div>
         </Link>
@@ -100,4 +92,3 @@ export default function CategoryGrid({ onCategoryClick }: CategoryGridProps) {
     </div>
   );
 }
-

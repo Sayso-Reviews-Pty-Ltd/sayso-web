@@ -6,37 +6,37 @@ import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 
 // Map collection IDs to Lucide React icons
 const COLLECTION_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  'remote-work': Laptop,
-  'date-spots': Heart,
-  'budget-eats': DollarSign,
-  'late-night': Moon,
+  "remote-work": Laptop,
+  "date-spots": Heart,
+  "budget-eats": DollarSign,
+  "late-night": Moon,
 };
 
 // Editorial collections - can be made dynamic/curated later
 const COLLECTIONS = [
   {
-    id: 'remote-work',
-    title: 'Best places to work remotely',
-    description: 'Quiet cafes and co-working spaces',
-    count: 12
+    id: "remote-work",
+    title: "Best places to work remotely",
+    description: "Quiet cafes and co-working spaces",
+    count: 12,
   },
   {
-    id: 'date-spots',
-    title: 'Quiet date spots',
-    description: 'Romantic and intimate venues',
-    count: 8
+    id: "date-spots",
+    title: "Quiet date spots",
+    description: "Romantic and intimate venues",
+    count: 8,
   },
   {
-    id: 'budget-eats',
-    title: 'Budget-friendly eats',
-    description: 'Great food without breaking the bank',
-    count: 15
+    id: "budget-eats",
+    title: "Budget-friendly eats",
+    description: "Great food without breaking the bank",
+    count: 15,
   },
   {
-    id: 'late-night',
-    title: 'Late-night food',
-    description: 'Open after midnight',
-    count: 10
+    id: "late-night",
+    title: "Late-night food",
+    description: "Open after midnight",
+    count: 10,
   },
 ];
 
@@ -53,7 +53,7 @@ export default function Collections({ onCollectionClick }: CollectionsProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-urbanist">
       <div className="flex items-center justify-between">
         <WavyTypedTitle
           text="Curated Collections"
@@ -65,21 +65,16 @@ export default function Collections({ onCollectionClick }: CollectionsProps) {
           loopWave={true}
           enableScrollTrigger={true}
           disableWave={true}
-          style={{ 
-            fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            fontWeight: 700,
-          }}
         />
         <Link
           href="/explore/collections"
           className="text-body-sm text-sage hover:text-sage/80 font-semibold transition-colors flex items-center gap-1"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
         >
           See all
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {COLLECTIONS.map((collection) => (
           <Link
@@ -100,22 +95,12 @@ export default function Collections({ onCollectionClick }: CollectionsProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 
-                  className="text-body font-semibold text-charcoal mb-2 group-hover:text-navbar-bg transition-colors duration-300"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                >
+                <h3 className="text-body font-semibold text-charcoal mb-2 group-hover:text-navbar-bg transition-colors duration-300">
                   {collection.title}
                 </h3>
-                <p 
-                  className="text-body-sm text-charcoal/60 mb-3"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                >
-                  {collection.description}
-                </p>
+                <p className="text-body-sm text-charcoal/60 mb-3">{collection.description}</p>
                 <div className="flex items-center gap-2 text-caption text-charcoal/70">
-                  <span style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                    {collection.count} places
-                  </span>
+                  <span>{collection.count} places</span>
                 </div>
               </div>
             </div>
@@ -125,4 +110,3 @@ export default function Collections({ onCollectionClick }: CollectionsProps) {
     </div>
   );
 }
-

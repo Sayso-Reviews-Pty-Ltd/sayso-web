@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 import { Award, CheckCircle } from "@/app/lib/icons";
 
 export interface AchievementItemProps {
@@ -17,10 +17,10 @@ export const AchievementItem: React.FC<AchievementItemProps> = ({
   description,
   icon,
   earnedAt,
-  className = '',
+  className = "",
 }) => {
   // Check if icon is a PNG path (from badge system)
-  const isPngIcon = icon && icon.startsWith('/badges/');
+  const isPngIcon = icon && icon.startsWith("/badges/");
 
   return (
     <div
@@ -41,12 +41,10 @@ export const AchievementItem: React.FC<AchievementItemProps> = ({
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <span className="text-base font-600 text-charcoal" style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>{name}</span>
-        {description && (
-          <p className="text-sm text-charcoal/60 mt-0.5" style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}>{description}</p>
-        )}
+        <span className="text-base font-600 text-charcoal">{name}</span>
+        {description && <p className="text-sm text-charcoal/60 mt-0.5">{description}</p>}
         {earnedAt && (
-          <p className="text-xs text-sage mt-0.5" style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}>
+          <p className="text-xs text-sage mt-0.5">
             Earned {new Date(earnedAt).toLocaleDateString()}
           </p>
         )}

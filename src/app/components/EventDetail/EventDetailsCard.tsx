@@ -14,6 +14,7 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
   return (
     <Card asChild variant="detail" className="p-4 sm:p-6 relative overflow-hidden">
       <m.div
+        className="font-urbanist"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
@@ -23,14 +24,7 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg"></div>
 
         <div className="relative z-10">
-          <h2
-            className="text-h3 font-semibold text-charcoal mb-4"
-            style={{
-              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            }}
-          >
-            Event Details
-          </h2>
+          <h2 className="text-h3 font-semibold text-charcoal mb-4">Event Details</h2>
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2.5">
@@ -38,34 +32,12 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
                 <Calendar className="w-4 h-4" />
               </div>
               <div>
-                <p
-                  className="text-caption text-charcoal/60"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  Date
-                </p>
-                <p
-                  className="text-body-sm font-semibold text-charcoal"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
+                <p className="text-caption text-charcoal/60">Date</p>
+                <p className="text-body-sm font-semibold text-charcoal">
                   {event.startDate || "Date TBA"}
                 </p>
                 {event.endDate && (
-                  <p
-                    className="text-caption text-charcoal/60"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    to {event.endDate}
-                  </p>
+                  <p className="text-caption text-charcoal/60">to {event.endDate}</p>
                 )}
               </div>
             </div>
@@ -76,22 +48,8 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
                   <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <p
-                    className="text-caption text-charcoal/60"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    Category
-                  </p>
-                  <p
-                    className="text-body-sm font-semibold text-charcoal"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
+                  <p className="text-caption text-charcoal/60">Category</p>
+                  <p className="text-body-sm font-semibold text-charcoal">
                     {[event.segment, event.genre].filter(Boolean).join(" · ")}
                   </p>
                 </div>
@@ -104,22 +62,8 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
-                  <p
-                    className="text-caption text-charcoal/60"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    Venue
-                  </p>
-                  <p
-                    className="text-body-sm font-semibold text-charcoal"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
+                  <p className="text-caption text-charcoal/60">Venue</p>
+                  <p className="text-body-sm font-semibold text-charcoal">
                     {[event.venueName, event.venueAddress].filter(Boolean).join(", ")}
                   </p>
                 </div>
@@ -132,24 +76,8 @@ export default function EventDetailsCard({ event }: EventDetailsCardProps) {
                   <span className="font-bold text-sm">R</span>
                 </div>
                 <div>
-                  <p
-                    className="text-caption text-charcoal/60"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    Price
-                  </p>
-                  <p
-                    className="text-body-sm font-semibold text-charcoal"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    {event.price}
-                  </p>
+                  <p className="text-caption text-charcoal/60">Price</p>
+                  <p className="text-body-sm font-semibold text-charcoal">{event.price}</p>
                 </div>
               </div>
             )}

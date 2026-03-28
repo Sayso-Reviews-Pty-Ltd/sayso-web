@@ -10,7 +10,11 @@ import BusinessCardDistanceBadge from "./parts/BusinessCardDistanceBadge";
 import BusinessCardContent from "./parts/BusinessCardContent";
 import { useBusinessCardController } from "./hooks/useBusinessCardController";
 import type { Business, Percentiles } from "./BusinessCard.types";
-import { RAIL_CARD_MEDIA_HEIGHT, RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
+import {
+  RAIL_CARD_MEDIA_HEIGHT,
+  RAIL_CARD_RADIUS,
+  RAIL_CARD_WIDTH,
+} from "../HomeSectionRow/cardDimensions";
 
 export type { Business, Percentiles };
 
@@ -44,11 +48,7 @@ function BusinessCard({
   return (
     <div
       id={controller.idForSnap}
-      className={`snap-center snap-always flex-shrink-0 h-full ${compact ? "w-auto" : RAIL_CARD_WIDTH}`}
-      style={{
-        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        fontWeight: 600,
-      }}
+      className={`snap-center snap-always flex-shrink-0 h-full font-urbanist font-semibold ${compact ? "w-auto" : RAIL_CARD_WIDTH}`}
     >
       <Link
         href={controller.businessProfileRoute}

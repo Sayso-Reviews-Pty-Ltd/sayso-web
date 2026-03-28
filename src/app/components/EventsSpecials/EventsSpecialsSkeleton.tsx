@@ -27,13 +27,7 @@ export default function EventsSpecialsSkeleton({
   const cardClass = `${HOME_SECTION_CARD_BASE_CLASS} event-card-rail-full-width`;
 
   return (
-    <section
-      className="relative m-0 w-full"
-      aria-label={title}
-      style={{
-        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
-    >
+    <section className="relative m-0 w-full" aria-label={title}>
       <div className={`${containerClass} ${HOME_SECTION_CONTAINER_INSET_CLASS}`}>
         <div className="pb-4 sm:pb-8 md:pb-10 flex flex-wrap items-center justify-between gap-2">
           <Skeleton className="h-8 sm:h-10 w-48 sm:w-64 bg-charcoal/10 rounded-lg py-1" />

@@ -78,14 +78,7 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
       >
-        <h3
-          className="text-h3 font-semibold text-charcoal mb-3"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
-          Photos
-        </h3>
+        <h3 className="text-h3 font-semibold text-charcoal mb-3">Photos</h3>
 
         {hasPhotos ? (
           <>
@@ -114,9 +107,6 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
               type="button"
               onClick={() => openModalAt(0)}
               className="mt-4 w-full rounded-full bg-navbar-bg px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-navbar-bg/90"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
             >
               View More
             </button>
@@ -124,33 +114,18 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
         ) : (
           <div className="space-y-4">
             <div className="rounded-[12px] border border-white/35 bg-off-white/60 px-4 py-6 text-center">
-              <p
-                className="text-body-sm text-charcoal/70"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
+              <p className="text-body-sm text-charcoal/70">
                 Photos from this business profile will appear here once gallery images are
                 available.
               </p>
-              <p
-                className="mt-2 text-xs text-charcoal/60"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
+              <p className="mt-2 text-xs text-charcoal/60">
                 This section uses the business gallery images for consistency.
               </p>
             </div>
 
             <div className="flex items-center justify-center gap-2 text-charcoal/60 animate-pulse">
               <ArrowDown className="w-4 h-4" />
-              <span
-                className="text-xs font-medium"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
+              <span className="text-xs font-medium">
                 Scroll down for similar businesses at the bottom
               </span>
             </div>
@@ -159,9 +134,6 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
               type="button"
               disabled
               className="w-full rounded-full bg-navbar-bg/60 px-5 py-3 text-body-sm font-semibold text-white/80 cursor-not-allowed"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
             >
               View More
             </button>
@@ -225,13 +197,7 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
                 </div>
 
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-charcoal/70 px-3 py-1.5">
-                  <span
-                    className="text-xs text-white"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
+                  <span className="text-xs text-white">
                     {activeIndex + 1} / {normalizedPhotos.length}
                   </span>
                 </div>

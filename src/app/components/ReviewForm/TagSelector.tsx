@@ -21,7 +21,11 @@ const tagCategories = {
 // Flatten all tags for display
 const allTags = Object.values(tagCategories).flat();
 
-export default function TagSelector({ selectedTags, onTagToggle, availableTags }: TagSelectorProps) {
+export default function TagSelector({
+  selectedTags,
+  onTagToggle,
+  availableTags,
+}: TagSelectorProps) {
   // Use availableTags if provided, otherwise show defaults (limited to 4)
   const displayTags = useMemo(() => {
     if (availableTags.length > 0) {
@@ -34,17 +38,12 @@ export default function TagSelector({ selectedTags, onTagToggle, availableTags }
   const selectedCount = selectedTags.length;
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 font-urbanist">
       {/* Header with counter */}
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-coral/80" />
-          <h3
-            className="text-base font-semibold text-charcoal"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-          >
-            Quick tags
-          </h3>
+          <h3 className="text-base font-semibold text-charcoal">Quick tags</h3>
         </div>
 
         {/* Selected counter */}
@@ -52,11 +51,8 @@ export default function TagSelector({ selectedTags, onTagToggle, availableTags }
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className={`text-sm px-2.5 py-1 rounded-full ${
-            selectedCount > 0
-              ? 'bg-coral/20 text-coral'
-              : 'bg-charcoal/10 text-charcoal/60'
+            selectedCount > 0 ? "bg-coral/20 text-coral" : "bg-charcoal/10 text-charcoal/60"
           }`}
-          style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
         >
           {selectedCount}/4 selected
         </m.div>
@@ -84,17 +80,15 @@ export default function TagSelector({ selectedTags, onTagToggle, availableTags }
                 className={`
                   relative flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2
                   text-base font-semibold transition-all duration-200 touch-manipulation
-                  ${isSelected
-                    ? "bg-coral/20 border-coral text-charcoal shadow-sm"
-                    : isDisabled
-                      ? "bg-charcoal/5 border-charcoal/10 text-charcoal/40 cursor-not-allowed"
-                      : "bg-charcoal/5 border-charcoal/20 text-charcoal/70 hover:border-charcoal/40 hover:bg-charcoal/10"
+                  ${
+                    isSelected
+                      ? "bg-coral/20 border-coral text-charcoal shadow-sm"
+                      : isDisabled
+                        ? "bg-charcoal/5 border-charcoal/10 text-charcoal/40 cursor-not-allowed"
+                        : "bg-charcoal/5 border-charcoal/20 text-charcoal/70 hover:border-charcoal/40 hover:bg-charcoal/10"
                   }
                 `}
-                style={{
-                  fontFamily: 'Urbanist, system-ui, sans-serif',
-                  WebkitTapHighlightColor: 'transparent',
-                }}
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
                 {/* Selection indicator */}
                 <AnimatePresence mode="wait">
@@ -133,7 +127,6 @@ export default function TagSelector({ selectedTags, onTagToggle, availableTags }
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mt-3 text-sm text-charcoal/60 text-center"
-          style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
         >
           Tap a selected tag to remove it
         </m.p>

@@ -54,40 +54,33 @@ const titleVariants = {
   },
 };
 
-function SubcategoryGroup({ 
-  interestId, 
-  title, 
-  items, 
-  selectedSubcategories, 
+function SubcategoryGroup({
+  interestId,
+  title,
+  items,
+  selectedSubcategories,
   maxSelections,
-  onToggle, 
+  onToggle,
   groupIndex,
-  shakingIds = new Set()
+  shakingIds = new Set(),
 }: SubcategoryGroupProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-  };
-
   return (
     <m.div
+      className="font-urbanist"
       variants={groupVariants}
       initial="hidden"
       animate="visible"
       custom={groupIndex}
     >
-      <m.h3
-        className="text-base md:text-lg font-bold text-charcoal mb-3"
-        style={sfPro}
-        variants={titleVariants}
-      >
+      <m.h3 className="text-base md:text-lg font-bold text-charcoal mb-3" variants={titleVariants}>
         {title}
       </m.h3>
       <div className="pills-container">
         {items.map((subcategory, index) => {
-          const isSelected = selectedSubcategories.some(s => s.id === subcategory.id);
+          const isSelected = selectedSubcategories.some((s) => s.id === subcategory.id);
           const isDisabled = !isSelected && selectedSubcategories.length >= maxSelections;
           const shouldShake = shakingIds.has(subcategory.id);
-          
+
           return (
             <SubcategoryPill
               key={subcategory.id}

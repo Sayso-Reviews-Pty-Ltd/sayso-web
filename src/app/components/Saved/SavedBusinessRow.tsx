@@ -22,8 +22,10 @@ export default function SavedBusinessRow({
     () =>
       businesses.some(
         (business) =>
-          typeof business.lat === "number" && Number.isFinite(business.lat) &&
-          typeof business.lng === "number" && Number.isFinite(business.lng)
+          typeof business.lat === "number" &&
+          Number.isFinite(business.lat) &&
+          typeof business.lng === "number" &&
+          Number.isFinite(business.lng)
       ),
     [businesses]
   );
@@ -31,29 +33,16 @@ export default function SavedBusinessRow({
   if (!businesses || businesses.length === 0) return null;
 
   return (
-    <section
-      className="relative font-urbanist"
-      aria-label={title}
-      data-section
-      style={{
-        fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-      }}
-    >
+    <section className="relative font-urbanist" aria-label={title} data-section>
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
       <div className="mx-auto w-full max-w-[2000px] px-2 relative z-10">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h2 
-              className="text-h2 font-semibold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
+            <h2 className="text-h2 font-semibold text-charcoal hover:text-sage transition-all duration-300 px-3 sm:px-4 py-1 hover:bg-card-bg/5 rounded-lg cursor-default">
               {title}
             </h2>
             {showCount && savedCount > 0 && (
-              <span 
-                className="px-3 py-1 bg-card-bg/10 text-sage text-body-sm font-semibold rounded-full"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
+              <span className="px-3 py-1 bg-card-bg/10 text-sage text-body-sm font-semibold rounded-full">
                 {savedCount}
               </span>
             )}
@@ -63,21 +52,25 @@ export default function SavedBusinessRow({
         <ScrollableSection>
           <div className="flex gap-3 pt-2">
             {businesses.map((business) => {
-              console.log('SavedBusinessRow - Rendering business:', {
+              console.log("SavedBusinessRow - Rendering business:", {
                 id: business.id,
                 name: business.name,
-                hasImage: !!(business.image || business.image_url || (business.uploaded_images && business.uploaded_images.length > 0)),
+                hasImage: !!(
+                  business.image ||
+                  business.image_url ||
+                  (business.uploaded_images && business.uploaded_images.length > 0)
+                ),
                 hasRating: business.hasRating,
-                verified: business.verified
+                verified: business.verified,
               });
-              
+
               return (
-                <div 
-                  key={business.id} 
-                  className="list-none relative group flex-shrink-0" 
-                  style={{ 
-                    minWidth: '340px', 
-                    width: '340px'
+                <div
+                  key={business.id}
+                  className="list-none relative group flex-shrink-0"
+                  style={{
+                    minWidth: "340px",
+                    width: "340px",
                   }}
                 >
                   <BusinessCard business={business} />

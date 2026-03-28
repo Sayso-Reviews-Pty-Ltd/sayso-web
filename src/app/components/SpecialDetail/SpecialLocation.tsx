@@ -54,23 +54,9 @@ export default function SpecialLocation({
             <MapPin className="w-5 h-5 text-coral" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3
-              className="text-sm font-semibold text-charcoal/70 mb-1.5"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
-            >
-              Venue Location
-            </h3>
+            <h3 className="text-sm font-semibold text-charcoal/70 mb-1.5">Venue Location</h3>
             {displayLocation && (
-              <p
-                className="text-base font-medium text-charcoal break-words"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                {displayLocation}
-              </p>
+              <p className="text-base font-medium text-charcoal break-words">{displayLocation}</p>
             )}
           </div>
         </div>

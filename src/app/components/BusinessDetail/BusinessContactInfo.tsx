@@ -48,14 +48,7 @@ export default function BusinessContactInfo({
         transition={{ delay: 0.6, duration: 0.6 }}
       >
         <div>
-          <h3
-            className="text-h3 font-semibold text-charcoal mb-3"
-            style={{
-              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            }}
-          >
-            Contact Information
-          </h3>
+          <h3 className="text-h3 font-semibold text-charcoal mb-3">Contact Information</h3>
 
           <div className="space-y-2.5">
             <div className="flex items-center gap-2.5">
@@ -69,10 +62,6 @@ export default function BusinessContactInfo({
                       type="button"
                       onClick={() => setIsPhoneVisible(true)}
                       className="inline-flex rounded-full bg-navbar-bg px-3 py-1.5 text-body-sm text-white hover:bg-navbar-bg/90 transition-colors"
-                      style={{
-                        fontFamily:
-                          "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                      }}
                     >
                       Show Contact Number
                     </button>
@@ -81,10 +70,6 @@ export default function BusinessContactInfo({
                       <a
                         href={`tel:${displayPhone}`}
                         className="min-w-0 truncate text-body-sm text-charcoal/70 hover:text-charcoal transition-colors"
-                        style={{
-                          fontFamily:
-                            "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                        }}
                       >
                         {displayPhone}
                       </a>
@@ -104,13 +89,7 @@ export default function BusinessContactInfo({
                   )}
                 </div>
               ) : (
-                <span
-                  className="text-body-sm text-charcoal/70 italic"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
+                <span className="text-body-sm text-charcoal/70 italic">
                   Phone number coming soon
                 </span>
               )}
@@ -123,23 +102,11 @@ export default function BusinessContactInfo({
                 <a
                   href={`mailto:${email}`}
                   className="text-body-sm text-charcoal/70 hover:text-charcoal transition-colors break-all"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
                 >
                   {email}
                 </a>
               ) : (
-                <span
-                  className="text-body-sm text-charcoal/70 italic"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  Email coming soon
-                </span>
+                <span className="text-body-sm text-charcoal/70 italic">Email coming soon</span>
               )}
             </div>
             <div className="flex items-center gap-2.5">
@@ -152,24 +119,12 @@ export default function BusinessContactInfo({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center rounded-full bg-navbar-bg px-3 py-1.5 text-body-sm text-white hover:bg-navbar-bg/90 transition-colors"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
                   aria-label="View business website (opens in a new tab)"
                 >
                   View Website
                 </a>
               ) : (
-                <span
-                  className="text-body-sm text-charcoal/70 italic"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  Website coming soon
-                </span>
+                <span className="text-body-sm text-charcoal/70 italic">Website coming soon</span>
               )}
             </div>
             <div className="flex items-center gap-2.5">
@@ -177,25 +132,9 @@ export default function BusinessContactInfo({
                 <MapPin className="w-3 h-3 text-charcoal/85" />
               </span>
               {address || location ? (
-                <span
-                  className="text-body-sm text-charcoal/70"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  {address || location}
-                </span>
+                <span className="text-body-sm text-charcoal/70">{address || location}</span>
               ) : (
-                <span
-                  className="text-body-sm text-charcoal/70 italic"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  Address coming soon
-                </span>
+                <span className="text-body-sm text-charcoal/70 italic">Address coming soon</span>
               )}
             </div>
           </div>

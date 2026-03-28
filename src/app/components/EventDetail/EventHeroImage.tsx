@@ -24,21 +24,21 @@ function getOptimizedImageUrl(url: string | null, width: number = 1080): string 
   const fixedUrl = url.startsWith("//") ? `https:${url}` : url;
 
   // If already has query params or is Supabase storage URL, return as-is
-  if (fixedUrl.includes('?') || fixedUrl.includes('supabase.co/storage')) {
+  if (fixedUrl.includes("?") || fixedUrl.includes("supabase.co/storage")) {
     return fixedUrl;
   }
 
   // Try to add width and auto format parameters
   try {
     // Handle relative URLs
-    if (fixedUrl.startsWith('/')) {
+    if (fixedUrl.startsWith("/")) {
       return fixedUrl;
     }
 
     // Handle absolute URLs
     const urlObj = new URL(fixedUrl);
-    urlObj.searchParams.set('width', width.toString());
-    urlObj.searchParams.set('auto', 'format');
+    urlObj.searchParams.set("width", width.toString());
+    urlObj.searchParams.set("auto", "format");
     return urlObj.toString();
   } catch {
     return fixedUrl;
@@ -70,17 +70,19 @@ export default function EventHeroImage({
         priority
         quality={80}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 1080px"
-        style={{ objectFit: 'cover' }}
+        style={{ objectFit: "cover" }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
       {/* Event Type Badge */}
       <div className="absolute top-6 left-6">
-        <span className={`px-4 py-2 rounded-full text-body-sm font-600 backdrop-blur-xl border ${
-          event.type === "event"
-            ? "bg-coral/90 text-white border-coral/50"
-            : "bg-card-bg/90 text-white border-sage/50"
-        }`} style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+        <span
+          className={`px-4 py-2 rounded-full text-body-sm font-600 backdrop-blur-xl border ${
+            event.type === "event"
+              ? "bg-coral/90 text-white border-coral/50"
+              : "bg-card-bg/90 text-white border-sage/50"
+          }`}
+        >
           {event.type === "event" ? "Event" : "Special"}
         </span>
       </div>
@@ -88,23 +90,24 @@ export default function EventHeroImage({
       {/* Availability badge */}
       {event.availabilityStatus && (
         <div className="absolute top-6 right-6 z-20">
-          <span className={`px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur-xl ${
-            event.availabilityStatus === 'sold_out'
-              ? 'bg-coral/90 text-white'
-              : 'bg-amber-500/90 text-white'
-          }`} style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-            {event.availabilityStatus === 'sold_out' ? 'Sold Out' : 'Limited Spots'}
+          <span
+            className={`px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur-xl ${
+              event.availabilityStatus === "sold_out"
+                ? "bg-coral/90 text-white"
+                : "bg-amber-500/90 text-white"
+            }`}
+          >
+            {event.availabilityStatus === "sold_out" ? "Sold Out" : "Limited Spots"}
           </span>
         </div>
       )}
 
       {event.rating != null && (
-        <div className={`absolute top-6 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal border-none ${event.availabilityStatus ? 'right-36' : 'right-6'}`}>
+        <div
+          className={`absolute top-6 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal border-none ${event.availabilityStatus ? "right-36" : "right-6"}`}
+        >
           <GoldStar size={14} className="w-3.5 h-3.5" />
-          <span className="text-body-sm font-semibold text-charcoal" style={{ 
-            fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', 
-            fontWeight: 600
-          }}>
+          <span className="text-body-sm font-semibold text-charcoal">
             {Number(event.rating).toFixed(1)}
           </span>
         </div>
@@ -123,7 +126,6 @@ export default function EventHeroImage({
           <Heart className={`mx-auto w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
         </button>
       )}
-
     </m.div>
   );
 }

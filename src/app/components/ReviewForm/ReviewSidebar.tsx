@@ -92,13 +92,7 @@ export default function ReviewSidebar({
               {isSkeleton ? (
                 <div className="w-24 h-3 rounded-full bg-charcoal/10 animate-pulse" />
               ) : (
-                <p
-                  className="text-sm font-semibold text-charcoal font-urbanist truncate"
-                  style={{
-                    fontFamily:
-                      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-                  }}
-                >
+                <p className="text-sm font-semibold text-charcoal font-urbanist truncate">
                   {review?.user.name}
                 </p>
               )}
@@ -111,22 +105,13 @@ export default function ReviewSidebar({
                 {isSkeleton ? (
                   <div className="w-6 h-3 rounded-full bg-charcoal/10 animate-pulse" />
                 ) : (
-                  <span
-                    className="text-[12px] text-charcoal/60 font-urbanist"
-                    style={{
-                      fontFamily:
-                        '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-                    }}
-                  >
+                  <span className="text-[12px] text-charcoal/60 font-urbanist">
                     {review?.rating}
                   </span>
                 )}
               </div>
             </div>
-            <div
-              className="flex items-center gap-2 text-[12px] text-charcoal/60 mb-1 font-urbanist"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}
-            >
+            <div className="flex items-center gap-2 text-[12px] text-charcoal/60 mb-1 font-urbanist">
               {isSkeleton ? (
                 <>
                   <div className="w-16 h-2 rounded-full bg-charcoal/10 animate-pulse" />
@@ -155,13 +140,7 @@ export default function ReviewSidebar({
               </div>
             ) : (
               <>
-                <p
-                  className="text-sm sm:text-[0.92rem] text-charcoal/90 leading-relaxed mb-2 font-urbanist"
-                  style={{
-                    fontFamily:
-                      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-                  }}
-                >
+                <p className="text-sm sm:text-[0.92rem] text-charcoal/90 leading-relaxed mb-2 font-urbanist">
                   {review?.text}
                 </p>
                 {review?.image && (
@@ -183,15 +162,7 @@ export default function ReviewSidebar({
               {isSkeleton ? (
                 <div className="w-8 h-2 rounded-full bg-charcoal/10 animate-pulse" />
               ) : (
-                <span
-                  className="text-[10px] font-urbanist"
-                  style={{
-                    fontFamily:
-                      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-                  }}
-                >
-                  {review?.likes}
-                </span>
+                <span className="text-[10px] font-urbanist">{review?.likes}</span>
               )}
             </div>
           </div>
@@ -202,7 +173,9 @@ export default function ReviewSidebar({
 
   const renderDesktopContent = () => {
     if (loading) {
-      return placeholderCards.map((_, idx) => renderReviewCard(null, "desktop", idx, "desktop-skeleton"));
+      return placeholderCards.map((_, idx) =>
+        renderReviewCard(null, "desktop", idx, "desktop-skeleton")
+      );
     }
 
     if (showFallback) {
@@ -232,7 +205,9 @@ export default function ReviewSidebar({
     if (loading) {
       return (
         <div className="flex gap-2 sm:gap-3 px-4 pb-4">
-          {placeholderCards.map((_, idx) => renderReviewCard(null, "mobile", idx, "mobile-skeleton"))}
+          {placeholderCards.map((_, idx) =>
+            renderReviewCard(null, "mobile", idx, "mobile-skeleton")
+          )}
         </div>
       );
     }
@@ -272,13 +247,7 @@ export default function ReviewSidebar({
       <div className="hidden lg:block">
         <div className={frostyPanel}>
           <div className="relative z-[1]">
-            <h3
-              className="text-sm font-bold text-charcoal font-urbanist px-3 pt-4 pb-3 border-b border-white/30"
-              style={{
-                fontFamily:
-                  '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-              }}
-            >
+            <h3 className="text-sm font-bold text-charcoal font-urbanist px-3 pt-4 pb-3 border-b border-white/30">
               What others are saying
             </h3>
             {businessInfo && (
@@ -302,13 +271,7 @@ export default function ReviewSidebar({
 
       {/* Mobile/Tablet horizontal list */}
       <div className="lg:hidden mt-4 sm:mt-6">
-        <h3
-          className="text-sm font-bold text-charcoal font-urbanist px-4 pt-4 pb-3"
-          style={{
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-          }}
-        >
+        <h3 className="text-sm font-bold text-charcoal font-urbanist px-4 pt-4 pb-3">
           What others are saying
         </h3>
         <div className="mt-2 sm:mt-3 overflow-x-auto hide-scrollbar">{renderMobileContent()}</div>

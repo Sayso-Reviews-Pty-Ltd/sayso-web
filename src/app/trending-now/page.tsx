@@ -20,13 +20,8 @@ export default function TrendingNowPage() {
   }, [isLoading, router, user]);
 
   return (
-    <main className="min-h-[100dvh] bg-off-white flex items-center justify-center px-4">
-      <p
-        className="text-sm text-charcoal/70"
-        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-      >
-        Redirecting to trending...
-      </p>
+    <main className="min-h-[100dvh] bg-off-white flex items-center justify-center px-4 font-urbanist">
+      <p className="text-sm text-charcoal/70">Redirecting to trending...</p>
     </main>
   );
 }

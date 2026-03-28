@@ -348,15 +348,8 @@ export default function MapboxMap({
           <div className="w-14 h-14 rounded-full bg-coral/10 flex items-center justify-center mx-auto mb-3">
             <AlertCircle className="w-7 h-7 text-coral" />
           </div>
-          <p
-            className="text-sm font-semibold text-charcoal mb-1"
-            style={{ fontFamily: "Urbanist, sans-serif" }}
-          >
-            Map unavailable
-          </p>
-          <p className="text-sm text-charcoal/60" style={{ fontFamily: "Urbanist, sans-serif" }}>
-            Unable to load the map
-          </p>
+          <p className="text-sm font-semibold text-charcoal mb-1">Map unavailable</p>
+          <p className="text-sm text-charcoal/60">Unable to load the map</p>
         </m.div>
       </div>
     );
@@ -449,12 +442,7 @@ export default function MapboxMap({
           aria-label="Center on location"
         >
           <MapPin className="w-4 h-4 text-coral" />
-          <span
-            className="text-sm font-semibold text-charcoal"
-            style={{ fontFamily: "Urbanist, sans-serif" }}
-          >
-            Center
-          </span>
+          <span className="text-sm font-semibold text-charcoal">Center</span>
         </m.button>
       )}
 

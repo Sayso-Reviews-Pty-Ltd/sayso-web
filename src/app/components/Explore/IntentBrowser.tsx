@@ -1,17 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { Utensils, Coffee, Activity, Heart, PartyPopper, ShoppingBag, Wrench } from "@/app/lib/icons";
+import {
+  Utensils,
+  Coffee,
+  Activity,
+  Heart,
+  PartyPopper,
+  ShoppingBag,
+  Wrench,
+} from "@/app/lib/icons";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 
 const INTENTS = [
-  { id: 'eat', label: 'Eat', icon: Utensils, color: 'from-coral/20 to-coral/10' },
-  { id: 'drink', label: 'Drink', icon: Coffee, color: 'from-sage/20 to-sage/10' },
-  { id: 'move', label: 'Move', icon: Activity, color: 'from-blue-400/20 to-blue-400/10' },
-  { id: 'relax', label: 'Relax', icon: Heart, color: 'from-purple-400/20 to-purple-400/10' },
-  { id: 'celebrate', label: 'Celebrate', icon: PartyPopper, color: 'from-yellow-400/20 to-yellow-400/10' },
-  { id: 'shop', label: 'Shop', icon: ShoppingBag, color: 'from-pink-400/20 to-pink-400/10' },
-  { id: 'fix', label: 'Fix something', icon: Wrench, color: 'from-gray-400/20 to-gray-400/10' },
+  { id: "eat", label: "Eat", icon: Utensils, color: "from-coral/20 to-coral/10" },
+  { id: "drink", label: "Drink", icon: Coffee, color: "from-sage/20 to-sage/10" },
+  { id: "move", label: "Move", icon: Activity, color: "from-blue-400/20 to-blue-400/10" },
+  { id: "relax", label: "Relax", icon: Heart, color: "from-purple-400/20 to-purple-400/10" },
+  {
+    id: "celebrate",
+    label: "Celebrate",
+    icon: PartyPopper,
+    color: "from-yellow-400/20 to-yellow-400/10",
+  },
+  { id: "shop", label: "Shop", icon: ShoppingBag, color: "from-pink-400/20 to-pink-400/10" },
+  { id: "fix", label: "Fix something", icon: Wrench, color: "from-gray-400/20 to-gray-400/10" },
 ];
 
 interface IntentBrowserProps {
@@ -27,7 +40,7 @@ export default function IntentBrowser({ onIntentClick }: IntentBrowserProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-urbanist">
       <WavyTypedTitle
         text="Browse by Intent"
         as="h2"
@@ -38,12 +51,8 @@ export default function IntentBrowser({ onIntentClick }: IntentBrowserProps) {
         loopWave={true}
         enableScrollTrigger={true}
         disableWave={true}
-        style={{ 
-          fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          fontWeight: 700,
-        }}
       />
-      
+
       <div className="flex flex-wrap gap-3">
         {INTENTS.map((intent) => {
           const IconComponent = intent.icon;
@@ -54,13 +63,12 @@ export default function IntentBrowser({ onIntentClick }: IntentBrowserProps) {
               onClick={(e) => handleClick(intent.id, e)}
               className="group relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-full overflow-hidden backdrop-blur-md border-none shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 px-5 py-3 flex items-center gap-2.5"
             >
-              <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${intent.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+              <div
+                className={`w-8 h-8 rounded-full bg-gradient-to-br ${intent.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+              >
                 <IconComponent className="w-4 h-4 text-charcoal" />
               </div>
-              <span 
-                className="text-body-sm font-semibold text-charcoal group-hover:text-navbar-bg transition-colors duration-300"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
+              <span className="text-body-sm font-semibold text-charcoal group-hover:text-navbar-bg transition-colors duration-300">
                 {intent.label}
               </span>
             </Link>
@@ -70,4 +78,3 @@ export default function IntentBrowser({ onIntentClick }: IntentBrowserProps) {
     </div>
   );
 }
-

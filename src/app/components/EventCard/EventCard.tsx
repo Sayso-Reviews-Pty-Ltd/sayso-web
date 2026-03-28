@@ -48,13 +48,25 @@ function EventCard({
   const hasRealImage = !isFallbackEventArtwork(mediaImage);
 
   const eventDetailHref = event.type === "event" ? `/event/${event.id}` : `/special/${event.id}`;
-  const reviewRoute = event.type === "event" ? `/write-review/event/${event.id}` : `/write-review/special/${event.id}`;
+  const reviewRoute =
+    event.type === "event"
+      ? `/write-review/event/${event.id}`
+      : `/write-review/special/${event.id}`;
   const detailTypeLabel = event.type === "special" ? "Special" : "Event";
   const detailCtaLabel = `View ${detailTypeLabel}`;
   const detailAriaLabel = `View ${event.type} details`;
 
-  const { handleCardMouseEnter, handleCardMouseLeave, handleCardTouchStart } = useEventPrefetch(eventDetailHref, index);
-  const { imageLoaded, showLoadingOverlay, mediaImageCacheKey, handleImageLoadingComplete, handleImageError } = useEventImageLoading(mediaImage, hasRealImage);
+  const { handleCardMouseEnter, handleCardMouseLeave, handleCardTouchStart } = useEventPrefetch(
+    eventDetailHref,
+    index
+  );
+  const {
+    imageLoaded,
+    showLoadingOverlay,
+    mediaImageCacheKey,
+    handleImageLoadingComplete,
+    handleImageError,
+  } = useEventImageLoading(mediaImage, hasRealImage);
   const countdown = useEventCountdown(event);
 
   const initialReviews = (event as any).reviews ?? (event as any).totalReviews ?? 0;
@@ -86,7 +98,11 @@ function EventCard({
     try {
       const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}${eventDetailHref}`;
       const shareText = `Check out ${event.title} on sayso!`;
-      if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ title: event.title, text: shareText, url: shareUrl })) {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.share &&
+        navigator.canShare?.({ title: event.title, text: shareText, url: shareUrl })
+      ) {
         await navigator.share({ title: event.title, text: shareText, url: shareUrl });
         showToast("Shared successfully!", "success", 2000);
       } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
@@ -103,38 +119,34 @@ function EventCard({
   // Determine star gradient tier based on rating
   const starGradientId = useMemo(() => {
     if (!displayRating) return null;
-    return displayRating > 4.0 ? 'Gold' : displayRating > 2.0 ? 'Bronze' : 'Low';
+    return displayRating > 4.0 ? "Gold" : displayRating > 2.0 ? "Bronze" : "Low";
   }, [displayRating]);
 
   return (
     <div
-      className={fullWidth ? "flex w-full h-full" : `flex ${RAIL_CARD_WIDTH} h-full`}
-      style={{
-        fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        fontWeight: 600,
-      }}
+      className={`${fullWidth ? "flex w-full h-full" : `flex ${RAIL_CARD_WIDTH} h-full`} font-urbanist font-semibold`}
     >
       {/* SVG Gradient Definitions for Star Icons */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
+      <svg width="0" height="0" style={{ position: "absolute" }}>
         <defs>
           {/* Gold Gradient: warm yellow → soft amber */}
           <linearGradient id="starGradientGoldEvent" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#F5D547', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#E6A547', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#F5D547", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#E6A547", stopOpacity: 1 }} />
           </linearGradient>
           {/* Bronze Gradient: muted orange → brown */}
           <linearGradient id="starGradientBronzeEvent" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#D4915C', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#8B6439', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#D4915C", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#8B6439", stopOpacity: 1 }} />
           </linearGradient>
           {/* Low Rating Gradient: soft red → charcoal */}
           <linearGradient id="starGradientLowEvent" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#D66B6B', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#6B5C5C', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#D66B6B", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#6B5C5C", stopOpacity: 1 }} />
           </linearGradient>
         </defs>
       </svg>
-      
+
       <Link
         href={eventDetailHref}
         prefetch={false}
@@ -143,9 +155,7 @@ function EventCard({
         onMouseLeave={handleCardMouseLeave}
         onTouchStart={handleCardTouchStart}
       >
-      <article
-        className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full flex flex-col backdrop-blur-xl shadow-md pb-4 h-full"
-      >
+        <article className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full flex flex-col backdrop-blur-xl shadow-md pb-4 h-full">
           {/* MEDIA - Full bleed with premium overlay */}
           <div className="relative w-full flex-shrink-0 z-10">
             <m.div
@@ -154,7 +164,10 @@ function EventCard({
             >
               {showLoadingOverlay && (
                 <div className="absolute inset-0 bg-charcoal/5 animate-pulse z-10 flex items-center justify-center">
-                  <span className="w-10 h-10 border-2 border-white/50 border-t-navbar-bg rounded-full animate-spin" aria-hidden />
+                  <span
+                    className="w-10 h-10 border-2 border-white/50 border-t-navbar-bg rounded-full animate-spin"
+                    aria-hidden
+                  />
                   <span className="sr-only">Loading image</span>
                 </div>
               )}
@@ -163,7 +176,11 @@ function EventCard({
                 alt={event.alt || event.title}
                 fill
                 sizes="(max-width: 640px) 85vw, 340px"
-                className={hasRealImage ? "object-cover card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none" : "object-contain w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"}
+                className={
+                  hasRealImage
+                    ? "object-cover card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"
+                    : "object-contain w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"
+                }
                 quality={hasRealImage ? 75 : 60}
                 priority={false}
                 onLoadingComplete={handleImageLoadingComplete}
@@ -180,33 +197,67 @@ function EventCard({
               {/* Rating badge - same style as Business Card */}
               {hasRating && displayRating !== undefined && (
                 <div className="absolute right-4 top-4 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-full p-1" aria-hidden>
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill={`url(#starGradient${starGradientId}Event)`} stroke={`url(#starGradient${starGradientId}Event)`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="rounded-full p-1"
+                    aria-hidden
+                  >
+                    <path
+                      d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                      fill={`url(#starGradient${starGradientId}Event)`}
+                      stroke={`url(#starGradient${starGradientId}Event)`}
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
-                  <span className="text-sm font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}>{Number(displayRating).toFixed(1)}</span>
+                  <span className="text-sm font-semibold text-charcoal">
+                    {Number(displayRating).toFixed(1)}
+                  </span>
                 </div>
               )}
 
               {/* Floating actions - same style as Business Card (desktop only) */}
-              <div data-event-card-action className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 flex-col items-center gap-2 transition-all duration-300 ease-out translate-x-12 opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
+              <div
+                data-event-card-action
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 flex-col items-center gap-2 transition-all duration-300 ease-out translate-x-12 opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100"
+              >
                 <button
                   type="button"
-                  className={`w-10 h-10 bg-off-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sage/30 shadow-md active:translate-y-[1px] transform-gpu touch-manipulation select-none ${hasReviewed ? 'opacity-50 cursor-not-allowed' : 'hover:bg-off-white/60 hover:scale-110 hover:text-charcoal/90 active:scale-95'}`}
+                  className={`w-10 h-10 bg-off-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sage/30 shadow-md active:translate-y-[1px] transform-gpu touch-manipulation select-none ${hasReviewed ? "opacity-50 cursor-not-allowed" : "hover:bg-off-white/60 hover:scale-110 hover:text-charcoal/90 active:scale-95"}`}
                   onClick={handleWriteReview}
                   disabled={hasReviewed}
-                  aria-label={hasReviewed ? `You have already reviewed ${event.title}` : `Write a review for ${event.title}`}
-                  title={hasReviewed ? 'Already reviewed' : 'Write a review'}
+                  aria-label={
+                    hasReviewed
+                      ? `You have already reviewed ${event.title}`
+                      : `Write a review for ${event.title}`
+                  }
+                  title={hasReviewed ? "Already reviewed" : "Write a review"}
                 >
-                  <Edit className={`w-4 h-4 ${hasReviewed ? 'text-charcoal/40' : 'text-charcoal/80'}`} strokeWidth={2.5} />
+                  <Edit
+                    className={`w-4 h-4 ${hasReviewed ? "text-charcoal/40" : "text-charcoal/80"}`}
+                    strokeWidth={2.5}
+                  />
                 </button>
                 <button
                   type="button"
                   className="w-10 h-10 bg-off-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-off-white/60 hover:scale-110 hover:text-charcoal/90 active:scale-95 active:translate-y-[1px] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sage/30 shadow-md transform-gpu touch-manipulation select-none"
                   onClick={handleBookmark}
-                  aria-label={isItemSaved(event.id) ? `Remove from saved ${event.title}` : `Save ${event.title}`}
-                  title={isItemSaved(event.id) ? 'Remove from saved' : 'Save'}
+                  aria-label={
+                    isItemSaved(event.id)
+                      ? `Remove from saved ${event.title}`
+                      : `Save ${event.title}`
+                  }
+                  title={isItemSaved(event.id) ? "Remove from saved" : "Save"}
                 >
-                  <Bookmark className={`w-4 h-4 ${isItemSaved(event.id) ? 'text-charcoal/80 fill-charcoal/80' : 'text-charcoal/80'}`} strokeWidth={2.5} />
+                  <Bookmark
+                    className={`w-4 h-4 ${isItemSaved(event.id) ? "text-charcoal/80 fill-charcoal/80" : "text-charcoal/80"}`}
+                    strokeWidth={2.5}
+                  />
                 </button>
                 <button
                   type="button"
@@ -236,93 +287,33 @@ function EventCard({
                     <>
                       {countdown.days > 0 && (
                         <div className="flex items-baseline gap-0.5">
-                          <span
-                            className="text-xs font-bold leading-none"
-                            style={{
-                              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 700,
-                            }}
-                          >
-                            {countdown.days}
-                          </span>
-                          <span
-                            className="text-[10px] font-medium leading-none"
-                            style={{
-                              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
-                          >
-                            d
-                          </span>
+                          <span className="text-xs font-bold leading-none">{countdown.days}</span>
+                          <span className="text-[10px] font-medium leading-none">d</span>
                         </div>
                       )}
                       {(countdown.days > 0 || countdown.hours > 0) && (
                         <div className="flex items-baseline gap-0.5">
-                          <span
-                            className="text-xs font-bold leading-none"
-                            style={{
-                              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 700,
-                            }}
-                          >
-                            {countdown.hours}
-                          </span>
-                          <span
-                            className="text-[10px] font-medium leading-none"
-                            style={{
-                              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
-                          >
-                            h
-                          </span>
+                          <span className="text-xs font-bold leading-none">{countdown.hours}</span>
+                          <span className="text-[10px] font-medium leading-none">h</span>
                         </div>
                       )}
                       <div className="flex items-baseline gap-0.5">
-                        <span
-                          className="text-xs font-bold leading-none"
-                          style={{
-                            fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {countdown.minutes}
-                        </span>
-                        <span
-                          className="text-[10px] font-medium leading-none"
-                          style={{
-                            fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          m
-                        </span>
+                        <span className="text-xs font-bold leading-none">{countdown.minutes}</span>
+                        <span className="text-[10px] font-medium leading-none">m</span>
                       </div>
                     </>
                   )}
 
                   {countdown.status === "live" && (
-                    <span
-                      className="text-xs font-semibold leading-none"
-                      style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-                    >
-                      Live now
-                    </span>
+                    <span className="text-xs font-semibold leading-none">Live now</span>
                   )}
 
                   {countdown.status === "ended" && (
-                    <span
-                      className="text-xs font-semibold leading-none"
-                      style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-                    >
-                      Ended
-                    </span>
+                    <span className="text-xs font-semibold leading-none">Ended</span>
                   )}
 
                   {countdown.status === "unknown" && (
-                    <span
-                      className="text-xs font-semibold leading-none"
-                      style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-                    >
-                      Date TBA
-                    </span>
+                    <span className="text-xs font-semibold leading-none">Date TBA</span>
                   )}
                 </div>
               )}
@@ -349,11 +340,9 @@ function EventCard({
                 layoutId={eventTitleLayoutId}
                 className="text-base sm:text-lg font-bold text-charcoal leading-tight line-clamp-1 transition-colors duration-300 group-hover:text-navbar-bg/90"
                 style={{
-                  fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                  fontWeight: 700,
-                  WebkitFontSmoothing: 'antialiased',
-                  MozOsxFontSmoothing: 'grayscale',
-                  textRendering: 'optimizeLegibility',
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
+                  textRendering: "optimizeLegibility",
                 }}
               >
                 {event.title}
@@ -361,74 +350,83 @@ function EventCard({
 
               <div className="w-full">
                 <p
-                  className="text-sm text-charcoal/70 line-clamp-2 leading-snug"
-                  style={{
-                    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    fontWeight: 400,
-                  }}
+                  className="text-sm font-normal text-charcoal/70 line-clamp-2 leading-snug"
                   title={event.description || undefined}
                 >
-                  {event.description || (event.type === "event" ? "Join us for this exciting event!" : "Don't miss out on this special offer!")}
+                  {event.description ||
+                    (event.type === "event"
+                      ? "Join us for this exciting event!"
+                      : "Don't miss out on this special offer!")}
                 </p>
               </div>
             </div>
 
             {event.occurrencesCount != null && event.occurrencesCount > 1 && (
-              <span
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-card-bg/10 text-sage text-sm font-medium w-fit"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-              >
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-card-bg/10 text-sage text-sm font-semibold w-fit">
                 {event.occurrencesCount} dates available
               </span>
             )}
             {event.type === "event" && !event.businessId && !event.isExternalEvent && (
               <span
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium w-fit ${
-                  "bg-coral/10 text-coral"
-                }`}
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold w-fit ${"bg-coral/10 text-coral"}`}
               >
                 Community-hosted event
               </span>
             )}
-            {event.availabilityStatus === 'sold_out' && (
-              <span
-                className="inline-flex items-center px-2.5 py-1 rounded-full bg-coral/15 text-coral text-sm font-semibold w-fit"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-              >
+            {event.availabilityStatus === "sold_out" && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-coral/15 text-coral text-sm font-semibold w-fit">
                 Sold Out
               </span>
             )}
-            {event.availabilityStatus === 'limited' && (
-              <span
-                className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 text-sm font-semibold w-fit"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-              >
+            {event.availabilityStatus === "limited" && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 text-sm font-semibold w-fit">
                 Limited Spots
               </span>
             )}
             {/* Review count - same styling as Business Card */}
-            <div className="flex flex-col items-center gap-1 mb-0.5 pt-1" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+            <div
+              className="flex flex-col items-center gap-1 mb-0.5 pt-1"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
               <div className="inline-flex items-center justify-center gap-1 min-h-[12px]">
                 {hasRating && displayRating !== undefined ? (
                   <>
                     <span
                       role="link"
                       tabIndex={0}
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(eventDetailHref); }}
-                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(eventDetailHref); } }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(eventDetailHref);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          router.push(eventDetailHref);
+                        }
+                      }}
                       className="inline-flex items-center justify-center text-body-sm sm:text-base font-bold leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 700 }}
                     >
                       {reviews}
                     </span>
                     <span
                       role="link"
                       tabIndex={0}
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(eventDetailHref); }}
-                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(eventDetailHref); } }}
-                      className="inline-flex items-center justify-center text-sm leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(eventDetailHref);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          router.push(eventDetailHref);
+                        }
+                      }}
+                      className="inline-flex items-center justify-center text-sm font-normal leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
                     >
                       Reviews
                     </span>
@@ -437,39 +435,57 @@ function EventCard({
                   <span
                     role="button"
                     tabIndex={hasReviewed ? -1 : 0}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (!hasReviewed) router.push(reviewRoute); }}
-                    onKeyDown={(e) => { if (!hasReviewed && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); router.push(reviewRoute); } }}
-                    className={`inline-flex items-center justify-center text-sm font-normal underline-offset-2 min-w-[92px] text-center transition-colors duration-200 ${hasReviewed ? 'text-charcoal/70 cursor-not-allowed' : 'text-charcoal cursor-pointer hover:text-coral'}`}
-                    style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (!hasReviewed) router.push(reviewRoute);
+                    }}
+                    onKeyDown={(e) => {
+                      if (!hasReviewed && (e.key === "Enter" || e.key === " ")) {
+                        e.preventDefault();
+                        router.push(reviewRoute);
+                      }
+                    }}
+                    className={`inline-flex items-center justify-center text-sm font-normal underline-offset-2 min-w-[92px] text-center transition-colors duration-200 ${hasReviewed ? "text-charcoal/70 cursor-not-allowed" : "text-charcoal cursor-pointer hover:text-coral"}`}
                     aria-disabled={hasReviewed}
-                    title={hasReviewed ? 'You have already reviewed this event' : 'Be the first to review'}
+                    title={
+                      hasReviewed
+                        ? "You have already reviewed this event"
+                        : "Be the first to review"
+                    }
                   >
-                    {hasReviewed ? 'Already reviewed' : 'Be the first to review'}
+                    {hasReviewed ? "Already reviewed" : "Be the first to review"}
                   </span>
                 )}
               </div>
             </div>
-            
+
             {/* Desktop details button */}
             <div className="hidden md:flex items-center justify-center pt-2 pb-0.5 px-1">
               <button
                 type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(eventDetailHref); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(eventDetailHref);
+                }}
                 className="w-full flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sage/40 border transition-all duration-200 shadow-md bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white border-sage/50 hover:scale-[1.02] active:scale-95 active:translate-y-[1px] transform-gpu touch-manipulation select-none"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
                 aria-label={detailAriaLabel}
               >
                 {detailCtaLabel}
               </button>
             </div>
-            
+
             {/* Mobile details button */}
             <div className="md:hidden flex items-center justify-center pt-1.5 pb-1 px-1">
               <button
                 type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(eventDetailHref); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(eventDetailHref);
+                }}
                 className="w-full flex items-center justify-center px-4 py-3 rounded-full text-caption sm:text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sage/40 border transition-all duration-200 min-h-[48px] shadow-md bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white border-sage/50 active:scale-95 active:translate-y-[1px] transform-gpu touch-manipulation select-none"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
                 aria-label={detailAriaLabel}
               >
                 {detailCtaLabel}

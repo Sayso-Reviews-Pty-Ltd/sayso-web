@@ -84,19 +84,14 @@ const checkIconVariants = {
   },
 };
 
-function SubcategoryPill({ 
-  subcategory, 
-  isSelected, 
-  isDisabled = false, 
+function SubcategoryPill({
+  subcategory,
+  isSelected,
+  isDisabled = false,
   shouldShake = false,
   onToggle,
-  index = 0
+  index = 0,
 }: SubcategoryPillProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 600,
-  };
-
   return (
     <m.button
       onClick={() => !isDisabled && onToggle(subcategory.id, subcategory.interest_id)}
@@ -114,22 +109,18 @@ function SubcategoryPill({
       className={`
         relative flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-medium
         focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2
-        ${isSelected
-          ? 'border-coral bg-gradient-to-br from-coral to-coral/90 text-white'
-          : isDisabled
-          ? 'border-charcoal/10 bg-charcoal/5 text-charcoal/60 cursor-not-allowed opacity-60'
-          : 'border-sage/30 bg-gradient-to-br from-sage/10 to-sage/5 text-sage backdrop-blur-sm'
+        ${
+          isSelected
+            ? "border-coral bg-gradient-to-br from-coral to-coral/90 text-white"
+            : isDisabled
+              ? "border-charcoal/10 bg-charcoal/5 text-charcoal/60 cursor-not-allowed opacity-60"
+              : "border-sage/30 bg-gradient-to-br from-sage/10 to-sage/5 text-sage backdrop-blur-sm"
         }
       `}
-      style={sfPro}
     >
       <span>{subcategory.label}</span>
       {isSelected && (
-        <m.div
-          variants={checkIconVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <m.div variants={checkIconVariants} initial="hidden" animate="visible">
           <CheckCircle className="h-4 w-4" />
         </m.div>
       )}

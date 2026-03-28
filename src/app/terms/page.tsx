@@ -8,10 +8,7 @@ export default function TermsOfUsePage() {
   const router = useRouter();
 
   return (
-    <div
-      className="min-h-dvh bg-navbar-bg font-urbanist relative overflow-hidden"
-      style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-    >
+    <div className="min-h-dvh bg-navbar-bg font-urbanist relative overflow-hidden">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12 relative z-10">
         <button
           onClick={() => router.back()}
@@ -48,12 +45,16 @@ export default function TermsOfUsePage() {
 
           <h3 className="text-base sm:text-lg font-semibold text-white/90">2.1 User Accounts</h3>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Users may create accounts to submit reviews, ratings, comments, photos, or videos.</li>
+            <li>
+              Users may create accounts to submit reviews, ratings, comments, photos, or videos.
+            </li>
             <li>You are responsible for maintaining the security of your account credentials.</li>
             <li>You may not share your account with others.</li>
           </ul>
 
-          <h3 className="text-base sm:text-lg font-semibold text-white/90">2.2 Business Accounts</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-white/90">
+            2.2 Business Accounts
+          </h3>
           <ul className="list-disc pl-6 space-y-1">
             <li>Businesses may claim or create profiles on Sayso to manage their listings.</li>
             <li>
@@ -125,7 +126,9 @@ export default function TermsOfUsePage() {
             </li>
           </ul>
 
-          <h2 className="text-lg sm:text-xl font-bold text-white pt-4">7. Disclaimers and Limitation of Liability</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-white pt-4">
+            7. Disclaimers and Limitation of Liability
+          </h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>
               Sayso provides the Platform &quot;as is&quot; and does not guarantee that it will be
@@ -156,7 +159,10 @@ export default function TermsOfUsePage() {
           <h2 className="text-lg sm:text-xl font-bold text-white pt-4">9. Privacy</h2>
           <p>
             Your use of Sayso is also governed by our{" "}
-            <Link href="/privacy" className="text-white underline underline-offset-2 hover:text-white/80 font-semibold">
+            <Link
+              href="/privacy"
+              className="text-white underline underline-offset-2 hover:text-white/80 font-semibold"
+            >
               Privacy Policy
             </Link>
             , which explains how we collect, use, and protect your information.
@@ -181,15 +187,19 @@ export default function TermsOfUsePage() {
           <h2 className="text-lg sm:text-xl font-bold text-white pt-4">12. Contact</h2>
           <p>For questions about these Terms or the Platform, contact:</p>
           <p className="font-semibold text-white/90">
-            Sayso<br />
+            Sayso
+            <br />
             Email:{" "}
-            <a href="mailto:info@sayso.co.za" className="text-white underline underline-offset-2 hover:text-white/80">
+            <a
+              href="mailto:info@sayso.co.za"
+              className="text-white underline underline-offset-2 hover:text-white/80"
+            >
               info@sayso.co.za
             </a>
           </p>
           <p>
-            By using Sayso, you acknowledge that you have read, understood, and agree to these
-            Terms of Use.
+            By using Sayso, you acknowledge that you have read, understood, and agree to these Terms
+            of Use.
           </p>
         </div>
       </div>

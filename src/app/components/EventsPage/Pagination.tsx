@@ -99,11 +99,7 @@ export default function Pagination({
         {pageNumbers.map((page, index) => {
           if (page === "...") {
             return (
-              <span
-                key={`ellipsis-${index}`}
-                className="px-3 py-2 text-body-sm text-charcoal/70"
-                style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-              >
+              <span key={`ellipsis-${index}`} className="px-3 py-2 text-body-sm text-charcoal/70">
                 ...
               </span>
             );
@@ -122,7 +118,6 @@ export default function Pagination({
                   ? "bg-gradient-to-br from-sage to-sage/80 text-white shadow-lg scale-105"
                   : "bg-gradient-to-br from-sage/20 to-sage/10 hover:from-sage/40 hover:to-sage/20 text-charcoal hover:text-sage hover:shadow-lg active:scale-95"
               }`}
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
               aria-label={`Go to page ${pageNum}`}
               aria-current={isActive ? "page" : undefined}
             >
@@ -148,4 +143,3 @@ export default function Pagination({
     </div>
   );
 }
-

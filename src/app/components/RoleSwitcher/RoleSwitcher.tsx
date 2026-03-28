@@ -12,7 +12,7 @@ export function RoleSwitcher() {
 
   if (!hasMultipleRoles || !user) return null;
 
-  const handleSwitchRole = async (newRole: 'user' | 'business_owner') => {
+  const handleSwitchRole = async (newRole: "user" | "business_owner") => {
     if (currentRole === newRole) {
       setIsOpen(false);
       return;
@@ -20,10 +20,10 @@ export function RoleSwitcher() {
 
     try {
       // Call API to switch role
-      const response = await fetch('/api/user/switch-role', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newRole })
+      const response = await fetch("/api/user/switch-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newRole }),
       });
 
       if (response.ok) {
@@ -31,13 +31,13 @@ export function RoleSwitcher() {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to switch role:', error);
+      console.error("Failed to switch role:", error);
     }
   };
 
-  const roleLabel = currentRole === 'business_owner' ? 'Business' : 'Personal';
-  const otherRole = currentRole === 'business_owner' ? 'user' : 'business_owner';
-  const otherLabel = otherRole === 'business_owner' ? 'Business' : 'Personal';
+  const roleLabel = currentRole === "business_owner" ? "Business" : "Personal";
+  const otherRole = currentRole === "business_owner" ? "user" : "business_owner";
+  const otherLabel = otherRole === "business_owner" ? "Business" : "Personal";
 
   return (
     <div className="relative">
@@ -45,10 +45,9 @@ export function RoleSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 border ${
           isOpen
-            ? 'bg-navbar-bg text-white border-white/20'
-            : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border-white/10'
+            ? "bg-navbar-bg text-white border-white/20"
+            : "bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border-white/10"
         }`}
-        style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
       >
         {roleLabel}
       </button>
@@ -62,7 +61,6 @@ export function RoleSwitcher() {
             <button
               onClick={() => handleSwitchRole(otherRole as any)}
               className="w-full px-3 py-2 text-sm text-white hover:bg-white/10 rounded transition-colors duration-200 text-left"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             >
               {otherLabel}
             </button>

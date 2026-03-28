@@ -6,16 +6,13 @@ import { ArrowRight } from "@/app/lib/icons";
 import EventCard from "../EventCard/EventCard";
 import ScrollableSection from "../ScrollableSection/ScrollableSection";
 import FilterPillGroup from "../Filters/FilterPillGroup";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import WavyTypedTitle from "../Animations/WavyTypedTitle";
 import type { EventsSpecialsProps, ListingTypeFilter } from "./EventsSpecials.types";
 import { getStableEventRailKey } from "./eventsSpecials.utils";
 import CardRail from "../CardRail/CardRail";
 import EventsSpecialsSkeleton from "./EventsSpecialsSkeleton";
-import {
-  HomeSectionRow,
-  HOME_SECTION_HEADING_CLASS,
-} from "../HomeSectionRow/HomeSectionRow";
+import { HomeSectionRow, HOME_SECTION_HEADING_CLASS } from "../HomeSectionRow/HomeSectionRow";
 import {
   HOME_SECTION_CARD_BASE_CLASS,
   HOME_SECTION_RAIL_CLASS,
@@ -50,10 +47,13 @@ export default function EventsSpecials({
 
   const displayEvents = useMemo(() => (events || []).slice(0, 12), [events]);
 
-  const typeCounts = useMemo(() => ({
-    eventCount: displayEvents.filter((e) => e.type === "event").length,
-    specialCount: displayEvents.filter((e) => e.type === "special").length,
-  }), [displayEvents]);
+  const typeCounts = useMemo(
+    () => ({
+      eventCount: displayEvents.filter((e) => e.type === "event").length,
+      specialCount: displayEvents.filter((e) => e.type === "special").length,
+    }),
+    [displayEvents]
+  );
 
   const filteredEvents = useMemo(() => {
     if (!activeTypeFilter) return displayEvents;
@@ -65,10 +65,7 @@ export default function EventsSpecials({
 
   const headingClass = HOME_SECTION_HEADING_CLASS;
 
-  const headingStyle = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: titleFontWeight,
-  } as const;
+  const headingStyle = { fontWeight: titleFontWeight } as CSSProperties;
 
   if (loading) {
     return (
@@ -93,22 +90,27 @@ export default function EventsSpecials({
     />
   ) : undefined;
 
-  const filterSlot = showTypeFilters && hasEvents ? (
-    <FilterPillGroup
-      options={[
-        ...(showAllTypeFilter
-          ? [{ value: null as ListingTypeFilter, label: "All", count: displayEvents.length }]
-          : []),
-        { value: "event" as ListingTypeFilter, label: "Events", count: typeCounts.eventCount },
-        { value: "special" as ListingTypeFilter, label: "Specials", count: typeCounts.specialCount },
-      ]}
-      value={activeTypeFilter}
-      onChange={(value) => setActiveTypeFilter((value as ListingTypeFilter) ?? null)}
-      ariaLabel="Event type filter"
-      size="sm"
-      showCounts
-    />
-  ) : undefined;
+  const filterSlot =
+    showTypeFilters && hasEvents ? (
+      <FilterPillGroup
+        options={[
+          ...(showAllTypeFilter
+            ? [{ value: null as ListingTypeFilter, label: "All", count: displayEvents.length }]
+            : []),
+          { value: "event" as ListingTypeFilter, label: "Events", count: typeCounts.eventCount },
+          {
+            value: "special" as ListingTypeFilter,
+            label: "Specials",
+            count: typeCounts.specialCount,
+          },
+        ]}
+        value={activeTypeFilter}
+        onChange={(value) => setActiveTypeFilter((value as ListingTypeFilter) ?? null)}
+        ariaLabel="Event type filter"
+        size="sm"
+        showCounts
+      />
+    ) : undefined;
 
   const cardClass = `${HOME_SECTION_CARD_BASE_CLASS} event-card-rail-full-width`;
 
@@ -153,7 +155,9 @@ export default function EventsSpecials({
                 <p className="text-body text-charcoal/70 mb-2">
                   No {activeTypeFilter === "special" ? "specials" : "events"} available right now
                 </p>
-                <p className="text-body-sm text-charcoal/70">Switch filters to view the other listings.</p>
+                <p className="text-body-sm text-charcoal/70">
+                  Switch filters to view the other listings.
+                </p>
               </div>
             </div>
           )
@@ -168,7 +172,6 @@ export default function EventsSpecials({
                 <button
                   onClick={() => router.push(href)}
                   className="mi-tap inline-flex items-center justify-center gap-2 rounded-full min-h-[48px] px-6 py-3 text-body font-semibold text-white bg-gradient-to-r from-coral to-coral/85 hover:opacity-95 transition-all duration-200 shadow-md w-full sm:w-auto sm:min-w-[200px]"
-                  style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
                   aria-label={`See more: ${title}`}
                 >
                   <span>See More</span>

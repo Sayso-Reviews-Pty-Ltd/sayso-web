@@ -5,29 +5,29 @@ const getUniqueEventColor = (eventId: string): string => {
   let hash = 0;
   for (let i = 0; i < eventId.length; i++) {
     const char = eventId.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
-  
+
   // Use absolute value and modulo to get a consistent index
   const index = Math.abs(hash) % 12;
-  
+
   // Palette of distinct solid colors for badges (using Tailwind color values)
   const colorPalette = [
-    '#FF6B6B',  // 0 - Coral/Red
-    '#4ECDC4',  // 1 - Teal
-    '#95E1D3',  // 2 - Mint
-    '#F38181',  // 3 - Pink
-    '#AA96DA',  // 4 - Purple
-    '#FCBAD3',  // 5 - Light Pink
-    '#FFD93D',  // 6 - Yellow
-    '#6BCB77',  // 7 - Green
-    '#4D96FF',  // 8 - Blue
-    '#FF9F43',  // 9 - Orange
-    '#A29BFE',  // 10 - Indigo
-    '#FD79A8',  // 11 - Rose
+    "#FF6B6B", // 0 - Coral/Red
+    "#4ECDC4", // 1 - Teal
+    "#95E1D3", // 2 - Mint
+    "#F38181", // 3 - Pink
+    "#AA96DA", // 4 - Purple
+    "#FCBAD3", // 5 - Light Pink
+    "#FFD93D", // 6 - Yellow
+    "#6BCB77", // 7 - Green
+    "#4D96FF", // 8 - Blue
+    "#FF9F43", // 9 - Orange
+    "#A29BFE", // 10 - Indigo
+    "#FD79A8", // 11 - Rose
   ];
-  
+
   return colorPalette[index];
 };
 
@@ -42,7 +42,7 @@ const getUniqueEventColor = (eventId: string): string => {
  */
 const formatDateRange = (startDate: string, endDate?: string): string => {
   // Don't format if it's already a recurring pattern
-  if (startDate.includes('Every') || startDate.includes('Daily') || startDate.includes('-')) {
+  if (startDate.includes("Every") || startDate.includes("Daily") || startDate.includes("-")) {
     return startDate;
   }
 
@@ -51,24 +51,24 @@ const formatDateRange = (startDate: string, endDate?: string): string => {
   }
 
   // For multi-day events, highlight when it ends
-  if (!endDate.includes('Every') && !endDate.includes('Daily')) {
+  if (!endDate.includes("Every") && !endDate.includes("Daily")) {
     return `Ends ${endDate}`;
   }
 
   // Don't format if end date is also a pattern
-  if (endDate.includes('Every') || endDate.includes('Daily') || endDate.includes('-')) {
+  if (endDate.includes("Every") || endDate.includes("Daily") || endDate.includes("-")) {
     return `${startDate} - ${endDate}`;
   }
 
   // Both are dates, try to format nicely
   // If start and end have the same month prefix, just show day range
-  const startMonth = startDate.split(' ')[0]; // e.g., "Dec"
-  const endMonth = endDate.split(' ')[0]; // e.g., "Dec"
-  
+  const startMonth = startDate.split(" ")[0]; // e.g., "Dec"
+  const endMonth = endDate.split(" ")[0]; // e.g., "Dec"
+
   if (startMonth === endMonth) {
     // Same month: "Dec 15-22"
-    const startDay = startDate.split(' ')[1]; // e.g., "15"
-    const endDay = endDate.split(' ')[1]; // e.g., "22"
+    const startDay = startDate.split(" ")[1]; // e.g., "15"
+    const endDay = endDate.split(" ")[1]; // e.g., "22"
     return `${startMonth} ${startDay}-${endDay}`;
   } else {
     // Different months: "Dec 15 - Jan 5"
@@ -86,14 +86,19 @@ interface EventBadgeProps {
   position?: "corner" | "middle";
 }
 
-const EN_DASH = '–';
+const EN_DASH = "–";
 
 const formatCompact = (start: Date, end?: Date): string => {
-  const dayFormatter = new Intl.DateTimeFormat('en-US', { day: 'numeric' });
-  const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
-  const yearFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric' });
+  const dayFormatter = new Intl.DateTimeFormat("en-US", { day: "numeric" });
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+  const yearFormatter = new Intl.DateTimeFormat("en-US", { year: "numeric" });
 
-  if (!end || (start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth() && start.getDate() === end.getDate())) {
+  if (
+    !end ||
+    (start.getFullYear() === end.getFullYear() &&
+      start.getMonth() === end.getMonth() &&
+      start.getDate() === end.getDate())
+  ) {
     return `${dayFormatter.format(start)} ${monthFormatter.format(start)} ${yearFormatter.format(start)}`;
   }
 
@@ -118,7 +123,7 @@ const tryParse = (value?: string): Date | null => {
 
 const parseFormatted = (value?: string): { day: string | null; month: string | null } => {
   if (!value) return { day: null, month: null };
-  const parts = value.split(' ');
+  const parts = value.split(" ");
   if (parts.length < 2) return { day: null, month: null };
   // Expect format like "Dec 15"
   const month = parts[0];
@@ -128,8 +133,8 @@ const parseFormatted = (value?: string): { day: string | null; month: string | n
 
 const formatFallbackCompact = (start?: string, end?: string): string => {
   // If recurring patterns, return the original string
-  if (start && (start.includes('Every') || start.includes('Daily'))) return start;
-  if (!start) return '';
+  if (start && (start.includes("Every") || start.includes("Daily"))) return start;
+  if (!start) return "";
 
   const s = parseFormatted(start);
   const e = parseFormatted(end);
@@ -158,33 +163,30 @@ export default function EventBadge({
   let latest: string | undefined = endDateISO;
 
   if (occurrences && occurrences.length > 0) {
-    const starts = occurrences.map(o => o.startDate).filter(Boolean).sort();
+    const starts = occurrences
+      .map((o) => o.startDate)
+      .filter(Boolean)
+      .sort();
     // Only count real end dates — don't fall back to startDate here or it
     // overwrites endDateISO and makes multi-day events show a single date.
-    const ends = occurrences.map(o => o.endDate).filter((d): d is string => !!d).sort();
+    const ends = occurrences
+      .map((o) => o.endDate)
+      .filter((d): d is string => !!d)
+      .sort();
     earliest = starts[0] || startDateISO;
     latest = ends[ends.length - 1] || endDateISO;
   }
 
   const startParsed = tryParse(earliest);
   const endParsed = tryParse(latest);
-  const dateText = startParsed ? formatCompact(startParsed, endParsed || undefined) : formatFallbackCompact(startDate, endDate);
+  const dateText = startParsed
+    ? formatCompact(startParsed, endParsed || undefined)
+    : formatFallbackCompact(startDate, endDate);
 
   if (position === "middle") {
     return (
       <div className="absolute left-1/2 bottom-0 z-20 -translate-x-1/2 translate-y-1/2">
-        <div
-          className="inline-flex items-center justify-center rounded-full bg-navbar-bg/95 px-5 py-2.5 text-white/85 shadow-md"
-          style={{
-            minWidth: "160px",
-            textAlign: "center",
-            fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            fontWeight: 700,
-            fontSize: "0.75rem",
-            letterSpacing: "0.015em",
-            lineHeight: 1,
-          }}
-        >
+        <div className="inline-flex min-w-[160px] items-center justify-center rounded-full bg-navbar-bg/95 px-5 py-2.5 text-center text-xs font-bold leading-none tracking-wide text-white/85 shadow-md font-urbanist">
           {dateText}
         </div>
       </div>
@@ -193,17 +195,7 @@ export default function EventBadge({
 
   return (
     <div className="absolute left-4 top-4 z-20">
-      <div
-        className="inline-flex items-center justify-center rounded-full bg-navbar-bg/90 px-3 py-1.5 text-white shadow-md"
-        style={{
-          textAlign: "center",
-          fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          fontWeight: 600,
-          fontSize: "0.75rem",
-          letterSpacing: "0.02em",
-          lineHeight: 1,
-        }}
-      >
+      <div className="inline-flex items-center justify-center rounded-full bg-navbar-bg/90 px-3 py-1.5 text-center text-xs font-semibold leading-none tracking-wide text-white shadow-md font-urbanist">
         {dateText}
       </div>
     </div>

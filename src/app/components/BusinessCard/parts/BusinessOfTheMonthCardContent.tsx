@@ -44,17 +44,7 @@ export default function BusinessOfTheMonthCardContent({
                   className="group w-full max-w-full min-w-0 text-charcoal transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-coral/40 rounded-lg px-2 py-1 flex items-center justify-center"
                   aria-label={`View ${business.name} details`}
                 >
-                  <h3
-                    className="text-h2 sm:text-h1 font-bold text-inherit text-center leading-[1.3] truncate tracking-tight transition-colors duration-300 group-hover:text-navbar-bg/90 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                      fontWeight: 700,
-                      WebkitFontSmoothing: 'antialiased',
-                      MozOsxFontSmoothing: 'grayscale',
-                      textRendering: 'optimizeLegibility',
-                      letterSpacing: '-0.01em'
-                    }}
-                  >
+                  <h3 className="text-h2 sm:text-h1 font-bold text-inherit text-center leading-[1.3] truncate tracking-tight transition-colors duration-300 group-hover:text-navbar-bg/90 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                     {business.name}
                   </h3>
                 </button>
@@ -71,17 +61,7 @@ export default function BusinessOfTheMonthCardContent({
                     <div className="w-8 h-8 rounded-full bg-off-white/20 flex items-center justify-center flex-shrink-0">
                       <CategoryIcon className="w-4 h-4 text-charcoal/70" strokeWidth={2.5} />
                     </div>
-                    <span
-                      className="truncate text-caption sm:text-xs text-charcoal/80 font-semibold"
-                      style={{
-                        fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                        fontWeight: 600,
-                        WebkitFontSmoothing: 'antialiased',
-                        MozOsxFontSmoothing: 'grayscale',
-                        textRendering: 'optimizeLegibility',
-                        letterSpacing: '0.01em'
-                      }}
-                    >
+                    <span className="truncate text-caption sm:text-xs text-charcoal/80 font-semibold">
                       {categoryLabel}
                     </span>
                   </div>
@@ -102,16 +82,12 @@ export default function BusinessOfTheMonthCardContent({
                         onCardClick();
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
                           onCardClick();
                         }
                       }}
                       className="inline-flex items-center justify-center text-body-sm sm:text-base font-bold leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-                      style={{
-                        fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                        fontWeight: 700
-                      }}
                     >
                       {business.reviewCount}
                     </span>
@@ -123,16 +99,12 @@ export default function BusinessOfTheMonthCardContent({
                         onCardClick();
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
                           onCardClick();
                         }
                       }}
                       className="inline-flex items-center justify-center text-sm leading-none text-navbar-bg underline-offset-2 cursor-pointer transition-colors duration-200 hover:text-coral"
-                      style={{
-                        fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                        fontWeight: 400
-                      }}
                     >
                       Reviews
                     </span>
@@ -146,26 +118,32 @@ export default function BusinessOfTheMonthCardContent({
                       onWriteReview(e);
                     }}
                     onKeyDown={(e: any) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                      if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         onWriteReview(e as any);
                       }
                     }}
                     className="inline-flex items-center justify-center text-sm font-normal underline-offset-2 min-w-[92px] text-center transition-colors duration-200 text-charcoal cursor-pointer hover:text-coral"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                      fontWeight: 400
-                    }}
                     title="Be the first to review"
                   >
                     Be the first to review
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-center gap-2 text-charcoal transition-all duration-300"
-                aria-label={hasReviews ? `View ${business.reviewCount} reviews for ${business.name}` : `Be the first to review ${business.name}`}
+              <div
+                className="flex items-center justify-center gap-2 text-charcoal transition-all duration-300"
+                aria-label={
+                  hasReviews
+                    ? `View ${business.reviewCount} reviews for ${business.name}`
+                    : `Be the first to review ${business.name}`
+                }
               >
-                <Stars value={hasReviews && displayTotal > 0 ? displayTotal : 0} color="charcoal" size={18} spacing={2.5} />
+                <Stars
+                  value={hasReviews && displayTotal > 0 ? displayTotal : 0}
+                  color="charcoal"
+                  size={18}
+                  spacing={2.5}
+                />
               </div>
             </div>
           </div>
@@ -181,10 +159,6 @@ export default function BusinessOfTheMonthCardContent({
             onWriteReview(e);
           }}
           aria-label={`Write a review for ${business.name}`}
-          style={{
-            fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            fontWeight: 600,
-          }}
         >
           <span>Review</span>
         </button>

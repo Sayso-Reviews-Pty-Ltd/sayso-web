@@ -21,11 +21,17 @@ import BusinessOfTheMonthCardContent from "./parts/BusinessOfTheMonthCardContent
 import { BLUR_DATA_URL } from "./BusinessOfTheMonthCard.constants";
 import { RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
 
-export default function BusinessOfTheMonthCard({ business, index = 0 }: { business: BusinessOfTheMonth; index?: number }) {
+export default function BusinessOfTheMonthCard({
+  business,
+  index = 0,
+}: {
+  business: BusinessOfTheMonth;
+  index?: number;
+}) {
   const router = useRouter();
   const { toggleSavedItem, isItemSaved } = useSavedItems();
   const { showToast } = useToast();
-  
+
   const idForSnap = useMemo(() => `business-month-${business.id}`, [business.id]);
   const [imgError, setImgError] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
@@ -41,7 +47,9 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
     return href.startsWith("/") ? href : `/${href}`;
   };
   const reviewRoute = `/business/${businessIdentifier}/review`;
-  const businessProfileRoute = normalizeRoute((business as any).href || `/business/${businessIdentifier}`);
+  const businessProfileRoute = normalizeRoute(
+    (business as any).href || `/business/${businessIdentifier}`
+  );
   const isInternalBusinessRoute = businessProfileRoute.startsWith("/");
   const isSaved = isItemSaved(business.id);
 
@@ -82,7 +90,12 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
       return raw.replace(/^Best\s+/i, "Sayso Select for ");
     }
     return raw;
-  }, [(business as any).monthAchievement, (business as any).ui_hints?.reason?.label, business.badge, business]);
+  }, [
+    (business as any).monthAchievement,
+    (business as any).ui_hints?.reason?.label,
+    business.badge,
+    business,
+  ]);
 
   const selectBadgeText = useMemo(() => {
     const normalized = ribbonText?.trim();
@@ -179,10 +192,12 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
       const primaryImage = businessImages.find((img: any) => img?.is_primary === true);
       const imageUrl = primaryImage?.url || businessImages[0]?.url;
 
-      if (imageUrl &&
-          typeof imageUrl === 'string' &&
-          imageUrl.trim() !== '' &&
-          !isPlaceholderImage(imageUrl)) {
+      if (
+        imageUrl &&
+        typeof imageUrl === "string" &&
+        imageUrl.trim() !== "" &&
+        !isPlaceholderImage(imageUrl)
+      ) {
         return { image: imageUrl, isPlaceholder: false };
       }
     }
@@ -191,20 +206,24 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
     const uploadedImages = (business as any).uploaded_images;
     if (uploadedImages && Array.isArray(uploadedImages) && uploadedImages.length > 0) {
       const firstImage = uploadedImages[0]; // First image is primary due to ORDER BY is_primary DESC
-      if (firstImage &&
-          typeof firstImage === 'string' &&
-          firstImage.trim() !== '' &&
-          !isPlaceholderImage(firstImage)) {
+      if (
+        firstImage &&
+        typeof firstImage === "string" &&
+        firstImage.trim() !== "" &&
+        !isPlaceholderImage(firstImage)
+      ) {
         return { image: firstImage, isPlaceholder: false };
       }
     }
 
     // Priority 3: Check image_url (API compatibility)
     const imageUrl = business.image || (business as any).image_url;
-    if (imageUrl &&
-        typeof imageUrl === 'string' &&
-        imageUrl.trim() !== '' &&
-        !isPlaceholderImage(imageUrl)) {
+    if (
+      imageUrl &&
+      typeof imageUrl === "string" &&
+      imageUrl.trim() !== "" &&
+      !isPlaceholderImage(imageUrl)
+    ) {
       return { image: imageUrl, isPlaceholder: false };
     }
 
@@ -225,9 +244,13 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
   const isPlaceholder = getDisplayImage.isPlaceholder;
   const displayAlt = (business as any).alt || business.name;
   const displayTotal =
-    (typeof business.totalRating === "number" && business.totalRating > 0 && business.totalRating) ||
+    (typeof business.totalRating === "number" &&
+      business.totalRating > 0 &&
+      business.totalRating) ||
     (typeof business.rating === "number" && business.rating > 0 && business.rating) ||
-    (typeof business?.stats?.average_rating === "number" && business.stats.average_rating > 0 && business.stats.average_rating) ||
+    (typeof business?.stats?.average_rating === "number" &&
+      business.stats.average_rating > 0 &&
+      business.stats.average_rating) ||
     0;
 
   // Handle image error - fallback to placeholder if uploaded image fails
@@ -260,7 +283,7 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
   // Determine star gradient tier based on rating
   const starGradientId = useMemo(() => {
     if (!displayTotal || displayTotal === 0) return null;
-    return displayTotal > 4.0 ? 'Gold' : displayTotal > 2.0 ? 'Bronze' : 'Low';
+    return displayTotal > 4.0 ? "Gold" : displayTotal > 2.0 ? "Bronze" : "Low";
   }, [displayTotal]);
 
   // Handle share
@@ -272,7 +295,7 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
         ? businessProfileRoute
         : `${window.location.origin}${businessProfileRoute}`;
       const shareText = `Check out ${business.name} on sayso!`;
-      
+
       if (navigator.share) {
         await navigator.share({
           title: business.name,
@@ -282,12 +305,12 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
       } else {
         // Fallback: copy to clipboard
         await navigator.clipboard.writeText(shareUrl);
-        showToast('Link copied to clipboard!', 'success');
+        showToast("Link copied to clipboard!", "success");
       }
     } catch (error) {
       // User cancelled or error occurred
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Error sharing:', error);
+      if ((error as Error).name !== "AbortError") {
+        console.error("Error sharing:", error);
       }
     }
   };
@@ -376,16 +399,14 @@ export default function BusinessOfTheMonthCard({ business, index = 0 }: { busine
     <div
       id={idForSnap}
       className={`snap-center snap-always flex-shrink-0 h-full ${RAIL_CARD_WIDTH} list-none`}
-      style={{
-        fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-        fontWeight: 600,
-      }}
     >
       <div
         className={`relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 ${RAIL_CARD_RADIUS} overflow-hidden group cursor-pointer w-full h-full flex flex-col backdrop-blur-xl shadow-md`}
-        style={{
-          maxWidth: "540px",
-        } as React.CSSProperties}
+        style={
+          {
+            maxWidth: "540px",
+          } as React.CSSProperties
+        }
         role="link"
         tabIndex={0}
         onClick={handleCardClick}

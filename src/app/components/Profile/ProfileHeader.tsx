@@ -120,7 +120,6 @@ export function ProfileHeader({
                 <h2
                   id="profile-heading"
                   className="text-h1 sm:text-hero font-semibold text-charcoal"
-                  style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
                 >
                   {displayLabel}
                 </h2>

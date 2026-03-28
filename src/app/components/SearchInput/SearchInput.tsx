@@ -12,8 +12,8 @@ import { useSearchSuggestions } from "../../hooks/useSearchSuggestions";
 interface SearchInputProps {
   placeholder?: string;
   mobilePlaceholder?: string;
-  onSearch?: (query: string) => void;           // fires on change
-  onSubmitQuery?: (query: string) => void;      // fires on Enter / submit
+  onSearch?: (query: string) => void; // fires on change
+  onSubmitQuery?: (query: string) => void; // fires on Enter / submit
   onFilterClick?: () => void;
   onMapClick?: () => void;
   showMap?: boolean;
@@ -23,7 +23,7 @@ interface SearchInputProps {
   showSearchIcon?: boolean;
   className?: string;
   variant?: "header" | "page";
-  activeFilterCount?: number;                   // Number of active filters (for badge)
+  activeFilterCount?: number; // Number of active filters (for badge)
 
   /** Suggestions dropdown */
   enableSuggestions?: boolean;
@@ -257,7 +257,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
     return (
       <form
         onSubmit={handleSubmit}
-        className={`${containerClass} ${className}`}
+        className={`${containerClass} font-urbanist ${className}`}
         ref={(node) => {
           rootRef.current = node;
           if (typeof ref === "function") ref(node);
@@ -272,7 +272,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                 type="button"
                 onClick={onMapClick}
                 className={`flex items-center text-charcoal/60 hover:text-charcoal transition-colors ${
-                  isMapMode ? 'text-coral' : ''
+                  isMapMode ? "text-coral" : ""
                 }`}
                 aria-label={isMapMode ? "Show list view" : "Show map view"}
               >
@@ -288,10 +288,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
               >
                 <Sliders className="w-5 h-5" strokeWidth={2} />
                 {activeFilterCount > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-card-bg text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                    style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                  >
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-card-bg text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {activeFilterCount}
                   </span>
                 )}
@@ -340,9 +337,6 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
               ${showFilter && onFilterClick && showMap && onMapClick ? "pr-24" : (showFilter && onFilterClick) || (showMap && onMapClick) ? "pr-12" : showSearchIcon ? "pr-10" : "pr-0"}
               py-3 px-0
             `}
-            style={{
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            }}
             aria-label="Search"
           />
 
@@ -363,9 +357,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                 onMouseDown={(e) => e.preventDefault()}
               >
                 <div className="px-4 py-3 border-b border-charcoal/10 flex items-center justify-between">
-                  <div className="text-xs font-semibold text-charcoal/70">
-                    Suggestions
-                  </div>
+                  <div className="text-xs font-semibold text-charcoal/70">Suggestions</div>
                   <button
                     type="button"
                     onMouseDown={(e) => {
@@ -392,9 +384,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                         className="mi-tap w-full text-left px-4 py-2.5 flex items-center gap-2.5 hover:bg-charcoal/5 transition-colors duration-150 group"
                       >
                         <Search className="w-3.5 h-3.5 text-charcoal/40 flex-shrink-0 group-hover:text-charcoal/60 transition-colors" />
-                        <span className="text-sm text-charcoal truncate flex-1">
-                          {s.query}
-                        </span>
+                        <span className="text-sm text-charcoal truncate flex-1">{s.query}</span>
                         <span className="text-[11px] text-charcoal/40 flex-shrink-0">
                           {s.type === "location" ? "area" : "category"}
                         </span>
@@ -406,9 +396,7 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                 <div className="py-2">
                   {suggestionsMode === "business" ? (
                     liveLoading && businessSuggestions.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-charcoal/60">
-                        Searching…
-                      </div>
+                      <div className="px-4 py-3 text-sm text-charcoal/60">Searching…</div>
                     ) : (
                       businessSuggestions.map((item, idx) => {
                         const isActive = idx === activeIndex;
@@ -432,7 +420,8 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                                 {item.name}
                               </div>
                               <div className="text-xs text-charcoal/60 truncate">
-                                {label ? `${label} • ` : ""}{item.location}
+                                {label ? `${label} • ` : ""}
+                                {item.location}
                               </div>
                             </div>
                           </button>

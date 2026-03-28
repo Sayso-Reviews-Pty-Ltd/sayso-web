@@ -495,13 +495,7 @@ export default function BusinessProfilePage() {
   };
 
   return (
-    <div
-      className="min-h-dvh bg-off-white font-urbanist"
-      style={{
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-      }}
-    >
+    <div className="min-h-dvh bg-off-white font-urbanist">
       {/* Main Header */}
 
       <div className="min-h-[100dvh] bg-gradient-to-b from-off-white/0 via-off-white/50 to-off-white relative overflow-hidden">

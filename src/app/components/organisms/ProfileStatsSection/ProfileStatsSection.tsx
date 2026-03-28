@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { StatsGrid, Stat } from '@/components/molecules/StatsGrid';
+import React from "react";
+import { StatsGrid, Stat } from "@/components/molecules/StatsGrid";
+import { H2 } from "@/app/components/ui/typography";
 
 export interface ProfileStatsSectionProps {
   stats: Stat[];
@@ -12,13 +13,15 @@ export interface ProfileStatsSectionProps {
 
 export const ProfileStatsSection: React.FC<ProfileStatsSectionProps> = ({
   stats,
-  title = 'Stats Overview',
+  title = "Stats Overview",
   columns = 3,
-  className = '',
+  className = "",
 }) => {
   return (
-    <div className={`p-6 sm:p-8 bg-card-bg  rounded-[12px] shadow-sm mb-6 ${className}`}>
-      <h2 className="text-sm font-bold text-charcoal mb-4" style={{ fontFamily: '"SF Pro New", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>{title}</h2>
+    <div
+      className={`p-6 sm:p-8 bg-card-bg rounded-[12px] shadow-sm mb-6 font-urbanist ${className}`}
+    >
+      <H2 className="text-sm font-bold mb-4">{title}</H2>
       <StatsGrid stats={stats} columns={columns} />
     </div>
   );

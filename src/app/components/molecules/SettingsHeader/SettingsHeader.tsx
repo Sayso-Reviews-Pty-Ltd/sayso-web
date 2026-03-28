@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 import { ArrowLeft } from "@/app/lib/icons";
 
 export interface SettingsHeaderProps {
@@ -9,17 +9,9 @@ export interface SettingsHeaderProps {
   backHref: string;
 }
 
-export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
-  title,
-  backHref,
-}) => {
+export const SettingsHeader: React.FC<SettingsHeaderProps> = ({ title, backHref }) => {
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 bg-navbar-bg backdrop-blur-sm border-b border-charcoal/10"
-      style={{
-        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-      }}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-navbar-bg backdrop-blur-sm border-b border-charcoal/10 font-urbanist">
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-8 pt-2 pb-4">
         <div className="flex items-center justify-between">
           <Link href={backHref} className="group flex items-center">
@@ -35,4 +27,3 @@ export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
     </header>
   );
 };
-

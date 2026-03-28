@@ -21,6 +21,7 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
   return (
     <Card asChild variant="detail" className="p-4 sm:p-6 relative overflow-hidden">
       <m.div
+        className="font-urbanist"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.6, duration: 0.6 }}
@@ -30,14 +31,7 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg"></div>
 
         <div className="relative z-10">
-          <h3
-            className="text-h3 font-semibold text-charcoal mb-3"
-            style={{
-              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            }}
-          >
-            Contact Information
-          </h3>
+          <h3 className="text-h3 font-semibold text-charcoal mb-3">Contact Information</h3>
 
           {hasAnyInfo ? (
             <div className="space-y-2.5">
@@ -46,15 +40,7 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
                   <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                     <Phone className="w-4 h-4 text-charcoal/85" />
                   </span>
-                  <span
-                    className="text-body-sm text-charcoal/70"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
-                    {contactText}
-                  </span>
+                  <span className="text-body-sm text-charcoal/70">{contactText}</span>
                 </div>
               )}
 
@@ -68,10 +54,6 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
                     target="_blank"
                     rel="noreferrer"
                     className="text-body-sm text-navbar-bg font-600 underline underline-offset-4"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
                   >
                     Visit booking page
                   </a>
@@ -83,13 +65,7 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
                   <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                     <MapPin className="w-4 h-4 text-charcoal/85" />
                   </span>
-                  <span
-                    className="text-body-sm text-charcoal/70"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
-                  >
+                  <span className="text-body-sm text-charcoal/70">
                     {primaryLocation}
                     {primaryLocation && secondaryLocation ? ", " : ""}
                     {secondaryLocation}
@@ -98,12 +74,7 @@ export default function EventContactInfo({ event }: EventContactInfoProps) {
               )}
             </div>
           ) : (
-            <p
-              className="text-body-sm text-charcoal/70"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
-            >
+            <p className="text-body-sm text-charcoal/70">
               Contact details are not available for this event yet.
             </p>
           )}

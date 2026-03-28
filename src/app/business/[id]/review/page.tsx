@@ -503,26 +503,7 @@ function WriteReviewContent() {
 
   return (
     <>
-      <style jsx global>{`
-        .font-urbanist {
-          font-family:
-            -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue",
-            Helvetica, Arial, system-ui, sans-serif;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          font-feature-settings:
-            "kern" 1,
-            "liga" 1,
-            "calt" 1;
-        }
-      `}</style>
-      <div
-        className="min-h-dvh bg-off-white relative overflow-x-hidden font-urbanist"
-        style={{
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-        }}
-      >
+      <div className="min-h-dvh bg-off-white relative overflow-x-hidden font-urbanist">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5 pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
@@ -532,7 +513,7 @@ function WriteReviewContent() {
 
         <div className="min-h-[100dvh] bg-gradient-to-b from-off-white/0 via-off-white/50 to-off-white">
           <main
-            className="relative font-sf-pro"
+            className="relative font-urbanist"
             id="main-content"
             role="main"
             aria-label="Write review content"

@@ -14,10 +14,7 @@ interface EventCardSkeletonProps {
 export default function EventCardSkeleton({ fullWidth = false }: EventCardSkeletonProps) {
   return (
     <div
-      className={fullWidth ? "flex w-full" : "flex w-full sm:w-auto sm:w-[260px] md:w-[340px]"}
-      style={{
-        fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
+      className={`${fullWidth ? "flex w-full" : "flex w-full sm:w-auto sm:w-[260px] md:w-[340px]"} font-urbanist`}
     >
       <article
         className={`relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden w-full flex flex-col border-none backdrop-blur-xl shadow-md animate-pulse ${

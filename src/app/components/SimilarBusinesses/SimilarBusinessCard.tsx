@@ -65,7 +65,9 @@ function SimilarBusinessCard({
   const placeholderSrc = getCategoryPlaceholder(categorySlug || undefined);
 
   const rawImage =
-    (uploaded_images && uploaded_images.length > 0 && !isPlaceholderImage(uploaded_images[0]) ? uploaded_images[0] : null) ||
+    (uploaded_images && uploaded_images.length > 0 && !isPlaceholderImage(uploaded_images[0])
+      ? uploaded_images[0]
+      : null) ||
     (image_url && !isPlaceholderImage(image_url) ? image_url : null) ||
     (image && !isPlaceholderImage(image) ? image : null);
   const isPlaceholder = !rawImage;
@@ -89,7 +91,7 @@ function SimilarBusinessCard({
   return (
     <Link
       href={`/business/${businessIdentifier}`}
-      className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full h-full flex flex-col border-none backdrop-blur-xl shadow-md"
+      className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden group cursor-pointer w-full h-full flex flex-col border-none backdrop-blur-xl shadow-md font-urbanist"
       style={{ minHeight: "416px" } as React.CSSProperties}
     >
       {/* Image Section */}
@@ -97,9 +99,7 @@ function SimilarBusinessCard({
         {typeof rating === "number" && rating > 0 && (
           <div className="absolute right-3 top-3 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-2.5 py-1 text-charcoal shadow-md border-none">
             <Star className="w-4 h-4 text-charcoal fill-charcoal" strokeWidth={2.5} aria-hidden />
-            <span className="text-xs font-semibold text-charcoal" style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}>
-              {Number(rating).toFixed(1)}
-            </span>
+            <span className="text-xs font-semibold text-charcoal">{Number(rating).toFixed(1)}</span>
           </div>
         )}
 
@@ -134,12 +134,18 @@ function SimilarBusinessCard({
             </div>
             <div
               className="absolute inset-0 pointer-events-none z-[1]"
-              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.02) 30%, transparent 60%)" }}
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.02) 30%, transparent 60%)",
+              }}
               aria-hidden="true"
             />
           </div>
         ) : (
-          <div className="relative w-full h-full flex items-center justify-center" style={{ backgroundColor: "#E5E0E5" }}>
+          <div
+            className="relative w-full h-full flex items-center justify-center"
+            style={{ backgroundColor: "#E5E0E5" }}
+          >
             <ImageIcon className="w-16 h-16 text-charcoal/20" aria-hidden="true" />
           </div>
         )}
@@ -148,14 +154,14 @@ function SimilarBusinessCard({
       {/* Content Section */}
       <CardContent className="px-4 py-4 bg-gradient-to-b from-card-bg/95 to-card-bg flex flex-col gap-2 rounded-b-[12px]">
         <CardTitle
-          className="text-base sm:text-lg font-bold text-charcoal leading-tight line-clamp-1 transition-colors duration-300 group-hover:text-navbar-bg/90"
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 700, WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale", textRendering: "optimizeLegibility" } as React.CSSProperties}
+          className="text-base sm:text-lg font-bold text-charcoal leading-tight line-clamp-1 transition-colors duration-300 group-hover:text-navbar-bg/90 antialiased [text-rendering:optimizeLegibility]"
           title={name}
         >
           {name}
         </CardTitle>
 
-        {(typeof rating === "number" && rating > 0) || (typeof reviews === "number" && reviews > 0) ? (
+        {(typeof rating === "number" && rating > 0) ||
+        (typeof reviews === "number" && reviews > 0) ? (
           <div className="flex items-center justify-center gap-2 text-xs text-charcoal/60 -mt-0.5">
             {typeof rating === "number" && rating > 0 && (
               <span className="inline-flex items-center gap-1">
@@ -164,16 +170,15 @@ function SimilarBusinessCard({
               </span>
             )}
             {typeof reviews === "number" && reviews > 0 && (
-              <span className="text-charcoal/60">{reviews} {reviews === 1 ? "review" : "reviews"}</span>
+              <span className="text-charcoal/60">
+                {reviews} {reviews === 1 ? "review" : "reviews"}
+              </span>
             )}
           </div>
         ) : null}
 
         {description && (
-          <CardDescription
-            className="text-sm text-charcoal/70 line-clamp-2 leading-snug"
-            style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 400 }}
-          >
+          <CardDescription className="text-sm font-normal text-charcoal/70 line-clamp-2 leading-snug">
             {description}
           </CardDescription>
         )}
@@ -181,7 +186,11 @@ function SimilarBusinessCard({
         {(location || address) && (
           <div className="flex items-center gap-1.5 text-xs text-charcoal/60 mt-1">
             {(() => {
-              const CategoryIcon = getCategoryIcon(category, categorySlug || subInterestId, subInterestLabel);
+              const CategoryIcon = getCategoryIcon(
+                category,
+                categorySlug || subInterestId,
+                subInterestLabel
+              );
               return (
                 <div className="w-8 h-8 rounded-full bg-navbar-bg/50 flex items-center justify-center flex-shrink-0">
                   <CategoryIcon className="w-4 h-4 text-white/80" strokeWidth={2.5} />
@@ -190,7 +199,9 @@ function SimilarBusinessCard({
             })()}
             <span className="truncate">{address || location}</span>
             {typeof distanceKm === "number" && distanceKm > 0 && (
-              <span className="flex-shrink-0 text-charcoal/50">• {distanceKm.toFixed(distanceKm < 10 ? 1 : 0)} km</span>
+              <span className="flex-shrink-0 text-charcoal/50">
+                • {distanceKm.toFixed(distanceKm < 10 ? 1 : 0)} km
+              </span>
             )}
           </div>
         )}
@@ -198,14 +209,17 @@ function SimilarBusinessCard({
         <Button
           variant="bare"
           size="sm"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCardClick(); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleCardClick();
+          }}
           className={cn(
             "mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5",
             "bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white rounded-full",
             "hover:from-navbar-bg/90 hover:to-navbar-bg/80 active:scale-95",
-            "shadow-md border border-sage/50 focus:ring-2 focus:ring-sage/40"
+            "shadow-md border border-sage/50 focus:ring-2 focus:ring-sage/40 font-semibold"
           )}
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
         >
           <span>Go to business</span>
           <ArrowRight className="w-4 h-4" />

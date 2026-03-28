@@ -39,14 +39,6 @@ const offlineBadgeVariants = {
 };
 
 export default function InterestHeader({ isOnline }: InterestHeaderProps) {
-  const titleStyle = {
-    fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-  } as React.CSSProperties;
-  const bodyStyle = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 400,
-  } as React.CSSProperties;
-
   return (
     <>
       {!isOnline && (
@@ -56,10 +48,7 @@ export default function InterestHeader({ isOnline }: InterestHeaderProps) {
           initial="hidden"
           animate="visible"
         >
-          <div
-            className="bg-gradient-to-br from-orange-50/95 to-orange-50/90 border border-orange-200/60 rounded-full px-3 py-1 flex items-center gap-2 ring-1 ring-orange-200/30 md:backdrop-blur-sm"
-            style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
-          >
+          <div className="bg-gradient-to-br from-orange-50/95 to-orange-50/90 border border-orange-200/60 rounded-full px-3 py-1 flex items-center gap-2 ring-1 ring-orange-200/30 md:backdrop-blur-sm">
             <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
             <span className="text-sm sm:text-xs font-semibold text-orange-700">Offline</span>
           </div>
@@ -67,26 +56,17 @@ export default function InterestHeader({ isOnline }: InterestHeaderProps) {
       )}
 
       <m.div
-        className="text-center mb-4 pt-4 sm:pt-6 title-no-break"
+        className="text-center mb-4 pt-4 sm:pt-6 title-no-break font-urbanist"
         variants={headerVariants}
         initial="hidden"
         animate="visible"
       >
         <div className="inline-block relative mb-2">
-          <h2
-            className="font-urbanist text-2xl md:text-3xl lg:text-4xl font-700 mb-2 text-center leading-snug px-6 sm:px-4 md:px-2 tracking-tight text-charcoal"
-            style={{
-              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              fontWeight: 700,
-            }}
-          >
+          <h2 className="font-urbanist text-2xl md:text-3xl lg:text-4xl font-700 mb-2 text-center leading-snug px-6 sm:px-4 md:px-2 tracking-tight text-charcoal">
             What interests you?
           </h2>
         </div>
-        <p
-          className="text-sm md:text-base font-normal text-charcoal/70 leading-relaxed px-4 max-w-lg md:max-w-lg mx-auto break-words whitespace-normal"
-          style={bodyStyle}
-        >
+        <p className="text-sm md:text-base font-normal text-charcoal/70 leading-relaxed px-4 max-w-lg md:max-w-lg mx-auto break-words whitespace-normal">
           Pick a few things you love and let&apos;s personalise your experience!
         </p>
       </m.div>

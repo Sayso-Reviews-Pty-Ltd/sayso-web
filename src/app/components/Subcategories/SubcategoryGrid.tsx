@@ -26,23 +26,17 @@ interface SubcategoryGridProps {
   shakingIds?: Set<string>;
 }
 
-function SubcategoryGrid({ 
-  groupedSubcategories, 
-  selectedSubcategories, 
+function SubcategoryGrid({
+  groupedSubcategories,
+  selectedSubcategories,
   maxSelections,
-  onToggle, 
-  subcategories, 
+  onToggle,
+  subcategories,
   loading,
-  shakingIds = new Set()
+  shakingIds = new Set(),
 }: SubcategoryGridProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-  };
-
   return (
-    <div
-      className="space-y-6 animate-fade-in-up"
-    >
+    <div className="space-y-6 animate-fade-in-up font-urbanist">
       {Object.entries(groupedSubcategories).map(([interestId, group], groupIndex) => (
         <SubcategoryGroup
           key={interestId}
@@ -58,10 +52,7 @@ function SubcategoryGrid({
       ))}
 
       {subcategories.length === 0 && !loading && (
-        <div
-          className="text-center text-charcoal/60 py-8 animate-fade-in-up"
-          style={sfPro}
-        >
+        <div className="text-center text-charcoal/60 py-8 animate-fade-in-up">
           <p>No subcategories found for your selected interests.</p>
         </div>
       )}

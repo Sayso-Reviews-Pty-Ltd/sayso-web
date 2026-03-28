@@ -11,27 +11,27 @@ interface PercentileChipProps {
 function PercentileChip({ label, value }: PercentileChipProps) {
   // Handle placeholder (0 value) with grayed out style
   const isPlaceholder = value === 0;
-  const normalizedLabel = label.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
-  
+  const normalizedLabel = label.toLowerCase().replace(/\s+/g, "-").replace(/_/g, "-");
+
   // Get descriptive tooltip text for each percentile
   const getTooltipText = () => {
     if (isPlaceholder) {
-      return `${label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ')} insights coming soon`;
+      return `${label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, " ")} insights coming soon`;
     }
-    
+
     switch (normalizedLabel) {
-      case 'punctuality':
+      case "punctuality":
         return `Punctuality: ${value}% - How well the business keeps appointments and meets deadlines`;
-      case 'cost-effectiveness':
-      case 'costeffectiveness':
-      case 'cost':
+      case "cost-effectiveness":
+      case "costeffectiveness":
+      case "cost":
         return `Cost Effectiveness: ${value}% - Value for money and fair pricing`;
-      case 'friendliness':
+      case "friendliness":
         return `Friendliness: ${value}% - How welcoming and approachable the staff are`;
-      case 'trustworthiness':
+      case "trustworthiness":
         return `Trustworthiness: ${value}% - Reliability, honesty, and credibility of the business`;
       default:
-        return `${label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ')}: ${value}%`;
+        return `${label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, " ")}: ${value}%`;
     }
   };
 
@@ -39,18 +39,18 @@ function PercentileChip({ label, value }: PercentileChipProps) {
 
   // Render icon based on label
   const renderIcon = () => {
-    const baseClasses = `w-3.5 h-3.5 sm:w-3 sm:h-3 flex-shrink-0 stroke-[2] ${isPlaceholder ? 'text-charcoal/40' : 'text-charcoal/80'}`;
+    const baseClasses = `w-3.5 h-3.5 sm:w-3 sm:h-3 flex-shrink-0 stroke-[2] ${isPlaceholder ? "text-charcoal/40" : "text-charcoal/80"}`;
 
     switch (normalizedLabel) {
-      case 'punctuality':
+      case "punctuality":
         return <Clock className={baseClasses} />;
-      case 'cost-effectiveness':
-      case 'costeffectiveness':
-      case 'cost':
+      case "cost-effectiveness":
+      case "costeffectiveness":
+      case "cost":
         return <DollarSign className={baseClasses} />;
-      case 'friendliness':
+      case "friendliness":
         return <Smile className={baseClasses} />;
-      case 'trustworthiness':
+      case "trustworthiness":
         return <Shield className={baseClasses} />;
       default:
         return <CheckCircle className={baseClasses} />;
@@ -58,7 +58,7 @@ function PercentileChip({ label, value }: PercentileChipProps) {
   };
 
   const icon = renderIcon();
-  const percentageText = isPlaceholder ? '—' : `${value}%`;
+  const percentageText = isPlaceholder ? "—" : `${value}%`;
 
   return (
     <div
@@ -71,17 +71,15 @@ function PercentileChip({ label, value }: PercentileChipProps) {
           event.preventDefault();
         }
       }}
-      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full cursor-help group relative flex-shrink-0 transition-colors duration-200 ${
-        isPlaceholder
-          ? 'bg-charcoal/[0.03]'
-          : 'bg-charcoal/[0.04] hover:bg-charcoal/[0.08]'
+      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full cursor-help group relative flex-shrink-0 transition-colors duration-200 font-urbanist ${
+        isPlaceholder ? "bg-charcoal/[0.03]" : "bg-charcoal/[0.04] hover:bg-charcoal/[0.08]"
       }`}
     >
       {icon}
-      <span className={`text-[10px] sm:text-[9px] font-semibold whitespace-nowrap leading-none ${
-        isPlaceholder ? 'text-charcoal/40' : 'text-charcoal/80'
-      }`}
-        style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+      <span
+        className={`text-[10px] sm:text-[9px] font-semibold whitespace-nowrap leading-none ${
+          isPlaceholder ? "text-charcoal/40" : "text-charcoal/80"
+        }`}
       >
         {percentageText}
       </span>

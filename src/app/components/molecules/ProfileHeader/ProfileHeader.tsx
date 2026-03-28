@@ -26,7 +26,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`flex items-start justify-between ${className}`}>
+    <div className={`flex items-start justify-between font-urbanist ${className}`}>
       <div className="flex items-center space-x-4">
         <Avatar
           src={avatarUrl}
@@ -36,29 +36,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         />
         <div>
           <div className="flex items-center space-x-2 mb-1">
-            <h1
-              className="text-sm font-bold text-charcoal"
-              style={{
-                fontFamily:
-                  '"SF Pro New", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-              }}
-            >
-              @{username}
-            </h1>
+            <h1 className="text-sm font-bold text-charcoal">@{username}</h1>
           </div>
           {isTopReviewer && (
             <Badge variant="coral" size="sm" className="flex items-center space-x-1">
               <Award className="w-3 h-3" />
-              <span
-                className="font-600 text-xs"
-                style={{
-                  fontFamily:
-                    '"SF Pro New", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-                  fontWeight: 600,
-                }}
-              >
-                {topReviewerBadgeText}
-              </span>
+              <span className="font-600 text-xs font-semibold">{topReviewerBadgeText}</span>
             </Badge>
           )}
         </div>

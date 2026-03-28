@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   CheckCircle,
   DollarSign,
@@ -21,10 +21,6 @@ interface BusinessInfoAsideProps {
   className?: string;
   stacked?: boolean; // If true, items stack vertically instead of grid
 }
-
-const sectionTitleStyle: CSSProperties = {
-  fontFamily: '"Urbanist", system-ui, sans-serif',
-};
 
 const formatPriceRangeDisplay = (priceRange?: string | null): string => {
   if (!priceRange) return "";
@@ -134,11 +130,8 @@ export default function BusinessInfoAside({
   return (
     <Card
       variant="detail"
-      className={`p-6 sm:p-8 md:p-10 space-y-8 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.08),0_4px_16px_rgba(0,0,0,0.04)] ${className}`}
+      className={`p-6 sm:p-8 md:p-10 space-y-8 relative overflow-hidden font-urbanist shadow-[0_8px_32px_rgba(0,0,0,0.08),0_4px_16px_rgba(0,0,0,0.04)] ${className}`}
       aria-labelledby="business-info-heading"
-      style={{
-        fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
     >
       {/* Premium gradient overlays */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-sage/20 via-sage/10 to-transparent rounded-full blur-3xl opacity-70"></div>
@@ -170,7 +163,7 @@ export default function BusinessInfoAside({
               </div>
             )}
           </div>
-          <div style={sectionTitleStyle}>
+          <div>
             <Text variant="h2" color="primary" className="leading-tight">
               {businessInfo.name || "Business Information"}
             </Text>

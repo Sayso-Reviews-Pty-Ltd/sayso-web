@@ -16,20 +16,8 @@ export default function SpecialDescription({ description }: SpecialDescriptionPr
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-        <h2
-          className="text-lg font-bold text-charcoal mb-3"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
-          About This Special
-        </h2>
-        <p
-          className="text-sm text-charcoal/80 leading-relaxed whitespace-pre-wrap"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
+        <h2 className="text-lg font-bold text-charcoal mb-3">About This Special</h2>
+        <p className="text-sm text-charcoal/80 leading-relaxed whitespace-pre-wrap">
           {description ||
             "Don't miss out on this amazing special offer! This limited-time deal provides incredible value and a fantastic experience. Perfect for trying something new or treating yourself to something special."}
         </p>

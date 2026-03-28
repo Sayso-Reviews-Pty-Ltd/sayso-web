@@ -195,10 +195,6 @@ export default function BusinessEditPage() {
                     <Link
                       href={previousHref}
                       className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium whitespace-nowrap truncate max-w-[150px] sm:max-w-none"
-                      style={{
-                        fontFamily:
-                          "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                      }}
                     >
                       {previousLabel}
                     </Link>
@@ -207,15 +203,7 @@ export default function BusinessEditPage() {
                     <ChevronRight className="w-4 h-4 text-navbar-bg" />
                   </li>
                   <li className="min-w-0 flex-1">
-                    <span
-                      className="text-charcoal font-semibold truncate block"
-                      style={{
-                        fontFamily:
-                          "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                      }}
-                    >
-                      Edit
-                    </span>
+                    <span className="text-charcoal font-semibold truncate block">Edit</span>
                   </li>
                 </ol>
               </nav>
@@ -233,14 +221,7 @@ export default function BusinessEditPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Business Name
                           </label>
                           <Input
@@ -253,14 +234,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Category
                           </label>
                           <select
@@ -277,14 +251,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label
-                            className="block text-sm font-semibold text-white mb-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Description
                           </label>
                           <Textarea
@@ -418,14 +385,7 @@ export default function BusinessEditPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2 flex items-center gap-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2 flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-navbar-bg" />
                             Address
                           </label>
@@ -439,14 +399,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2 flex items-center gap-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2 flex items-center gap-2">
                             <Phone className="w-4 h-4 text-navbar-bg" />
                             Phone Number
                           </label>
@@ -460,14 +413,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2 flex items-center gap-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2 flex items-center gap-2">
                             <Mail className="w-4 h-4 text-navbar-bg" />
                             Email
                           </label>
@@ -481,14 +427,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2 flex items-center gap-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2 flex items-center gap-2">
                             <Globe className="w-4 h-4 text-navbar-bg" />
                             Website
                           </label>
@@ -502,14 +441,7 @@ export default function BusinessEditPage() {
                         </div>
 
                         <div>
-                          <label
-                            className="block text-sm font-semibold text-white mb-2 flex items-center gap-2"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
+                          <label className="block text-sm font-semibold text-white mb-2 flex items-center gap-2">
                             <DollarSign className="w-4 h-4 text-navbar-bg" />
                             Price Range
                           </label>
@@ -542,14 +474,7 @@ export default function BusinessEditPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {days.map((day) => (
                           <div key={day.key} className="flex items-center gap-3">
-                            <label
-                              className="w-24 text-sm font-semibold text-white"
-                              style={{
-                                fontFamily:
-                                  "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                fontWeight: 600,
-                              }}
-                            >
+                            <label className="w-24 text-sm font-semibold text-white">
                               {day.label}
                             </label>
                             <Input
@@ -599,14 +524,7 @@ export default function BusinessEditPage() {
                             </button>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
-                                <label
-                                  className="block text-sm font-semibold text-white mb-2"
-                                  style={{
-                                    fontFamily:
-                                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                    fontWeight: 600,
-                                  }}
-                                >
+                                <label className="block text-sm font-semibold text-white mb-2">
                                   Name
                                 </label>
                                 <Input
@@ -620,14 +538,7 @@ export default function BusinessEditPage() {
                                 />
                               </div>
                               <div>
-                                <label
-                                  className="block text-sm font-semibold text-white mb-2"
-                                  style={{
-                                    fontFamily:
-                                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                    fontWeight: 600,
-                                  }}
-                                >
+                                <label className="block text-sm font-semibold text-white mb-2">
                                   Description
                                 </label>
                                 <Input

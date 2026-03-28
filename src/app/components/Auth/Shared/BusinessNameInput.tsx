@@ -27,7 +27,7 @@ export function BusinessNameInput({
   disabled = false,
   label = "Public Business Name",
   placeholder = "Your public business name",
-  successMessage = "Public business name looks good."
+  successMessage = "Public business name looks good.",
 }: BusinessNameInputProps) {
   const generatedId = useId().replace(/:/g, "");
   const inputId = id ?? `auth-business-name-${generatedId}`;
@@ -40,11 +40,7 @@ export function BusinessNameInput({
 
   return (
     <div>
-      <label
-        htmlFor={inputId}
-        className="block text-sm font-semibold text-white mb-2"
-        style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
-      >
+      <label htmlFor={inputId} className="block text-sm font-semibold text-white mb-2">
         {label}
       </label>
       <div className="relative group">
@@ -76,7 +72,6 @@ export function BusinessNameInput({
           onFocus={() => setFocusKey((k) => k + 1)}
           aria-invalid={hasError ? "true" : "false"}
           aria-describedby={hasError ? errorId : isValid ? successId : undefined}
-          style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
           className={`w-full bg-white/95 backdrop-blur-sm border pl-12 sm:pl-14 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full ${
             hasError
               ? "border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20"
@@ -88,21 +83,17 @@ export function BusinessNameInput({
         />
       </div>
       <AutoDismissFeedback type="error" message={hasError ? error! : null} resetKey={focusKey}>
-        <p
-          id={errorId}
-          className="auth-field-feedback auth-field-feedback-error"
-          role="alert"
-        >
+        <p id={errorId} className="auth-field-feedback auth-field-feedback-error" role="alert">
           <AlertCircle className="w-3 h-3" aria-hidden="true" />
           {error}
         </p>
       </AutoDismissFeedback>
-      <AutoDismissFeedback type="success" message={isValid ? successMessage : null} resetKey={focusKey}>
-        <p
-          id={successId}
-          className="auth-field-feedback auth-field-feedback-success"
-          role="status"
-        >
+      <AutoDismissFeedback
+        type="success"
+        message={isValid ? successMessage : null}
+        resetKey={focusKey}
+      >
+        <p id={successId} className="auth-field-feedback auth-field-feedback-success" role="status">
           <CheckCircle className="w-3 h-3" aria-hidden="true" />
           {successMessage}
         </p>

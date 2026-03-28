@@ -21,15 +21,18 @@ interface BusinessCarouselProps {
   subcategorySlug?: string | null;
 }
 
-export default function BusinessCarousel({ businessName, businessImages, subcategorySlug }: BusinessCarouselProps) {
+export default function BusinessCarousel({
+  businessName,
+  businessImages,
+  subcategorySlug,
+}: BusinessCarouselProps) {
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
   const [emblaApi, setEmblaApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
   const prefersReducedMotion = useReducedMotion() ?? false;
 
-  const validImages = businessImages?.filter((img) =>
-    img && img.trim() !== "" && !isPlaceholderImage(img)
-  ) ?? [];
+  const validImages =
+    businessImages?.filter((img) => img && img.trim() !== "" && !isPlaceholderImage(img)) ?? [];
   const totalImages = validImages.length;
   const hasImages = totalImages > 0;
   const hasMultipleImages = totalImages > 1;
@@ -40,7 +43,9 @@ export default function BusinessCarousel({ businessName, businessImages, subcate
     const onSelect = () => setCurrentIndex(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
-    return () => { emblaApi.off("select", onSelect); };
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
   }, [emblaApi]);
 
   const entranceVariants = prefersReducedMotion
@@ -76,11 +81,7 @@ export default function BusinessCarousel({ businessName, businessImages, subcate
       transition={{ duration: 0.6 }}
       className="relative w-full h-[50vh] sm:h-auto sm:aspect-[16/9] lg:aspect-[21/9] rounded-none overflow-hidden"
     >
-      <Carousel
-        setApi={setEmblaApi}
-        opts={{ loop: true }}
-        className="w-full h-full"
-      >
+      <Carousel setApi={setEmblaApi} opts={{ loop: true }} className="w-full h-full">
         <CarouselContent>
           {validImages.map((src, i) => (
             <CarouselItem key={`${src}-${i}`}>
@@ -115,10 +116,7 @@ export default function BusinessCarousel({ businessName, businessImages, subcate
                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-coral/20 to-coral/10 flex items-center justify-center">
                       <Star className="w-10 h-10 sm:w-12 sm:h-12 text-charcoal" strokeWidth={1.5} />
                     </div>
-                    <p
-                      className="text-body-sm text-charcoal/70 font-medium uppercase tracking-wide"
-                      style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-                    >
+                    <p className="text-body-sm text-charcoal/70 font-medium uppercase tracking-wide font-urbanist">
                       IMAGE UNAVAILABLE
                     </p>
                   </div>
@@ -145,7 +143,9 @@ export default function BusinessCarousel({ businessName, businessImages, subcate
                   type="button"
                   onClick={() => emblaApi?.scrollTo(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    i === currentIndex ? "w-8 bg-white shadow-md" : "w-2 bg-white/60 hover:bg-white/80"
+                    i === currentIndex
+                      ? "w-8 bg-white shadow-md"
+                      : "w-2 bg-white/60 hover:bg-white/80"
                   }`}
                   aria-label={`Go to image ${i + 1}`}
                 />
@@ -154,10 +154,7 @@ export default function BusinessCarousel({ businessName, businessImages, subcate
 
             {/* Image counter */}
             <div className="absolute bottom-6 right-6 z-30 px-3 py-1.5 rounded-full bg-charcoal/80 backdrop-blur-xl">
-              <span
-                className="text-xs font-semibold text-white"
-                style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-              >
+              <span className="text-xs font-semibold text-white font-urbanist">
                 {currentIndex + 1} / {totalImages}
               </span>
             </div>

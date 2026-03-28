@@ -72,14 +72,14 @@ export default function InlineFilters({
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-charcoal/70">
                 <MapPin className="w-4 h-4" />
-                <span style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}>
-                  Distance
-                </span>
+                <span>Distance</span>
               </div>
               <FilterPillGroup
                 options={DISTANCE_OPTIONS}
                 value={filters.distance}
-                onChange={(v) => { if (v !== null) onDistanceChange(v); }}
+                onChange={(v) => {
+                  if (v !== null) onDistanceChange(v);
+                }}
                 ariaLabel="Distance filter"
                 size="sm"
               />
@@ -89,14 +89,14 @@ export default function InlineFilters({
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-charcoal/70">
                 <Star className="w-4 h-4 fill-current" />
-                <span style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}>
-                  Minimum Rating
-                </span>
+                <span>Minimum Rating</span>
               </div>
               <FilterPillGroup
                 options={RATING_OPTIONS}
                 value={filters.minRating}
-                onChange={(v) => { if (v !== null) onRatingChange(v); }}
+                onChange={(v) => {
+                  if (v !== null) onRatingChange(v);
+                }}
                 ariaLabel="Minimum rating filter"
                 size="sm"
               />

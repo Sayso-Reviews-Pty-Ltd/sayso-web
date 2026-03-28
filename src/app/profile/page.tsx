@@ -149,12 +149,7 @@ function ProfileContent() {
         }
       `}</style>
 
-      <div
-        className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist"
-        style={{
-          fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        }}
-      >
+      <div className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist">
         <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />

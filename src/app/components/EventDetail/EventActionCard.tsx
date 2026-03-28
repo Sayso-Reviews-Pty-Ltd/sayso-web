@@ -202,13 +202,10 @@ export default function EventActionCard({
     setShowReminderPicker(false);
   };
 
-  const fontStyle = {
-    fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-  };
-
   return (
     <Card asChild variant="detail" className="p-4 sm:p-6 relative overflow-visible">
       <m.div
+        className="font-urbanist"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5, duration: 0.6 }}
@@ -217,9 +214,7 @@ export default function EventActionCard({
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-coral/10 to-transparent rounded-full blur-lg" />
 
         <div className="relative z-10">
-          <h3 className="text-h3 font-semibold text-charcoal mb-3" style={fontStyle}>
-            Join This Event
-          </h3>
+          <h3 className="text-h3 font-semibold text-charcoal mb-3">Join This Event</h3>
 
           <div className="space-y-3">
             {/* Primary CTA */}
@@ -246,10 +241,7 @@ export default function EventActionCard({
             )}
 
             <div className="mt-2 rounded-[16px] border border-white/70 bg-off-white/70 p-3 sm:p-4">
-              <p
-                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal/55"
-                style={fontStyle}
-              >
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal/55">
                 Quick Actions
               </p>
 
@@ -262,7 +254,6 @@ export default function EventActionCard({
                   ariaLabel={isGoing ? "Remove Going" : "Mark as Going"}
                   label={rsvpCount > 0 ? String(rsvpCount) : "Going"}
                   icon={<Users className="h-5 w-5" strokeWidth={isGoing ? 2.2 : 1.9} />}
-                  style={fontStyle}
                 />
 
                 <div className={`relative ${showReminderPicker ? "z-[210]" : "z-10"}`}>
@@ -279,7 +270,6 @@ export default function EventActionCard({
                         strokeWidth={hasReminder("1_day") || hasReminder("2_hours") ? 2.2 : 1.9}
                       />
                     }
-                    style={fontStyle}
                   />
 
                   <AnimatePresence>
@@ -291,10 +281,7 @@ export default function EventActionCard({
                         transition={{ duration: 0.12 }}
                         className="absolute bottom-full left-1/2 z-[220] mb-3 min-w-[196px] -translate-x-1/2 rounded-[22px] border border-white/80 bg-off-white/95 p-2.5 shadow-[0_20px_40px_rgba(35,39,34,0.16)] backdrop-blur-xl"
                       >
-                        <p
-                          className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.22em] text-charcoal/45"
-                          style={fontStyle}
-                        >
+                        <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.22em] text-charcoal/45">
                           Remind me
                         </p>
                         <button
@@ -306,7 +293,6 @@ export default function EventActionCard({
                               ? "border border-amber-200 bg-amber-50/90 text-amber-700"
                               : "text-charcoal/75 hover:bg-charcoal/5"
                           }`}
-                          style={fontStyle}
                         >
                           1 day before
                           {hasReminder("1_day") && <Check className="h-3.5 w-3.5 text-amber-700" />}
@@ -320,7 +306,6 @@ export default function EventActionCard({
                               ? "border border-amber-200 bg-amber-50/90 text-amber-700"
                               : "text-charcoal/75 hover:bg-charcoal/5"
                           }`}
-                          style={fontStyle}
                         >
                           2 hours before
                           {hasReminder("2_hours") && (
@@ -331,7 +316,6 @@ export default function EventActionCard({
                           type="button"
                           onClick={() => setShowReminderPicker(false)}
                           className="mt-1 flex w-full items-center justify-center rounded-xl px-3 py-2 text-xs text-charcoal/40 transition-colors hover:text-charcoal/60"
-                          style={fontStyle}
                         >
                           <X className="mr-1 h-3 w-3" /> Close
                         </button>
@@ -347,7 +331,6 @@ export default function EventActionCard({
                   ariaLabel="Add to calendar"
                   label="Calendar"
                   icon={<Calendar className="h-5 w-5" strokeWidth={1.9} />}
-                  style={fontStyle}
                 />
 
                 <EventQuickActionButton
@@ -357,7 +340,6 @@ export default function EventActionCard({
                   ariaLabel="Share event"
                   label="Share"
                   icon={<Share2 className="h-5 w-5" strokeWidth={1.9} />}
-                  style={fontStyle}
                 />
               </div>
             </div>

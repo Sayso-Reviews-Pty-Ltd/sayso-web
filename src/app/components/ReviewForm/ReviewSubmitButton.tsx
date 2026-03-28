@@ -26,7 +26,7 @@ export default function ReviewSubmitButton({
   // Scroll error into view when it appears
   useEffect(() => {
     if (error && errorRef.current) {
-      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       errorRef.current.focus();
     }
   }, [error]);
@@ -75,21 +75,18 @@ export default function ReviewSubmitButton({
   };
 
   return (
-    <div className="pt-2 space-y-4">
+    <div className="pt-2 space-y-4 font-urbanist">
       {/* Inline Error Banner */}
       <AnimatePresence>
         {error && (
           <m.div
             ref={errorRef}
             initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             role="alert"
             tabIndex={-1}
             className="flex items-start gap-3 p-4 rounded-[12px] bg-coral/10 border border-coral/30 text-charcoal"
-            style={{
-              fontFamily: 'Urbanist, system-ui, sans-serif',
-            }}
           >
             <AlertCircle className="w-5 h-5 text-coral flex-shrink-0 mt-0.5" />
             <p className="text-sm font-medium">{error}</p>
@@ -113,9 +110,8 @@ export default function ReviewSubmitButton({
             : "bg-charcoal/10 text-charcoal/60 cursor-not-allowed"
         )}
         style={{
-          touchAction: 'manipulation',
-          WebkitTapHighlightColor: 'transparent',
-          fontFamily: 'Urbanist, system-ui, sans-serif',
+          touchAction: "manipulation",
+          WebkitTapHighlightColor: "transparent",
         }}
         aria-disabled={!isFormValid || isSubmitting}
       >
@@ -123,13 +119,13 @@ export default function ReviewSubmitButton({
         {isFormValid && !isSubmitting && (
           <m.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-            initial={{ x: '-100%' }}
-            animate={{ x: '100%' }}
+            initial={{ x: "-100%" }}
+            animate={{ x: "100%" }}
             transition={{
               duration: 2,
               repeat: Infinity,
               repeatDelay: 3,
-              ease: 'easeInOut',
+              ease: "easeInOut",
             }}
           />
         )}
@@ -177,7 +173,6 @@ export default function ReviewSubmitButton({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             className="mt-3 text-center text-sm text-charcoal/60"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
           >
             Add a rating and at least 10 characters to submit
           </m.p>

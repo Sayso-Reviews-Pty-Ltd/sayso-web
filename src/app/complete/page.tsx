@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle } from "@/app/lib/icons";
 import { ShieldCheck, Clock, Smile, BadgeDollarSign } from "@/app/lib/icons";
 import { useReducedMotion } from "../utils/useReducedMotion";
-import { 
-  OnboardingLayout, 
-  OnboardingErrorBoundary, 
+import {
+  OnboardingLayout,
+  OnboardingErrorBoundary,
   OnboardingErrorBanner,
-  OnboardingActionBar 
+  OnboardingActionBar,
 } from "../components/Onboarding";
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 import { Loader } from "../components/Loader";
@@ -17,9 +17,9 @@ import { useCompletePage } from "../hooks/useCompletePage";
 
 // Dealbreaker icon mapping
 const DEALBREAKER_ICONS: { [key: string]: React.ComponentType<{ className?: string }> } = {
-  "trustworthiness": ShieldCheck,
-  "punctuality": Clock,
-  "friendliness": Smile,
+  trustworthiness: ShieldCheck,
+  punctuality: Clock,
+  friendliness: Smile,
   "value-for-money": BadgeDollarSign,
 };
 
@@ -105,12 +105,6 @@ const completeStyles = `
   }
 `;
 
-/** ---------- Shared fonts ---------- */
-const sf = {
-  fontFamily:
-    '"SF Pro New", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-} as const;
-
 function CompletePageContent() {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -124,13 +118,13 @@ function CompletePageContent() {
   // Enhanced continue handler with navigation state
   const handleContinue = async () => {
     if (isNavigating) return; // Prevent double-clicks
-    
+
     try {
       setIsNavigating(true);
-      console.log('[Complete Page] Direct navigation initiated');
+      console.log("[Complete Page] Direct navigation initiated");
       await hookHandleContinue();
     } catch (error) {
-      console.error('[Complete] Error navigating:', error);
+      console.error("[Complete] Error navigating:", error);
       setIsNavigating(false);
     }
   };
@@ -144,7 +138,7 @@ function CompletePageContent() {
 
     const autoRedirectTimer = setTimeout(() => {
       if (!isNavigating) {
-        console.log('[Complete Page] Auto-redirecting after 2 seconds');
+        console.log("[Complete Page] Auto-redirecting after 2 seconds");
         handleContinue();
       }
     }, 2000);
@@ -155,55 +149,57 @@ function CompletePageContent() {
   // Confetti celebration (deferred until after initial render for better performance)
   useEffect(() => {
     if (isVerifying) return;
-    
+
     // Prefetch home immediately for instant transition after completion
     if (router) {
-      router.prefetch('/home');
+      router.prefetch("/home");
     }
-    
+
     // 🎉 Confetti rain effect - defer to avoid blocking initial render
-    if (!reducedMotion && typeof window !== 'undefined') {
+    if (!reducedMotion && typeof window !== "undefined") {
       let cancelled = false;
 
       // Use requestIdleCallback or setTimeout to defer non-critical animation
       const loadConfetti = () => {
         // Dynamically import canvas-confetti to avoid SSR issues and reduce initial bundle
-        import('canvas-confetti').then((confetti) => {
-          if (cancelled) return;
-          
-          const duration = 2000; // Reduced to 2 seconds for faster page load
-          const end = Date.now() + duration;
-
-          (function frame() {
+        import("canvas-confetti")
+          .then((confetti) => {
             if (cancelled) return;
 
-            // Use app brand palette only: navbar-bg, card-bg, off-white
-            const colors = ['#722F37', '#9DAB9B', '#E5E0E5'];
+            const duration = 2000; // Reduced to 2 seconds for faster page load
+            const end = Date.now() + duration;
 
-            confetti.default({
-              particleCount: 3, // Reduced particle count for better performance
-              angle: 60,
-              spread: 55,
-              origin: { x: 0 },
-              colors: colors,
-            });
-            confetti.default({
-              particleCount: 3,
-              angle: 120,
-              spread: 55,
-              origin: { x: 1 },
-              colors: colors,
-            });
+            (function frame() {
+              if (cancelled) return;
 
-            if (Date.now() < end) requestAnimationFrame(frame);
-          })();
-        }).catch((error) => {
-          console.error('Failed to load confetti:', error);
-        });
+              // Use app brand palette only: navbar-bg, card-bg, off-white
+              const colors = ["#722F37", "#9DAB9B", "#E5E0E5"];
+
+              confetti.default({
+                particleCount: 3, // Reduced particle count for better performance
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors,
+              });
+              confetti.default({
+                particleCount: 3,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors,
+              });
+
+              if (Date.now() < end) requestAnimationFrame(frame);
+            })();
+          })
+          .catch((error) => {
+            console.error("Failed to load confetti:", error);
+          });
       };
 
       // Defer confetti loading using requestIdleCallback if available, otherwise setTimeout
-      if ('requestIdleCallback' in window) {
+      if ("requestIdleCallback" in window) {
         requestIdleCallback(loadConfetti, { timeout: 1000 });
       } else {
         setTimeout(loadConfetti, 300); // Small delay to allow page to render first
@@ -238,25 +234,18 @@ function CompletePageContent() {
               "--sage": "hsl(148, 20%, 38%)",
               "--charcoal": "hsl(0, 0%, 25%)",
               "--off-white": "hsl(0, 0%, 98%)",
-              ...sf,
             } as React.CSSProperties
           }
         >
           {/* Heading */}
           <div className="title-no-break mb-4">
-            <h1
-              className="font-urbanist text-lg md:text-4xl lg:text-5xl font-700 tracking-tight leading-snug text-charcoal"
-              style={{
-                fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                fontWeight: 700,
-              }}
-            >
+            <h1 className="font-urbanist text-lg md:text-4xl lg:text-5xl font-bold tracking-tight leading-snug text-charcoal">
               You&apos;re all set!
             </h1>
           </div>
 
           {/* Subheading */}
-          <p className="text-base md:text-lg font-normal text-charcoal/70 mb-4 leading-relaxed" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+          <p className="text-base md:text-lg font-normal font-urbanist text-charcoal/70 mb-4 leading-relaxed">
             Time to discover what&apos;s out there.
           </p>
 
@@ -266,13 +255,9 @@ function CompletePageContent() {
               {selectedDealbreakers.map((dealbreakerId) => {
                 const IconComponent = DEALBREAKER_ICONS[dealbreakerId];
                 if (!IconComponent) return null;
-                
+
                 return (
-                  <div
-                    key={dealbreakerId}
-                    className="floating-dealbreaker-icon"
-                    aria-hidden="true"
-                  >
+                  <div key={dealbreakerId} className="floating-dealbreaker-icon" aria-hidden="true">
                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-sage/20 to-coral/20 border-2 border-sage/30 flex items-center justify-center backdrop-blur-sm">
                       <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-sage" />
                     </div>
@@ -289,10 +274,9 @@ function CompletePageContent() {
               disabled={isNavigating}
               data-testid="onboarding-complete-cta"
               aria-label="Go to Home"
-              className="relative block w-[200px] mx-auto rounded-full py-4 px-4 text-body font-semibold text-white text-center flex items-center justify-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage border border-white/30 ring-1 ring-coral/20 hover:ring-sage/20 backdrop-blur-sm transition-all duration-300 btn-target btn-press focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
+              className="relative block w-[200px] mx-auto rounded-full py-4 px-4 text-body font-urbanist font-semibold text-white text-center flex items-center justify-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage border border-white/30 ring-1 ring-coral/20 hover:ring-sage/20 backdrop-blur-sm transition-all duration-300 btn-target btn-press focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isNavigating ? 'Going to Home...' : 'Continue to Home'}
+              {isNavigating ? "Going to Home..." : "Continue to Home"}
               {!isNavigating && <ArrowRight className="w-5 h-5 ml-2 inline-block" />}
             </button>
           </OnboardingActionBar>
@@ -301,9 +285,7 @@ function CompletePageContent() {
           <div className="mt-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-sage/15 to-sage/10 border border-sage/40 ring-1 ring-sage/20 rounded-full backdrop-blur-sm">
               <CheckCircle className="w-4 h-4 text-sage" />
-              <span className="text-xs font-semibold text-sage" style={sf}>
-                Setup Complete
-              </span>
+              <span className="text-xs font-semibold text-sage font-urbanist">Setup Complete</span>
             </div>
           </div>
         </div>
@@ -316,13 +298,15 @@ export default function CompletePage() {
   return (
     <ProtectedRoute requiresAuth={true}>
       <OnboardingErrorBoundary>
-        <Suspense fallback={
-          <OnboardingLayout step={4} showProgress={false}>
-            <div className="flex items-center justify-center min-h-[400px]">
-              <Loader size="md" variant="wavy" color="sage" />
-            </div>
-          </OnboardingLayout>
-        }>
+        <Suspense
+          fallback={
+            <OnboardingLayout step={4} showProgress={false}>
+              <div className="flex items-center justify-center min-h-[400px]">
+                <Loader size="md" variant="wavy" color="sage" />
+              </div>
+            </OnboardingLayout>
+          }
+        >
           <CompletePageContent />
         </Suspense>
       </OnboardingErrorBoundary>

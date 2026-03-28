@@ -54,28 +54,38 @@ export function PasswordInput({
   // Adapt checks to support only 'length' property
   const checks = strength?.checks || { length: false };
   const lengthCheck = checks.length;
-  const uppercaseCheck = 'uppercase' in checks ? checks.uppercase : false;
-  const lowercaseCheck = 'lowercase' in checks ? checks.lowercase : false;
-  const numberCheck = 'number' in checks ? checks.number : false;
+  const uppercaseCheck = "uppercase" in checks ? checks.uppercase : false;
+  const lowercaseCheck = "lowercase" in checks ? checks.lowercase : false;
+  const numberCheck = "number" in checks ? checks.number : false;
 
   const [focusKey, setFocusKey] = useState(0);
 
   return (
     <div>
-      <label htmlFor={inputId} className="block text-sm font-semibold text-white mb-2" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}>
+      <label htmlFor={inputId} className="block text-sm font-semibold text-white mb-2">
         {label}
       </label>
       <div className="relative group">
-        <div className={`absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 transition-colors duration-300 z-10 ${
-          hasError ? 'text-navbar-bg' :
-          isStrong ? 'text-sage' :
-          isWeak ? 'text-amber-500' :
-          'text-charcoal/60 group-focus-within:text-sage'
-        }`}>
-          {hasError ? <AlertCircle className="w-5 h-5" /> :
-            isStrong ? <CheckCircle className="w-5 h-5" /> :
-            isWeak ? <AlertCircle className="w-5 h-5" /> :
-            <Lock className="w-5 h-5" />}
+        <div
+          className={`absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 transition-colors duration-300 z-10 ${
+            hasError
+              ? "text-navbar-bg"
+              : isStrong
+                ? "text-sage"
+                : isWeak
+                  ? "text-amber-500"
+                  : "text-charcoal/60 group-focus-within:text-sage"
+          }`}
+        >
+          {hasError ? (
+            <AlertCircle className="w-5 h-5" />
+          ) : isStrong ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : isWeak ? (
+            <AlertCircle className="w-5 h-5" />
+          ) : (
+            <Lock className="w-5 h-5" />
+          )}
         </div>
         <input
           id={inputId}
@@ -89,12 +99,14 @@ export function PasswordInput({
           autoComplete={autoComplete}
           aria-invalid={hasError ? "true" : "false"}
           aria-describedby={hasError ? errorId : undefined}
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
           className={`w-full bg-white/95 backdrop-blur-sm border pl-12 sm:pl-14 pr-12 sm:pr-16 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full ${
-            hasError ? 'border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20' :
-            isStrong ? 'border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20' :
-            isWeak ? 'border-amber-300 focus:border-navbar-bg focus:ring-navbar-bg/20' :
-            'border-white/60 focus:ring-navbar-bg/30 focus:border-navbar-bg'
+            hasError
+              ? "border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20"
+              : isStrong
+                ? "border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20"
+                : isWeak
+                  ? "border-amber-300 focus:border-navbar-bg focus:ring-navbar-bg/20"
+                  : "border-white/60 focus:ring-navbar-bg/30 focus:border-navbar-bg"
           }`}
           disabled={disabled}
         />
@@ -106,11 +118,7 @@ export function PasswordInput({
           aria-label={showPassword ? "Hide password" : "Show password"}
           aria-controls={inputId}
         >
-          {showPassword ? (
-            <EyeOff className="w-5 h-5" />
-          ) : (
-            <Eye className="w-5 h-5" />
-          )}
+          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
         </button>
       </div>
 

@@ -54,14 +54,7 @@ export default function EventPersonalizationInsights({ event }: EventPersonaliza
         <div className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
           <Sparkles className="w-4 h-4 text-charcoal/85" />
         </div>
-        <h3
-          className="text-base font-semibold text-charcoal"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
-          Why You'll Love This
-        </h3>
+        <h3 className="text-base font-semibold text-charcoal">Why You'll Love This</h3>
       </div>
       <div className="space-y-3">
         {insights.map((insight, index) => (
@@ -69,14 +62,7 @@ export default function EventPersonalizationInsights({ event }: EventPersonaliza
             <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors mt-0.5 text-charcoal/85">
               {insight.icon}
             </span>
-            <p
-              className="text-sm text-charcoal/80 leading-relaxed"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
-            >
-              {insight.text}
-            </p>
+            <p className="text-sm text-charcoal/80 leading-relaxed">{insight.text}</p>
           </div>
         ))}
       </div>

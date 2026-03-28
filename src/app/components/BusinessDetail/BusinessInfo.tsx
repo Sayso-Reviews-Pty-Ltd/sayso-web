@@ -13,7 +13,13 @@ interface BusinessInfoProps {
   sharedTitleLayoutId?: string;
 }
 
-export default function BusinessInfo({ name, rating, location, category, sharedTitleLayoutId }: BusinessInfoProps) {
+export default function BusinessInfo({
+  name,
+  rating,
+  location,
+  category,
+  sharedTitleLayoutId,
+}: BusinessInfoProps) {
   return (
     <m.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +29,6 @@ export default function BusinessInfo({ name, rating, location, category, sharedT
       <m.h1
         layoutId={sharedTitleLayoutId}
         className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal mb-3"
-        style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
       >
         {name}
       </m.h1>
@@ -32,39 +37,22 @@ export default function BusinessInfo({ name, rating, location, category, sharedT
         {/* Rating Badge - matching BusinessCard style */}
         <div className="inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal border-none">
           <GoldStar size={14} className="w-3.5 h-3.5" />
-          <span
-            className="text-body-sm font-semibold text-charcoal"
-            style={{ 
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              fontWeight: 600
-            }}
-          >
+          <span className="text-body-sm font-semibold text-charcoal">
             {Number(rating).toFixed(1)}
           </span>
         </div>
         {category && (
           <div className="inline-flex items-center gap-1.5 text-charcoal/70">
-            <span
-              className="text-body-sm font-medium"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
-              {category}
-            </span>
+            <span className="text-body-sm font-medium">{category}</span>
           </div>
         )}
         <div className="flex items-center gap-1.5 text-charcoal/70">
           <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
             <MapPin className="w-3 h-3 text-charcoal/85" />
           </span>
-          <span
-            className="text-body-sm font-medium"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
-            {location}
-          </span>
+          <span className="text-body-sm font-medium">{location}</span>
         </div>
       </div>
     </m.div>
   );
 }
-

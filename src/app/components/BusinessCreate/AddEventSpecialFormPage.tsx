@@ -17,7 +17,7 @@ import { useToast } from "@/app/contexts/ToastContext";
 import { usePreviousPageBreadcrumb } from "@/app/hooks/usePreviousPageBreadcrumb";
 import { authStyles } from "@/app/components/Auth/Shared/authStyles";
 import { animations } from "@/app/(business-portal)/add-business/components/types";
-import { COPY, urbanist, fontStyle } from "./addEventSpecialForm.constants";
+import { COPY, urbanist } from "./addEventSpecialForm.constants";
 import { useAddEventSpecialForm } from "./useAddEventSpecialForm";
 import AddEventSpecialFormSkeleton from "./AddEventSpecialFormSkeleton";
 import AddEventSpecialPublishingContext from "./AddEventSpecialPublishingContext";
@@ -87,19 +87,13 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
       <>
         <style dangerouslySetInnerHTML={{ __html: authStyles }} />
         <style dangerouslySetInnerHTML={{ __html: animations }} />
-        <div
-          className="min-h-dvh bg-off-white font-urbanist"
-          style={{
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-          }}
-        >
+        <div className="min-h-dvh bg-off-white font-urbanist">
           <div className="max-w-[920px] mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16">
             <div className="rounded-[12px] border border-coral/20 bg-coral/5 p-6">
-              <h1 className="text-2xl font-semibold text-charcoal mb-3" style={fontStyle}>
+              <h1 className="text-2xl font-semibold text-charcoal mb-3">
                 Special creation is restricted
               </h1>
-              <p className="text-charcoal/80 mb-5" style={fontStyle}>
+              <p className="text-charcoal/80 mb-5">
                 Only verified business owners can create specials.
               </p>
               <Link
@@ -119,13 +113,7 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
     <>
       <style dangerouslySetInnerHTML={{ __html: authStyles }} />
       <style dangerouslySetInnerHTML={{ __html: animations }} />
-      <div
-        className="min-h-dvh bg-off-white font-urbanist"
-        style={{
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-        }}
-      >
+      <div className="min-h-dvh bg-off-white font-urbanist">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <Breadcrumb className="pt-4 sm:pt-6 pb-2">
             <BreadcrumbList>
@@ -149,24 +137,17 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
               transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <h1
-                className={`${urbanist.className} text-2xl sm:text-3xl font-semibold mb-2 text-center leading-[1.2] tracking-tight text-charcoal`}
-                style={{ fontFamily: urbanist.style.fontFamily }}
+                className={`${urbanist.className} text-2xl sm:text-3xl font-semibold mb-2 text-center leading-[1.2] tracking-tight text-charcoal font-urbanist`}
               >
                 {copy.heroTitle}
               </h1>
-              <p
-                className="text-sm sm:text-base text-charcoal/70 max-w-md mx-auto"
-                style={fontStyle}
-              >
+              <p className="text-sm sm:text-base text-charcoal/70 max-w-md mx-auto">
                 {copy.heroSubtitle}
               </p>
             </m.div>
 
             {hasDraft && (
-              <div
-                className="mb-4 flex items-center gap-3 rounded-[12px] border border-charcoal/15 bg-white px-4 py-3 text-sm text-charcoal"
-                style={fontStyle}
-              >
+              <div className="mb-4 flex items-center gap-3 rounded-[12px] border border-charcoal/15 bg-white px-4 py-3 text-sm text-charcoal">
                 <span className="flex-1 font-medium">You have a saved draft.</span>
                 <button
                   type="button"
@@ -244,7 +225,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
                   <button
                     type="button"
                     onClick={saveDraft}
-                    style={fontStyle}
                     className="px-6 py-3 rounded-full border-2 border-navbar-bg/30 text-navbar-bg font-semibold hover:bg-navbar-bg/5 transition-all duration-200 text-center"
                   >
                     Save draft
@@ -254,7 +234,6 @@ export default function AddEventSpecialFormPage({ type }: AddEventSpecialFormPag
                     disabled={isSubmitting}
                     whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                     whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                    style={fontStyle}
                     className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-6 rounded-full hover:from-coral/90 hover:to-coral transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
                   >
                     <AnimatePresence mode="wait">

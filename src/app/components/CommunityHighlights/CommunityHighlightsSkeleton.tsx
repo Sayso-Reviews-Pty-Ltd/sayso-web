@@ -16,10 +16,7 @@ interface CommunityHighlightsSkeletonProps {
 
 function BusinessOfTheMonthCardSkeleton() {
   return (
-    <div
-      className="snap-center snap-always flex-shrink-0 w-full sm:w-[260px] md:w-[340px] list-none"
-      style={{ fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
-    >
+    <div className="snap-center snap-always flex-shrink-0 w-full sm:w-[260px] md:w-[340px] list-none font-urbanist">
       <div
         className="relative px-1 pt-1 pb-2 sm:pb-0 bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-visible w-full flex flex-col border-none backdrop-blur-xl shadow-md sm:h-auto animate-pulse"
         style={{ maxWidth: "540px" } as React.CSSProperties}
@@ -67,10 +64,9 @@ export default function CommunityHighlightsSkeleton({
 
   return (
     <section
-      className="relative m-0 w-full"
+      className="relative m-0 w-full font-urbanist"
       aria-label="Community Highlights loading"
       aria-busy="true"
-      style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
     >
       <div
         className={`mx-auto w-full max-w-[2000px] relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`}

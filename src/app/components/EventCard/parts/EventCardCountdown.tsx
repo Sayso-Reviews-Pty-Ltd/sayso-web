@@ -1,16 +1,12 @@
-'use client';
+"use client";
 
 interface EventCardCountdownProps {
   days: number;
   hours: number;
   minutes: number;
   show: boolean;
-  status: 'upcoming' | 'live' | 'ended' | 'unknown';
+  status: "upcoming" | "live" | "ended" | "unknown";
 }
-
-const fontStyle = {
-  fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-};
 
 export function EventCardCountdown({
   days,
@@ -30,67 +26,34 @@ export function EventCardCountdown({
 
   return (
     <div
-      className={`absolute left-3 bottom-3 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] ${statusColors[status]}`}
+      className={`absolute left-3 bottom-3 z-20 inline-flex items-center gap-1.5 rounded-full backdrop-blur-md px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] font-urbanist font-semibold ${statusColors[status]}`}
     >
       {status === "upcoming" && (
         <>
           {days > 0 && (
             <div className="flex items-baseline gap-0.5">
-              <span
-                className="text-xs font-bold leading-none"
-                style={{ ...fontStyle, fontWeight: 700 }}
-              >
-                {days}
-              </span>
-              <span className="text-[10px] font-medium leading-none" style={fontStyle}>
-                d
-              </span>
+              <span className="text-xs font-bold leading-none">{days}</span>
+              <span className="text-[10px] font-medium leading-none">d</span>
             </div>
           )}
           {(days > 0 || hours > 0) && (
             <div className="flex items-baseline gap-0.5">
-              <span
-                className="text-xs font-bold leading-none"
-                style={{ ...fontStyle, fontWeight: 700 }}
-              >
-                {hours}
-              </span>
-              <span className="text-[10px] font-medium leading-none" style={fontStyle}>
-                h
-              </span>
+              <span className="text-xs font-bold leading-none">{hours}</span>
+              <span className="text-[10px] font-medium leading-none">h</span>
             </div>
           )}
           <div className="flex items-baseline gap-0.5">
-            <span
-              className="text-xs font-bold leading-none"
-              style={{ ...fontStyle, fontWeight: 700 }}
-            >
-              {minutes}
-            </span>
-            <span className="text-[10px] font-medium leading-none" style={fontStyle}>
-              m
-            </span>
+            <span className="text-xs font-bold leading-none">{minutes}</span>
+            <span className="text-[10px] font-medium leading-none">m</span>
           </div>
         </>
       )}
 
-      {status === "live" && (
-        <span className="text-xs font-semibold leading-none" style={fontStyle}>
-          Live now
-        </span>
-      )}
+      {status === "live" && <span className="text-xs font-semibold leading-none">Live now</span>}
 
-      {status === "ended" && (
-        <span className="text-xs font-semibold leading-none" style={fontStyle}>
-          Ended
-        </span>
-      )}
+      {status === "ended" && <span className="text-xs font-semibold leading-none">Ended</span>}
 
-      {status === "unknown" && (
-        <span className="text-xs font-semibold leading-none" style={fontStyle}>
-          Date TBA
-        </span>
-      )}
+      {status === "unknown" && <span className="text-xs font-semibold leading-none">Date TBA</span>}
     </div>
   );
 }

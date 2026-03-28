@@ -27,30 +27,16 @@ export default function EventLocation({
   }
 
   return (
-    <Card variant="detail" className="overflow-hidden">
+    <Card variant="detail" className="overflow-hidden font-urbanist">
       <div className="p-5 sm:p-6">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-coral/10 flex items-center justify-center flex-shrink-0 mt-0.5">
             <MapPin className="w-5 h-5 text-coral" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3
-              className="text-sm font-semibold text-charcoal/70 mb-1.5"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
-            >
-              Event Location
-            </h3>
+            <h3 className="text-sm font-semibold text-charcoal/70 mb-1.5">Event Location</h3>
             {displayLocation && (
-              <p
-                className="text-base font-medium text-charcoal break-words"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                {displayLocation}
-              </p>
+              <p className="text-base font-medium text-charcoal break-words">{displayLocation}</p>
             )}
           </div>
         </div>

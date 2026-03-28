@@ -96,20 +96,15 @@ const checkIconVariants = {
   },
 };
 
-function InterestButton({ 
-  interest, 
-  isSelected, 
-  isDisabled, 
-  isAnimating, 
+function InterestButton({
+  interest,
+  isSelected,
+  isDisabled,
+  isAnimating,
   shouldShake = false,
-  onToggle, 
-  index 
+  onToggle,
+  index,
 }: InterestButtonProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 600,
-  };
-
   return (
     <m.button
       data-interest-id={interest.id}
@@ -131,32 +126,31 @@ function InterestButton({
       whileTap={!isDisabled ? "tap" : undefined}
       custom={index}
       className={`
-        relative z-30 w-[85%] aspect-square rounded-full mx-auto min-h-[44px] min-w-[44px] touch-target-large
+        relative z-30 w-[85%] aspect-square rounded-full mx-auto min-h-[44px] min-w-[44px] touch-target-large font-urbanist font-semibold
         focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2
         ${
           isSelected
             ? "bg-gradient-to-br from-coral to-coral/90 text-white border-2 border-white/30 ring-1 ring-coral/30 md:backdrop-blur-sm"
             : isDisabled
-            ? "bg-charcoal/5 text-charcoal/60 cursor-not-allowed opacity-60 border border-charcoal/10"
-            : "bg-gradient-to-br from-sage to-sage/90 text-white border border-white/20 ring-1 ring-sage/20 md:backdrop-blur-sm"
+              ? "bg-charcoal/5 text-charcoal/60 cursor-not-allowed opacity-60 border border-charcoal/10"
+              : "bg-gradient-to-br from-sage to-sage/90 text-white border border-white/20 ring-1 ring-sage/20 md:backdrop-blur-sm"
         }
       `}
-      style={sfPro}
       suppressHydrationWarning
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
         <span
           className="text-[15px] md:text-base font-semibold text-center leading-tight"
           style={{
-            wordBreak: 'keep-all',
-            overflowWrap: 'break-word',
-            whiteSpace: 'normal',
-            hyphens: 'none',
-            WebkitHyphens: 'none',
-            msHyphens: 'none',
+            wordBreak: "keep-all",
+            overflowWrap: "break-word",
+            whiteSpace: "normal",
+            hyphens: "none",
+            WebkitHyphens: "none",
+            msHyphens: "none",
           }}
         >
-          {typeof interest.name === 'string' ? interest.name : String(interest.name || interest.id)}
+          {typeof interest.name === "string" ? interest.name : String(interest.name || interest.id)}
         </span>
         {isSelected && (
           <m.div

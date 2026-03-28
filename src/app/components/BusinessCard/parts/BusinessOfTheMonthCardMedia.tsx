@@ -29,7 +29,17 @@ interface BusinessOfTheMonthCardMediaProps {
   } | null;
   badgeTransition: {
     duration: number;
-    ease: "easeOut" | "easeIn" | "easeInOut" | "circIn" | "circOut" | "circInOut" | "backIn" | "backOut" | "backInOut" | "anticipate";
+    ease:
+      | "easeOut"
+      | "easeIn"
+      | "easeInOut"
+      | "circIn"
+      | "circOut"
+      | "circInOut"
+      | "backIn"
+      | "backOut"
+      | "backInOut"
+      | "anticipate";
   };
   canSwitchBadges: boolean;
   isMediaHovered: boolean;
@@ -70,19 +80,19 @@ export default function BusinessOfTheMonthCardMedia({
   return (
     <>
       {/* SVG Gradient Definitions for Star Icons */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
+      <svg width="0" height="0" style={{ position: "absolute" }}>
         <defs>
           <linearGradient id="starGradientGoldBOTM" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#F5D547', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#E6A547', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#F5D547", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#E6A547", stopOpacity: 1 }} />
           </linearGradient>
           <linearGradient id="starGradientBronzeBOTM" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#D4915C', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#8B6439', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#D4915C", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#8B6439", stopOpacity: 1 }} />
           </linearGradient>
           <linearGradient id="starGradientLowBOTM" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: '#D66B6B', stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: '#6B5C5C', stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#D66B6B", stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: "#6B5C5C", stopOpacity: 1 }} />
           </linearGradient>
         </defs>
       </svg>
@@ -98,13 +108,17 @@ export default function BusinessOfTheMonthCardMedia({
           {!imgError && displayImage ? (
             <div className="relative w-full h-full overflow-hidden shadow-sm">
               <Image
-                src={usingFallback ? getSubcategoryPlaceholderFromCandidates([
-                  (business as any).sub_interest_id,
-                  (business as any).subInterestId,
-                  (business as any).sub_interest_slug,
-                  (business as any).interest_id,
-                  (business as any).interestId,
-                ]) : displayImage}
+                src={
+                  usingFallback
+                    ? getSubcategoryPlaceholderFromCandidates([
+                        (business as any).sub_interest_id,
+                        (business as any).subInterestId,
+                        (business as any).sub_interest_slug,
+                        (business as any).interest_id,
+                        (business as any).interestId,
+                      ])
+                    : displayImage
+                }
                 alt={displayAlt}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 340px"
@@ -113,7 +127,7 @@ export default function BusinessOfTheMonthCardMedia({
                 loading={index < 2 ? "eager" : "lazy"}
                 fetchPriority={index < 2 ? "high" : "auto"}
                 quality={index < 2 ? 85 : 80}
-                style={{ aspectRatio: '4/3' }}
+                style={{ aspectRatio: "4/3" }}
                 onError={onImageError}
                 placeholder="blur"
                 blurDataURL={BLUR_DATA_URL}
@@ -127,7 +141,7 @@ export default function BusinessOfTheMonthCardMedia({
           ) : (
             <div
               className="relative w-full h-full flex items-center justify-center"
-              style={{ backgroundColor: '#E5E0E5' }}
+              style={{ backgroundColor: "#E5E0E5" }}
             >
               <ImageIcon className="w-16 h-16 text-charcoal/20" aria-hidden="true" />
             </div>
@@ -156,12 +170,7 @@ export default function BusinessOfTheMonthCardMedia({
                   aria-label={activeOverlayBadge.ariaLabel}
                   title={activeOverlayBadge.title}
                 >
-                  <span
-                    className="truncate text-[11px] font-medium leading-none text-charcoal"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                    }}
-                  >
+                  <span className="truncate text-[11px] font-medium leading-none text-charcoal font-urbanist">
                     {activeOverlayBadge.label}
                   </span>
                 </m.div>
@@ -173,24 +182,31 @@ export default function BusinessOfTheMonthCardMedia({
         {/* Star rating badge */}
         {hasReviews && displayTotal > 0 ? (
           <div className="absolute right-4 top-4 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-full p-1" aria-hidden>
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill={`url(#starGradient${starGradientId}BOTM)`} stroke={`url(#starGradient${starGradientId}BOTM)`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="rounded-full p-1"
+              aria-hidden
+            >
+              <path
+                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                fill={`url(#starGradient${starGradientId}BOTM)`}
+                stroke={`url(#starGradient${starGradientId}BOTM)`}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            <span className="text-sm font-semibold text-charcoal" style={{
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              fontWeight: 600
-            }}>
+            <span className="text-sm font-semibold text-charcoal font-urbanist">
               {Number(displayTotal).toFixed(1)}
             </span>
           </div>
         ) : (
           <div className="absolute right-4 top-4 z-20 inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal shadow-md">
-            <span className="text-sm font-semibold text-charcoal" style={{
-              fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              fontWeight: 600
-            }}>
-              New
-            </span>
+            <span className="text-sm font-semibold text-charcoal font-urbanist">New</span>
           </div>
         )}
 
@@ -205,7 +221,17 @@ export default function BusinessOfTheMonthCardMedia({
             aria-label={`Write a review for ${business.name}`}
             title="Write a review"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-charcoal/80">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-charcoal/80"
+            >
               <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
             </svg>
           </button>
@@ -215,10 +241,20 @@ export default function BusinessOfTheMonthCardMedia({
               e.stopPropagation();
               onBookmark(e);
             }}
-            aria-label={`${isSaved ? 'Remove from saved' : 'Save'} ${business.name}`}
-            title={isSaved ? 'Remove from saved' : 'Save'}
+            aria-label={`${isSaved ? "Remove from saved" : "Save"} ${business.name}`}
+            title={isSaved ? "Remove from saved" : "Save"}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-charcoal/80">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill={isSaved ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-charcoal/80"
+            >
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
             </svg>
           </button>
@@ -231,7 +267,17 @@ export default function BusinessOfTheMonthCardMedia({
             aria-label={`Share ${business.name}`}
             title="Share"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-charcoal/80">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-charcoal/80"
+            >
               <circle cx="18" cy="5" r="3" />
               <circle cx="6" cy="12" r="3" />
               <circle cx="18" cy="19" r="3" />

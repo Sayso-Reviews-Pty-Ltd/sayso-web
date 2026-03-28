@@ -35,34 +35,30 @@ export function ForYouMapDisplay({
 }: ForYouMapDisplayProps) {
   return (
     <>
-      <div className="mb-4 px-2 flex items-center justify-end">
+      <div className="mb-4 px-2 flex items-center justify-end font-urbanist">
         <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full p-1 border border-white/30 shadow-sm">
           <button
             onClick={() => {
-              console.log('[ForYou] Switching to List mode');
+              console.log("[ForYou] Switching to List mode");
               onMapModeChange(false);
             }}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
               !isMapMode
-                ? 'bg-card-bg text-white shadow-sm'
-                : 'text-charcoal/70 hover:text-charcoal'
+                ? "bg-card-bg text-white shadow-sm"
+                : "text-charcoal/70 hover:text-charcoal"
             }`}
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
           >
             <List className="w-3.5 h-3.5" />
             List
           </button>
           <button
             onClick={() => {
-              console.log('[ForYou] Switching to Map mode, businesses:', mapBusinesses.length);
+              console.log("[ForYou] Switching to Map mode, businesses:", mapBusinesses.length);
               onMapModeChange(true);
             }}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              isMapMode
-                ? 'bg-coral text-white shadow-sm'
-                : 'text-charcoal/70 hover:text-charcoal'
+              isMapMode ? "bg-coral text-white shadow-sm" : "text-charcoal/70 hover:text-charcoal"
             }`}
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
           >
             <MapIcon className="w-3.5 h-3.5" />
             Map
@@ -71,10 +67,7 @@ export function ForYouMapDisplay({
       </div>
 
       {isMapMode && usingCoordinateFallback && (
-        <p
-          className="mb-3 px-2 text-right text-xs text-charcoal/60"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
+        <p className="mb-3 px-2 text-right text-xs text-charcoal/60 font-urbanist">
           Showing map-ready recommendations.
         </p>
       )}
@@ -90,17 +83,11 @@ export function ForYouMapDisplay({
             className="w-full h-[calc(100vh-300px)] min-h-[500px] rounded-[12px] overflow-hidden border border-white/30 shadow-lg"
           >
             {isMapFallbackLoading ? (
-              <div
-                className="w-full h-full flex items-center justify-center bg-off-white/70 text-charcoal/60 text-sm"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-              >
+              <div className="w-full h-full flex items-center justify-center bg-off-white/70 text-charcoal/60 text-sm font-urbanist">
                 Loading map-ready recommendations...
               </div>
             ) : (
-              <BusinessesMap
-                businesses={mapBusinesses}
-                className="w-full h-full"
-              />
+              <BusinessesMap businesses={mapBusinesses} className="w-full h-full" />
             )}
           </m.div>
         ) : null}

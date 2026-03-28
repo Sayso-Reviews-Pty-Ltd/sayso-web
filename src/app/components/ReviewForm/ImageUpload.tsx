@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { Image as ImageIcon, X, Upload, ChevronLeft, ChevronRight, Maximize2 } from "@/app/lib/icons";
+import {
+  Image as ImageIcon,
+  X,
+  Upload,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+} from "@/app/lib/icons";
 import Image from "next/image";
 
 interface ImageUploadProps {
@@ -13,7 +20,7 @@ interface ImageUploadProps {
 }
 
 interface ImageItem {
-  type: 'file' | 'url';
+  type: "file" | "url";
   file?: File;
   url?: string;
   preview?: string;
@@ -91,10 +98,10 @@ export default function ImageUpload({
         // Remove new file
         const updatedFiles = files.filter((_, i) => i !== index);
         const updatedPreviews = previews.filter((_, i) => i !== index);
-        
+
         // Revoke object URL to free memory
         URL.revokeObjectURL(previews[index]);
-        
+
         setFiles(updatedFiles);
         setPreviews(updatedPreviews);
         onImagesChange(updatedFiles);
@@ -109,13 +116,16 @@ export default function ImageUpload({
     }
   };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!disabled && (existingImageUrls.length + files.length) < maxImages) {
-      setIsDragging(true);
-    }
-  }, [disabled, existingImageUrls.length, files.length, maxImages]);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!disabled && existingImageUrls.length + files.length < maxImages) {
+        setIsDragging(true);
+      }
+    },
+    [disabled, existingImageUrls.length, files.length, maxImages]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -123,15 +133,18 @@ export default function ImageUpload({
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    if (disabled || (existingImageUrls.length + files.length) >= maxImages) return;
-    
-    handleFileSelect(e.dataTransfer.files);
-  }, [disabled, existingImageUrls.length, files.length, maxImages, handleFileSelect]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      if (disabled || existingImageUrls.length + files.length >= maxImages) return;
+
+      handleFileSelect(e.dataTransfer.files);
+    },
+    [disabled, existingImageUrls.length, files.length, maxImages, handleFileSelect]
+  );
 
   const handlePreviewClick = useCallback((index: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -142,51 +155,60 @@ export default function ImageUpload({
     setPreviewIndex(null);
   }, []);
 
-  const handlePrevPreview = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (previewIndex !== null && previewIndex > 0) {
-      setPreviewIndex(previewIndex - 1);
-    }
-  }, [previewIndex]);
+  const handlePrevPreview = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (previewIndex !== null && previewIndex > 0) {
+        setPreviewIndex(previewIndex - 1);
+      }
+    },
+    [previewIndex]
+  );
 
-  const handleNextPreview = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    const totalImages = existingImageUrls.length + previews.length;
-    if (previewIndex !== null && previewIndex < totalImages - 1) {
-      setPreviewIndex(previewIndex + 1);
-    }
-  }, [previewIndex, existingImageUrls.length, previews.length]);
-
-  // Handle keyboard navigation in preview
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (previewIndex === null) return;
-    
-    if (e.key === 'Escape') {
-      handleClosePreview();
-    } else if (e.key === 'ArrowLeft' && previewIndex > 0) {
-      setPreviewIndex(previewIndex - 1);
-    } else if (e.key === 'ArrowRight') {
+  const handleNextPreview = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
       const totalImages = existingImageUrls.length + previews.length;
-      if (previewIndex < totalImages - 1) {
+      if (previewIndex !== null && previewIndex < totalImages - 1) {
         setPreviewIndex(previewIndex + 1);
       }
-    }
-  }, [previewIndex, existingImageUrls.length, previews.length, handleClosePreview]);
+    },
+    [previewIndex, existingImageUrls.length, previews.length]
+  );
+
+  // Handle keyboard navigation in preview
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (previewIndex === null) return;
+
+      if (e.key === "Escape") {
+        handleClosePreview();
+      } else if (e.key === "ArrowLeft" && previewIndex > 0) {
+        setPreviewIndex(previewIndex - 1);
+      } else if (e.key === "ArrowRight") {
+        const totalImages = existingImageUrls.length + previews.length;
+        if (previewIndex < totalImages - 1) {
+          setPreviewIndex(previewIndex + 1);
+        }
+      }
+    },
+    [previewIndex, existingImageUrls.length, previews.length, handleClosePreview]
+  );
 
   // Add keyboard event listener
   useEffect(() => {
     if (previewIndex !== null) {
-      window.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
       return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = 'unset';
+        window.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "unset";
       };
     }
   }, [previewIndex, handleKeyDown]);
 
   return (
-    <div className="w-full">
+    <div className="w-full font-urbanist">
       <input
         ref={fileInputRef}
         type="file"
@@ -219,14 +241,14 @@ export default function ImageUpload({
               />
               {/* Gradient overlay on hover */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
+
               {/* Preview icon on hover */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
                   <Maximize2 className="w-5 h-5 text-charcoal" strokeWidth={2} />
                 </div>
               </div>
-              
+
               {!disabled && (
                 <button
                   type="button"
@@ -267,14 +289,14 @@ export default function ImageUpload({
               />
               {/* Gradient overlay on hover */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
+
               {/* Preview icon on hover */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
                   <Maximize2 className="w-5 h-5 text-charcoal" strokeWidth={2} />
                 </div>
               </div>
-              
+
               {!disabled && (
                 <button
                   type="button"
@@ -320,7 +342,7 @@ export default function ImageUpload({
           )}
 
           {/* Next button */}
-          {previewIndex < (existingImageUrls.length + previews.length) - 1 && (
+          {previewIndex < existingImageUrls.length + previews.length - 1 && (
             <button
               onClick={handleNextPreview}
               className="absolute right-4 sm:right-6 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 border border-white/20"
@@ -353,7 +375,7 @@ export default function ImageUpload({
 
           {/* Image counter */}
           <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-            <p className="text-sm text-white font-medium" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+            <p className="text-sm text-white font-medium">
               {previewIndex + 1} / {existingImageUrls.length + previews.length}
             </p>
           </div>
@@ -361,7 +383,7 @@ export default function ImageUpload({
       )}
 
       {/* Drop Zone */}
-      {!disabled && (existingImageUrls.length + files.length) < maxImages && (
+      {!disabled && existingImageUrls.length + files.length < maxImages && (
         <div
           ref={dropZoneRef}
           onDragOver={handleDragOver}
@@ -371,54 +393,53 @@ export default function ImageUpload({
           className={`
             relative w-full min-h-[120px] rounded-[12px] border-2 border-dashed
             transition-all duration-300 cursor-pointer group
-            ${isDragging
-              ? 'border-coral bg-coral/10 scale-[1.01]'
-              : 'border-charcoal/20 hover:border-charcoal/40 bg-charcoal/5 hover:bg-charcoal/10'
+            ${
+              isDragging
+                ? "border-coral bg-coral/10 scale-[1.01]"
+                : "border-charcoal/20 hover:border-charcoal/40 bg-charcoal/5 hover:bg-charcoal/10"
             }
-            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           `}
         >
           <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[120px] px-4 py-5">
-            <div className={`
+            <div
+              className={`
               w-12 h-12 rounded-full flex items-center justify-center mb-3
               transition-all duration-300
-              ${isDragging
-                ? 'bg-coral/20 scale-110'
-                : 'bg-charcoal/10 group-hover:bg-charcoal/20'
-              }
-            `}>
+              ${isDragging ? "bg-coral/20 scale-110" : "bg-charcoal/10 group-hover:bg-charcoal/20"}
+            `}
+            >
               {isDragging ? (
                 <Upload className="w-6 h-6 text-coral animate-bounce" strokeWidth={2} />
               ) : (
-                <ImageIcon className="w-6 h-6 text-charcoal/60 group-hover:text-charcoal/80 transition-colors duration-300" strokeWidth={2} />
+                <ImageIcon
+                  className="w-6 h-6 text-charcoal/60 group-hover:text-charcoal/80 transition-colors duration-300"
+                  strokeWidth={2}
+                />
               )}
             </div>
 
-            <p className="text-base font-semibold text-charcoal/70 mb-1 text-center" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
-              {isDragging ? 'Drop images here' : 'Tap to add photos'}
+            <p className="text-base font-semibold text-charcoal/70 mb-1 text-center">
+              {isDragging ? "Drop images here" : "Tap to add photos"}
             </p>
 
-            <p className="text-sm text-charcoal/60 text-center" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
-              {(existingImageUrls.length + files.length) > 0
+            <p className="text-sm text-charcoal/60 text-center">
+              {existingImageUrls.length + files.length > 0
                 ? `${existingImageUrls.length + files.length}/${maxImages} added`
                 : maxImages === 2
-                  ? 'Up to 2 images only, max 2MB each'
-                  : `Up to ${maxImages} images, max 2MB each`
-              }
+                  ? "Up to 2 images only, max 2MB each"
+                  : `Up to ${maxImages} images, max 2MB each`}
             </p>
           </div>
         </div>
       )}
 
       {/* Disabled state message */}
-      {disabled && (existingImageUrls.length + files.length) >= maxImages && (
+      {disabled && existingImageUrls.length + files.length >= maxImages && (
         <div className="w-full min-h-[120px] rounded-[12px] border-2 border-dashed border-charcoal/10 bg-off-white/20 flex items-center justify-center">
-          <p className="text-sm text-charcoal/70 text-center" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
-            Maximum {maxImages} images reached
-          </p>
+          <p className="text-sm text-charcoal/70 text-center">Maximum {maxImages} images reached</p>
         </div>
       )}
     </div>
   );
 }
-

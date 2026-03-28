@@ -59,22 +59,16 @@ export function DesktopNavCenter({
     pillTransition,
   } = styles;
 
-  const dropdownFont: CSSProperties = {
-    fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-  };
-
   const isAddGroupActive = ADD_MENU_ITEMS.some((item) => isPathActive(item.href, pathname));
 
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-0 lg:gap-1">
-
         {/* ── Business account nav ─────────────────────────────── */}
         {isBusinessAccountUser &&
           businessLinks.map(({ key, label, href, requiresAuth }) => {
             const isActive =
-              isPathActive(href, pathname) ||
-              (isClaimBusinessActive && href === "/for-businesses");
+              isPathActive(href, pathname) || (isClaimBusinessActive && href === "/for-businesses");
 
             if (key === "add-business") {
               return (
@@ -88,15 +82,21 @@ export function DesktopNavCenter({
                     style={sf}
                   >
                     {getShowPill("add", isAddGroupActive, hoveredNavKey) && (
-                      <m.span layoutId="nav-pill" className={pillClass} transition={pillTransition} />
+                      <m.span
+                        layoutId="nav-pill"
+                        className={pillClass}
+                        transition={pillTransition}
+                      />
                     )}
                     <span className={navLabelHoverClass}>Add</span>
                     <ChevronDown className="w-4 h-4 transition-transform duration-300 relative z-10 group-data-[state=open]:rotate-180" />
                   </NavigationMenuTrigger>
 
-                  <NavigationMenuContent style={dropdownFont} className="min-w-[250px]">
+                  <NavigationMenuContent className="min-w-[250px] font-urbanist">
                     <div className="px-4 pt-3 pb-2 border-b border-charcoal/10">
-                      <h3 className="text-sm font-semibold text-charcoal" style={sf}>Add</h3>
+                      <h3 className="text-sm font-semibold text-charcoal" style={sf}>
+                        Add
+                      </h3>
                     </div>
                     <div className="py-2">
                       {ADD_MENU_ITEMS.map((item) => {
@@ -138,7 +138,11 @@ export function DesktopNavCenter({
                     style={sf}
                   >
                     {getShowPill(key, isActive, hoveredNavKey) && (
-                      <m.span layoutId="nav-pill" className={pillClass} transition={pillTransition} />
+                      <m.span
+                        layoutId="nav-pill"
+                        className={pillClass}
+                        transition={pillTransition}
+                      />
                     )}
                     <span className={navLabelHoverClass}>{label}</span>
                   </OptimizedLink>
@@ -165,7 +169,11 @@ export function DesktopNavCenter({
                       style={sf}
                     >
                       {getShowPill(key, isActive, hoveredNavKey) && (
-                        <m.span layoutId="nav-pill" className={pillClass} transition={pillTransition} />
+                        <m.span
+                          layoutId="nav-pill"
+                          className={pillClass}
+                          transition={pillTransition}
+                        />
                       )}
                       <span className={navLabelHoverClass}>{label}</span>
                     </OptimizedLink>
@@ -183,44 +191,60 @@ export function DesktopNavCenter({
                       style={sf}
                     >
                       {getShowPill("discover", isDiscoverActive, hoveredNavKey) && (
-                        <m.span layoutId="nav-pill" className={pillClass} transition={pillTransition} />
+                        <m.span
+                          layoutId="nav-pill"
+                          className={pillClass}
+                          transition={pillTransition}
+                        />
                       )}
                       <span className={navLabelHoverClass}>Discover</span>
                       <ChevronDown className="w-4 h-4 transition-transform duration-300 relative z-10 group-data-[state=open]:rotate-180" />
                     </NavigationMenuTrigger>
 
-                    <NavigationMenuContent style={dropdownFont} className="min-w-[320px]">
+                    <NavigationMenuContent className="min-w-[320px] font-urbanist">
                       <div className="px-5 pt-4 pb-3 border-b border-charcoal/10">
                         <h3 className="text-sm md:text-base font-semibold text-charcoal" style={sf}>
                           Discover
                         </h3>
                       </div>
                       <div className="py-3">
-                        {discoverLinks.map(({ key: subKey, label: subLabel, description, href: subHref, requiresAuth: subAuth }) => {
-                          const subIsActive = isPathActive(subHref, pathname);
-                          const isLocked = isGuest && subAuth;
-                          return (
-                            <NavigationMenuLink key={subKey} asChild>
-                              <OptimizedLink
-                                href={getLinkHref(subHref ?? "", subAuth, isGuest)}
-                                onClick={(e) => handleNavClick(subHref ?? "", e)}
-                                className={`group flex items-start gap-3 px-5 py-3 transition-colors duration-200 rounded-lg mx-2 ${
-                                  subIsActive ? "bg-gradient-to-r from-sage/10 to-sage/5" : "hover:bg-charcoal/[0.03]"
-                                }`}
-                                style={sf}
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <div className={`text-sm font-semibold ${subIsActive ? "text-sage" : "text-charcoal group-hover:text-coral"}`}>
-                                    <span className="truncate">{subLabel}</span>
+                        {discoverLinks.map(
+                          ({
+                            key: subKey,
+                            label: subLabel,
+                            description,
+                            href: subHref,
+                            requiresAuth: subAuth,
+                          }) => {
+                            const subIsActive = isPathActive(subHref, pathname);
+                            const isLocked = isGuest && subAuth;
+                            return (
+                              <NavigationMenuLink key={subKey} asChild>
+                                <OptimizedLink
+                                  href={getLinkHref(subHref ?? "", subAuth, isGuest)}
+                                  onClick={(e) => handleNavClick(subHref ?? "", e)}
+                                  className={`group flex items-start gap-3 px-5 py-3 transition-colors duration-200 rounded-lg mx-2 ${
+                                    subIsActive
+                                      ? "bg-gradient-to-r from-sage/10 to-sage/5"
+                                      : "hover:bg-charcoal/[0.03]"
+                                  }`}
+                                  style={sf}
+                                >
+                                  <div className="flex-1 min-w-0">
+                                    <div
+                                      className={`text-sm font-semibold ${subIsActive ? "text-sage" : "text-charcoal group-hover:text-coral"}`}
+                                    >
+                                      <span className="truncate">{subLabel}</span>
+                                    </div>
+                                    <div className="text-sm sm:text-xs text-charcoal/60 mt-0.5">
+                                      {isLocked ? "Sign in for personalised picks" : description}
+                                    </div>
                                   </div>
-                                  <div className="text-sm sm:text-xs text-charcoal/60 mt-0.5">
-                                    {isLocked ? "Sign in for personalised picks" : description}
-                                  </div>
-                                </div>
-                              </OptimizedLink>
-                            </NavigationMenuLink>
-                          );
-                        })}
+                                </OptimizedLink>
+                              </NavigationMenuLink>
+                            );
+                          }
+                        )}
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuItem>
@@ -228,7 +252,6 @@ export function DesktopNavCenter({
               </Fragment>
             );
           })}
-
       </NavigationMenuList>
     </NavigationMenu>
   );

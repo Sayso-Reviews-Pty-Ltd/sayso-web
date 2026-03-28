@@ -12,7 +12,7 @@ interface BusinessCardContentProps {
     name: string;
     percentiles?: {
       punctuality?: number;
-      'cost-effectiveness'?: number;
+      "cost-effectiveness"?: number;
       friendliness?: number;
       trustworthiness?: number;
     };
@@ -50,9 +50,7 @@ export default function BusinessCardContent({
   return (
     <div
       className={`px-4 pt-3 sm:px-4 sm:pt-2 md:pt-3 lg:pt-3 pb-3 ${
-        compact
-          ? "lg:py-1 lg:pt-2 lg:pb-0 lg:min-h-[160px]"
-          : "flex-1"
+        compact ? "lg:py-1 lg:pt-2 lg:pb-0 lg:min-h-[160px]" : "flex-1"
       } relative flex-shrink-0 flex flex-col justify-start bg-card-bg/10 z-10 rounded-b-[12px]`}
     >
       <div className="flex flex-col">
@@ -72,24 +70,13 @@ export default function BusinessCardContent({
                   <m.h3
                     layoutId={businessTitleLayoutId}
                     className="text-h2 sm:text-h1 font-bold text-center leading-[1.3] truncate tracking-tight transition-colors duration-300 group-hover:text-navbar-bg/90 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap relative z-[1]"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                      fontWeight: 700,
-                      WebkitFontSmoothing: 'antialiased',
-                      MozOsxFontSmoothing: 'grayscale',
-                      textRendering: 'optimizeLegibility',
-                      letterSpacing: '-0.01em',
-                    }}
                   >
                     {business.name}
                   </m.h3>
                 </button>
               </Tooltip>
-              {ownerView && (business as { status?: string }).status === 'pending_approval' && (
-                <span
-                  className="mt-1.5 inline-flex items-center rounded-full bg-off-white px-2.5 py-1 text-xs font-semibold text-charcoal"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                >
+              {ownerView && (business as { status?: string }).status === "pending_approval" && (
+                <span className="mt-1.5 inline-flex items-center rounded-full bg-off-white px-2.5 py-1 text-xs font-semibold text-charcoal">
                   Pending Approval
                 </span>
               )}
@@ -128,12 +115,8 @@ export default function BusinessCardContent({
           className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-full text-caption sm:text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sage/40 border transition-all duration-200 min-h-[48px] shadow-md bg-gradient-to-br from-navbar-bg to-navbar-bg/90 text-white border-sage/50 active:scale-95 active:translate-y-[1px] transform-gpu touch-manipulation select-none"
           onClick={onCardClick}
           aria-label={`View ${business.name} details`}
-          style={{
-            fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-            fontWeight: 600,
-          }}
         >
-          <span>{isBusinessAccount ? 'View Business Profile' : 'View Details'}</span>
+          <span>{isBusinessAccount ? "View Business Profile" : "View Details"}</span>
         </button>
       </div>
     </div>

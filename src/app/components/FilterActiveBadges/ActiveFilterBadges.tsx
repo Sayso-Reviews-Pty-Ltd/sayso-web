@@ -8,8 +8,8 @@ import { pillBase, pillSize, pillActive } from "../Filters/filterPillTokens";
 
 interface ActiveFilterBadgesProps {
   filters: FilterState;
-  onRemoveFilter: (filterType: 'minRating' | 'distance') => void;
-  onUpdateFilter: (filterType: 'minRating' | 'distance', value: number | string | null) => void;
+  onRemoveFilter: (filterType: "minRating" | "distance") => void;
+  onUpdateFilter: (filterType: "minRating" | "distance", value: number | string | null) => void;
   onClearAll?: () => void;
 }
 
@@ -19,7 +19,7 @@ export default function ActiveFilterBadges({
   onUpdateFilter,
   onClearAll,
 }: ActiveFilterBadgesProps) {
-  const [openDropdown, setOpenDropdown] = useState<'rating' | 'distance' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"rating" | "distance" | null>(null);
   const ratingRef = useRef<HTMLDivElement>(null);
   const distanceRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -31,15 +31,11 @@ export default function ActiveFilterBadges({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (
-        openDropdown === 'rating' &&
-        ratingRef.current &&
-        !ratingRef.current.contains(target)
-      ) {
+      if (openDropdown === "rating" && ratingRef.current && !ratingRef.current.contains(target)) {
         setOpenDropdown(null);
       }
       if (
-        openDropdown === 'distance' &&
+        openDropdown === "distance" &&
         distanceRef.current &&
         !distanceRef.current.contains(target)
       ) {
@@ -48,8 +44,8 @@ export default function ActiveFilterBadges({
     };
 
     if (openDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [openDropdown]);
 
@@ -83,28 +79,29 @@ export default function ActiveFilterBadges({
         >
           <m.button
             type="button"
-            onClick={() => setOpenDropdown(openDropdown === 'rating' ? null : 'rating')}
-            aria-pressed={openDropdown === 'rating'}
+            onClick={() => setOpenDropdown(openDropdown === "rating" ? null : "rating")}
+            aria-pressed={openDropdown === "rating"}
             whileHover={prefersReducedMotion ? undefined : { y: -1 }}
             whileTap={prefersReducedMotion ? undefined : { y: 0, scale: 0.99 }}
             className={`${pillBase} ${pillSize.sm} ${pillActive} gap-1.5`}
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             aria-label="Edit rating filter"
           >
             <Star className="w-3.5 h-3.5" />
             <span>{filters.minRating}+ Rating</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === 'rating' ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-3.5 h-3.5 transition-transform ${openDropdown === "rating" ? "rotate-180" : ""}`}
+            />
             <span
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveFilter('minRating');
+                onRemoveFilter("minRating");
                 setOpenDropdown(null);
               }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   e.stopPropagation();
-                  onRemoveFilter('minRating');
+                  onRemoveFilter("minRating");
                   setOpenDropdown(null);
                 }
               }}
@@ -118,7 +115,7 @@ export default function ActiveFilterBadges({
           </m.button>
 
           <AnimatePresence>
-            {openDropdown === 'rating' && (
+            {openDropdown === "rating" && (
               <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -131,15 +128,14 @@ export default function ActiveFilterBadges({
                     <button
                       key={rating}
                       onClick={() => {
-                        onUpdateFilter('minRating', rating);
+                        onUpdateFilter("minRating", rating);
                         setOpenDropdown(null);
                       }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors ${
                         filters.minRating === rating
-                          ? 'bg-card-bg text-white'
-                          : 'text-charcoal hover:bg-card-bg/10'
+                          ? "bg-card-bg text-white"
+                          : "text-charcoal hover:bg-card-bg/10"
                       }`}
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                     >
                       <Star className="w-4 h-4" />
                       <span className="font-medium">{rating}+ Stars</span>
@@ -173,28 +169,29 @@ export default function ActiveFilterBadges({
         >
           <m.button
             type="button"
-            onClick={() => setOpenDropdown(openDropdown === 'distance' ? null : 'distance')}
-            aria-pressed={openDropdown === 'distance'}
+            onClick={() => setOpenDropdown(openDropdown === "distance" ? null : "distance")}
+            aria-pressed={openDropdown === "distance"}
             whileHover={prefersReducedMotion ? undefined : { y: -1 }}
             whileTap={prefersReducedMotion ? undefined : { y: 0, scale: 0.99 }}
             className={`${pillBase} ${pillSize.sm} ${pillActive} gap-1.5`}
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
             aria-label="Edit distance filter"
           >
             <MapPin className="w-3.5 h-3.5" />
             <span>Within {filters.distance}</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === 'distance' ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-3.5 h-3.5 transition-transform ${openDropdown === "distance" ? "rotate-180" : ""}`}
+            />
             <span
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveFilter('distance');
+                onRemoveFilter("distance");
                 setOpenDropdown(null);
               }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   e.stopPropagation();
-                  onRemoveFilter('distance');
+                  onRemoveFilter("distance");
                   setOpenDropdown(null);
                 }
               }}
@@ -208,7 +205,7 @@ export default function ActiveFilterBadges({
           </m.button>
 
           <AnimatePresence>
-            {openDropdown === 'distance' && (
+            {openDropdown === "distance" && (
               <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -221,15 +218,14 @@ export default function ActiveFilterBadges({
                     <button
                       key={distance}
                       onClick={() => {
-                        onUpdateFilter('distance', distance);
+                        onUpdateFilter("distance", distance);
                         setOpenDropdown(null);
                       }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors ${
                         filters.distance === distance
-                          ? 'bg-coral text-white'
-                          : 'text-charcoal hover:bg-coral/10'
+                          ? "bg-coral text-white"
+                          : "text-charcoal hover:bg-coral/10"
                       }`}
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                     >
                       <MapPin className="w-4 h-4" />
                       <span className="font-medium">{distance}</span>
@@ -263,7 +259,6 @@ export default function ActiveFilterBadges({
           whileHover={prefersReducedMotion ? undefined : { y: -1 }}
           whileTap={prefersReducedMotion ? undefined : { y: 0, scale: 0.99 }}
           className="shrink-0 text-sm text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-500"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
         >
           Clear all
         </m.button>
