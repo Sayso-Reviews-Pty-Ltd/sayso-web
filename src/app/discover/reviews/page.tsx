@@ -253,10 +253,7 @@ export default function GeneralReviewsPage() {
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-charcoal/10 to-charcoal/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center shadow-premium-sm hover:shadow-premium-md transition-all duration-premium ease-premium hover:scale-110 border border-charcoal/5 hover:border-sage/20 mr-2 sm:mr-4">
               <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-charcoal/70 group-hover:text-sage transition-colors duration-premium ease-premium" />
             </div>
-            <m.h1
-              className="text-base sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sage via-sage/90 to-charcoal transition-all duration-premium ease-premium group-hover:from-sage/90 group-hover:to-sage relative tracking-[-0.02em]"
-              style={{ fontFamily: '"Urbanist", system-ui, sans-serif' }}
-            >
+            <m.h1 className="font-urbanist text-base sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sage via-sage/90 to-charcoal transition-all duration-premium ease-premium group-hover:from-sage/90 group-hover:to-sage relative tracking-[-0.02em]">
               Community Reviews
             </m.h1>
           </Link>
@@ -279,10 +276,7 @@ export default function GeneralReviewsPage() {
             <li>
               <Link
                 href="/home"
-                className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
+                className="font-urbanist text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
               >
                 Home
               </Link>
@@ -291,14 +285,7 @@ export default function GeneralReviewsPage() {
               <ChevronRight className="w-4 h-4 text-charcoal/60" />
             </li>
             <li>
-              <span
-                className="text-charcoal font-semibold"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                Reviews
-              </span>
+              <span className="font-urbanist text-charcoal font-semibold">Reviews</span>
             </li>
           </ol>
         </nav>

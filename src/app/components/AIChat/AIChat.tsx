@@ -16,7 +16,8 @@ export default function AIChat() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi! I'm your Sayso AI assistant. How can I help you discover amazing local businesses today?",
+      content:
+        "Hi! I'm your Sayso AI assistant. How can I help you discover amazing local businesses today?",
       timestamp: new Date(),
     },
   ]);
@@ -55,7 +56,8 @@ export default function AIChat() {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I understand you're looking for information. How can I assist you further with finding the perfect local business?",
+        content:
+          "I understand you're looking for information. How can I assist you further with finding the perfect local business?",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
@@ -94,7 +96,7 @@ export default function AIChat() {
                 <MessageCircle className="w-5 h-5 text-white" strokeWidth={2.5} />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+                <h3 className="text-white font-semibold text-sm font-urbanist">
                   Sayso AI Assistant
                 </h3>
                 <p className="text-white/80 text-sm sm:text-xs">Always here to help</p>
@@ -123,11 +125,12 @@ export default function AIChat() {
                       : "bg-card-bg text-white rounded-tl-sm"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
-                    {message.content}
-                  </p>
+                  <p className="text-sm leading-relaxed font-urbanist">{message.content}</p>
                   <span className={`text-sm sm:text-xs mt-1 block text-white/70`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>
@@ -153,8 +156,7 @@ export default function AIChat() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything..."
-                className="flex-1 px-4 py-2.5 bg-off-white/50 border border-charcoal/10 rounded-full text-sm text-charcoal placeholder:text-charcoal/60 focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage/30 transition-all"
-                style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}
+                className="flex-1 px-4 py-2.5 bg-off-white/50 border border-charcoal/10 rounded-full text-sm text-charcoal placeholder:text-charcoal/60 focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage/30 transition-all font-urbanist"
                 disabled={isLoading}
               />
               <button
@@ -166,7 +168,7 @@ export default function AIChat() {
                 <Send className="w-4 h-4 text-white" strokeWidth={2.5} />
               </button>
             </div>
-            <p className="text-sm sm:text-xs text-charcoal/60 mt-2 text-center" style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+            <p className="text-sm sm:text-xs text-charcoal/60 mt-2 text-center font-urbanist">
               Powered by Sayso AI
             </p>
           </div>
@@ -175,4 +177,3 @@ export default function AIChat() {
     </>
   );
 }
-

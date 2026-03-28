@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MapPin, X, Search, Loader } from "@/app/lib/icons";
-// mapbox-gl is dynamically imported inside useEffect to avoid 1.6MB in the initial bundle
+import { H3 } from "@/app/components/ui/typography";
 
 interface LocationPickerProps {
   address?: string;
@@ -31,7 +31,6 @@ export default function LocationPicker({
   const [selectedLng, setSelectedLng] = useState<number | null>(initialLng || null);
   const [formattedAddress, setFormattedAddress] = useState<string>("");
 
-  // Initialize map
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
@@ -98,7 +97,6 @@ export default function LocationPicker({
     };
   }, []);
 
-  // Reverse geocode coordinates to address
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
       const response = await fetch(
@@ -114,7 +112,6 @@ export default function LocationPicker({
     }
   };
 
-  // Geocode search query
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
 
@@ -131,7 +128,6 @@ export default function LocationPicker({
         setSelectedLng(lng);
         setFormattedAddress(data.formatted_address || searchQuery);
 
-        // Update map center and marker
         if (map.current) {
           map.current.flyTo({
             center: [lng, lat],
@@ -179,7 +175,6 @@ export default function LocationPicker({
         setSelectedLng(lng);
         setFormattedAddress(data.formatted_address || fullAddress);
 
-        // Update map center and marker
         if (map.current) {
           map.current.flyTo({
             center: [lng, lat],
@@ -208,12 +203,7 @@ export default function LocationPicker({
       <div className="bg-white rounded-[12px] w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3
-            className="text-lg font-semibold text-charcoal"
-            style={{ fontFamily: "Urbanist, sans-serif" }}
-          >
-            Select Location
-          </h3>
+          <H3 className="text-lg">Select Location</H3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-charcoal/10 rounded-full transition-colors"
@@ -233,15 +223,13 @@ export default function LocationPicker({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Search for an address..."
-                className="w-full pl-10 pr-4 py-2 border border-charcoal/20 rounded-full focus:outline-none focus:ring-2 focus:ring-sage/30"
-                style={{ fontFamily: "Urbanist, sans-serif" }}
+                className="w-full pl-10 pr-4 py-2 border border-charcoal/20 rounded-full focus:outline-none focus:ring-2 focus:ring-sage/30 font-urbanist"
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={isGeocoding || !searchQuery.trim()}
-              className="px-4 py-2 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              style={{ fontFamily: "Urbanist, sans-serif" }}
+              className="px-4 py-2 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-urbanist"
             >
               {isGeocoding ? (
                 <>
@@ -259,8 +247,7 @@ export default function LocationPicker({
             <button
               onClick={handleGeocodeAddress}
               disabled={isGeocoding}
-              className="mt-2 w-full px-4 py-2 bg-charcoal/10 text-charcoal rounded-full hover:bg-charcoal/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-              style={{ fontFamily: "Urbanist, sans-serif" }}
+              className="mt-2 w-full px-4 py-2 bg-charcoal/10 text-charcoal rounded-full hover:bg-charcoal/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm font-urbanist"
             >
               {isGeocoding ? (
                 <>
@@ -285,21 +272,13 @@ export default function LocationPicker({
         {/* Selected Location Info */}
         {selectedLat && selectedLng && (
           <div className="p-4 border-t bg-card-bg/5">
-            <p
-              className="text-sm text-charcoal/70 mb-2"
-              style={{ fontFamily: "Urbanist, sans-serif" }}
-            >
-              Selected Location:
-            </p>
+            <p className="text-sm text-charcoal/70 mb-2 font-urbanist">Selected Location:</p>
             {formattedAddress && (
-              <p
-                className="text-sm font-semibold text-charcoal mb-2"
-                style={{ fontFamily: "Urbanist, sans-serif" }}
-              >
+              <p className="text-sm font-semibold text-charcoal mb-2 font-urbanist">
                 {formattedAddress}
               </p>
             )}
-            <p className="text-xs text-charcoal/60" style={{ fontFamily: "Urbanist, sans-serif" }}>
+            <p className="text-xs text-charcoal/60 font-urbanist">
               Coordinates: {selectedLat.toFixed(6)}, {selectedLng.toFixed(6)}
             </p>
           </div>
@@ -309,16 +288,14 @@ export default function LocationPicker({
         <div className="p-4 border-t flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 border border-charcoal/20 text-charcoal rounded-full hover:bg-charcoal/5 transition-colors"
-            style={{ fontFamily: "Urbanist, sans-serif" }}
+            className="flex-1 px-4 py-3 border border-charcoal/20 text-charcoal rounded-full hover:bg-charcoal/5 transition-colors font-urbanist"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={!selectedLat || !selectedLng}
-            className="flex-1 px-4 py-3 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ fontFamily: "Urbanist, sans-serif" }}
+            className="flex-1 px-4 py-3 bg-card-bg text-white rounded-full hover:bg-card-bg/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-urbanist"
           >
             Confirm Location
           </button>

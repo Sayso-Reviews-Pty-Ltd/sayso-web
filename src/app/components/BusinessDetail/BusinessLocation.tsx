@@ -315,8 +315,8 @@ export default function BusinessLocation({
                   <MapPin className="w-4 h-4 text-charcoal/85" />
                 </span>
                 <h3
-                  className="text-base font-semibold text-charcoal"
-                  style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                  className="text-base font-semibold text-charcoal font-urbanist"
+                  style={{ fontWeight: 600 }}
                 >
                   Location
                 </h3>
@@ -390,10 +390,7 @@ export default function BusinessLocation({
                   className="mt-3 flex flex-wrap items-center gap-2"
                 >
                   {/* Distance Pill */}
-                  <span
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80"
-                    style={{ fontFamily: "Urbanist, sans-serif" }}
-                  >
+                  <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80 font-urbanist">
                     <Navigation className="w-4 h-4 text-sage" />
                     <span className="font-600">
                       {distance < 1
@@ -404,20 +401,14 @@ export default function BusinessLocation({
                   </span>
 
                   {/* Drive Time Pill */}
-                  <span
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80"
-                    style={{ fontFamily: "Urbanist, sans-serif" }}
-                  >
+                  <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80 font-urbanist">
                     <Car className="w-4 h-4 text-coral" />
                     <span className="font-600">{estimateTravelTime(distance, "drive")}</span>
                   </span>
 
                   {/* Walk Time Pill - Only if close */}
                   {distance < 3 && (
-                    <span
-                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80"
-                      style={{ fontFamily: "Urbanist, sans-serif" }}
-                    >
+                    <span className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-off-white border border-charcoal/10 text-charcoal/80 text-sm font-medium transition-all hover:border-charcoal/20 hover:bg-off-white/80 font-urbanist">
                       <Footprints className="w-4 h-4 text-sage/70" />
                       <span className="font-600">{estimateTravelTime(distance, "walk")}</span>
                     </span>
@@ -432,10 +423,7 @@ export default function BusinessLocation({
                   className="flex items-center gap-2 mt-2"
                 >
                   <div className="w-3 h-3 border-2 border-sage/30 border-t-sage rounded-full animate-spin" />
-                  <span
-                    className="text-sm text-charcoal/70"
-                    style={{ fontFamily: "Urbanist, sans-serif" }}
-                  >
+                  <span className="text-sm text-charcoal/70 font-urbanist">
                     Calculating distance...
                   </span>
                 </m.div>
@@ -445,8 +433,7 @@ export default function BusinessLocation({
                 <m.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-xs text-charcoal/50 mt-2"
-                  style={{ fontFamily: "Urbanist, sans-serif" }}
+                  className="text-xs text-charcoal/50 mt-2 font-urbanist"
                 >
                   Enable location access to see distance
                 </m.p>
@@ -476,10 +463,7 @@ export default function BusinessLocation({
                   >
                     <div className="px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center gap-2">
                       <Maximize2 className="w-4 h-4 text-charcoal" />
-                      <span
-                        className="text-sm font-semibold text-charcoal"
-                        style={{ fontFamily: "Urbanist, sans-serif" }}
-                      >
+                      <span className="text-sm font-semibold text-charcoal font-urbanist">
                         View larger
                       </span>
                     </div>
@@ -496,8 +480,8 @@ export default function BusinessLocation({
                     href={getDirectionsUrl("driving")}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors"
-                    style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors font-urbanist"
+                    style={{ fontWeight: 600 }}
                   >
                     <Navigation className="w-4 h-4" />
                     Get directions
@@ -519,8 +503,8 @@ export default function BusinessLocation({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   href={getUberUrl()}
-                  className="block w-full text-center px-4 py-2.5 rounded-full text-sm font-semibold bg-white/30 text-charcoal hover:bg-white/50 transition-colors"
-                  style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                  className="block w-full text-center px-4 py-2.5 rounded-full text-sm font-semibold bg-white/30 text-charcoal hover:bg-white/50 transition-colors font-urbanist"
+                  style={{ fontWeight: 600 }}
                 >
                   Get an Uber
                 </m.a>
@@ -535,18 +519,12 @@ export default function BusinessLocation({
                 {isResolvingCoordinates ? (
                   <div className="mb-4 flex items-center justify-center gap-2">
                     <div className="w-3 h-3 border-2 border-sage/30 border-t-sage rounded-full animate-spin" />
-                    <p
-                      className="text-sm text-charcoal/60"
-                      style={{ fontFamily: "Urbanist, sans-serif" }}
-                    >
+                    <p className="text-sm text-charcoal/60 font-urbanist">
                       Finding map coordinates...
                     </p>
                   </div>
                 ) : (
-                  <p
-                    className="text-sm text-charcoal/60 mb-4"
-                    style={{ fontFamily: "Urbanist, sans-serif" }}
-                  >
+                  <p className="text-sm text-charcoal/60 mb-4 font-urbanist">
                     Map coordinates not available
                   </p>
                 )}
@@ -556,8 +534,8 @@ export default function BusinessLocation({
                   href={getDirectionsUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors"
-                  style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors font-urbanist"
+                  style={{ fontWeight: 600 }}
                 >
                   <ExternalLink className="w-4 h-4" />
                   Search on map
@@ -606,18 +584,15 @@ export default function BusinessLocation({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2
-                      className="text-lg font-semibold text-white truncate"
+                      className="text-lg font-semibold text-white truncate font-urbanist"
                       title={name}
-                      style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                      style={{ fontWeight: 600 }}
                     >
                       {name}
                     </h2>
                     {displayLocation && (
                       <div className="flex items-center gap-2 mt-1">
-                        <p
-                          className="text-sm text-white/70 truncate"
-                          style={{ fontFamily: "Urbanist, sans-serif" }}
-                        >
+                        <p className="text-sm text-white/70 truncate font-urbanist">
                           {displayLocation}
                         </p>
                         <m.button
@@ -637,19 +612,13 @@ export default function BusinessLocation({
                     )}
                     {distance !== null && (
                       <div className="flex items-center gap-3 mt-2">
-                        <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-card-bg/20 text-charcoal/70 text-sm font-medium"
-                          style={{ fontFamily: "Urbanist, sans-serif" }}
-                        >
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-card-bg/20 text-charcoal/70 text-sm font-medium font-urbanist">
                           <Navigation className="w-3 h-3" />
                           {distance < 1
                             ? `${Math.round(distance * 1000)}m`
                             : `${distance.toFixed(1)}km`}
                         </span>
-                        <span
-                          className="text-sm text-white/50"
-                          style={{ fontFamily: "Urbanist, sans-serif" }}
-                        >
+                        <span className="text-sm text-white/50 font-urbanist">
                           {estimateTravelTime(distance, "drive")}
                         </span>
                       </div>
@@ -676,8 +645,8 @@ export default function BusinessLocation({
                       href={getDirectionsUrl("driving")}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors"
-                      style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-coral text-white rounded-full text-sm font-semibold hover:bg-coral/90 transition-colors font-urbanist"
+                      style={{ fontWeight: 600 }}
                     >
                       <Car className="w-4 h-4" />
                       Drive
@@ -688,8 +657,8 @@ export default function BusinessLocation({
                       href={getDirectionsUrl("walking")}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white rounded-full text-sm font-semibold hover:bg-white/20 transition-colors"
-                      style={{ fontFamily: "Urbanist, sans-serif", fontWeight: 600 }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white rounded-full text-sm font-semibold hover:bg-white/20 transition-colors font-urbanist"
+                      style={{ fontWeight: 600 }}
                     >
                       <Footprints className="w-4 h-4" />
                       Walk

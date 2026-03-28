@@ -32,14 +32,7 @@ export default function SpecialContactInfo({
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.6, duration: 0.6 }}
       >
-        <h3
-          className="text-lg font-bold text-charcoal mb-4"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
-          Venue Information
-        </h3>
+        <h3 className="text-lg font-bold text-charcoal mb-4 font-urbanist">Venue Information</h3>
 
         <div className="space-y-3">
           {phone && (
@@ -50,14 +43,7 @@ export default function SpecialContactInfo({
               <div className="w-10 h-10 rounded-full bg-coral/10 group-hover:bg-coral/20 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
                 <Phone className="w-4 h-4 text-coral" />
               </div>
-              <span
-                className="text-sm font-medium"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                {phone}
-              </span>
+              <span className="text-sm font-medium font-urbanist">{phone}</span>
             </a>
           )}
 
@@ -71,12 +57,7 @@ export default function SpecialContactInfo({
               <div className="w-10 h-10 rounded-full bg-card-bg/10 group-hover:bg-card-bg/20 flex items-center justify-center flex-shrink-0 transition-colors duration-200">
                 <Globe className="w-4 h-4 text-sage" />
               </div>
-              <span
-                className="text-sm font-medium truncate"
-                style={{
-                  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
+              <span className="text-sm font-medium truncate font-urbanist">
                 {website.replace(/^https?:\/\//, "")}
               </span>
             </a>
@@ -88,23 +69,11 @@ export default function SpecialContactInfo({
                 <MapPin className="w-4 h-4 text-coral" />
               </div>
               <div className="flex-1 min-w-0">
-                <p
-                  className="text-sm font-medium break-words"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  {location}
-                </p>
+                <p className="text-sm font-medium break-words font-urbanist">{location}</p>
                 {showMapLink && onViewMap && (
                   <button
                     onClick={onViewMap}
-                    className="text-xs text-sage hover:text-sage/80 font-medium mt-1"
-                    style={{
-                      fontFamily:
-                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                    }}
+                    className="text-xs text-sage hover:text-sage/80 font-medium mt-1 font-urbanist"
                   >
                     View on map
                   </button>

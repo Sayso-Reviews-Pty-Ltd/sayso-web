@@ -73,16 +73,8 @@ export default function ReviewForm({
       <div className="flex items-center gap-3 px-1">
         <Edit3 className="w-5 h-5 text-coral" />
         <div>
-          <h2
-            className="text-xl font-bold text-charcoal"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-          >
-            Write a Review
-          </h2>
-          <p
-            className="text-sm text-charcoal/70"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-          >
+          <h2 className="text-xl font-bold text-charcoal font-urbanist">Write a Review</h2>
+          <p className="text-sm text-charcoal/70 font-urbanist">
             Share your experience with {businessName}
           </p>
         </div>
@@ -144,18 +136,12 @@ export default function ReviewForm({
         >
           <div className="flex items-center gap-2 mb-3 px-1">
             <Camera className="w-4 h-4 text-charcoal/60" />
-            <h3
-              className="text-base font-semibold text-charcoal"
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-            >
+            <h3 className="text-base font-semibold text-charcoal font-urbanist">
               Photos
               <span className="ml-1 text-sm font-normal text-charcoal/40">(optional)</span>
             </h3>
             {hasImages && (
-              <span
-                className="ml-auto text-sm text-charcoal/70"
-                style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
-              >
+              <span className="ml-auto text-sm text-charcoal/70 font-urbanist">
                 {existingImages.length + selectedImages.length}/2
               </span>
             )}

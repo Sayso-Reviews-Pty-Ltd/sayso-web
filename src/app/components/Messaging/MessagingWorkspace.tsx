@@ -1,20 +1,24 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 import { ChevronLeft, MessageCircle } from "@/app/lib/icons";
-import { ConversationListPane } from './ConversationListPane';
-import { MessageThread } from './MessageThread';
-import { MessageComposer } from './MessageComposer';
-import { useMessagingWorkspace } from './hooks/useMessagingWorkspace';
-import { getConversationTitle, getConversationSubtitle, getConversationAvatar } from './messagingWorkspace.utils';
-import type { MessagingWorkspaceProps } from './messagingWorkspace.utils';
+import { ConversationListPane } from "./ConversationListPane";
+import { MessageThread } from "./MessageThread";
+import { MessageComposer } from "./MessageComposer";
+import { useMessagingWorkspace } from "./hooks/useMessagingWorkspace";
+import {
+  getConversationTitle,
+  getConversationSubtitle,
+  getConversationAvatar,
+} from "./messagingWorkspace.utils";
+import type { MessagingWorkspaceProps } from "./messagingWorkspace.utils";
 
 export default function MessagingWorkspace({
   role,
   title,
   subtitle,
-  topPaddingClassName = '',
-  viewportClassName = 'h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)]',
+  topPaddingClassName = "",
+  viewportClassName = "h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)]",
   businessOptions,
   initialBusinessId,
   initialConversationId,
@@ -22,22 +26,55 @@ export default function MessagingWorkspace({
   startUserId,
 }: MessagingWorkspaceProps) {
   const {
-    selectedConversation, selectedConversationId, setSelectedConversationId, unreadTotal,
-    conversationsLoading, messages, hasMore, messagesLoading, isLoadingOlder,
-    loadOlder, retryMessage, filteredConversations, activeBusinessId, setActiveBusinessId,
-    searchQuery, setSearchQuery, composerValue, setComposerValue, isSending,
-    isResolvingStartConversation, startConversationError, mobileThreadOpen, setMobileThreadOpen,
-    animatedMessageIds, prefersReducedMotion, threadScrollRef,
-    listPaneVisibleClass, threadPaneVisibleClass, reviewedBusinessSuggestions,
-    getFallbackBusinessName, resolveMessageIdentity,
-    handleSelectConversation, handleSend, markAsRead,
-  } = useMessagingWorkspace({ role, businessOptions, initialBusinessId, initialConversationId, startBusinessId, startUserId });
+    selectedConversation,
+    selectedConversationId,
+    setSelectedConversationId,
+    unreadTotal,
+    conversationsLoading,
+    messages,
+    hasMore,
+    messagesLoading,
+    isLoadingOlder,
+    loadOlder,
+    retryMessage,
+    filteredConversations,
+    activeBusinessId,
+    setActiveBusinessId,
+    searchQuery,
+    setSearchQuery,
+    composerValue,
+    setComposerValue,
+    isSending,
+    isResolvingStartConversation,
+    startConversationError,
+    mobileThreadOpen,
+    setMobileThreadOpen,
+    animatedMessageIds,
+    prefersReducedMotion,
+    threadScrollRef,
+    listPaneVisibleClass,
+    threadPaneVisibleClass,
+    reviewedBusinessSuggestions,
+    getFallbackBusinessName,
+    resolveMessageIdentity,
+    handleSelectConversation,
+    handleSend,
+    markAsRead,
+  } = useMessagingWorkspace({
+    role,
+    businessOptions,
+    initialBusinessId,
+    initialConversationId,
+    startBusinessId,
+    startUserId,
+  });
 
   return (
     <>
       <div className={`bg-off-white ${topPaddingClassName}`}>
-        <div className={`mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm ${viewportClassName}`}>
-
+        <div
+          className={`mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm ${viewportClassName}`}
+        >
           {/* ── Sidebar ──────────────────────────────────────────── */}
           <ConversationListPane
             title={title}
@@ -70,10 +107,8 @@ export default function MessagingWorkspace({
                 <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-charcoal/15">
                   <MessageCircle className="h-9 w-9 text-charcoal/25" />
                 </div>
-                <p className="text-base font-bold text-charcoal" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
-                  Your messages
-                </p>
-                <p className="mt-1 text-sm text-charcoal/45" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+                <p className="text-base font-bold text-charcoal font-urbanist">Your messages</p>
+                <p className="mt-1 text-sm text-charcoal/45 font-urbanist">
                   Select a conversation to start messaging
                 </p>
               </div>
@@ -85,8 +120,16 @@ export default function MessagingWorkspace({
                 <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-charcoal/8 bg-off-white/98 px-4 py-3 backdrop-blur sm:px-5">
                   {(() => {
                     const fallbackBusinessName = getFallbackBusinessName(selectedConversation);
-                    const selectedConversationTitle = getConversationTitle(selectedConversation, role, fallbackBusinessName);
-                    const selectedConversationSubtitle = getConversationSubtitle(selectedConversation, role, fallbackBusinessName);
+                    const selectedConversationTitle = getConversationTitle(
+                      selectedConversation,
+                      role,
+                      fallbackBusinessName
+                    );
+                    const selectedConversationSubtitle = getConversationSubtitle(
+                      selectedConversation,
+                      role,
+                      fallbackBusinessName
+                    );
                     const selectedAvatar = getConversationAvatar(selectedConversation, role);
 
                     return (
@@ -104,7 +147,13 @@ export default function MessagingWorkspace({
                         {/* Avatar */}
                         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-charcoal/[0.08]">
                           {selectedAvatar ? (
-                            <Image src={selectedAvatar} alt={selectedConversationTitle} fill sizes="40px" className="object-cover" />
+                            <Image
+                              src={selectedAvatar}
+                              alt={selectedConversationTitle}
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                            />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
                               <MessageCircle className="h-4 w-4 text-charcoal/35" />
@@ -114,10 +163,10 @@ export default function MessagingWorkspace({
 
                         {/* Name + subtitle */}
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-bold text-charcoal" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+                          <p className="truncate text-sm font-bold text-charcoal font-urbanist">
                             {selectedConversationTitle}
                           </p>
-                          <p className="truncate text-xs text-charcoal/45" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+                          <p className="truncate text-xs text-charcoal/45 font-urbanist">
                             {selectedConversationSubtitle}
                           </p>
                         </div>
@@ -147,7 +196,7 @@ export default function MessagingWorkspace({
                   onChange={setComposerValue}
                   onSend={() => void handleSend()}
                   isSending={isSending}
-                  showTemplates={role === 'business'}
+                  showTemplates={role === "business"}
                 />
               </>
             )}
@@ -156,15 +205,29 @@ export default function MessagingWorkspace({
       </div>
       <style jsx>{`
         @keyframes messageBubbleEnter {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         @keyframes messageBubbleFade {
-          from { opacity: 0; }
-          to   { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
-        .message-bubble-enter { animation: messageBubbleEnter 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .message-bubble-enter-reduced { animation: messageBubbleFade 90ms ease-out both; }
+        .message-bubble-enter {
+          animation: messageBubbleEnter 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .message-bubble-enter-reduced {
+          animation: messageBubbleFade 90ms ease-out both;
+        }
       `}</style>
     </>
   );

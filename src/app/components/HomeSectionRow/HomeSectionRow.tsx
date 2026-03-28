@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { ArrowRight } from "@/app/lib/icons";
 import { HOME_SECTION_CONTAINER_INSET_CLASS, SECTION_WRAPPER_CLASS } from "./homeSectionLayout";
-
-const FONT_STYLE = {
-  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-} as const;
+import { H2 } from "@/app/components/ui/typography";
 
 export type HomeSectionRowProps = {
   title: string;
@@ -52,7 +49,10 @@ export function HomeSectionRow({
   const router = useRouter();
   const showCta = showHeaderCta && Boolean(cta && href);
   const ctaLabel = cta
-    ? cta.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ")
+    ? cta
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" ")
     : "";
 
   const headerPb = filterSlot ? "pb-2 sm:pb-3" : "pb-4 sm:pb-8 md:pb-10";
@@ -60,11 +60,12 @@ export function HomeSectionRow({
   const containerClass = fullBleed
     ? `w-full relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`
     : SECTION_WRAPPER_CLASS;
-  const headingStyle = { ...FONT_STYLE, fontWeight: titleFontWeight } as const;
-
-  const headingNode = titleSlot ?? (
-    disableAnimations ? (
-      <h2 className={headingClassName} style={headingStyle}>{title}</h2>
+  const headingNode =
+    titleSlot ??
+    (disableAnimations ? (
+      <H2 className={headingClassName} style={{ fontWeight: titleFontWeight }}>
+        {title}
+      </H2>
     ) : (
       <m.h2
         initial={{ opacity: 0, x: -20 }}
@@ -72,12 +73,11 @@ export function HomeSectionRow({
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={headingClassName}
-        style={headingStyle}
+        style={{ fontWeight: titleFontWeight }}
       >
         {title}
       </m.h2>
-    )
-  );
+    ));
 
   const ctaButtonClass = premiumCtaHover
     ? "group inline-flex items-center gap-1 text-body-sm sm:text-caption font-normal text-charcoal transition-colors duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-sage focus:outline-none px-4 py-2 -mx-2 relative no-underline motion-reduce:transition-none"
@@ -91,7 +91,7 @@ export function HomeSectionRow({
     "relative z-10 w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-x-[3px] text-charcoal group-hover:text-sage motion-reduce:transition-none";
 
   return (
-    <section className="relative m-0 w-full" aria-label={title} style={FONT_STYLE}>
+    <section className="relative m-0 w-full font-urbanist" aria-label={title}>
       <div className={containerClass}>
         <div className={`${headerPb} flex flex-wrap items-center justify-between gap-2`}>
           {headingNode}
@@ -102,7 +102,7 @@ export function HomeSectionRow({
               className={ctaButtonClass}
               aria-label={`${ctaLabel}: ${title}`}
             >
-              <span className={ctaSpanClass} style={{ ...FONT_STYLE, fontWeight: ctaFontWeight }}>
+              <span className={ctaSpanClass} style={{ fontWeight: ctaFontWeight }}>
                 {ctaLabel}
               </span>
               <ArrowRight className={ctaArrowClass} />

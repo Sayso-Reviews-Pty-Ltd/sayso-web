@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Store } from "@/app/lib/icons";
 import PhoneOtpModal from "../../../components/BusinessClaim/PhoneOtpModal";
 import { Loader } from "../../../components/Loader";
-import { FONT, ICON_CHIP_CLASS } from "./claimBusiness.constants";
+import { ICON_CHIP_CLASS } from "./claimBusiness.constants";
 import { useClaimBusinessPage } from "./hooks/useClaimBusinessPage";
 import { ClaimBusinessFormContent } from "./parts/ClaimBusinessFormContent";
 
@@ -15,16 +15,15 @@ function ClaimBusinessNotFound() {
         <span className={`${ICON_CHIP_CLASS} w-14 h-14 mx-auto mb-4`}>
           <Store className="w-6 h-6" />
         </span>
-        <h1 className="text-lg font-semibold text-charcoal mb-2" style={{ fontFamily: FONT }}>
+        <h1 className="text-lg font-semibold text-charcoal mb-2 font-urbanist">
           Business not found
         </h1>
-        <p className="text-base text-charcoal/70 mb-6" style={{ fontFamily: FONT }}>
+        <p className="text-base text-charcoal/70 mb-6 font-urbanist">
           We couldn&apos;t find that business. It may have been removed or the link is incorrect.
         </p>
         <Link
           href="/claim-business"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card-bg text-white text-sm font-semibold hover:bg-card-bg/90 transition-colors"
-          style={{ fontFamily: FONT }}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card-bg text-white text-sm font-semibold hover:bg-card-bg/90 transition-colors font-urbanist"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Claim Business

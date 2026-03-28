@@ -10,7 +10,8 @@ import Link from "next/link";
 import type { FilterState } from "../FilterModal/FilterModal";
 import HeroSkeleton from "./HeroSkeleton";
 import MobileHeroSkeleton from "./MobileHeroSkeleton";
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from "../../contexts/AuthContext";
+import { Hero } from "@/app/components/ui/typography";
 
 interface HeroSlide {
   id: string;
@@ -102,8 +103,6 @@ function selectStableSubset(images: string[], cap: number, seed: string): string
   if (cap >= ordered.length) return ordered;
   return ordered.slice(0, cap);
 }
-
-const FONT_STACK = "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
 const DEFAULT_HERO_IMAGE = "/hero/devon-janse-van-rensburg-CeI5GZF0MrQ-unsplash.jpg";
 
@@ -295,14 +294,22 @@ export default function HeroCarousel() {
     const ua = navigator.userAgent || "";
     const isAppleMobile = /iPad|iPhone|iPod/i.test(ua);
     const isIpadOS13Plus =
-      navigator.platform === "MacIntel" && typeof navigator.maxTouchPoints === "number" && navigator.maxTouchPoints > 1;
+      navigator.platform === "MacIntel" &&
+      typeof navigator.maxTouchPoints === "number" &&
+      navigator.maxTouchPoints > 1;
     return isAppleMobile || isIpadOS13Plus;
   }, []);
   const isIOSMobile = isIOS && heroViewport === "mobile";
 
   const cappedHeroImages = useMemo(() => {
     // Keep iOS mobile extremely light: fewer slides + fewer image elements prevents Safari tab crashes.
-    const cap = isIOSMobile ? 4 : heroViewport === "mobile" ? 5 : heroViewport === "tablet" ? 14 : null;
+    const cap = isIOSMobile
+      ? 4
+      : heroViewport === "mobile"
+        ? 5
+        : heroViewport === "tablet"
+          ? 14
+          : null;
     const base = Array.isArray(heroImages) ? heroImages : HERO_IMAGES;
     if (!cap) return orderHeroImages(base, heroSeed);
     return selectStableSubset(base, cap, heroSeed);
@@ -361,23 +368,23 @@ export default function HeroCarousel() {
 
   // Preload first hero image for mobile-first LCP optimization
   useEffect(() => {
-    if (typeof window === 'undefined' || slides.length === 0) return;
-    
+    if (typeof window === "undefined" || slides.length === 0) return;
+
     const firstSlide = slides[0];
     if (!firstSlide?.image) return;
 
     // Create preload link for first hero image
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
     link.href = firstSlide.image;
-    link.fetchPriority = 'high';
-    
+    link.fetchPriority = "high";
+
     // Add mobile-first media query for better bandwidth management
-    if (heroViewport === 'mobile') {
-      link.media = '(max-width: 768px)';
+    if (heroViewport === "mobile") {
+      link.media = "(max-width: 768px)";
     }
-    
+
     document.head.appendChild(link);
 
     return () => {
@@ -398,9 +405,9 @@ export default function HeroCarousel() {
   const prefersReduced = useReducedMotion() ?? false;
   const prefersDataSaver =
     typeof navigator !== "undefined" &&
-    Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
-
-
+    Boolean(
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+    );
 
   // Hide scroll indicator once the user starts scrolling.
   useEffect(() => {
@@ -451,7 +458,7 @@ export default function HeroCarousel() {
         return nextIndex;
       });
     },
-    [slides.length],
+    [slides.length]
   );
 
   const next = useCallback(() => {
@@ -563,16 +570,16 @@ export default function HeroCarousel() {
   const handleFiltersChange = (f: FilterState) => {
     const params = new URLSearchParams();
     if (f.categories && f.categories.length > 0) {
-      params.set('categories', f.categories.join(','));
+      params.set("categories", f.categories.join(","));
     }
     if (f.minRating !== null) {
-      params.set('min_rating', f.minRating.toString());
+      params.set("min_rating", f.minRating.toString());
     }
     if (f.distance) {
-      params.set('distance', f.distance);
+      params.set("distance", f.distance);
     }
     const queryString = params.toString();
-    const exploreUrl = queryString ? `/explore?${queryString}` : '/explore';
+    const exploreUrl = queryString ? `/explore?${queryString}` : "/explore";
     router.push(exploreUrl);
     closeFilters();
   };
@@ -602,173 +609,156 @@ export default function HeroCarousel() {
         {/* Hero Section - full viewport height */}
         <section
           ref={containerRef as React.RefObject<HTMLElement>}
-          className="relative h-[100vh] w-full overflow-hidden outline-none rounded-none"
+          className="relative h-[100vh] w-full overflow-hidden outline-none rounded-none font-urbanist"
           aria-label="Hero carousel"
           tabIndex={0}
-          style={{
-            fontFamily: FONT_STACK,
-            // Allow native vertical page scrolling on mobile while preserving
-            // horizontal swipe interactions for the carousel.
-            touchAction: "pan-y",
-          }}
+          style={{ touchAction: "pan-y" }}
         >
           {/* Liquid Glass Ambient Lighting */}
-      <div
-        className="absolute inset-0 z-0 bg-gradient-to-br from-white/20 via-transparent to-sage/10 pointer-events-none rounded-none"
-      />
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] pointer-events-none rounded-none" />
-      <div className="absolute inset-0 z-0 backdrop-blur-[1px] bg-off-white/5 mix-blend-overlay pointer-events-none rounded-none" />
-      {/* Image layers — previous slide sits beneath as a static backdrop so the
+          <div className="absolute inset-0 z-0 bg-gradient-to-br from-white/20 via-transparent to-sage/10 pointer-events-none rounded-none" />
+          <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] pointer-events-none rounded-none" />
+          <div className="absolute inset-0 z-0 backdrop-blur-[1px] bg-off-white/5 mix-blend-overlay pointer-events-none rounded-none" />
+          {/* Image layers — previous slide sits beneath as a static backdrop so the
           grey section background never flashes during the incoming image load. */}
-      {(() => {
-        const activeIdx = currentIndex % slides.length;
-        const activeSlide = slides[activeIdx] ?? slides[0];
-        const activeSrc = failedImageUrls.has(activeSlide.image)
-          ? HERO_IMAGES[activeIdx % HERO_IMAGES.length]
-          : activeSlide.image;
+          {(() => {
+            const activeIdx = currentIndex % slides.length;
+            const activeSlide = slides[activeIdx] ?? slides[0];
+            const activeSrc = failedImageUrls.has(activeSlide.image)
+              ? HERO_IMAGES[activeIdx % HERO_IMAGES.length]
+              : activeSlide.image;
 
-        const prevIdx = (activeIdx - 1 + slides.length) % slides.length;
-        const prevSlide = slides[prevIdx];
-        const prevSrc = prevSlide
-          ? (failedImageUrls.has(prevSlide.image)
-              ? HERO_IMAGES[prevIdx % HERO_IMAGES.length]
-              : prevSlide.image)
-          : null;
+            const prevIdx = (activeIdx - 1 + slides.length) % slides.length;
+            const prevSlide = slides[prevIdx];
+            const prevSrc = prevSlide
+              ? failedImageUrls.has(prevSlide.image)
+                ? HERO_IMAGES[prevIdx % HERO_IMAGES.length]
+                : prevSlide.image
+              : null;
 
-        return (
-          <>
-            {/* Previous slide — static backdrop, loaded and cached, fills the gap
+            return (
+              <>
+                {/* Previous slide — static backdrop, loaded and cached, fills the gap
                 between when the active slide unmounts and the new image renders. */}
-            {prevSrc && (
-              <div
-                aria-hidden
-                className="absolute inset-0 overflow-hidden rounded-none z-[9]"
-              >
-                <Image
-                  src={prevSrc}
-                  alt=""
-                  fill
-                  quality={heroViewport === "mobile" ? 75 : 85}
-                  className="object-cover object-center"
-                  style={{ filter: "brightness(0.95) contrast(1.05) saturate(1.1)" }}
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
-                />
-                <div className="absolute inset-0 pointer-events-none" style={{ background: "hsla(0,0%,0%,0.3)" }} />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/40" />
-                <div className="absolute inset-0 pointer-events-none bg-black/20" />
-              </div>
-            )}
+                {prevSrc && (
+                  <div aria-hidden className="absolute inset-0 overflow-hidden rounded-none z-[9]">
+                    <Image
+                      src={prevSrc}
+                      alt=""
+                      fill
+                      quality={heroViewport === "mobile" ? 75 : 85}
+                      className="object-cover object-center"
+                      style={{ filter: "brightness(0.95) contrast(1.05) saturate(1.1)" }}
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
+                    />
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{ background: "hsla(0,0%,0%,0.3)" }}
+                    />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+                    <div className="absolute inset-0 pointer-events-none bg-black/20" />
+                  </div>
+                )}
 
-            {/* Active slide — src updates in place; no unmount/remount to avoid Chrome compositor flicker. */}
-            <div
-              aria-hidden={false}
-              className="absolute inset-0 overflow-hidden transform-gpu rounded-none z-10"
-            >
-              <div className="absolute inset-0 rounded-none overflow-hidden transform-gpu [backface-visibility:hidden] will-change-transform">
-                <Image
-                  src={activeSrc}
-                  alt={activeSlide.title?.trim() || FALLBACK_HERO_TEXT.title}
-                  fill
-                  priority={activeIdx === 0}
-                  loading={activeIdx === 0 ? "eager" : "lazy"}
-                  fetchPriority={activeIdx === 0 ? "high" : "auto"}
-                  quality={heroViewport === "mobile" ? 75 : 85}
-                  className="transform-gpu [backface-visibility:hidden] object-cover object-center"
-                  style={{ filter: "brightness(0.95) contrast(1.05) saturate(1.1)" }}
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
-                  onError={() => {
-                    setFailedImageUrls((prev) => new Set(prev).add(activeSlide.image));
-                  }}
-                />
+                {/* Active slide — src updates in place; no unmount/remount to avoid Chrome compositor flicker. */}
                 <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: "hsla(0, 0%, 0%, 0.3)" }}
-                />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/40" />
-                <div className="absolute inset-0 pointer-events-none bg-black/20" />
-              </div>
-            </div>
-          </>
-        );
-      })()}
+                  aria-hidden={false}
+                  className="absolute inset-0 overflow-hidden transform-gpu rounded-none z-10"
+                >
+                  <div className="absolute inset-0 rounded-none overflow-hidden transform-gpu [backface-visibility:hidden] will-change-transform">
+                    <Image
+                      src={activeSrc}
+                      alt={activeSlide.title?.trim() || FALLBACK_HERO_TEXT.title}
+                      fill
+                      priority={activeIdx === 0}
+                      loading={activeIdx === 0 ? "eager" : "lazy"}
+                      fetchPriority={activeIdx === 0 ? "high" : "auto"}
+                      quality={heroViewport === "mobile" ? 75 : 85}
+                      className="transform-gpu [backface-visibility:hidden] object-cover object-center"
+                      style={{ filter: "brightness(0.95) contrast(1.05) saturate(1.1)" }}
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
+                      onError={() => {
+                        setFailedImageUrls((prev) => new Set(prev).add(activeSlide.image));
+                      }}
+                    />
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{ background: "hsla(0, 0%, 0%, 0.3)" }}
+                    />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+                    <div className="absolute inset-0 pointer-events-none bg-black/20" />
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
-      {/* Hero Text - tied directly to the active slide with simple transitions. */}
-      <div data-testid="hero-text" className="absolute inset-0 z-30 flex items-center justify-center w-full pt-[var(--safe-area-top)] sm:pt-[var(--header-height)] translate-y-0 sm:-translate-y-4 px-6 sm:px-10 pointer-events-none">
+          {/* Hero Text - tied directly to the active slide with simple transitions. */}
           <div
-            className="w-full max-w-3xl flex flex-col items-center justify-center text-center pb-12 sm:pb-20"
+            data-testid="hero-text"
+            className="absolute inset-0 z-30 flex items-center justify-center w-full pt-[var(--safe-area-top)] sm:pt-[var(--header-height)] translate-y-0 sm:-translate-y-4 px-6 sm:px-10 pointer-events-none"
           >
-            <h2
-              key={`hero-title-${currentTextSlide?.id ?? currentIndex}`}
-              className={`text-[2rem] sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-off-white drop-shadow-lg mb-3 sm:mb-4 leading-[1.1] tracking-[-0.02em] whitespace-pre-line [word-break:normal] [overflow-wrap:normal] [hyphens:none] transition-opacity ease-out min-h-[4.5rem] sm:min-h-0 ${textTransitionClass}`}
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', textShadow: '0 2px 24px rgba(0,0,0,0.4)' }}
-            >
-              {currentTitle}
-            </h2>
-            {/* Conditional CTA Button */}
-            <div
-              className="w-full flex justify-center pointer-events-auto mt-3 sm:mt-4"
-            >
-              {!user ? (
-                <Link
-                  href="/login"
-                  className="mi-tap group relative inline-flex items-center justify-center rounded-full min-h-[48px] py-3 px-10 sm:px-12 text-base font-semibold text-white text-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 w-full max-w-[320px] sm:w-auto sm:min-w-[180px]"
-                  style={{
-                    fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                    fontWeight: 600,
-                  }}
-                >
-                  <span className="relative z-10">Sign In</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/trending"
-                  className="mi-tap group relative inline-flex items-center justify-center rounded-full min-h-[48px] py-3 px-10 sm:px-12 text-base font-semibold text-white text-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 w-full max-w-[320px] sm:w-auto sm:min-w-[180px]"
-                  style={{
-                    fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                    fontWeight: 600,
-                  }}
-                >
-                  <span className="relative z-10">Discover</span>
-                </Link>
-              )}
+            <div className="w-full max-w-3xl flex flex-col items-center justify-center text-center pb-12 sm:pb-20">
+              <Hero
+                key={`hero-title-${currentTextSlide?.id ?? currentIndex}`}
+                className={`text-[2rem] sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-off-white drop-shadow-lg mb-3 sm:mb-4 leading-[1.1] tracking-[-0.02em] whitespace-pre-line [word-break:normal] [overflow-wrap:normal] [hyphens:none] transition-opacity ease-out min-h-[4.5rem] sm:min-h-0 ${textTransitionClass}`}
+                style={{ textShadow: "0 2px 24px rgba(0,0,0,0.4)" }}
+              >
+                {currentTitle}
+              </Hero>
+              {/* Conditional CTA Button */}
+              <div className="w-full flex justify-center pointer-events-auto mt-3 sm:mt-4">
+                {!user ? (
+                  <Link
+                    href="/login"
+                    className="mi-tap group relative inline-flex items-center justify-center rounded-full min-h-[48px] py-3 px-10 sm:px-12 text-base font-urbanist font-semibold text-white text-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 w-full max-w-[320px] sm:w-auto sm:min-w-[180px]"
+                  >
+                    <span className="relative z-10">Sign In</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/trending"
+                    className="mi-tap group relative inline-flex items-center justify-center rounded-full min-h-[48px] py-3 px-10 sm:px-12 text-base font-urbanist font-semibold text-white text-center bg-gradient-to-r from-coral to-coral/80 hover:from-sage hover:to-sage transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-sage/30 focus-visible:ring-offset-2 w-full max-w-[320px] sm:w-auto sm:min-w-[180px]"
+                  >
+                    <span className="relative z-10">Discover</span>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
-      </div>
 
-      {/* Accessible live region (announces slide title) */}
-      <div className="sr-only" aria-live="polite">
-        {slides[currentIndex]?.title}
-      </div>
+          {/* Accessible live region (announces slide title) */}
+          <div className="sr-only" aria-live="polite">
+            {slides[currentIndex]?.title}
+          </div>
 
-      {/* Scroll-down indicator — fades out once user scrolls */}
-      <m.div
-        aria-hidden="true"
-        animate={{ opacity: scrolled ? 0 : 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="absolute bottom-[22%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 pointer-events-none"
-      >
-        <m.div
-          animate={prefersReduced ? {} : { y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-white/70 drop-shadow"
+          {/* Scroll-down indicator — fades out once user scrolls */}
+          <m.div
+            aria-hidden="true"
+            animate={{ opacity: scrolled ? 0 : 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="absolute bottom-[22%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 pointer-events-none"
           >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </m.div>
-      </m.div>
-
+            <m.div
+              animate={prefersReduced ? {} : { y: [0, 6, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-white/70 drop-shadow"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </m.div>
+          </m.div>
         </section>
       </div>
 

@@ -11,7 +11,11 @@ interface ForYouHeaderProps {
   hasInitialBusinesses: boolean;
 }
 
-export function ForYouHeader({ choreoEnabled, prefsLoading, hasInitialBusinesses }: ForYouHeaderProps) {
+export function ForYouHeader({
+  choreoEnabled,
+  prefsLoading,
+  hasInitialBusinesses,
+}: ForYouHeaderProps) {
   return (
     <>
       <m.nav
@@ -21,7 +25,10 @@ export function ForYouHeader({ choreoEnabled, prefsLoading, hasInitialBusinesses
       >
         <ol className="flex items-center gap-2 text-sm sm:text-base">
           <li>
-            <Link href="/home" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+            <Link
+              href="/home"
+              className="font-urbanist text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+            >
               Home
             </Link>
           </li>
@@ -29,9 +36,7 @@ export function ForYouHeader({ choreoEnabled, prefsLoading, hasInitialBusinesses
             <ChevronRight className="w-4 h-4 text-charcoal/60" />
           </li>
           <li>
-            <span className="text-charcoal font-semibold" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-              For You
-            </span>
+            <span className="font-urbanist text-charcoal font-semibold">For You</span>
           </li>
         </ol>
       </m.nav>
@@ -44,35 +49,35 @@ export function ForYouHeader({ choreoEnabled, prefsLoading, hasInitialBusinesses
           <h1
             className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold leading-[1.2] tracking-tight text-charcoal mx-auto"
             style={{
-              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              wordBreak: 'keep-all',
-              overflowWrap: 'break-word',
-              whiteSpace: 'normal',
-              hyphens: 'none',
+              wordBreak: "keep-all",
+              overflowWrap: "break-word",
+              whiteSpace: "normal",
+              hyphens: "none",
             }}
           >
-            <span className="inline-block font-bold" style={{
-              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              wordBreak: 'keep-all',
-              overflowWrap: 'break-word',
-              whiteSpace: 'normal',
-              hyphens: 'none',
-            }}>Curated Just For You</span>
+            <span
+              className="font-urbanist inline-block font-bold"
+              style={{
+                wordBreak: "keep-all",
+                overflowWrap: "break-word",
+                whiteSpace: "normal",
+                hyphens: "none",
+              }}
+            >
+              Curated Just For You
+            </span>
           </h1>
         </div>
-        <p className="text-sm sm:text-base text-charcoal/70 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-          Discover personalised recommendations tailored to your interests and preferences.
-          We've handpicked the best local businesses just for you.
+        <p className="font-urbanist text-sm sm:text-base text-charcoal/70 max-w-2xl mx-auto leading-relaxed">
+          Discover personalised recommendations tailored to your interests and preferences. We've
+          handpicked the best local businesses just for you.
         </p>
         {prefsLoading && hasInitialBusinesses && (
           <div
             className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs text-charcoal/70 shadow-sm border border-sage/20"
             aria-live="polite"
           >
-            <span
-              className="inline-block h-2 w-6 rounded-full bg-charcoal/20"
-              aria-hidden
-            />
+            <span className="inline-block h-2 w-6 rounded-full bg-charcoal/20" aria-hidden />
             <span>Personalizing...</span>
           </div>
         )}

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { Loader2, Send } from "@/app/lib/icons";
 
 const QUICK_REPLIES = [
@@ -17,9 +17,15 @@ interface MessageComposerProps {
   showTemplates?: boolean;
 }
 
-export function MessageComposer({ value, onChange, onSend, isSending, showTemplates = false }: MessageComposerProps) {
+export function MessageComposer({
+  value,
+  onChange,
+  onSend,
+  isSending,
+  showTemplates = false,
+}: MessageComposerProps) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       onSend();
     }
@@ -28,7 +34,7 @@ export function MessageComposer({ value, onChange, onSend, isSending, showTempla
   return (
     <div
       className="border-t border-charcoal/8 bg-off-white px-4 py-3 sm:px-5"
-      style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+      style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
     >
       {showTemplates && (
         <div className="flex flex-wrap gap-2 mb-2">
@@ -37,8 +43,7 @@ export function MessageComposer({ value, onChange, onSend, isSending, showTempla
               key={template}
               type="button"
               onClick={() => onChange(template)}
-              className="rounded-full bg-off-white border border-charcoal/15 px-3 py-1 text-xs font-medium text-charcoal/70 hover:border-charcoal/30 hover:text-charcoal transition-colors"
-              style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+              className="rounded-full bg-off-white border border-charcoal/15 px-3 py-1 text-xs font-medium text-charcoal/70 hover:border-charcoal/30 hover:text-charcoal transition-colors font-urbanist"
             >
               {template}
             </button>
@@ -54,8 +59,7 @@ export function MessageComposer({ value, onChange, onSend, isSending, showTempla
             disabled={isSending}
             placeholder="Message..."
             rows={1}
-            className="max-h-[120px] min-h-[22px] flex-1 resize-none bg-transparent text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none disabled:opacity-70"
-            style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}
+            className="max-h-[120px] min-h-[22px] flex-1 resize-none bg-transparent text-sm text-charcoal placeholder:text-charcoal/40 focus:outline-none disabled:opacity-70 font-urbanist"
           />
         </div>
         <button

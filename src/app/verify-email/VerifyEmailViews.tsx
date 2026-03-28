@@ -1,23 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Urbanist } from "next/font/google";
 import { AlertCircle, ArrowLeft, CheckCircle, ExternalLink, Mail } from "@/app/lib/icons";
 import type { ReactNode } from "react";
 
+import { H2, Lead } from "@/app/components/ui/typography";
 import { Loader as AppLoader } from "../components/Loader";
 
 import { verifyEmailStyles } from "./verifyEmailStyles";
-
-const urbanist = Urbanist({
-  weight: ["400", "600", "700", "800"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const FONT_STYLE = {
-  fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-} as const;
 
 type VerifyEmailShellProps = {
   children: ReactNode;
@@ -66,11 +56,11 @@ export function VerifyEmailSuccessView({ isSignedIn }: { isSignedIn: boolean }) 
         <div className="w-20 h-20 mx-auto mb-6 bg-card-bg/20 rounded-full flex items-center justify-center">
           <CheckCircle className="w-10 h-10 text-sage" />
         </div>
-        <h2 className="text-2xl font-bold text-charcoal mb-3" style={FONT_STYLE}>
-          Email Verified!
-        </h2>
-        <p className="text-base text-charcoal/70 mb-6" style={FONT_STYLE}>
-          {isSignedIn ? "Redirecting you to continue setup..." : "Your email has been verified. Redirecting to login..."}
+        <H2 className="text-2xl font-bold mb-3">Email Verified!</H2>
+        <p className="font-urbanist text-base text-charcoal/70 mb-6">
+          {isSignedIn
+            ? "Redirecting you to continue setup..."
+            : "Your email has been verified. Redirecting to login..."}
         </p>
         <div className="w-8 h-8 border-3 border-sage/20 border-t-sage rounded-full animate-spin mx-auto" />
       </div>
@@ -94,22 +84,18 @@ export function VerifyEmailExpiredView({
         <div className="w-20 h-20 mx-auto mb-6 bg-coral/10 rounded-full flex items-center justify-center">
           <AlertCircle className="w-10 h-10 text-coral" />
         </div>
-        <h2
-          className="text-2xl font-bold leading-tight text-charcoal mb-3"
-          style={{ ...FONT_STYLE, overflowWrap: "anywhere" }}
-        >
+        <H2 className="text-2xl font-bold leading-tight mb-3" style={{ overflowWrap: "anywhere" }}>
           Verification Link Expired
-        </h2>
+        </H2>
         <p
-          className="text-base text-charcoal/70 mb-6 leading-relaxed break-words"
-          style={{ ...FONT_STYLE, overflowWrap: "anywhere" }}
+          className="font-urbanist text-base text-charcoal/70 mb-6 leading-relaxed break-words"
+          style={{ overflowWrap: "anywhere" }}
         >
           {displayEmail ? (
             <>
               The verification link for{" "}
-              <strong className="text-charcoal break-all">{displayEmail}</strong>{" "}
-              has expired. Request a
-              new one below.
+              <strong className="text-charcoal break-all">{displayEmail}</strong> has expired.
+              Request a new one below.
             </>
           ) : (
             "Your verification link has expired. Request a new one below."
@@ -141,7 +127,7 @@ export function VerifyEmailExpiredView({
           </button>
           {(resendCooldownMessage || resendRateLimitMessage) && (
             <div className="rounded-lg border border-sage/20 bg-card-bg/5 px-4 py-3">
-              <p className="text-sm text-charcoal/80" style={FONT_STYLE}>
+              <p className="font-urbanist text-sm text-charcoal/80">
                 {resendRateLimitMessage || resendCooldownMessage}
               </p>
             </div>
@@ -188,7 +174,9 @@ export function VerifyEmailLoadingView({ isVerifyingLink }: { isVerifyingLink: b
     <div className="flex-1 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-6 space-y-3">
         <AppLoader size="lg" variant="wavy" color="sage" />
-        {isVerifyingLink && <p className="text-sm text-charcoal/70">Verifying your link and signing you in...</p>}
+        {isVerifyingLink && (
+          <p className="text-sm text-charcoal/70">Verifying your link and signing you in...</p>
+        )}
       </div>
     </div>
   );
@@ -218,7 +206,11 @@ export function VerifyEmailErrorView({
   );
 }
 
-export function VerifyEmailInvalidLinkView({ useDifferentEmailHref }: { useDifferentEmailHref: string }) {
+export function VerifyEmailInvalidLinkView({
+  useDifferentEmailHref,
+}: {
+  useDifferentEmailHref: string;
+}) {
   return (
     <div className="flex-1 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-6 space-y-4">
@@ -256,16 +248,13 @@ export function VerifyEmailMainView({
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto relative z-10 flex-1 flex flex-col justify-center py-8 sm:py-12">
         <div className="text-center mb-4 pt-16 sm:pt-20">
           <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-            <h2
-              className={`${urbanist.className} text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal`}
-              style={{ fontFamily: urbanist.style.fontFamily }}
-            >
+            <H2 className="text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 text-charcoal">
               Check Your Email
-            </h2>
+            </H2>
           </div>
-          <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700" style={FONT_STYLE}>
+          <Lead className="mb-4 leading-[1.55] px-2 mx-auto animate-fade-in-up animate-delay-700">
             We&apos;ve sent a confirmation email to verify your account and unlock full features!
-          </p>
+          </Lead>
         </div>
 
         <div className="bg-card-bg rounded-lg p-5 sm:p-7 md:p-9 mb-4 relative overflow-hidden shadow-md transition-shadow duration-300 animate-scale-in">
@@ -278,7 +267,7 @@ export function VerifyEmailMainView({
               onClick={onOpenInbox}
               className="bg-navbar-bg rounded-full p-4 mb-6 border-0 w-full hover:bg-navbar-bg transition-all duration-300 cursor-pointer group"
             >
-              <p className="text-lg font-600 text-white group-hover:text-white transition-colors duration-300 flex items-center justify-center gap-2" style={FONT_STYLE}>
+              <p className="font-urbanist text-lg font-semibold text-white group-hover:text-white transition-colors duration-300 flex items-center justify-center gap-2">
                 {displayEmail}
                 <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </p>
@@ -286,9 +275,9 @@ export function VerifyEmailMainView({
           </div>
 
           <div className="text-center mb-8">
-            <p className="text-sm text-charcoal/70 mb-6 leading-relaxed" style={FONT_STYLE}>
-              Please check your email and click the verification link to activate your account. The link will
-              automatically redirect you back to the app once verified.
+            <p className="font-urbanist text-sm text-charcoal/70 mb-6 leading-relaxed">
+              Please check your email and click the verification link to activate your account. The
+              link will automatically redirect you back to the app once verified.
             </p>
           </div>
 
@@ -317,7 +306,7 @@ export function VerifyEmailMainView({
             </button>
             {(resendCooldownMessage || resendRateLimitMessage) && (
               <div className="rounded-lg border border-sage/20 bg-card-bg/5 px-4 py-3">
-                <p className="text-sm text-charcoal/80" style={FONT_STYLE}>
+                <p className="font-urbanist text-sm text-charcoal/80">
                   {resendRateLimitMessage || resendCooldownMessage}
                 </p>
               </div>
@@ -342,9 +331,7 @@ export function VerifyEmailMainView({
 
           {verificationStatusMessage && (
             <div className="mb-5 rounded-lg border border-coral/20 bg-coral/5 px-4 py-3">
-              <p className="text-sm text-charcoal/80" style={FONT_STYLE}>
-                {verificationStatusMessage}
-              </p>
+              <p className="font-urbanist text-sm text-charcoal/80">{verificationStatusMessage}</p>
             </div>
           )}
 

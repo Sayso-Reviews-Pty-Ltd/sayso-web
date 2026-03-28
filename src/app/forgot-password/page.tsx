@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Urbanist } from "next/font/google";
 import { ArrowLeft } from "@/app/lib/icons";
+import { H2, Lead, Muted, P } from "@/app/components/ui/typography";
 import { AuthService } from "../lib/auth";
 import { useToast } from "../contexts/ToastContext";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -14,12 +14,6 @@ import { authStyles } from "../components/Auth/Shared/authStyles";
 import { EmailInput } from "../components/Auth/Shared/EmailInput";
 import { AuthAlert } from "../components/Auth/Shared/AuthAlert";
 import { authCopy, formatAuthMessage } from "../components/Auth/Shared/authCopy";
-
-const urbanist = Urbanist({
-  weight: ["400", "600", "700", "800"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -58,14 +52,14 @@ export default function ForgotPasswordPage() {
 
     if (!email) {
       setError(authCopy.emailRequired);
-      showToast(authCopy.emailRequired, 'warning', 3000);
+      showToast(authCopy.emailRequired, "warning", 3000);
       setIsSubmitting(false);
       return;
     }
 
     if (!validateEmail(email)) {
       setError(authCopy.emailInvalid);
-      showToast(authCopy.emailInvalid, 'warning', 3000);
+      showToast(authCopy.emailInvalid, "warning", 3000);
       setIsSubmitting(false);
       return;
     }
@@ -74,17 +68,23 @@ export default function ForgotPasswordPage() {
       const { error: resetError } = await AuthService.resetPasswordForEmail(email);
 
       if (resetError) {
-        const resetErrorMessage = formatAuthMessage(resetError.message, authCopy.resetRequestFailed);
+        const resetErrorMessage = formatAuthMessage(
+          resetError.message,
+          authCopy.resetRequestFailed
+        );
         setError(resetErrorMessage);
-        showToast(resetErrorMessage, 'error', 4000);
+        showToast(resetErrorMessage, "error", 4000);
       } else {
         setEmailSent(true);
-        showToast("Password reset email sent. Please check your inbox.", 'success', 5000);
+        showToast("Password reset email sent. Please check your inbox.", "success", 5000);
       }
     } catch (error: unknown) {
-      const errorMsg = formatAuthMessage(error instanceof Error ? error.message : "", authCopy.resetRequestFailed);
+      const errorMsg = formatAuthMessage(
+        error instanceof Error ? error.message : "",
+        authCopy.resetRequestFailed
+      );
       setError(errorMsg);
-      showToast(errorMsg, 'error', 4000);
+      showToast(errorMsg, "error", 4000);
     } finally {
       setIsSubmitting(false);
     }
@@ -94,8 +94,11 @@ export default function ForgotPasswordPage() {
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: authStyles }} />
-        <div ref={containerRef} className="  bg-off-white flex flex-col relative safe-area-full"
-        style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}>
+        <div
+          ref={containerRef}
+          className="  bg-off-white flex flex-col relative safe-area-full"
+          style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
+        >
           {/* Premium floating orbs background — clipped inside own layer so root can scroll */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <div className="floating-orb floating-orb-1" />
@@ -108,7 +111,10 @@ export default function ForgotPasswordPage() {
 
           {/* Back button with entrance animation */}
           <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 animate-slide-in-left animate-delay-200">
-            <Link href="/login" className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm">
+            <Link
+              href="/login"
+              className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm"
+            >
               <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
             </Link>
           </div>
@@ -116,16 +122,13 @@ export default function ForgotPasswordPage() {
           {/* Header with premium styling and animations */}
           <div className="text-center mb-4 pt-16 sm:pt-20 title-no-break">
             <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-              <h2
-                className={`${urbanist.className} text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal`}
-                style={{ fontFamily: urbanist.style.fontFamily }}
-              >
+              <H2 className="text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 text-charcoal">
                 Check your email
-              </h2>
+              </H2>
             </div>
-            <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
+            <Lead className="mb-4 leading-[1.55] px-2 mx-auto animate-fade-in-up animate-delay-700">
               Password reset instructions sent
-            </p>
+            </Lead>
           </div>
 
           <div className="w-full sm:max-w-md lg:max-w-lg sm:mx-auto relative z-10 flex-1 flex flex-col justify-center py-8 sm:py-12 px-0 sm:px-2">
@@ -133,42 +136,47 @@ export default function ForgotPasswordPage() {
               <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md shadow-md px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12">
                 <div className="text-center space-y-4 relative z-10">
                   <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="font-urbanist text-xl font-700 text-white" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                      Email sent
-                    </h2>
-                    <p className="font-urbanist text-body-sm text-white/80" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                    <H2 className="text-xl font-bold text-white">Email sent</H2>
+                    <Muted className="text-white/80">
                       We&apos;ve sent password reset instructions to:
-                    </p>
-                    <p className="font-urbanist text-body font-600 text-coral" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                      {email}
-                    </p>
+                    </Muted>
+                    <P className="font-semibold text-coral">{email}</P>
                   </div>
 
                   <div className="bg-white/10 rounded-[12px] p-4 text-left space-y-2">
-                    <p className="font-urbanist text-body-sm text-white/90" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                    <Muted className="text-white/90">
                       <strong className="text-white">Next steps:</strong>
-                    </p>
-                    <ol className="font-urbanist text-body-sm text-white/80 space-y-1 list-decimal list-inside" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                    </Muted>
+                    <ol className="font-urbanist text-body-sm text-white/80 space-y-1 list-decimal list-inside">
                       <li>Check your inbox (and spam folder)</li>
                       <li>Click the reset link in the email</li>
                       <li>Create a new password</li>
                     </ol>
-                    <p className="font-urbanist text-body-sm text-white/70 italic pt-2" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                    <Muted className="text-white/70 italic pt-2">
                       The reset link expires in 60 minutes
-                    </p>
+                    </Muted>
                   </div>
 
                   <div className="pt-4 space-y-3">
                     <button
-                      onClick={() => router.push('/login')}
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-                      className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 flex items-center justify-center gap-2 btn-target btn-press"
+                      onClick={() => router.push("/login")}
+                      className="font-urbanist w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 flex items-center justify-center gap-2 btn-target btn-press"
                     >
                       Back to Login
                     </button>
@@ -179,8 +187,7 @@ export default function ForgotPasswordPage() {
                         setEmail("");
                         setEmailTouched(false);
                       }}
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
-                      className="w-full text-body-sm text-white hover:text-coral transition-colors duration-300"
+                      className="font-urbanist w-full text-body-sm text-white hover:text-coral transition-colors duration-300 font-medium"
                     >
                       Use a different email
                     </button>
@@ -197,9 +204,11 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: authStyles }} />
-      <div ref={containerRef} className="  bg-off-white flex flex-col relative safe-area-full"
-        style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}>
-
+      <div
+        ref={containerRef}
+        className="  bg-off-white flex flex-col relative safe-area-full"
+        style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
+      >
         {/* Premium floating orbs background — clipped inside own layer so root can scroll */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
           <div className="floating-orb floating-orb-1" />
@@ -212,7 +221,10 @@ export default function ForgotPasswordPage() {
 
         {/* Back button with entrance animation */}
         <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 animate-slide-in-left animate-delay-200">
-          <Link href="/login" className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm">
+          <Link
+            href="/login"
+            className="text-charcoal hover:text-charcoal/80 transition-colors duration-300 p-2 hover:bg-off-white/50 rounded-lg block backdrop-blur-sm"
+          >
             <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
           </Link>
         </div>
@@ -220,33 +232,28 @@ export default function ForgotPasswordPage() {
         {/* Header with premium styling and animations */}
         <div className="text-center mb-4 pt-16 sm:pt-20 title-no-break">
           <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-            <h2
-              className={`${urbanist.className} text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal`}
-              style={{ fontFamily: urbanist.style.fontFamily }}
-            >
+            <H2 className="text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 text-charcoal">
               Forgot password?
-            </h2>
+            </H2>
           </div>
-          <p className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
+          <Lead className="mb-4 leading-[1.55] px-2 mx-auto animate-fade-in-up animate-delay-700">
             Enter your email to reset your password
-          </p>
+          </Lead>
         </div>
 
         <div className="w-full sm:max-w-md lg:max-w-lg sm:mx-auto relative z-10 flex-1 flex flex-col justify-center py-8 sm:py-12 px-0 sm:px-2">
           {/* Form Card */}
           <section data-section>
             <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md px-2 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12">
-
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 {/* Error Message */}
-                {error && (
-                  <AuthAlert message={error} tone="error" />
-                )}
+                {error && <AuthAlert message={error} tone="error" />}
 
                 <div className="mb-4 text-center">
-                  <p className="font-urbanist text-body-sm text-white/80 [hyphens:none]" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                    Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
-                  </p>
+                  <Muted className="text-white/80 [hyphens:none]">
+                    Enter the email address associated with your account and we&apos;ll send you a
+                    link to reset your password.
+                  </Muted>
                 </div>
 
                 {/* Email Input */}
@@ -268,8 +275,7 @@ export default function ForgotPasswordPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting || !email}
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 600 }}
-                      className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-target btn-press"
+                      className="font-urbanist w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 btn-target btn-press"
                     >
                       {isSubmitting ? (
                         <>
@@ -286,12 +292,11 @@ export default function ForgotPasswordPage() {
 
               {/* Footer */}
               <div className="text-center mt-6 pt-6 border-t border-white/20">
-                <div className="text-body-sm sm:text-body text-white" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
+                <div className="font-urbanist text-body-sm sm:text-body text-white">
                   Remember your password?{" "}
                   <Link
                     href="/login"
-                    className="text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
-                    style={{ fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif", fontWeight: 600 }}
+                    className="font-urbanist text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
                   >
                     Sign in
                   </Link>

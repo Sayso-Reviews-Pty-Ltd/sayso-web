@@ -5,6 +5,7 @@ import { m } from "framer-motion";
 import type { BadgeMapping } from "../lib/badgeMappings";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import { BADGE_DETAILS, itemVariants } from "./badgeConfig";
+import { H4 } from "@/app/components/ui/typography";
 
 export function BadgeCard({ badge, index }: { badge: BadgeMapping; index: number }) {
   const isDesktop = useIsDesktop();
@@ -31,33 +32,19 @@ export function BadgeCard({ badge, index }: { badge: BadgeMapping; index: number
         </div>
 
         {/* Badge Name */}
-        <h3
-          className="text-lg font-semibold text-charcoal text-center mb-2"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
-          {badge.name}
-        </h3>
+        <H4 className="text-center mb-2">{badge.name}</H4>
 
         {/* Description */}
-        <p
-          className="text-sm text-charcoal/70 text-center mb-4 leading-relaxed min-h-[3rem]"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-        >
+        <p className="font-urbanist text-sm text-charcoal/70 text-center mb-4 leading-relaxed min-h-[3rem]">
           {details?.description || "A special badge recognizing your contributions."}
         </p>
 
         {/* How to Earn */}
         <div className="bg-card-bg/5 rounded-xl px-4 py-3 border border-sage/10">
-          <p
-            className="text-xs font-medium text-sage uppercase tracking-wide mb-1"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <p className="font-urbanist text-xs font-medium text-sage uppercase tracking-wide mb-1">
             How to earn
           </p>
-          <p
-            className="text-sm text-charcoal/80"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <p className="font-urbanist text-sm text-charcoal/80">
             {details?.howToEarn || "Keep exploring and contributing!"}
           </p>
         </div>

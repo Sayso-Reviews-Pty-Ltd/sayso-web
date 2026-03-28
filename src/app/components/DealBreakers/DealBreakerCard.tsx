@@ -18,64 +18,66 @@ interface DealBreakerCardProps {
   IconComponent: React.ComponentType<{ className?: string }>;
 }
 
-export default function DealBreakerCard({ 
-  dealbreaker, 
-  isSelected, 
+export default function DealBreakerCard({
+  dealbreaker,
+  isSelected,
   isDisabled = false,
-  onToggle, 
-  index, 
-  IconComponent 
+  onToggle,
+  index,
+  IconComponent,
 }: DealBreakerCardProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 600,
-  };
-
   return (
     <div
       className={`
         enter-stagger
-        ${isSelected ? 'scale-105' : 'scale-100'}
+        ${isSelected ? "scale-105" : "scale-100"}
         transition-transform duration-300 ease-out
       `}
-      style={{ 
+      style={{
         animationDelay: `${index * 0.1}s`,
-        perspective: '1000px',
-        WebkitPerspective: '1000px'
+        perspective: "1000px",
+        WebkitPerspective: "1000px",
       }}
     >
       <div
         className={`
           relative w-full h-32
-          ${isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}
+          ${isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
         `}
         onClick={() => !isDisabled && onToggle(dealbreaker.id)}
         style={{
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.6s ease-in-out',
-          transform: isSelected ? 'rotateY(180deg)' : 'rotateY(0deg)'
+          transformStyle: "preserve-3d",
+          transition: "transform 0.6s ease-in-out",
+          transform: isSelected ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
       >
         {/* Front of card - Text only */}
         <div
           className={`
             absolute inset-0 w-full h-full rounded-lg border-2 p-4 flex flex-col justify-center items-center text-center
-            ${isDisabled 
-              ? 'bg-charcoal/5 border-charcoal/10 ring-1 ring-charcoal/10' 
-              : 'bg-gradient-to-br from-sage/10 to-sage/5 border-sage/30 hover:border-sage/50 ring-1 ring-sage/20 hover:ring-sage/30'
+            ${
+              isDisabled
+                ? "bg-charcoal/5 border-charcoal/10 ring-1 ring-charcoal/10"
+                : "bg-gradient-to-br from-sage/10 to-sage/5 border-sage/30 hover:border-sage/50 ring-1 ring-sage/20 hover:ring-sage/30"
             }
             backdrop-blur-sm
             transition-all duration-200
           `}
-          style={{ 
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden'
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
           }}
         >
-          <h3 className="text-base font-semibold text-charcoal mb-2" style={sfPro}>
+          <h3
+            className="text-base font-semibold text-charcoal mb-2 font-urbanist"
+            style={{ fontWeight: 600 }}
+          >
             {dealbreaker.label}
           </h3>
-          <p className="text-sm sm:text-xs text-charcoal/60 leading-relaxed px-2" style={sfPro}>
+          <p
+            className="text-sm sm:text-xs text-charcoal/60 leading-relaxed px-2 font-urbanist"
+            style={{ fontWeight: 600 }}
+          >
             {dealbreaker.description}
           </p>
         </div>
@@ -86,10 +88,10 @@ export default function DealBreakerCard({
             absolute inset-0 w-full h-full rounded-lg border-2 p-4 flex flex-col justify-center items-center text-center
             bg-gradient-to-br from-coral to-coral/90 border-coral ring-1 ring-coral/30 backdrop-blur-sm
           `}
-          style={{ 
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)'
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
           }}
         >
           <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-white/20 mb-3">

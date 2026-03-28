@@ -50,7 +50,6 @@ function SavedPageSkeleton({ showHeader = true }: { showHeader?: boolean }) {
   );
 }
 
-
 export default function SavedPage() {
   usePredefinedPageTitle("saved");
   const prefersReducedMotion = useReducedMotion() ?? false;
@@ -58,7 +57,12 @@ export default function SavedPage() {
   const { savedItems, isLoading: savedItemsLoading, refetch: refetchBusinesses } = useSavedItems();
 
   // SWR-backed saved businesses list
-  const { businesses: savedBusinesses, loading: isLoadingBusinesses, error, refetch: refetchSavedBusinesses } = useSavedBusinesses();
+  const {
+    businesses: savedBusinesses,
+    loading: isLoadingBusinesses,
+    error,
+    refetch: refetchSavedBusinesses,
+  } = useSavedBusinesses();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
@@ -68,17 +72,17 @@ export default function SavedPage() {
   // Extract unique categories from saved businesses
   const categories = useMemo(() => {
     const uniqueCategories = Array.from(
-      new Set(savedBusinesses.map(b => b.category).filter(Boolean))
+      new Set(savedBusinesses.map((b) => b.category).filter(Boolean))
     ).sort();
-    return ['All', ...uniqueCategories];
+    return ["All", ...uniqueCategories];
   }, [savedBusinesses]);
 
   // Filter businesses by selected category
   const filteredBusinesses = useMemo(() => {
-    if (!selectedCategory || selectedCategory === 'All') {
+    if (!selectedCategory || selectedCategory === "All") {
       return savedBusinesses;
     }
-    return savedBusinesses.filter(b => b.category === selectedCategory);
+    return savedBusinesses.filter((b) => b.category === selectedCategory);
   }, [savedBusinesses, selectedCategory]);
 
   // Calculate pagination based on active tab
@@ -113,8 +117,6 @@ export default function SavedPage() {
     setCurrentPage(1);
   }, [selectedCategory]);
 
-
-
   // Handle pagination with loader and transitions
   const handlePageChange = (newPage: number) => {
     if (newPage === currentPage) return;
@@ -145,12 +147,7 @@ export default function SavedPage() {
 
   return (
     <EmailVerificationGuard>
-      <div
-        className="min-h-[100dvh] flex flex-col bg-off-white relative font-urbanist"
-        style={{
-          fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-        }}
-      >
+      <div className="min-h-[100dvh] flex flex-col bg-off-white relative font-urbanist">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
@@ -164,7 +161,7 @@ export default function SavedPage() {
             >
               {/* Breadcrumb Navigation */}
               <nav className="pb-1" aria-label="Breadcrumb">
-                <ol className="flex items-center gap-2 text-sm sm:text-base" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+                <ol className="flex items-center gap-2 text-sm sm:text-base font-urbanist">
                   <li>
                     <Link
                       href="/home"
@@ -193,16 +190,10 @@ export default function SavedPage() {
                 {...getChoreoItemMotion({ order: 1, intent: "section", enabled: choreoEnabled })}
               >
                 <div className="text-center max-w-md mx-auto px-4">
-                  <p
-                    className="text-body text-charcoal/70 mb-4"
-                    style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
-                  >
-                    {error}
-                  </p>
+                  <p className="text-body text-charcoal/70 mb-4 font-urbanist">{error}</p>
                   <button
                     onClick={handleRefetch}
-                    className="px-6 py-3 bg-card-bg text-white rounded-full text-body font-semibold hover:bg-card-bg/90 transition-colors"
-                    style={{ fontFamily: "Urbanist, system-ui, sans-serif" }}
+                    className="px-6 py-3 bg-card-bg text-white rounded-full text-body font-semibold hover:bg-card-bg/90 transition-colors font-urbanist"
                   >
                     Try Again
                   </button>
@@ -217,23 +208,16 @@ export default function SavedPage() {
                   {/* Title — always visible */}
                   <m.div
                     className="mb-6 sm:mb-8 px-2"
-                    {...getChoreoItemMotion({ order: 2, intent: "heading", enabled: choreoEnabled })}
+                    {...getChoreoItemMotion({
+                      order: 2,
+                      intent: "heading",
+                      enabled: choreoEnabled,
+                    })}
                   >
-                    <h1
-                      className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal"
-                      style={{
-                        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                        fontWeight: 800,
-                      }}
-                    >
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-charcoal font-urbanist">
                       Your Saved Gems
                     </h1>
-                    <p
-                      className="text-body-sm text-charcoal/60 mt-2"
-                      style={{
-                        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                      }}
-                    >
+                    <p className="text-body-sm text-charcoal/60 mt-2 font-urbanist">
                       {hasAnyContent
                         ? `${totalSavedCount} ${totalSavedCount === 1 ? "item" : "items"} saved`
                         : "Businesses you bookmark will appear here"}
@@ -246,18 +230,25 @@ export default function SavedPage() {
                       {categories.length > 1 && (
                         <m.div
                           className="mb-6 px-2"
-                          {...getChoreoItemMotion({ order: 3, intent: "section", enabled: choreoEnabled })}
+                          {...getChoreoItemMotion({
+                            order: 3,
+                            intent: "section",
+                            enabled: choreoEnabled,
+                          })}
                         >
                           <FilterPillGroup
                             options={categories.map((cat) => ({
-                              value: cat === 'All' ? null : cat,
+                              value: cat === "All" ? null : cat,
                               label: cat,
-                              count: cat === 'All'
-                                ? savedBusinesses.length
-                                : savedBusinesses.filter(b => b.category === cat).length,
+                              count:
+                                cat === "All"
+                                  ? savedBusinesses.length
+                                  : savedBusinesses.filter((b) => b.category === cat).length,
                             }))}
                             value={selectedCategory}
-                            onChange={(value) => setSelectedCategory((value as string | null) ?? null)}
+                            onChange={(value) =>
+                              setSelectedCategory((value as string | null) ?? null)
+                            }
                             ariaLabel="Filter by category"
                             size="md"
                             showCounts
@@ -280,7 +271,11 @@ export default function SavedPage() {
                           <m.div
                             key={`businesses-${currentPage}`}
                             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3"
-                            {...getChoreoItemMotion({ order: 4, intent: "section", enabled: choreoEnabled })}
+                            {...getChoreoItemMotion({
+                              order: 4,
+                              intent: "section",
+                              enabled: choreoEnabled,
+                            })}
                           >
                             {(paginatedItems as Business[]).map((business) => (
                               <div key={business.id} className="list-none">
@@ -293,7 +288,7 @@ export default function SavedPage() {
                             <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-off-white/70 text-charcoal/85 transition duration-200 ease-out hover:bg-off-white/90 hover:scale-[1.03]">
                               <Store className="w-6 h-6" aria-hidden />
                             </span>
-                            <p className="text-charcoal/60 text-body" style={{ fontFamily: 'Urbanist, system-ui, sans-serif' }}>
+                            <p className="text-charcoal/60 text-body font-urbanist">
                               No saved businesses yet
                             </p>
                             <Link
@@ -309,7 +304,11 @@ export default function SavedPage() {
                       {/* Pagination */}
                       {currentItems.length > ITEMS_PER_PAGE && (
                         <m.div
-                          {...getChoreoItemMotion({ order: 5, intent: "section", enabled: choreoEnabled })}
+                          {...getChoreoItemMotion({
+                            order: 5,
+                            intent: "section",
+                            enabled: choreoEnabled,
+                          })}
                         >
                           <Pagination
                             currentPage={currentPage}
@@ -323,7 +322,11 @@ export default function SavedPage() {
                   ) : (
                     <m.div
                       className="px-2"
-                      {...getChoreoItemMotion({ order: 3, intent: "section", enabled: choreoEnabled })}
+                      {...getChoreoItemMotion({
+                        order: 3,
+                        intent: "section",
+                        enabled: choreoEnabled,
+                      })}
                     >
                       <EmptySavedState />
                     </m.div>

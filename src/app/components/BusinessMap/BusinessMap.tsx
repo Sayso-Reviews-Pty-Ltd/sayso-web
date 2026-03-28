@@ -36,11 +36,11 @@ export default function BusinessMap({
   const mapEmbedUrl = useMemo(() => {
     if (latitude && longitude) {
       // Use coordinates for precise location
-      return `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&q=${latitude},${longitude}&zoom=15`;
+      return `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""}&q=${latitude},${longitude}&zoom=15`;
     }
     if (mapQuery) {
       // Use address/location search
-      return `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}&q=${mapQuery}&zoom=15`;
+      return `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""}&q=${mapQuery}&zoom=15`;
     }
     return null;
   }, [latitude, longitude, mapQuery]);
@@ -66,22 +66,14 @@ export default function BusinessMap({
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-navbar-bg flex-shrink-0" />
             <h3
-              className="text-base sm:text-lg font-bold text-charcoal"
-              style={{
-                fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                fontWeight: 700,
-              }}
+              className="text-base sm:text-lg font-bold text-charcoal font-urbanist"
+              style={{ fontWeight: 700 }}
             >
               Location
             </h3>
           </div>
           {(address || location) && (
-            <p
-              className="text-sm text-charcoal/70 mt-1 ml-7"
-              style={{
-                fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-              }}
-            >
+            <p className="text-sm text-charcoal/70 mt-1 ml-7 font-urbanist">
               {address || location}
             </p>
           )}
@@ -116,21 +108,13 @@ export default function BusinessMap({
                 </div>
                 <div className="text-center">
                   <p
-                    className="text-sm font-semibold text-charcoal mb-1"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                      fontWeight: 600,
-                    }}
+                    className="text-sm font-semibold text-charcoal mb-1 font-urbanist"
+                    style={{ fontWeight: 600 }}
                   >
                     View on Google Maps
                   </p>
-                  <p
-                    className="text-xs text-charcoal/60"
-                    style={{
-                      fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                    }}
-                  >
-                    {address || location || 'Click to view location'}
+                  <p className="text-xs text-charcoal/60 font-urbanist">
+                    {address || location || "Click to view location"}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 text-xs text-navbar-bg">
@@ -149,11 +133,8 @@ export default function BusinessMap({
               href={mapSearchUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-navbar-bg hover:text-navbar-bg/80 transition-colors"
-              style={{
-                fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-                fontWeight: 600,
-              }}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-navbar-bg hover:text-navbar-bg/80 transition-colors font-urbanist"
+              style={{ fontWeight: 600 }}
             >
               <span>Open in Google Maps</span>
               <ExternalLink className="w-4 h-4" />
@@ -164,4 +145,3 @@ export default function BusinessMap({
     </div>
   );
 }
-

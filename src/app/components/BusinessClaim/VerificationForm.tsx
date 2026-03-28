@@ -14,7 +14,7 @@ interface VerificationFormProps {
   onSuccess: () => void;
 }
 
-type VerificationMethod = 'email' | 'phone' | 'document' | 'manual';
+type VerificationMethod = "email" | "phone" | "document" | "manual";
 
 export function VerificationForm({ business, onClose, onSuccess }: VerificationFormProps) {
   const { user } = useAuth();
@@ -22,9 +22,9 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
   const [selectedMethod, setSelectedMethod] = useState<VerificationMethod | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationData, setVerificationData] = useState({
-    email: business.email || '',
-    phone: business.phone || '',
-    notes: ''
+    email: business.email || "",
+    phone: business.phone || "",
+    notes: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,12 +35,12 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
 
     try {
       const data: Record<string, any> = {};
-      
-      if (selectedMethod === 'email') {
+
+      if (selectedMethod === "email") {
         data.email = verificationData.email;
-      } else if (selectedMethod === 'phone') {
+      } else if (selectedMethod === "phone") {
         data.phone = verificationData.phone;
-      } else if (selectedMethod === 'manual') {
+      } else if (selectedMethod === "manual") {
         data.notes = verificationData.notes;
       }
 
@@ -52,14 +52,18 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
       );
 
       if (result.success) {
-        showToast('Ownership request submitted successfully! We\'ll review it shortly.', 'success', 5000);
+        showToast(
+          "Ownership request submitted successfully! We'll review it shortly.",
+          "success",
+          5000
+        );
         onSuccess();
       } else {
-        showToast(result.error || 'Failed to submit ownership request', 'sage', 4000);
+        showToast(result.error || "Failed to submit ownership request", "sage", 4000);
       }
     } catch (error) {
-      console.error('Error submitting verification request:', error);
-      showToast('An error occurred. Please try again.', 'sage', 4000);
+      console.error("Error submitting verification request:", error);
+      showToast("An error occurred. Please try again.", "sage", 4000);
     } finally {
       setIsSubmitting(false);
     }
@@ -70,11 +74,7 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
       <div className="bg-off-white rounded-[12px] shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-off-white border-b border-charcoal/10 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-charcoal" style={{
-            fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
-          }}>
-            Verify Ownership
-          </h2>
+          <h2 className="text-xl font-bold text-charcoal font-urbanist">Verify Ownership</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-charcoal/10 transition-colors"
@@ -88,34 +88,34 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Business Info */}
           <div className="bg-white/50 rounded-[12px] p-4 border border-charcoal/10">
-            <h3 className="text-sm font-semibold text-charcoal mb-2" style={{
-              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
-            }}>
+            <h3 className="text-sm font-semibold text-charcoal mb-2 font-urbanist">
               {business.name}
             </h3>
-            <p className="text-sm sm:text-xs text-charcoal/70">{business.category} • {business.location}</p>
+            <p className="text-sm sm:text-xs text-charcoal/70">
+              {business.category} • {business.location}
+            </p>
           </div>
 
           {/* Verification Methods */}
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-charcoal block" style={{
-              fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
-            }}>
+            <label className="text-sm font-semibold text-charcoal block font-urbanist">
               Choose Verification Method
             </label>
 
             {/* Email Verification */}
-            <label className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
-              selectedMethod === 'email' 
-                ? 'border-coral bg-coral/5' 
-                : 'border-charcoal/10 bg-white/50 hover:border-charcoal/20'
-            }`}>
+            <label
+              className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
+                selectedMethod === "email"
+                  ? "border-coral bg-coral/5"
+                  : "border-charcoal/10 bg-white/50 hover:border-charcoal/20"
+              }`}
+            >
               <input
                 type="radio"
                 name="method"
                 value="email"
-                checked={selectedMethod === 'email'}
-                onChange={() => setSelectedMethod('email')}
+                checked={selectedMethod === "email"}
+                onChange={() => setSelectedMethod("email")}
                 className="mt-1"
               />
               <div className="flex-1">
@@ -126,12 +126,14 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
                 <p className="text-sm sm:text-xs text-charcoal/70">
                   We'll send a verification code to the business email address
                 </p>
-                {selectedMethod === 'email' && business.email && (
+                {selectedMethod === "email" && business.email && (
                   <div className="mt-2">
                     <input
                       type="email"
                       value={verificationData.email}
-                      onChange={(e) => setVerificationData({ ...verificationData, email: e.target.value })}
+                      onChange={(e) =>
+                        setVerificationData({ ...verificationData, email: e.target.value })
+                      }
                       placeholder="Business email"
                       className="w-full px-3 py-2 text-sm border border-charcoal/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral/30"
                       required
@@ -142,17 +144,19 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
             </label>
 
             {/* Phone Verification */}
-            <label className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
-              selectedMethod === 'phone' 
-                ? 'border-coral bg-coral/5' 
-                : 'border-charcoal/10 bg-white/50 hover:border-charcoal/20'
-            }`}>
+            <label
+              className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
+                selectedMethod === "phone"
+                  ? "border-coral bg-coral/5"
+                  : "border-charcoal/10 bg-white/50 hover:border-charcoal/20"
+              }`}
+            >
               <input
                 type="radio"
                 name="method"
                 value="phone"
-                checked={selectedMethod === 'phone'}
-                onChange={() => setSelectedMethod('phone')}
+                checked={selectedMethod === "phone"}
+                onChange={() => setSelectedMethod("phone")}
                 className="mt-1"
               />
               <div className="flex-1">
@@ -163,12 +167,14 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
                 <p className="text-sm sm:text-xs text-charcoal/70">
                   We'll send an SMS code to the business phone number
                 </p>
-                {selectedMethod === 'phone' && business.phone && (
+                {selectedMethod === "phone" && business.phone && (
                   <div className="mt-2">
                     <input
                       type="tel"
                       value={verificationData.phone}
-                      onChange={(e) => setVerificationData({ ...verificationData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setVerificationData({ ...verificationData, phone: e.target.value })
+                      }
                       placeholder="Business phone"
                       className="w-full px-3 py-2 text-sm border border-charcoal/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral/30"
                       required
@@ -179,17 +185,19 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
             </label>
 
             {/* Document Verification */}
-            <label className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
-              selectedMethod === 'document' 
-                ? 'border-coral bg-coral/5' 
-                : 'border-charcoal/10 bg-white/50 hover:border-charcoal/20'
-            }`}>
+            <label
+              className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
+                selectedMethod === "document"
+                  ? "border-coral bg-coral/5"
+                  : "border-charcoal/10 bg-white/50 hover:border-charcoal/20"
+              }`}
+            >
               <input
                 type="radio"
                 name="method"
                 value="document"
-                checked={selectedMethod === 'document'}
-                onChange={() => setSelectedMethod('document')}
+                checked={selectedMethod === "document"}
+                onChange={() => setSelectedMethod("document")}
                 className="mt-1"
               />
               <div className="flex-1">
@@ -200,22 +208,26 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
                 <p className="text-sm sm:text-xs text-charcoal/70">
                   Upload business license, tax documents, or other proof of ownership
                 </p>
-                <p className="text-sm sm:text-xs text-coral/80 mt-1">(Coming soon - manual review required)</p>
+                <p className="text-sm sm:text-xs text-coral/80 mt-1">
+                  (Coming soon - manual review required)
+                </p>
               </div>
             </label>
 
             {/* Manual Review */}
-            <label className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
-              selectedMethod === 'manual' 
-                ? 'border-coral bg-coral/5' 
-                : 'border-charcoal/10 bg-white/50 hover:border-charcoal/20'
-            }`}>
+            <label
+              className={`flex items-start gap-3 p-4 rounded-[12px] border-2 cursor-pointer transition-all ${
+                selectedMethod === "manual"
+                  ? "border-coral bg-coral/5"
+                  : "border-charcoal/10 bg-white/50 hover:border-charcoal/20"
+              }`}
+            >
               <input
                 type="radio"
                 name="method"
                 value="manual"
-                checked={selectedMethod === 'manual'}
-                onChange={() => setSelectedMethod('manual')}
+                checked={selectedMethod === "manual"}
+                onChange={() => setSelectedMethod("manual")}
                 className="mt-1"
               />
               <div className="flex-1">
@@ -226,11 +238,13 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
                 <p className="text-sm sm:text-xs text-charcoal/70">
                   Request manual review by our team (for complex cases)
                 </p>
-                {selectedMethod === 'manual' && (
+                {selectedMethod === "manual" && (
                   <div className="mt-2">
                     <textarea
                       value={verificationData.notes}
-                      onChange={(e) => setVerificationData({ ...verificationData, notes: e.target.value })}
+                      onChange={(e) =>
+                        setVerificationData({ ...verificationData, notes: e.target.value })
+                      }
                       placeholder="Tell us why you need manual review..."
                       rows={3}
                       className="w-full px-3 py-2 text-sm border border-charcoal/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral/30"
@@ -247,20 +261,14 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-full text-sm font-semibold text-charcoal bg-white/50 hover:bg-charcoal/10 transition-colors"
-              style={{
-                fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
-              }}
+              className="flex-1 px-4 py-3 rounded-full text-sm font-semibold text-charcoal bg-white/50 hover:bg-charcoal/10 transition-colors font-urbanist"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={!selectedMethod || isSubmitting || (selectedMethod === 'document')}
-              className="flex-1 px-4 py-3 rounded-full text-sm font-semibold text-white bg-coral hover:bg-coral/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-              style={{
-                fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif"
-              }}
+              disabled={!selectedMethod || isSubmitting || selectedMethod === "document"}
+              className="flex-1 px-4 py-3 rounded-full text-sm font-semibold text-white bg-coral hover:bg-coral/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-urbanist"
             >
               {isSubmitting ? (
                 <>
@@ -268,7 +276,7 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
                   Submitting...
                 </>
               ) : (
-                'Submit Request'
+                "Submit Request"
               )}
             </button>
           </div>
@@ -277,4 +285,3 @@ export function VerificationForm({ business, onClose, onSuccess }: VerificationF
     </div>
   );
 }
-

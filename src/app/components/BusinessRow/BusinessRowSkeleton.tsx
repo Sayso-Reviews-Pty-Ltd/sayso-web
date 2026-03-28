@@ -16,12 +16,9 @@ export default function BusinessRowSkeleton({
 }: BusinessRowSkeletonProps) {
   return (
     <section
-      className="relative m-0 p-0 w-full"
+      className="relative m-0 p-0 w-full font-urbanist"
       aria-label={`${title} loading`}
       aria-busy="true"
-      style={{
-        fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
     >
       <div
         className={`mx-auto w-full max-w-[2000px] relative z-10 ${HOME_SECTION_CONTAINER_INSET_CLASS}`}

@@ -21,7 +21,13 @@ import { invalidateEventDetail } from "../../../hooks/useEventDetail";
 function IconStar({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -30,7 +36,12 @@ function IconCalendar({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8 3v4M16 3v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M8 3v4M16 3v4M3 10h18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -38,7 +49,11 @@ function IconCalendar({ className = "" }: { className?: string }) {
 function IconMapPin({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
       <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
@@ -48,7 +63,13 @@ function IconClock({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M12 7v5l3 2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -214,7 +235,8 @@ function WriteReviewContent() {
         const { ImageUploadService } = await import("../../../lib/services/imageUploadService");
         const compressedImages = await ImageUploadService.compressFilesForUpload(selectedImages);
         compressedImages.forEach((image, index) => {
-          const fileName = image.name && image.name.trim() ? image.name : `photo_${Date.now()}_${index}.jpg`;
+          const fileName =
+            image.name && image.name.trim() ? image.name : `photo_${Date.now()}_${index}.jpg`;
           formData.append("images", image, fileName);
         });
       }
@@ -248,13 +270,29 @@ function WriteReviewContent() {
       if (type === "event" && typeof window !== "undefined") {
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (!reducedMotion) {
-          import("canvas-confetti").then((mod) => {
-            const confetti = mod.default;
-            const colors = ["#7D9B76", "#E88D67", "#FFFFFF", "#FFD700"];
-            confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 }, colors, zIndex: 9999 });
-            confetti({ particleCount: 25, angle: 60, spread: 55, origin: { x: 0.2, y: 0.8 }, colors, zIndex: 9999 });
-            confetti({ particleCount: 25, angle: 120, spread: 55, origin: { x: 0.8, y: 0.8 }, colors, zIndex: 9999 });
-          }).catch(() => {});
+          import("canvas-confetti")
+            .then((mod) => {
+              const confetti = mod.default;
+              const colors = ["#7D9B76", "#E88D67", "#FFFFFF", "#FFD700"];
+              confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 }, colors, zIndex: 9999 });
+              confetti({
+                particleCount: 25,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0.2, y: 0.8 },
+                colors,
+                zIndex: 9999,
+              });
+              confetti({
+                particleCount: 25,
+                angle: 120,
+                spread: 55,
+                origin: { x: 0.8, y: 0.8 },
+                colors,
+                zIndex: 9999,
+              });
+            })
+            .catch(() => {});
         }
       }
 
@@ -298,7 +336,9 @@ function WriteReviewContent() {
           <div className="mx-auto w-full max-w-[2000px] px-3">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-charcoal mb-4">Item Not Found</h1>
-              <p className="text-charcoal/70 mb-6">The item you&apos;re trying to review doesn&apos;t exist.</p>
+              <p className="text-charcoal/70 mb-6">
+                The item you&apos;re trying to review doesn&apos;t exist.
+              </p>
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 bg-navbar-bg text-white px-6 py-3 rounded-full font-semibold hover:scale-105 transition-transform"
@@ -315,35 +355,30 @@ function WriteReviewContent() {
 
   const isEvent = type === "event";
   const displayTitle = isEvent
-    ? ((target as Event).name || (target as any).title)
+    ? (target as Event).name || (target as any).title
     : (target as Special).title;
   const displayImage =
     target.image || (target as any).image_url || (target.images && target.images[0]);
   const businessName = target.business_name;
   const displayVenue = isEvent
-    ? ((target as Event).venue || (target as any).venue_name || (target as any).location)
+    ? (target as Event).venue || (target as any).venue_name || (target as any).location
     : (target as any).location;
-  const displayDate = isEvent
-    ? ((target as Event).date || (target as any).start_date)
-    : null;
+  const displayDate = isEvent ? (target as Event).date || (target as any).start_date : null;
 
   return (
-    <div
-      className="min-h-dvh bg-off-white relative overflow-x-hidden font-urbanist"
-      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif' }}
-    >
+    <div className="min-h-dvh bg-off-white relative overflow-x-hidden font-urbanist">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
-      
+
       <div className="min-h-[100dvh] bg-gradient-to-b from-off-white/0 via-off-white/50 to-off-white relative z-10">
         <main className="relative" id="main-content" role="main" aria-label="Write review content">
           {/* Background Gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5 pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
-          
+
           <div className="mx-auto w-full max-w-[2000px] px-2 relative z-10">
             {/* Breadcrumb */}
             <nav className="pb-1" aria-label="Breadcrumb">
@@ -406,7 +441,9 @@ function WriteReviewContent() {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h1 className="font-urbanist text-lg sm:text-xl font-bold text-charcoal mb-1 line-clamp-2">{displayTitle}</h1>
+                        <h1 className="font-urbanist text-lg sm:text-xl font-bold text-charcoal mb-1 line-clamp-2">
+                          {displayTitle}
+                        </h1>
 
                         {businessName && (
                           <p className="text-charcoal/70 text-sm mb-2">by {businessName}</p>
@@ -433,7 +470,12 @@ function WriteReviewContent() {
                               {(target as Special).valid_until && (
                                 <div className="flex items-center gap-1">
                                   <IconClock className="w-4 h-4 text-charcoal/70" />
-                                  <span>Valid until {new Date((target as Special).valid_until!).toLocaleDateString()}</span>
+                                  <span>
+                                    Valid until{" "}
+                                    {new Date(
+                                      (target as Special).valid_until!
+                                    ).toLocaleDateString()}
+                                  </span>
                                 </div>
                               )}
                             </>
@@ -453,7 +495,9 @@ function WriteReviewContent() {
                     <div className="p-4 md:p-6">
                       {!user && (
                         <div className="mb-4 rounded-lg border border-sage/20 bg-card-bg/5 p-3">
-                          <p className="text-sm font-semibold text-charcoal">Posting as Anonymous</p>
+                          <p className="text-sm font-semibold text-charcoal">
+                            Posting as Anonymous
+                          </p>
                           <p className="mt-1 text-sm text-charcoal/70">
                             Sign in if you want this review tied to your profile identity.
                           </p>
@@ -512,7 +556,9 @@ function WriteReviewContent() {
                         className="w-full h-40 rounded-lg object-cover mb-3"
                       />
                     )}
-                    <p className="text-sm font-medium text-charcoal mb-1 line-clamp-2">{displayTitle}</p>
+                    <p className="text-sm font-medium text-charcoal mb-1 line-clamp-2">
+                      {displayTitle}
+                    </p>
                     {businessName && (
                       <p className="text-sm text-charcoal/60 mb-3">by {businessName}</p>
                     )}

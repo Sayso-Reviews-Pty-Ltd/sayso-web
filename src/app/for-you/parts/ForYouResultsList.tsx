@@ -48,10 +48,7 @@ export function ForYouResultsList({
   isDesktop,
   isMapMode,
 }: ForYouResultsListProps) {
-  const desktopCards = useMemo(
-    () => !isMapMode && isDesktop,
-    [isMapMode, isDesktop]
-  );
+  const desktopCards = useMemo(() => !isMapMode && isDesktop, [isMapMode, isDesktop]);
 
   if (shouldShowSkeleton) {
     return <BusinessGridSkeleton />;
@@ -60,16 +57,18 @@ export function ForYouResultsList({
   if (canShowError) {
     return (
       <div className="bg-white border border-sage/20 rounded-3xl shadow-sm px-6 py-10 text-center space-y-4">
-        <p className="text-charcoal font-semibold text-h2" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+        <p className="font-urbanist text-charcoal font-semibold text-h2">
           We couldn't load businesses right now.
         </p>
-        <p className="text-body-sm text-charcoal/60 max-w-[70ch]" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
+        <p
+          className="font-urbanist text-body-sm text-charcoal/60 max-w-[70ch]"
+          style={{ fontWeight: 500 }}
+        >
           {combinedError}
         </p>
         <button
           onClick={onRetry}
-          className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+          className="font-urbanist inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
         >
           Try again
         </button>
@@ -86,11 +85,13 @@ export function ForYouResultsList({
       return (
         <div className="w-full sm:max-w-md lg:max-w-lg xl:max-w-xl sm:mx-auto relative z-10">
           <div className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden backdrop-blur-md shadow-md px-4 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12 text-center space-y-4">
-            <h2 className="text-h2 font-semibold text-white" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-              No results found
-            </h2>
-            <p className="text-body-sm text-white/80 max-w-[70ch] mx-auto leading-relaxed" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 400 }}>
-              We couldn't find any businesses matching "{debouncedSearchQuery}". Try adjusting your search or check back soon.
+            <h2 className="font-urbanist text-h2 font-semibold text-white">No results found</h2>
+            <p
+              className="font-urbanist text-body-sm text-white/80 max-w-[70ch] mx-auto leading-relaxed"
+              style={{ fontWeight: 400 }}
+            >
+              We couldn't find any businesses matching "{debouncedSearchQuery}". Try adjusting your
+              search or check back soon.
             </p>
           </div>
         </div>
@@ -99,29 +100,28 @@ export function ForYouResultsList({
 
     return (
       <div className="bg-white border border-sage/20 rounded-[12px] shadow-md px-6 py-16 text-center space-y-3">
-        <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+        <h2 className="font-urbanist text-h2 font-semibold text-charcoal">
           {showOnboardingEmptyState
-            ? 'Pick your interests to personalize For You'
+            ? "Pick your interests to personalize For You"
             : isFiltered
-              ? 'No businesses match your filters'
-              : 'Curated from your interests'}
+              ? "No businesses match your filters"
+              : "Curated from your interests"}
         </h2>
         <p
-          className="text-body-sm text-charcoal/60 max-w-[62ch] mx-auto leading-relaxed break-normal [text-wrap:balance]"
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}
+          className="font-urbanist text-body-sm text-charcoal/60 max-w-[62ch] mx-auto leading-relaxed break-normal [text-wrap:balance]"
+          style={{ fontWeight: 500 }}
         >
           {showOnboardingEmptyState
-            ? 'We need a few preferences before we can curate recommendations for you.'
+            ? "We need a few preferences before we can curate recommendations for you."
             : isFiltered
-              ? 'Try adjusting your filters or check back soon as new businesses join the community.'
-              : 'No matches in your selected categories yet. Adjust your interests or check back as more businesses join.'}
+              ? "Try adjusting your filters or check back soon as new businesses join the community."
+              : "No matches in your selected categories yet. Adjust your interests or check back as more businesses join."}
         </p>
         {showOnboardingEmptyState ? (
           <div className="pt-2">
             <Link
               href="/interests"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+              className="font-urbanist inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
             >
               Select interests
             </Link>
@@ -135,8 +135,9 @@ export function ForYouResultsList({
     <>
       {isSearchActive && totalCount > 0 && (
         <div className="mb-4 px-2 flex items-center justify-between">
-          <div className="text-sm text-charcoal/60" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-            Found {totalCount} {totalCount === 1 ? 'result' : 'results'} for "{debouncedSearchQuery}"
+          <div className="font-urbanist text-sm text-charcoal/60">
+            Found {totalCount} {totalCount === 1 ? "result" : "results"} for "{debouncedSearchQuery}
+            "
           </div>
         </div>
       )}
@@ -221,14 +222,27 @@ export function ForYouResultsList({
           position: absolute;
           inset: -2px;
           pointer-events: none;
-          background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.04) 35%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 65%, transparent 100%);
+          background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.04) 35%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.04) 65%,
+            transparent 100%
+          );
           opacity: 0.08;
           animation: desktopShimmer 10s linear infinite;
         }
         @keyframes desktopShimmer {
-          0% { transform: translateX(-120%); }
-          40% { transform: translateX(120%); }
-          100% { transform: translateX(120%); }
+          0% {
+            transform: translateX(-120%);
+          }
+          40% {
+            transform: translateX(120%);
+          }
+          100% {
+            transform: translateX(120%);
+          }
         }
       `}</style>
     </>

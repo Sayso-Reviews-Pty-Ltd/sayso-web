@@ -1,6 +1,5 @@
 "use client";
 
-import { m, useReducedMotion } from "framer-motion";
 import { pillBase, pillSize, pillInactive, pillActive } from "./filterPillTokens";
 
 export type PillValue = string | number | null;
@@ -39,8 +38,6 @@ export default function FilterPillGroup<T extends PillValue>({
   className = "",
   activeClassName,
 }: FilterPillGroupProps<T>) {
-  const prefersReducedMotion = useReducedMotion();
-
   const containerClass = [
     "flex items-center gap-2",
     scrollable ? "overflow-x-auto scrollbar-hide" : "",
@@ -60,27 +57,23 @@ export default function FilterPillGroup<T extends PillValue>({
       {options.map((option) => {
         const isActive = value === option.value;
         return (
-          <m.button
+          <button
             key={String(option.value)}
             type="button"
             disabled={option.disabled}
             onClick={() => onChange(isActive ? null : option.value)}
             aria-pressed={isActive}
-            whileHover={prefersReducedMotion || option.disabled ? undefined : { y: -1 }}
-            whileTap={prefersReducedMotion || option.disabled ? undefined : { scale: 0.98 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
             className={[
               pillBase,
               pillSize[size],
               isActive ? (activeClassName ?? pillActive) : pillInactive,
-              option.disabled ? "opacity-50 cursor-not-allowed" : "",
+              option.disabled
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:-translate-y-px active:scale-[0.98]",
+              "font-urbanist transition-transform duration-150 ease-out motion-reduce:transform-none",
             ]
               .filter(Boolean)
               .join(" ")}
-            style={{
-              fontFamily:
-                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            }}
           >
             {option.icon && <span aria-hidden>{option.icon}</span>}
             {option.label}
@@ -89,7 +82,7 @@ export default function FilterPillGroup<T extends PillValue>({
                 ({option.count})
               </span>
             )}
-          </m.button>
+          </button>
         );
       })}
     </div>

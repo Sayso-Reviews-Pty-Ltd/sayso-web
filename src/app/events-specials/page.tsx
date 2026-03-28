@@ -38,11 +38,17 @@ export default function EventsSpecialsPage() {
   const effectiveCategory = selectedFilter === "special" ? null : selectedCategory;
 
   // SWR-backed events list (caching, dedup, pre-fetch next page)
-  const { items, count, categoryBuckets, hasMore, loading, loadingMore, error, fetchMore, refetch } = useEventsSpecials(
-    selectedFilter,
-    debouncedSearchQuery,
-    effectiveCategory
-  );
+  const {
+    items,
+    count,
+    categoryBuckets,
+    hasMore,
+    loading,
+    loadingMore,
+    error,
+    fetchMore,
+    refetch,
+  } = useEventsSpecials(selectedFilter, debouncedSearchQuery, effectiveCategory);
 
   const handleLoadMoreWithSkeletons = async () => {
     setOptimisticSkeletons(ITEMS_PER_PAGE);
@@ -66,7 +72,8 @@ export default function EventsSpecialsPage() {
     if (debouncedSearchQuery.trim()) {
       const q = debouncedSearchQuery.trim().toLowerCase();
       filtered = filtered.filter((item) => {
-        const haystack = `${item.title ?? ""} ${item.location ?? ""} ${item.description ?? ""}`.toLowerCase();
+        const haystack =
+          `${item.title ?? ""} ${item.location ?? ""} ${item.description ?? ""}`.toLowerCase();
         return haystack.includes(q);
       });
     }
@@ -78,7 +85,8 @@ export default function EventsSpecialsPage() {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
     const matches = mergedEvents.filter((item) => {
-      const haystack = `${item.title ?? ""} ${item.location ?? ""} ${item.description ?? ""}`.toLowerCase();
+      const haystack =
+        `${item.title ?? ""} ${item.location ?? ""} ${item.description ?? ""}`.toLowerCase();
       return haystack.includes(q);
     });
     return matches.slice(0, 6).map((item) => ({
@@ -124,7 +132,8 @@ export default function EventsSpecialsPage() {
   const specialsSectionItems = filteredEvents.filter((event) => event.type === "special");
 
   useEffect(() => {
-    const updateIsDesktop = () => setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
+    const updateIsDesktop = () =>
+      setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
     updateIsDesktop();
     window.addEventListener("resize", updateIsDesktop);
     return () => window.removeEventListener("resize", updateIsDesktop);
@@ -166,7 +175,7 @@ export default function EventsSpecialsPage() {
   const renderGridSection = (items: Event[], title: string) => (
     <section key={title} className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>{title}</h2>
+        <h2 className="font-urbanist text-lg font-semibold text-charcoal">{title}</h2>
       </div>
       {isDesktop ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-3 md:gap-3 lg:gap-2 xl:gap-2 2xl:gap-2">
@@ -191,25 +200,28 @@ export default function EventsSpecialsPage() {
             </m.div>
           ))}
           {/* Optimistic skeleton cards during load more */}
-          {optimisticSkeletons > 0 && Array.from({ length: optimisticSkeletons }).map((_, idx) => (
-            <m.div
-              key={`skeleton-${idx}`}
-              className="list-none"
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20, filter: "blur(4px)" }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={
-                prefersReducedMotion
-                  ? undefined
-                  : {
-                      duration: 0.35,
-                      ease: [0.16, 1, 0.3, 1] as const,
-                      delay: idx * 0.03,
-                    }
-              }
-            >
-              <EventCardSkeleton fullWidth />
-            </m.div>
-          ))}
+          {optimisticSkeletons > 0 &&
+            Array.from({ length: optimisticSkeletons }).map((_, idx) => (
+              <m.div
+                key={`skeleton-${idx}`}
+                className="list-none"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20, filter: "blur(4px)" }}
+                animate={
+                  prefersReducedMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }
+                }
+                transition={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        duration: 0.35,
+                        ease: [0.16, 1, 0.3, 1] as const,
+                        delay: idx * 0.03,
+                      }
+                }
+              >
+                <EventCardSkeleton fullWidth />
+              </m.div>
+            ))}
         </div>
       ) : (
         <m.div
@@ -240,11 +252,12 @@ export default function EventsSpecialsPage() {
               </m.div>
             ))}
             {/* Optimistic skeleton cards during load more */}
-            {optimisticSkeletons > 0 && Array.from({ length: optimisticSkeletons }).map((_, idx) => (
-              <div key={`skeleton-${idx}`} className="list-none">
-                <EventCardSkeleton fullWidth />
-              </div>
-            ))}
+            {optimisticSkeletons > 0 &&
+              Array.from({ length: optimisticSkeletons }).map((_, idx) => (
+                <div key={`skeleton-${idx}`} className="list-none">
+                  <EventCardSkeleton fullWidth />
+                </div>
+              ))}
           </div>
         </m.div>
       )}
@@ -258,14 +271,7 @@ export default function EventsSpecialsPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
 
-
-      <main
-        className="relative"
-        style={{
-          fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
-        }}
-      >
-        
+      <main className="relative font-urbanist">
         <div className="relative mx-auto w-full max-w-[2000px] px-2">
           <m.nav
             className="relative z-10 pb-1"
@@ -276,8 +282,7 @@ export default function EventsSpecialsPage() {
               <li>
                 <Link
                   href="/home"
-                  className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                  className="font-urbanist text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
                 >
                   Home
                 </Link>
@@ -286,9 +291,7 @@ export default function EventsSpecialsPage() {
                 <ChevronRight className="w-4 h-4 text-charcoal/60" />
               </li>
               <li>
-                <span className="text-charcoal font-semibold" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                  Events & Specials
-                </span>
+                <span className="font-urbanist text-charcoal font-semibold">Events & Specials</span>
               </li>
             </ol>
           </m.nav>
@@ -299,28 +302,31 @@ export default function EventsSpecialsPage() {
             {...getChoreoItemMotion({ order: 1, intent: "heading", enabled: choreoEnabled })}
           >
             <div className="my-4">
-              <h1 
+              <h1
                 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-[1.2] tracking-tight text-charcoal mx-auto font-urbanist"
-                style={{ 
-                  fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  wordBreak: 'keep-all',
-                  overflowWrap: 'break-word',
-                  whiteSpace: 'normal',
-                  hyphens: 'none',
+                style={{
+                  wordBreak: "keep-all",
+                  overflowWrap: "break-word",
+                  whiteSpace: "normal",
+                  hyphens: "none",
                 }}
               >
-                <span className="inline-block font-bold" style={{
-                  fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  wordBreak: 'keep-all',
-                  overflowWrap: 'break-word',
-                  whiteSpace: 'normal',
-                  hyphens: 'none',
-                }}>Events & Specials</span>
+                <span
+                  className="font-urbanist inline-block font-bold"
+                  style={{
+                    wordBreak: "keep-all",
+                    overflowWrap: "break-word",
+                    whiteSpace: "normal",
+                    hyphens: "none",
+                  }}
+                >
+                  Events & Specials
+                </span>
               </h1>
             </div>
-            <p className="text-sm sm:text-base text-charcoal/70 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-              Discover exciting local events and exclusive special offers. 
-              Find concerts, festivals, workshops, and limited-time deals happening near you.
+            <p className="font-urbanist text-sm sm:text-base text-charcoal/70 max-w-2xl mx-auto leading-relaxed">
+              Discover exciting local events and exclusive special offers. Find concerts, festivals,
+              workshops, and limited-time deals happening near you.
             </p>
           </m.div>
 
@@ -342,11 +348,10 @@ export default function EventsSpecialsPage() {
             />
             {/* Show search status indicator */}
             {debouncedSearchQuery.trim().length > 0 && (
-              <div className="mt-2 px-2 text-sm text-charcoal/60" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+              <div className="mt-2 px-2 text-sm text-charcoal/60 font-urbanist">
                 {filteredEvents.length > 0
-                  ? `Found ${filteredEvents.length} result${filteredEvents.length === 1 ? '' : 's'} for "${debouncedSearchQuery}"`
-                  : `No results found for "${debouncedSearchQuery}"`
-                }
+                  ? `Found ${filteredEvents.length} result${filteredEvents.length === 1 ? "" : "s"} for "${debouncedSearchQuery}"`
+                  : `No results found for "${debouncedSearchQuery}"`}
               </div>
             )}
           </m.div>
@@ -360,7 +365,9 @@ export default function EventsSpecialsPage() {
               <FilterPillGroup
                 options={categoryFilterOptions}
                 value={selectedCategory}
-                onChange={(value) => setSelectedCategory((value as QuicketCategorySlug | null) ?? null)}
+                onChange={(value) =>
+                  setSelectedCategory((value as QuicketCategorySlug | null) ?? null)
+                }
                 ariaLabel="Quicket category filter"
                 size="sm"
                 showCounts
@@ -398,7 +405,8 @@ export default function EventsSpecialsPage() {
                   We’re curating something special for you
                 </p>
                 <p className="mx-auto max-w-[44ch] text-sm leading-relaxed text-charcoal/70">
-                  Business owners are manually adding curated events and specials. Check back soon for the latest experiences.
+                  Business owners are manually adding curated events and specials. Check back soon
+                  for the latest experiences.
                 </p>
                 <ul className="mx-auto max-w-[18rem] list-none space-y-1 text-sm leading-relaxed text-charcoal/70">
                   <li>Explore businesses</li>
@@ -432,14 +440,14 @@ export default function EventsSpecialsPage() {
                   </div>
                 )}
                 {eventsSectionItems.length > 0 && renderGridSection(eventsSectionItems, "Events")}
-                {specialsSectionItems.length > 0 && renderGridSection(specialsSectionItems, "Specials")}
+                {specialsSectionItems.length > 0 &&
+                  renderGridSection(specialsSectionItems, "Specials")}
                 {hasMore && (
                   <div className="flex items-center justify-center py-8">
                     <button
                       onClick={handleLoadMore}
                       disabled={loadingMore}
-                      className="flex items-center gap-2 px-6 py-3 bg-navbar-bg text-white rounded-full font-medium hover:bg-navbar-bg/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                      className="font-urbanist flex items-center gap-2 px-6 py-3 bg-navbar-bg text-white rounded-full font-medium hover:bg-navbar-bg/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                     >
                       {loadingMore ? (
                         <span aria-live="polite">Loading more...</span>
@@ -466,14 +474,27 @@ export default function EventsSpecialsPage() {
           position: absolute;
           inset: -2px;
           pointer-events: none;
-          background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.04) 35%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 65%, transparent 100%);
+          background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.04) 35%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.04) 65%,
+            transparent 100%
+          );
           opacity: 0.08;
           animation: desktopShimmer 10s linear infinite;
         }
         @keyframes desktopShimmer {
-          0% { transform: translateX(-120%); }
-          40% { transform: translateX(120%); }
-          100% { transform: translateX(120%); }
+          0% {
+            transform: translateX(-120%);
+          }
+          40% {
+            transform: translateX(120%);
+          }
+          100% {
+            transform: translateX(120%);
+          }
         }
       `}</style>
 

@@ -23,7 +23,7 @@ export function BadgeSection({
     if (groupKey !== "specialist") return { all: badges };
 
     const groups: Record<string, BadgeMapping[]> = {};
-    badges.forEach(badge => {
+    badges.forEach((badge) => {
       const key = badge.categoryKey || "other";
       if (!groups[key]) groups[key] = [];
       groups[key].push(badge);
@@ -42,49 +42,35 @@ export function BadgeSection({
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-8 sm:mb-12"
         >
-          <div className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${meta.gradient} border ${meta.borderColor} mb-4`}>
+          <div
+            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${meta.gradient} border ${meta.borderColor} mb-4`}
+          >
             <IconComponent className={`w-5 h-5 ${meta.accentColor}`} />
-            <span
-              className={`text-sm font-semibold ${meta.accentColor}`}
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
+            <span className={`font-urbanist text-sm font-semibold ${meta.accentColor}`}>
               {meta.subtitle}
             </span>
           </div>
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal mb-3"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <h2 className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal mb-3">
             {meta.title}
           </h2>
-          <p
-            className="text-base sm:text-lg text-charcoal/70 max-w-2xl"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <p className="font-urbanist text-base sm:text-lg text-charcoal/70 max-w-2xl">
             {meta.description}
           </p>
         </m.div>
       ) : (
         <div className="mb-8 sm:mb-12">
-          <div className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${meta.gradient} border ${meta.borderColor} mb-4`}>
+          <div
+            className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${meta.gradient} border ${meta.borderColor} mb-4`}
+          >
             <IconComponent className={`w-5 h-5 ${meta.accentColor}`} />
-            <span
-              className={`text-sm font-semibold ${meta.accentColor}`}
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-            >
+            <span className={`font-urbanist text-sm font-semibold ${meta.accentColor}`}>
               {meta.subtitle}
             </span>
           </div>
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal mb-3"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <h2 className="font-urbanist text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal mb-3">
             {meta.title}
           </h2>
-          <p
-            className="text-base sm:text-lg text-charcoal/70 max-w-2xl"
-            style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-          >
+          <p className="font-urbanist text-base sm:text-lg text-charcoal/70 max-w-2xl">
             {meta.description}
           </p>
         </div>
@@ -95,7 +81,8 @@ export function BadgeSection({
         // Specialist badges grouped by category
         <div className="space-y-12">
           {Object.entries(groupedBadges).map(([categoryKey, categoryBadges]) => {
-            const categoryMeta = SPECIALIST_CATEGORIES[categoryKey as keyof typeof SPECIALIST_CATEGORIES];
+            const categoryMeta =
+              SPECIALIST_CATEGORIES[categoryKey as keyof typeof SPECIALIST_CATEGORIES];
             if (!categoryMeta) return null;
 
             return (
@@ -108,10 +95,7 @@ export function BadgeSection({
                     className="flex items-center gap-3 mb-6"
                   >
                     <span className="text-2xl">{categoryMeta.emoji}</span>
-                    <h3
-                      className="text-xl font-semibold text-charcoal"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                    >
+                    <h3 className="font-urbanist text-xl font-semibold text-charcoal">
                       {categoryMeta.title}
                     </h3>
                     <div className="flex-1 h-px bg-charcoal/10" />
@@ -119,10 +103,7 @@ export function BadgeSection({
                 ) : (
                   <div className="flex items-center gap-3 mb-6">
                     <span className="text-2xl">{categoryMeta.emoji}</span>
-                    <h3
-                      className="text-xl font-semibold text-charcoal"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                    >
+                    <h3 className="font-urbanist text-xl font-semibold text-charcoal">
                       {categoryMeta.title}
                     </h3>
                     <div className="flex-1 h-px bg-charcoal/10" />

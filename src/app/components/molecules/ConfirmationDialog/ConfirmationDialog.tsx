@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { m } from 'framer-motion';
+import React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { m } from "framer-motion";
 import { AlertTriangle } from "@/app/lib/icons";
 
 export interface ConfirmationDialogProps {
@@ -13,7 +13,7 @@ export interface ConfirmationDialogProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
-  variant?: 'danger' | 'warning' | 'info';
+  variant?: "danger" | "warning" | "info";
   isLoading?: boolean;
   requireConfirmText?: string;
   error?: string | null;
@@ -21,25 +21,26 @@ export interface ConfirmationDialogProps {
 
 const variantStyles = {
   danger: {
-    iconBg: 'bg-gradient-to-br from-coral/20 to-coral/10',
-    iconColor: 'text-coral',
-    iconRing: 'ring-coral/20',
-    button: 'bg-white/50 text-coral border border-coral hover:bg-coral hover:text-white',
-    buttonShadow: 'shadow-coral/10 hover:shadow-coral/20',
+    iconBg: "bg-gradient-to-br from-coral/20 to-coral/10",
+    iconColor: "text-coral",
+    iconRing: "ring-coral/20",
+    button: "bg-white/50 text-coral border border-coral hover:bg-coral hover:text-white",
+    buttonShadow: "shadow-coral/10 hover:shadow-coral/20",
   },
   warning: {
-    iconBg: 'bg-gradient-to-br from-amber-500/20 to-amber-500/10',
-    iconColor: 'text-amber-600',
-    iconRing: 'ring-amber-500/20',
-    button: 'bg-white/50 text-amber-600 border border-amber-500 hover:bg-amber-500 hover:text-white',
-    buttonShadow: 'shadow-amber-500/10 hover:shadow-amber-500/20',
+    iconBg: "bg-gradient-to-br from-amber-500/20 to-amber-500/10",
+    iconColor: "text-amber-600",
+    iconRing: "ring-amber-500/20",
+    button:
+      "bg-white/50 text-amber-600 border border-amber-500 hover:bg-amber-500 hover:text-white",
+    buttonShadow: "shadow-amber-500/10 hover:shadow-amber-500/20",
   },
   info: {
-    iconBg: 'bg-gradient-to-br from-sage/20 to-sage/10',
-    iconColor: 'text-sage',
-    iconRing: 'ring-sage/20',
-    button: 'bg-white/50 text-sage border border-sage hover:bg-card-bg hover:text-white',
-    buttonShadow: 'shadow-sage/10 hover:shadow-sage/20',
+    iconBg: "bg-gradient-to-br from-sage/20 to-sage/10",
+    iconColor: "text-sage",
+    iconRing: "ring-sage/20",
+    button: "bg-white/50 text-sage border border-sage hover:bg-card-bg hover:text-white",
+    buttonShadow: "shadow-sage/10 hover:shadow-sage/20",
   },
 };
 
@@ -49,17 +50,17 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  variant = 'danger',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  variant = "danger",
   isLoading = false,
   requireConfirmText,
   error,
 }) => {
-  const [confirmInput, setConfirmInput] = React.useState('');
+  const [confirmInput, setConfirmInput] = React.useState("");
 
   React.useEffect(() => {
-    if (!isOpen) setConfirmInput('');
+    if (!isOpen) setConfirmInput("");
   }, [isOpen]);
 
   const handleConfirm = () => {
@@ -73,7 +74,9 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   return (
     <DialogPrimitive.Root
       open={isOpen}
-      onOpenChange={(open) => { if (!open && !isLoading) onClose(); }}
+      onOpenChange={(open) => {
+        if (!open && !isLoading) onClose();
+      }}
     >
       <DialogPrimitive.Portal>
         {/* Backdrop — Radix handles scroll lock and focus trap */}
@@ -82,8 +85,12 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         {/* Content wrapper — Radix manages ARIA, ESC, and portal */}
         <DialogPrimitive.Content
           className="fixed left-[50%] top-[50%] z-[9999] w-full max-w-md translate-x-[-50%] translate-y-[-50%] p-4 focus:outline-none"
-          onEscapeKeyDown={(e) => { if (isLoading) e.preventDefault(); }}
-          onInteractOutside={(e) => { if (isLoading) e.preventDefault(); }}
+          onEscapeKeyDown={(e) => {
+            if (isLoading) e.preventDefault();
+          }}
+          onInteractOutside={(e) => {
+            if (isLoading) e.preventDefault();
+          }}
           aria-describedby={undefined}
         >
           {/* Accessible title and description (visually hidden) */}
@@ -108,29 +115,29 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className={`w-18 h-18 ${styles.iconBg} rounded-full flex items-center justify-center ring-8 ${styles.iconRing} p-4`}>
+                <div
+                  className={`w-18 h-18 ${styles.iconBg} rounded-full flex items-center justify-center ring-8 ${styles.iconRing} p-4`}
+                >
                   <AlertTriangle className={`w-8 h-8 ${styles.iconColor}`} strokeWidth={2} />
                 </div>
               </m.div>
 
               {/* Title (visible) */}
               <m.h3
-                className="text-xl font-semibold text-charcoal text-center mb-3"
+                className="font-urbanist text-xl font-semibold text-charcoal text-center mb-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.3 }}
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
               >
                 {title}
               </m.h3>
 
               {/* Message (visible) */}
               <m.p
-                className="text-sm text-charcoal/70 text-center mb-6 leading-relaxed"
+                className="font-urbanist text-sm text-charcoal/70 text-center mb-6 leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
               >
                 {message}
               </m.p>
@@ -143,20 +150,20 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25, duration: 0.3 }}
                 >
-                  <label
-                    className="block text-sm font-medium text-charcoal/80 mb-2"
-                    style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                  >
-                    Type <span className="font-semibold bg-coral/10 text-coral px-2 py-0.5 rounded-md">{requireConfirmText}</span> to confirm:
+                  <label className="font-urbanist block text-sm font-medium text-charcoal/80 mb-2">
+                    Type{" "}
+                    <span className="font-semibold bg-coral/10 text-coral px-2 py-0.5 rounded-md">
+                      {requireConfirmText}
+                    </span>{" "}
+                    to confirm:
                   </label>
                   <input
                     type="text"
                     value={confirmInput}
                     onChange={(e) => setConfirmInput(e.target.value)}
-                    className="w-full px-4 py-3 rounded-full text-sm text-charcoal border-2 border-charcoal/10 bg-white/80 focus:border-coral/50 focus:outline-none focus:ring-4 focus:ring-coral/10 transition-all duration-300"
+                    className="font-urbanist w-full px-4 py-3 rounded-full text-sm text-charcoal border-2 border-charcoal/10 bg-white/80 focus:border-coral/50 focus:outline-none focus:ring-4 focus:ring-coral/10 transition-all duration-300"
                     placeholder={requireConfirmText}
                     autoFocus
-                    style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                   />
                 </m.div>
               )}
@@ -183,18 +190,16 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 <button
                   onClick={onClose}
                   disabled={isLoading}
-                  className="flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-white/60 text-charcoal border border-charcoal/10 hover:bg-white hover:border-charcoal/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                  className="font-urbanist flex-1 px-6 py-3 rounded-full text-sm font-semibold bg-white/60 text-charcoal border border-charcoal/10 hover:bg-white hover:border-charcoal/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
                 >
                   {cancelText}
                 </button>
                 <button
                   onClick={handleConfirm}
                   disabled={isLoading || !canConfirm}
-                  className={`flex-1 px-6 py-3 rounded-full text-sm font-semibold ${styles.button} transition-all duration-300 shadow-lg ${styles.buttonShadow} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white/50 disabled:hover:text-coral`}
-                  style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                  className={`font-urbanist flex-1 px-6 py-3 rounded-full text-sm font-semibold ${styles.button} transition-all duration-300 shadow-lg ${styles.buttonShadow} disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white/50 disabled:hover:text-coral`}
                 >
-                  {isLoading ? 'Processing...' : confirmText}
+                  {isLoading ? "Processing..." : confirmText}
                 </button>
               </m.div>
             </div>

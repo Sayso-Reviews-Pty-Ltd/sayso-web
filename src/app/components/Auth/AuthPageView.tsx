@@ -6,6 +6,7 @@ import { ArrowLeft } from "@/app/lib/icons";
 import { AnimatePresence, m } from "framer-motion";
 
 import { Card } from "@/app/components/ui/card";
+import { H2, H3, Lead, P } from "@/app/components/ui/typography";
 import { Button } from "@/app/components/atoms/Button";
 
 import { authStyles } from "./Shared/authStyles";
@@ -138,26 +139,14 @@ export function AuthPageView({
 
         <div className="text-center mb-4 pt-16 sm:pt-20">
           <div className="inline-block relative mb-4 animate-fade-in-up animate-delay-400">
-            <h2
-              className="text-3xl md:text-4xl font-semibold mb-2 text-center leading-[1.2] px-2 tracking-tight text-charcoal"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                fontWeight: 700,
-              }}
-            >
+            <H2 className="text-3xl md:text-4xl font-bold mb-2 text-center leading-[1.2] px-2 text-charcoal">
               {title}
-            </h2>
+            </H2>
           </div>
 
-          <p
-            className="text-body font-normal text-charcoal/70 mb-4 leading-[1.55] px-2 max-w-[70ch] mx-auto animate-fade-in-up animate-delay-700"
-            style={{
-              fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              fontWeight: 400,
-            }}
-          >
+          <Lead className="mb-4 leading-[1.55] px-2 mx-auto animate-fade-in-up animate-delay-700">
             {subtitle}
-          </p>
+          </Lead>
         </div>
 
         <div className="flex justify-center px-4">
@@ -165,28 +154,22 @@ export function AuthPageView({
             <button
               type="button"
               onClick={() => onSetAccountType("personal")}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+              className={`font-urbanist px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                 accountType === "personal"
                   ? "bg-navbar-bg/90 text-white shadow-md"
                   : "text-charcoal/70 hover:text-charcoal"
               }`}
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
             >
               Personal Account
             </button>
             <button
               type="button"
               onClick={() => onSetAccountType("business")}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+              className={`font-urbanist px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                 accountType === "business"
                   ? "bg-navbar-bg/90 text-white shadow-md"
                   : "text-charcoal/70 hover:text-charcoal"
               }`}
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
             >
               Business Account
             </button>
@@ -207,30 +190,22 @@ export function AuthPageView({
                       <button
                         type="button"
                         onClick={() => onSetAuthMode("register")}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                        className={`font-urbanist px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                           authMode === "register"
                             ? "bg-white text-charcoal shadow-sm"
                             : "text-white/70 hover:text-white"
                         }`}
-                        style={{
-                          fontFamily:
-                            "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                        }}
                       >
                         Register
                       </button>
                       <button
                         type="button"
                         onClick={() => onSetAuthMode("login")}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                        className={`font-urbanist px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                           authMode === "login"
                             ? "bg-white text-charcoal shadow-sm"
                             : "text-white/70 hover:text-white"
                         }`}
-                        style={{
-                          fontFamily:
-                            "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                        }}
                       >
                         Login
                       </button>
@@ -256,35 +231,17 @@ export function AuthPageView({
                           </svg>
                         </div>
 
-                        <h3
-                          className="text-lg font-semibold text-blue-900 mb-2"
-                          style={{
-                            fontFamily:
-                              "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
-                          Account Already Exists
-                        </h3>
+                        <H3 className="text-lg text-blue-900 mb-2">Account Already Exists</H3>
 
-                        <p
-                          className="text-blue-700 mb-6"
-                          style={{
-                            fontFamily:
-                              "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          }}
-                        >
+                        <P className="text-blue-700 mb-6">
                           {error || "Email already registered. Log in or use a different email."}
-                        </p>
+                        </P>
 
                         <div className="space-y-3">
                           <button
                             type="button"
                             onClick={onSwitchToLogin}
-                            className="inline-flex items-center justify-center w-full px-6 py-3 bg-blue-600 text-white text-body font-semibold rounded-full hover:bg-blue-700 transition-all duration-300"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
+                            className="font-urbanist inline-flex items-center justify-center w-full px-6 py-3 bg-blue-600 text-white text-body font-semibold rounded-full hover:bg-blue-700 transition-all duration-300"
                           >
                             Switch to Login
                           </button>
@@ -292,11 +249,7 @@ export function AuthPageView({
                           <button
                             type="button"
                             onClick={onTryDifferentEmail}
-                            className="inline-flex items-center justify-center w-full px-6 py-3 bg-gray-100 text-gray-700 text-body font-semibold rounded-full hover:bg-gray-200 transition-all duration-300"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
+                            className="font-urbanist inline-flex items-center justify-center w-full px-6 py-3 bg-gray-100 text-gray-700 text-body font-semibold rounded-full hover:bg-gray-200 transition-all duration-300"
                           >
                             Try Different Email
                           </button>
@@ -317,22 +270,10 @@ export function AuthPageView({
                               aria-live="assertive"
                               className="bg-off-white border border-error-100 rounded-[12px] p-4 text-center"
                             >
-                              <p
-                                className="text-caption font-bold text-error-700 mb-1"
-                                style={{
-                                  fontFamily:
-                                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                }}
-                              >
+                              <p className="font-urbanist text-caption font-bold text-error-700 mb-1">
                                 {isRegisterMode ? "Registration failed" : "Sign in failed"}
                               </p>
-                              <p
-                                className="text-caption font-semibold text-error-600"
-                                style={{
-                                  fontFamily:
-                                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                }}
-                              >
+                              <p className="font-urbanist text-caption font-semibold text-error-600">
                                 {error}
                               </p>
                             </div>
@@ -343,13 +284,7 @@ export function AuthPageView({
                             message={!isOnline && !error && isRegisterMode ? "offline" : null}
                           >
                             <div className="bg-off-white border border-orange-200 rounded-[12px] p-4 text-center">
-                              <p
-                                className="text-caption font-semibold text-orange-600"
-                                style={{
-                                  fontFamily:
-                                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                }}
-                              >
+                              <p className="font-urbanist text-caption font-semibold text-orange-600">
                                 You&apos;re offline. We&apos;ll try again when you&apos;re back
                                 online.
                               </p>
@@ -369,13 +304,7 @@ export function AuthPageView({
                                     disabled={isFormDisabled}
                                     checking={usernameChecking}
                                   />
-                                  <p
-                                    className="text-xs text-white/80 mt-1"
-                                    style={{
-                                      fontFamily:
-                                        "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                    }}
-                                  >
+                                  <p className="font-urbanist text-xs text-white/80 mt-1">
                                     This is your account username.
                                   </p>
                                 </>
@@ -422,12 +351,7 @@ export function AuthPageView({
                             <div className="text-right">
                               <Link
                                 href="/forgot-password"
-                                className="text-body-sm text-white hover:text-coral transition-colors duration-300 font-medium"
-                                style={{
-                                  fontFamily:
-                                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                  fontWeight: 600,
-                                }}
+                                className="font-urbanist text-body-sm text-white hover:text-coral transition-colors duration-300 font-semibold"
                               >
                                 Forgot password?
                               </Link>
@@ -436,14 +360,7 @@ export function AuthPageView({
 
                           {isRegisterMode && (
                             <div className="pt-2">
-                              <label
-                                className="flex items-start gap-3 text-body-sm text-white cursor-pointer"
-                                style={{
-                                  fontFamily:
-                                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                  fontWeight: 400,
-                                }}
-                              >
+                              <label className="font-urbanist flex items-start gap-3 text-body-sm text-white cursor-pointer">
                                 <input
                                   type="checkbox"
                                   checked={consent}
@@ -477,12 +394,7 @@ export function AuthPageView({
                               fullWidth
                               isLoading={isFormDisabled}
                               disabled={isSubmitDisabled}
-                              style={{
-                                fontFamily:
-                                  "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                fontWeight: 600,
-                              }}
-                              className="bg-gradient-to-r from-coral to-coral/80 text-body text-white font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 btn-target btn-press"
+                              className="font-urbanist bg-gradient-to-r from-coral to-coral/80 text-body text-white font-semibold py-4 px-2 rounded-full hover:from-coral/90 hover:to-coral transition-all duration-300 btn-target btn-press"
                             >
                               {isFormDisabled
                                 ? isRegisterMode
@@ -509,14 +421,7 @@ export function AuthPageView({
                         </form>
 
                         <div className="text-center mt-6 pt-6 border-t border-white/20">
-                          <div
-                            className="text-body-sm sm:text-body text-white"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                              fontWeight: 400,
-                            }}
-                          >
+                          <div className="font-urbanist text-body-sm sm:text-body text-white">
                             {authMode === "register"
                               ? "Already have an account?"
                               : "Don't have an account?"}{" "}
@@ -525,12 +430,7 @@ export function AuthPageView({
                               onClick={() =>
                                 onSetAuthMode(authMode === "register" ? "login" : "register")
                               }
-                              className="text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
-                              style={{
-                                fontFamily:
-                                  "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                                fontWeight: 600,
-                              }}
+                              className="font-urbanist text-white font-semibold hover:text-coral transition-colors duration-300 relative group"
                             >
                               {authMode === "register" ? "Log in" : "Sign up"}
                             </button>

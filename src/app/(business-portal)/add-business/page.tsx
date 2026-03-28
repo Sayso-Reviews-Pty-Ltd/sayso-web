@@ -18,7 +18,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { PageLoader } from "../../components/Loader";
 import { usePreviousPageBreadcrumb } from "../../hooks/usePreviousPageBreadcrumb";
 import { authStyles } from "../../components/Auth/Shared/authStyles";
-import { Urbanist } from "next/font/google";
 import { useAddBusinessFormLogic } from "./hooks/useAddBusinessFormLogic";
 
 // Import extracted components
@@ -30,12 +29,6 @@ import {
   BusinessHoursSection,
   animations,
 } from "./components";
-
-const urbanist = Urbanist({
-  weight: ["400", "600", "700", "800"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export default function AddBusinessPage() {
   const router = useRouter();
@@ -135,10 +128,7 @@ export default function AddBusinessPage() {
                     transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                   >
                     <div className="inline-block relative mb-2">
-                      <h1
-                        className={`${urbanist.className} text-2xl sm:text-3xl font-semibold mb-2 text-center leading-[1.2] tracking-tight text-charcoal`}
-                        style={{ fontFamily: urbanist.style.fontFamily }}
-                      >
+                      <h1 className="font-urbanist text-2xl sm:text-3xl font-semibold mb-2 text-center leading-[1.2] tracking-tight text-charcoal">
                         Create Business Profile
                       </h1>
                     </div>
@@ -221,22 +211,10 @@ export default function AddBusinessPage() {
                           <AlertCircle className="h-4 w-4" />
                         </span>
                         <div>
-                          <p
-                            className="text-sm sm:text-base font-semibold text-charcoal"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
-                          >
+                          <p className="text-sm sm:text-base font-semibold text-charcoal font-urbanist">
                             Business Ownership Notice
                           </p>
-                          <p
-                            className="mt-1 text-sm sm:text-base leading-relaxed text-charcoal/80"
-                            style={{
-                              fontFamily:
-                                "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                            }}
-                          >
+                          <p className="mt-1 text-sm sm:text-base leading-relaxed text-charcoal/80 font-urbanist">
                             {ownershipPricingNotice}
                           </p>
                         </div>
@@ -265,12 +243,7 @@ export default function AddBusinessPage() {
                         }
                         whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                         whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                        style={{
-                          fontFamily:
-                            "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                          fontWeight: 600,
-                        }}
-                        className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-6 rounded-full hover:from-coral/90 hover:to-coral transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+                        className="w-full bg-gradient-to-r from-coral to-coral/80 text-white text-body font-semibold py-4 px-6 rounded-full hover:from-coral/90 hover:to-coral transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg font-urbanist"
                       >
                         <AnimatePresence mode="wait">
                           {isSubmitting ? (

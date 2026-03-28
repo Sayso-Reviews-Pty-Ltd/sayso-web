@@ -10,13 +10,7 @@ import { Loader } from "../../../components/Loader/Loader";
 import BusinessGridSkeleton from "../../../components/Explore/BusinessGridSkeleton";
 import { useOnboarding } from "../../../contexts/OnboardingContext";
 import { ChevronLeft, ChevronRight } from "@/app/lib/icons";
-import { Urbanist } from "next/font/google";
-
-const urbanist = Urbanist({
-  weight: ["400", "600", "700", "800"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { H1, H2, P, Muted } from "@/app/components/ui/typography";
 
 function CategoryDetailContent() {
   const params = useParams();
@@ -39,14 +33,14 @@ function CategoryDetailContent() {
   useEffect(() => {
     // ✅ Load subcategories for this category (global taxonomy)
     if (categoryId && interests.length > 0) {
-      console.log('[CategoryDetail] Loading subcategories for category:', categoryId);
+      console.log("[CategoryDetail] Loading subcategories for category:", categoryId);
       loadSubInterests([categoryId]);
     }
   }, [categoryId, interests.length, loadSubInterests]);
 
   // Find the category
   const category = useMemo(() => {
-    return interests.find(i => i.id === categoryId);
+    return interests.find((i) => i.id === categoryId);
   }, [interests, categoryId]);
 
   // Guard: ensure subInterests is always an array
@@ -63,7 +57,7 @@ function CategoryDetailContent() {
       const subInterestId = String(sub.interest_id ?? "").trim();
       return subInterestId === id;
     });
-    
+
     // Debug logging
     console.log("🔍 [CategoryDetail] Filtering subcategories:", {
       categoryId: id,
@@ -72,7 +66,7 @@ function CategoryDetailContent() {
       filteredLength: filtered.length,
       filteredSample: filtered[0],
     });
-    
+
     return filtered;
   }, [safeSubcategories, categoryId]);
 
@@ -80,9 +74,9 @@ function CategoryDetailContent() {
   const subcategoryNames = useMemo(() => {
     return selectedSubcategories.length > 0
       ? categorySubcategories
-          .filter(sub => selectedSubcategories.includes(sub.id))
-          .map(sub => sub.label)
-      : categorySubcategories.map(sub => sub.label);
+          .filter((sub) => selectedSubcategories.includes(sub.id))
+          .map((sub) => sub.label)
+      : categorySubcategories.map((sub) => sub.label);
   }, [selectedSubcategories, categorySubcategories]);
 
   // Build interest IDs for filtering - EXACT same pattern as home page
@@ -107,12 +101,7 @@ function CategoryDetailContent() {
   // Fetch businesses filtered by this category
   // EXACT same approach as home page: pass interestIds to API, let API handle filtering
   // Also pass subInterestIds for server-side filtering by sub_interest_id
-  const {
-    businesses,
-    loading,
-    error,
-    refetch,
-  } = useBusinesses({
+  const { businesses, loading, error, refetch } = useBusinesses({
     limit: 100,
     sortBy: "created_at",
     sortOrder: "desc",
@@ -125,14 +114,14 @@ function CategoryDetailContent() {
   // Visibility-based refresh - refetch when returning to tab
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && refetch) {
+      if (document.visibilityState === "visible" && refetch) {
         refetch();
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [refetch]);
 
@@ -140,24 +129,22 @@ function CategoryDetailContent() {
   // This handles ID mismatches (UUID vs slug) and provides fallback filtering
   const filteredBusinesses = useMemo(() => {
     const list = Array.isArray(businesses) ? businesses : [];
-    
+
     // If no subcategories selected, return all businesses (already filtered by API by interest_id)
     if (selectedSubcategories.length === 0) {
       return list;
     }
-    
+
     // Defensive filtering: handle both UUID and slug formats
     const set = new Set(selectedSubcategories.map(String));
-    
+
     return list.filter((b) => {
       // Try multiple field names and formats for sub_interest_id
       const businessSubInterestId = String(
-        (b as any).subInterestId ?? 
-        (b as any).sub_interest_id ?? 
-        ""
+        (b as any).subInterestId ?? (b as any).sub_interest_id ?? ""
       ).trim();
-      
-      // STRICT filtering: Only include businesses whose sub_interest_id matches 
+
+      // STRICT filtering: Only include businesses whose sub_interest_id matches
       // one of the selected subcategories. No fallback to show all category businesses.
       // This ensures users see only businesses matching their selected filter types.
       return businessSubInterestId && set.has(businessSubInterestId);
@@ -182,20 +169,33 @@ function CategoryDetailContent() {
       error,
       loading,
     });
-    
+
     // ✅ Critical: Log if businesses table might not have interest_id populated
-    if (activeInterestIds && activeInterestIds.length > 0 && businesses.length === 0 && !loading && !error) {
-      console.warn("⚠️ [CategoryDetail] WARNING: No businesses returned for interest_ids:", activeInterestIds);
+    if (
+      activeInterestIds &&
+      activeInterestIds.length > 0 &&
+      businesses.length === 0 &&
+      !loading &&
+      !error
+    ) {
+      console.warn(
+        "⚠️ [CategoryDetail] WARNING: No businesses returned for interest_ids:",
+        activeInterestIds
+      );
       console.warn("⚠️ This could mean:");
       console.warn("   1. Businesses table doesn't have interest_id =", activeInterestIds[0]);
       console.warn("   2. All businesses with this interest_id have status != 'active'");
       console.warn("   3. RLS policies are blocking the results");
-      console.warn("   → Run this SQL to check: SELECT COUNT(*) FROM businesses WHERE interest_id =", activeInterestIds[0]);
+      console.warn(
+        "   → Run this SQL to check: SELECT COUNT(*) FROM businesses WHERE interest_id =",
+        activeInterestIds[0]
+      );
     }
-    
+
     if (businesses.length > 0) {
-      console.log("📊 [SAMPLE BUSINESSES] First 3 businesses from API:", 
-        businesses.slice(0, 3).map(b => ({
+      console.log(
+        "📊 [SAMPLE BUSINESSES] First 3 businesses from API:",
+        businesses.slice(0, 3).map((b) => ({
           id: b.id,
           name: b.name,
           interestId: b.interestId,
@@ -207,17 +207,18 @@ function CategoryDetailContent() {
         }))
       );
     }
-    
+
     if (categorySubcategories.length > 0) {
-      console.log("📋 [SUBCATEGORIES] Available subcategories:", 
-        categorySubcategories.map(sub => ({
+      console.log(
+        "📋 [SUBCATEGORIES] Available subcategories:",
+        categorySubcategories.map((sub) => ({
           id: sub.id,
           label: sub.label,
           interest_id: sub.interest_id,
         }))
       );
     }
-    
+
     // Critical: Check ID format mismatch
     if (categorySubcategories.length > 0 && businesses.length > 0) {
       const subId = categorySubcategories[0].id;
@@ -231,22 +232,34 @@ function CategoryDetailContent() {
         selectedSubcategories,
       });
     }
-    
+
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  }, [loading, businesses, filteredBusinesses, categoryId, activeInterestIds, activeSubInterestIds, category, safeSubcategories, categorySubcategories, selectedSubcategories, error]);
+  }, [
+    loading,
+    businesses,
+    filteredBusinesses,
+    categoryId,
+    activeInterestIds,
+    activeSubInterestIds,
+    category,
+    safeSubcategories,
+    categorySubcategories,
+    selectedSubcategories,
+    error,
+  ]);
 
   const handleSubcategoryToggle = (subcategoryId: string) => {
     // ✅ User explicitly toggled subcategory filter
-    setSelectedSubcategories(prev => {
+    setSelectedSubcategories((prev) => {
       const newIds = prev.includes(subcategoryId)
-        ? prev.filter(id => id !== subcategoryId)
+        ? prev.filter((id) => id !== subcategoryId)
         : [...prev, subcategoryId];
-      
+
       // Immediately trigger refetch when subcategory changes (same pattern as home page)
       setTimeout(() => {
         refetch();
       }, 0);
-      
+
       return newIds;
     });
   };
@@ -256,13 +269,10 @@ function CategoryDetailContent() {
       <div className="min-h-dvh bg-off-white">
         <main className="">
           <div className="mx-auto w-full max-w-[2000px] px-4 sm:px-6 text-center py-20">
-            <h1 className="text-h2 font-semibold text-charcoal mb-4" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-              Category not found
-            </h1>
+            <H1 className="text-h2 font-semibold text-charcoal mb-4">Category not found</H1>
             <Link
               href="/home"
-              className="text-sage hover:text-sage/80 font-semibold transition-colors flex items-center gap-1.5"
-              style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+              className="font-urbanist text-sage hover:text-sage/80 font-semibold transition-colors flex items-center gap-1.5"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to Home
@@ -286,13 +296,16 @@ function CategoryDetailContent() {
         <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5 pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)] pointer-events-none" />
-        
+
         <div className="relative mx-auto w-full max-w-[2000px] px-2 sm:px-4">
           {/* Breadcrumb */}
           <nav className="pb-1" aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-sm sm:text-base">
               <li>
-                <Link href="/explore" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+                <Link
+                  href="/explore"
+                  className="font-urbanist text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+                >
                   Explore
                 </Link>
               </li>
@@ -300,8 +313,8 @@ function CategoryDetailContent() {
                 <ChevronRight className="w-4 h-4 text-charcoal/60" />
               </li>
               <li>
-                <span className="text-charcoal font-semibold" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                  {category?.name || 'Category'}
+                <span className="font-urbanist text-charcoal font-semibold">
+                  {category?.name || "Category"}
                 </span>
               </li>
             </ol>
@@ -317,26 +330,20 @@ function CategoryDetailContent() {
                 <ChevronLeft className="w-5 h-5 text-white" />
               </Link>
               <div className="text-center">
-                <h1 
-                  className={`${urbanist.className} text-2xl sm:text-3xl md:text-4xl font-bold leading-[1.2] tracking-tight text-charcoal`}
-                  style={{ fontFamily: urbanist.style.fontFamily, fontWeight: 800 }}
+                <H1
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold leading-[1.2] tracking-tight text-charcoal"
+                  style={{ fontWeight: 800 }}
                 >
-                  {category?.name || 'Category'}
-                </h1>
-                {category?.description && (
-                  <p className="text-body-sm text-charcoal/60 mt-2" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                    {category.description}
-                  </p>
-                )}
+                  {category?.name || "Category"}
+                </H1>
+                {category?.description && <Muted className="mt-2">{category.description}</Muted>}
               </div>
             </div>
 
             {/* Subcategory filters */}
             {categorySubcategories.length > 0 && (
               <div className="mt-6">
-                <p className="text-body-sm font-semibold text-charcoal mb-3" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                  Filter by type:
-                </p>
+                <P className="text-body-sm font-semibold text-charcoal mb-3">Filter by type:</P>
                 <div className="flex flex-wrap gap-2">
                   {categorySubcategories.map((sub) => {
                     const isSelected = selectedSubcategories.includes(sub.id);
@@ -349,7 +356,6 @@ function CategoryDetailContent() {
                             ? "bg-coral text-white shadow-lg"
                             : "bg-card-bg/10 text-charcoal/70 hover:bg-card-bg/20 hover:text-sage border border-sage/30"
                         }`}
-                        style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
                       >
                         {sub.label}
                       </button>
@@ -369,16 +375,15 @@ function CategoryDetailContent() {
 
           {!loading && error && (
             <div className="bg-white border border-sage/20 rounded-3xl shadow-sm px-6 py-10 text-center space-y-4">
-              <p className="text-charcoal font-semibold text-h2" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
+              <P className="text-charcoal font-semibold text-h2">
                 We couldn't load businesses right now.
-              </p>
-              <p className="text-body-sm text-charcoal/60 max-w-[70ch]" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
+              </P>
+              <Muted className="max-w-[70ch]" style={{ fontWeight: 500 }}>
                 {error}
-              </p>
+              </Muted>
               <button
                 onClick={refetch}
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
-                style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                className="font-urbanist inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
               >
                 Try again
               </button>
@@ -389,19 +394,20 @@ function CategoryDetailContent() {
             <>
               {filteredBusinesses.length === 0 ? (
                 <div className="bg-white border border-sage/20 rounded-3xl shadow-sm px-6 py-16 text-center space-y-3">
-                  <h2 className="text-h2 font-semibold text-charcoal" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                    {hasSubcategoryFilter ? 'No businesses match your filters' : 'No businesses yet'}
-                  </h2>
-                  <p className="text-body-sm text-charcoal/60 max-w-[70ch] mx-auto" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 500 }}>
-                    {hasSubcategoryFilter 
-                      ? 'Try adjusting your subcategory filters or check back soon as new businesses join this category.'
-                      : 'Check back soon as new businesses join this category.'}
-                  </p>
+                  <H2 className="text-h2 font-semibold text-charcoal">
+                    {hasSubcategoryFilter
+                      ? "No businesses match your filters"
+                      : "No businesses yet"}
+                  </H2>
+                  <Muted className="max-w-[70ch] mx-auto" style={{ fontWeight: 500 }}>
+                    {hasSubcategoryFilter
+                      ? "Try adjusting your subcategory filters or check back soon as new businesses join this category."
+                      : "Check back soon as new businesses join this category."}
+                  </Muted>
                   {hasSubcategoryFilter && (
                     <button
                       onClick={() => setSelectedSubcategories([])}
-                      className="mt-4 inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
-                      style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+                      className="font-urbanist mt-4 inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-card-bg text-white hover:bg-card-bg/90 transition-colors text-body font-semibold"
                     >
                       Clear subcategory filters
                     </button>
@@ -409,8 +415,9 @@ function CategoryDetailContent() {
                 </div>
               ) : (
                 <>
-                  <div className="mb-4 text-body-sm text-charcoal/60" style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}>
-                    {filteredBusinesses.length} {filteredBusinesses.length === 1 ? 'place' : 'places'} found
+                  <div className="font-urbanist mb-4 text-body-sm text-charcoal/60">
+                    {filteredBusinesses.length}{" "}
+                    {filteredBusinesses.length === 1 ? "place" : "places"} found
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3">
                     {filteredBusinesses.map((business) => (
@@ -433,13 +440,14 @@ function CategoryDetailContent() {
 
 export default function CategoryDetailPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-[100dvh] flex items-center justify-center bg-off-white">
-        <Loader size="lg" variant="wavy" color="sage" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-[100dvh] flex items-center justify-center bg-off-white">
+          <Loader size="lg" variant="wavy" color="sage" />
+        </div>
+      }
+    >
       <CategoryDetailContent />
     </Suspense>
   );
 }
-

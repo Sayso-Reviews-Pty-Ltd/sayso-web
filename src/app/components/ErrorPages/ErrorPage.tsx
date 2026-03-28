@@ -30,7 +30,7 @@ interface ErrorPageProps {
 
 /**
  * Unified Error Page Component
- * 
+ *
  * Design Principles:
  * - Premium, minimal, intentional design
  * - Uses core color palette: Sage (#7D9B76), navbar-bg (#722F37), off-white (#E5E0E5)
@@ -66,8 +66,7 @@ export default function ErrorPage({
     },
     "401": {
       title: "Authentication Required",
-      description:
-        "You need to sign in to access this page. Let's get you logged in.",
+      description: "You need to sign in to access this page. Let's get you logged in.",
       defaultPrimaryAction: {
         label: "Sign In",
         href: "/login",
@@ -110,8 +109,7 @@ export default function ErrorPage({
     },
     "503": {
       title: "Service Unavailable",
-      description:
-        "We're temporarily down for maintenance. We'll be back shortly.",
+      description: "We're temporarily down for maintenance. We'll be back shortly.",
       defaultPrimaryAction: {
         label: "Check Status",
         href: "/",
@@ -146,13 +144,7 @@ export default function ErrorPage({
   const finalPrimaryAction = primaryAction || config.defaultPrimaryAction;
 
   return (
-    <div
-      className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist"
-      style={{
-        fontFamily:
-          "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }}
-    >
+    <div className="min-h-dvh bg-off-white relative overflow-hidden font-urbanist">
       {/* Subtle background gradient accent */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-card-bg/5 rounded-full blur-3xl" />

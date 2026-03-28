@@ -8,12 +8,11 @@ interface InterestSelectionProps {
   maxSelections: number;
 }
 
-export default function InterestSelection({ selectedCount, minSelections, maxSelections }: InterestSelectionProps) {
-  const sfPro = {
-    fontFamily: "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-    fontWeight: 600,
-  };
-
+export default function InterestSelection({
+  selectedCount,
+  minSelections,
+  maxSelections,
+}: InterestSelectionProps) {
   return (
     <div className="text-center mb-4 enter-fade" style={{ animationDelay: "0.1s" }}>
       <div
@@ -24,8 +23,7 @@ export default function InterestSelection({ selectedCount, minSelections, maxSel
         }`}
       >
         <span
-          className="text-sm font-semibold text-sage"
-          style={sfPro}
+          className="text-sm font-semibold text-sage font-urbanist"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -35,12 +33,15 @@ export default function InterestSelection({ selectedCount, minSelections, maxSel
           <CheckCircle className="w-4 h-4 text-[hsl(148,20%,38%)]" aria-hidden="true" />
         )}
       </div>
-      <p className="text-sm sm:text-xs text-charcoal/60" style={sfPro} aria-live="polite">
+      <p
+        className="text-sm sm:text-xs text-charcoal/60 font-urbanist font-semibold"
+        aria-live="polite"
+      >
         {selectedCount < minSelections
           ? `Select ${minSelections - selectedCount} or more to continue`
           : selectedCount === maxSelections
-          ? "Perfect! You've selected the maximum"
-          : "Great! You can continue or select more"}
+            ? "Perfect! You've selected the maximum"
+            : "Great! You can continue or select more"}
       </p>
     </div>
   );

@@ -56,12 +56,7 @@ export default function SpecialPersonalizationInsights({
         <div className="w-8 h-8 rounded-full bg-card-bg/10 flex items-center justify-center">
           <Sparkles className="w-4 h-4 text-navbar-bg/90" />
         </div>
-        <h3
-          className="text-base font-semibold text-charcoal"
-          style={{
-            fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-          }}
-        >
+        <h3 className="text-base font-semibold text-charcoal font-urbanist">
           Why You'll Love This
         </h3>
       </div>
@@ -69,14 +64,7 @@ export default function SpecialPersonalizationInsights({
         {insights.map((insight, index) => (
           <div key={index} className="flex items-start gap-2.5">
             <div className={`${insight.color} mt-0.5 flex-shrink-0`}>{insight.icon}</div>
-            <p
-              className="text-sm text-charcoal/80 leading-relaxed"
-              style={{
-                fontFamily: "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              }}
-            >
-              {insight.text}
-            </p>
+            <p className="text-sm text-charcoal/80 leading-relaxed font-urbanist">{insight.text}</p>
           </div>
         ))}
       </div>

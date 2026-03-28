@@ -7,13 +7,26 @@ import { useState, useEffect, useMemo } from "react";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { getChoreoItemMotion } from "../lib/motion/choreography";
 import {
-  Bell, Check, X, MessageSquare, MessageCircle, Star, Heart,
-  TrendingUp, ChevronRight, Award, ThumbsUp, CheckCircle,
-  ImageIcon, Trophy, User,
+  Bell,
+  Check,
+  X,
+  MessageSquare,
+  MessageCircle,
+  Star,
+  Heart,
+  TrendingUp,
+  ChevronRight,
+  Award,
+  ThumbsUp,
+  CheckCircle,
+  ImageIcon,
+  Trophy,
+  User,
 } from "@/app/lib/icons";
 import Footer from "../components/Footer/Footer";
 import { usePredefinedPageTitle } from "../hooks/usePageTitle";
 import { useNotifications } from "../contexts/NotificationsContext";
+import { H1, Muted } from "@/app/components/ui/typography";
 import { useAuth } from "../contexts/AuthContext";
 import { LiveIndicator } from "../components/Realtime/RealtimeIndicators";
 import FilterPillGroup from "../components/Filters/FilterPillGroup";
@@ -21,50 +34,46 @@ import FilterPillGroup from "../components/Filters/FilterPillGroup";
 /* ── Icon + colour per notification type ────────────────────────────────── */
 function getNotificationMeta(type: string) {
   switch (type) {
-    case 'review':
-      return { Icon: MessageSquare, wrapBg: 'bg-coral/10', iconColor: 'text-coral' };
-    case 'highlyRated':
-      return { Icon: Star, wrapBg: 'bg-coral/10', iconColor: 'text-coral' };
-    case 'review_helpful':
-      return { Icon: ThumbsUp, wrapBg: 'bg-coral/10', iconColor: 'text-coral' };
-    case 'user':
-      return { Icon: Heart, wrapBg: 'bg-coral/10', iconColor: 'text-coral' };
-    case 'message':
-    case 'comment_reply':
-      return { Icon: MessageCircle, wrapBg: 'bg-sage/10', iconColor: 'text-sage' };
-    case 'badge_earned':
-    case 'gamification':
-      return { Icon: Award, wrapBg: 'bg-amber-500/10', iconColor: 'text-amber-600' };
-    case 'milestone_achievement':
-      return { Icon: Trophy, wrapBg: 'bg-amber-500/10', iconColor: 'text-amber-600' };
-    case 'business':
-      return { Icon: TrendingUp, wrapBg: 'bg-sage/10', iconColor: 'text-sage' };
-    case 'business_approved':
-    case 'claim_approved':
-    case 'claim_status_changed':
-      return { Icon: CheckCircle, wrapBg: 'bg-sage/10', iconColor: 'text-sage' };
-    case 'photo_approved':
-      return { Icon: ImageIcon, wrapBg: 'bg-sage/10', iconColor: 'text-sage' };
+    case "review":
+      return { Icon: MessageSquare, wrapBg: "bg-coral/10", iconColor: "text-coral" };
+    case "highlyRated":
+      return { Icon: Star, wrapBg: "bg-coral/10", iconColor: "text-coral" };
+    case "review_helpful":
+      return { Icon: ThumbsUp, wrapBg: "bg-coral/10", iconColor: "text-coral" };
+    case "user":
+      return { Icon: Heart, wrapBg: "bg-coral/10", iconColor: "text-coral" };
+    case "message":
+    case "comment_reply":
+      return { Icon: MessageCircle, wrapBg: "bg-sage/10", iconColor: "text-sage" };
+    case "badge_earned":
+    case "gamification":
+      return { Icon: Award, wrapBg: "bg-amber-500/10", iconColor: "text-amber-600" };
+    case "milestone_achievement":
+      return { Icon: Trophy, wrapBg: "bg-amber-500/10", iconColor: "text-amber-600" };
+    case "business":
+      return { Icon: TrendingUp, wrapBg: "bg-sage/10", iconColor: "text-sage" };
+    case "business_approved":
+    case "claim_approved":
+    case "claim_status_changed":
+      return { Icon: CheckCircle, wrapBg: "bg-sage/10", iconColor: "text-sage" };
+    case "photo_approved":
+      return { Icon: ImageIcon, wrapBg: "bg-sage/10", iconColor: "text-sage" };
     default:
-      return { Icon: Bell, wrapBg: 'bg-charcoal/8', iconColor: 'text-charcoal/55' };
+      return { Icon: Bell, wrapBg: "bg-charcoal/8", iconColor: "text-charcoal/55" };
   }
 }
 
 /* ── Time grouping from timeAgo string ───────────────────────────────────── */
 function getTimeGroup(timeAgo: string): string {
   const t = timeAgo.toLowerCase();
-  if (
-    t.includes("just") ||
-    t.includes("second") ||
-    t.includes("minute") ||
-    t.includes("hour")
-  ) return "Today";
+  if (t.includes("just") || t.includes("second") || t.includes("minute") || t.includes("hour"))
+    return "Today";
   if (t === "1 day" || t.startsWith("1 day")) return "Yesterday";
   if (t.includes("day")) return "This Week";
   return "Earlier";
 }
 
-type FilterType = 'All' | 'Unread' | 'Read';
+type FilterType = "All" | "Unread" | "Read";
 
 interface NotificationListProps {
   notifications: any[];
@@ -110,15 +119,15 @@ function NotificationRow({
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.18 }}
       className={`flex items-start gap-3 px-4 py-3.5 group relative transition-colors duration-150 ${
-        isRead ? 'hover:bg-charcoal/[0.025]' : 'bg-coral/[0.03] hover:bg-coral/[0.055]'
-      } ${hasLink ? 'cursor-pointer' : ''}`}
+        isRead ? "hover:bg-charcoal/[0.025]" : "bg-coral/[0.03] hover:bg-coral/[0.055]"
+      } ${hasLink ? "cursor-pointer" : ""}`}
       onClick={hasLink || !isRead ? handleRowClick : undefined}
     >
       {/* Unread dot — far left, vertically centred to first text line */}
       <div className="flex-shrink-0 flex items-start pt-[17px] w-3">
         <span
           className={`block w-2 h-2 rounded-full transition-all duration-200 ${
-            isRead ? 'opacity-0' : 'bg-coral'
+            isRead ? "opacity-0" : "bg-coral"
           }`}
         />
       </div>
@@ -138,7 +147,9 @@ function NotificationRow({
               />
             </div>
             {/* Type badge overlay — bottom-right */}
-            <span className={`absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center ring-[1.5px] ring-card-bg ${wrapBg}`}>
+            <span
+              className={`absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center ring-[1.5px] ring-card-bg ${wrapBg}`}
+            >
               <Icon className={`w-2.5 h-2.5 ${iconColor}`} strokeWidth={2.5} />
             </span>
           </>
@@ -152,28 +163,25 @@ function NotificationRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p
-          className={`text-[13.5px] leading-snug ${
-            isRead ? 'text-charcoal/55 font-normal' : 'text-charcoal font-semibold'
+          className={`font-urbanist text-[13.5px] leading-snug ${
+            isRead ? "text-charcoal/55 font-normal" : "text-charcoal font-semibold"
           }`}
-          style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
         >
           {notification.title}
         </p>
         {notification.message && (
           <p
-            className={`text-[12.5px] leading-snug mt-0.5 ${
-              isRead ? 'text-charcoal/38' : 'text-charcoal/58'
+            className={`font-urbanist text-[12.5px] leading-snug mt-0.5 ${
+              isRead ? "text-charcoal/38" : "text-charcoal/58"
             }`}
-            style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
           >
             {notification.message}
           </p>
         )}
         <p
-          className={`text-[11px] mt-1.5 font-medium tabular-nums ${
-            isRead ? 'text-charcoal/30' : 'text-charcoal/45'
+          className={`font-urbanist text-[11px] mt-1.5 font-medium tabular-nums ${
+            isRead ? "text-charcoal/30" : "text-charcoal/45"
           }`}
-          style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
         >
           {notification.timeAgo} ago
         </p>
@@ -224,17 +232,17 @@ function NotificationList({
   const unreadCount = notifications.filter((n) => !readNotifications.has(n.id)).length;
 
   const filtered = useMemo(() => {
-    if (filterType === 'All') return notifications;
-    if (filterType === 'Unread') return notifications.filter((n) => !readNotifications.has(n.id));
+    if (filterType === "All") return notifications;
+    if (filterType === "Unread") return notifications.filter((n) => !readNotifications.has(n.id));
     return notifications.filter((n) => readNotifications.has(n.id));
   }, [notifications, readNotifications, filterType]);
 
   /* Group by time */
   const grouped = useMemo(() => {
-    const order = ['Today', 'Yesterday', 'This Week', 'Earlier'];
+    const order = ["Today", "Yesterday", "This Week", "Earlier"];
     const map: Record<string, any[]> = {};
     for (const n of filtered) {
-      const g = getTimeGroup(n.timeAgo ?? '');
+      const g = getTimeGroup(n.timeAgo ?? "");
       if (!map[g]) map[g] = [];
       map[g].push(n);
     }
@@ -247,16 +255,10 @@ function NotificationList({
         <div className="w-16 h-16 mb-4 bg-charcoal/8 rounded-full flex items-center justify-center">
           <Bell className="w-8 h-8 text-charcoal/35" strokeWidth={1.5} />
         </div>
-        <p
-          className="text-[15px] font-semibold text-charcoal/50"
-          style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
-        >
+        <p className="font-urbanist text-[15px] font-semibold text-charcoal/50">
           No notifications yet
         </p>
-        <p
-          className="text-[13px] text-charcoal/38 mt-1"
-          style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
-        >
+        <p className="font-urbanist text-[13px] text-charcoal/38 mt-1">
           You'll see updates from your activity here.
         </p>
       </div>
@@ -268,12 +270,9 @@ function NotificationList({
       {/* ── Toolbar: count + live + mark-all ── */}
       <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
         <div className="flex items-center gap-2.5">
-          <p
-            className="text-[13px] text-charcoal/55 font-medium"
-            style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
-          >
-            {filtered.length} {filtered.length === 1 ? 'notification' : 'notifications'}
-            {filterType !== 'All' && (
+          <p className="font-urbanist text-[13px] text-charcoal/55 font-medium">
+            {filtered.length} {filtered.length === 1 ? "notification" : "notifications"}
+            {filterType !== "All" && (
               <span className="text-charcoal/38"> · {filterType.toLowerCase()}</span>
             )}
           </p>
@@ -282,8 +281,7 @@ function NotificationList({
         {isPersonal && unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            className="text-[13px] font-semibold text-sage hover:text-sage/75 transition-colors duration-150 whitespace-nowrap"
-            style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
+            className="font-urbanist text-[13px] font-semibold text-sage hover:text-sage/75 transition-colors duration-150 whitespace-nowrap"
           >
             Mark all as read
           </button>
@@ -308,10 +306,7 @@ function NotificationList({
 
       {/* ── List ── */}
       {filtered.length === 0 ? (
-        <p
-          className="text-center text-[13px] text-charcoal/45 py-12"
-          style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
-        >
+        <p className="font-urbanist text-center text-[13px] text-charcoal/45 py-12">
           No {filterType.toLowerCase()} notifications
         </p>
       ) : (
@@ -321,10 +316,7 @@ function NotificationList({
               <div key={group.label}>
                 {/* Group header */}
                 <div className="px-4 py-2 bg-off-white/55 border-b border-charcoal/[0.06]">
-                  <p
-                    className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-charcoal/38"
-                    style={{ fontFamily: "'Urbanist', system-ui, sans-serif" }}
-                  >
+                  <p className="font-urbanist text-[10.5px] font-bold uppercase tracking-[0.1em] text-charcoal/38">
                     {group.label}
                   </p>
                 </div>
@@ -344,9 +336,7 @@ function NotificationList({
                 </div>
 
                 {/* Divider between groups */}
-                {gi < grouped.length - 1 && (
-                  <div className="h-px bg-charcoal/[0.08]" />
-                )}
+                {gi < grouped.length - 1 && <div className="h-px bg-charcoal/[0.08]" />}
               </div>
             ))}
           </div>
@@ -384,7 +374,10 @@ function NotificationsPageSkeleton() {
               <div className="h-3 w-12 rounded bg-charcoal/10" />
             </div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-3.5 border-b border-charcoal/[0.06] last:border-0">
+              <div
+                key={i}
+                className="flex items-start gap-3 px-4 py-3.5 border-b border-charcoal/[0.06] last:border-0"
+              >
                 <div className="w-3 flex-shrink-0 pt-3">
                   <div className="w-2 h-2 rounded-full bg-charcoal/10" />
                 </div>
@@ -405,7 +398,7 @@ function NotificationsPageSkeleton() {
 
 /* ── Page ─────────────────────────────────────────────────────────────────── */
 export default function NotificationsPage() {
-  usePredefinedPageTitle('notifications');
+  usePredefinedPageTitle("notifications");
   const prefersReducedMotion = useReducedMotion() ?? false;
   const choreoEnabled = !prefersReducedMotion;
   const { user } = useAuth();
@@ -425,27 +418,26 @@ export default function NotificationsPage() {
     deleteNotification,
   } = useNotifications();
 
-  const [personalFilter, setPersonalFilter] = useState<FilterType>('All');
+  const [personalFilter, setPersonalFilter] = useState<FilterType>("All");
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
 
   useEffect(() => {
-    if (!user?.id) { setIsRealtimeConnected(false); return; }
+    if (!user?.id) {
+      setIsRealtimeConnected(false);
+      return;
+    }
     setIsRealtimeConnected(true);
     return () => setIsRealtimeConnected(false);
   }, [user?.id]);
 
   return (
-    <div
-      className="min-h-[100dvh] flex flex-col bg-off-white relative font-urbanist"
-      style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-    >
+    <div className="min-h-[100dvh] flex flex-col bg-off-white relative font-urbanist">
       <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
 
       <main className="min-h-[100dvh] flex-1 flex flex-col relative z-10">
         <div className="flex-1 flex flex-col pb-12 sm:pb-16 md:pb-20">
-
           {/* Breadcrumb */}
           <m.div
             className="mx-auto w-full max-w-[2000px] px-2 relative"
@@ -479,24 +471,15 @@ export default function NotificationsPage() {
               {...getChoreoItemMotion({ order: 1, intent: "section", enabled: choreoEnabled })}
             >
               <div className="mx-auto w-full max-w-[2000px] px-2 flex flex-col flex-1">
-
                 {/* Title */}
                 <m.div
                   className="mb-6 sm:mb-8 px-2"
                   {...getChoreoItemMotion({ order: 2, intent: "heading", enabled: choreoEnabled })}
                 >
-                  <h1
-                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-charcoal"
-                    style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 800 }}
-                  >
+                  <H1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold">
                     {headingTitle}
-                  </h1>
-                  <p
-                    className="text-body-sm text-charcoal/60 mt-2"
-                    style={{ fontFamily: '"Urbanist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
-                  >
-                    {headingSubtitle}
-                  </p>
+                  </H1>
+                  <Muted className="mt-2">{headingSubtitle}</Muted>
                 </m.div>
 
                 {/* List */}
@@ -516,7 +499,6 @@ export default function NotificationsPage() {
                     isRealtimeConnected={isRealtimeConnected}
                   />
                 </m.div>
-
               </div>
             </m.div>
           )}

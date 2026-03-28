@@ -3,6 +3,7 @@
 import React from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { MapPin, X } from "@/app/lib/icons";
+import { H3 } from "@/app/components/ui/typography";
 import { BusinessFormData } from "./types";
 import MapPicker, { MapPickerLocation } from "./MapPicker";
 
@@ -42,38 +43,23 @@ const LocationSection: React.FC<LocationSectionProps> = ({
     formData.businessType === "service-area"
       ? "Service Area (City/Area)"
       : isOnlineOnly
-      ? "Location (Optional)"
-      : "Location (City/Area)";
+        ? "Location (Optional)"
+        : "Location (City/Area)";
 
   return (
     <div className="relative bg-white rounded-[12px] overflow-hidden border border-charcoal/10 shadow-md px-4 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-10 xl:px-16 xl:py-12 animate-fade-in-up animate-delay-200">
-
       <div className="relative z-10">
-        <h3
-          className="font-urbanist text-base font-semibold text-charcoal mb-6 flex items-center gap-3"
-          style={{
-            fontFamily:
-              "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-            fontWeight: 600,
-          }}
-        >
+        <H3 className="text-base mb-6 flex items-center gap-3">
           <span className={ICON_CHIP_CLASS}>
             <MapPin className="w-5 h-5" />
           </span>
           Location Information
-        </h3>
+        </H3>
 
         <div className="space-y-6">
           {/* Location */}
           <div>
-            <label
-              className="block text-sm font-semibold text-charcoal mb-2"
-              style={{
-                fontFamily:
-                  "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                fontWeight: 600,
-              }}
-            >
+            <label className="block text-sm font-semibold text-charcoal mb-2 font-urbanist">
               {locationLabel}
               {!isOnlineOnly && <span className="text-coral">*</span>}
             </label>
@@ -91,12 +77,7 @@ const LocationSection: React.FC<LocationSectionProps> = ({
               aria-invalid={showLocationError ? "true" : "false"}
               aria-describedby={showLocationError ? "location-error" : undefined}
               aria-required={!isOnlineOnly}
-              style={{
-                fontFamily:
-                  "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                fontWeight: 600,
-              }}
-              className={`w-full bg-white/95 backdrop-blur-sm border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full ${
+              className={`w-full bg-white/95 backdrop-blur-sm border pl-4 pr-4 py-3 sm:py-4 md:py-5 text-body font-semibold text-charcoal placeholder-charcoal/50 placeholder:font-normal focus:outline-none focus:ring-2 transition-all duration-300 hover:border-sage/50 input-mobile rounded-full font-urbanist ${
                 errors.location
                   ? "border-navbar-bg focus:border-navbar-bg focus:ring-navbar-bg/20"
                   : "border-charcoal/15 focus:ring-navbar-bg/30 focus:border-navbar-bg"
@@ -111,54 +92,30 @@ const LocationSection: React.FC<LocationSectionProps> = ({
             {showLocationError && (
               <p
                 id="location-error"
-                className="mt-2 text-sm text-navbar-bg font-medium flex items-center gap-1.5"
+                className="mt-2 text-sm text-navbar-bg font-medium flex items-center gap-1.5 font-urbanist"
                 role="alert"
                 aria-live="polite"
-                style={{
-                  fontFamily:
-                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
               >
                 {errors.location}
               </p>
             )}
 
             {!showLocationError && geocodeStatus === "searching" && (
-              <p
-                className="mt-2 text-xs text-charcoal/70 font-medium"
-                style={{
-                  fontFamily:
-                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
+              <p className="mt-2 text-xs text-charcoal/70 font-medium font-urbanist">
                 Finding location...
               </p>
             )}
 
             {!showLocationError && geocodeStatus === "found" && hasCoordinates && (
-              <p
-                className="mt-2 text-xs text-sage font-medium"
-                style={{
-                  fontFamily:
-                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                Location found ✓
-              </p>
+              <p className="mt-2 text-xs text-sage font-medium font-urbanist">Location found ✓</p>
             )}
 
-            {!showLocationError &&
-              (geocodeStatus === "not_found" || geocodeStatus === "error") && (
-                <p
-                  className="mt-2 text-xs text-charcoal/70 font-medium"
-                  style={{
-                    fontFamily:
-                      "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  }}
-                >
-                  We couldn&apos;t pinpoint this address yet. You can still continue without coordinates.
-                </p>
-              )}
+            {!showLocationError && (geocodeStatus === "not_found" || geocodeStatus === "error") && (
+              <p className="mt-2 text-xs text-charcoal/70 font-medium font-urbanist">
+                We couldn&apos;t pinpoint this address yet. You can still continue without
+                coordinates.
+              </p>
+            )}
 
             {isOnlineOnly &&
               !showLocationError &&
@@ -166,29 +123,16 @@ const LocationSection: React.FC<LocationSectionProps> = ({
               geocodeStatus !== "found" &&
               geocodeStatus !== "not_found" &&
               geocodeStatus !== "error" && (
-              <p
-                className="mt-2 text-xs text-charcoal/70 font-medium"
-                style={{
-                  fontFamily:
-                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                }}
-              >
-                This business operates online only. Location is optional.
-              </p>
+                <p className="mt-2 text-xs text-charcoal/70 font-medium font-urbanist">
+                  This business operates online only. Location is optional.
+                </p>
               )}
           </div>
 
           {/* Map Picker (physical & service-area only) */}
           {!isOnlineOnly && onLocationSelect && (
             <div>
-              <label
-                className="block text-sm font-semibold text-charcoal mb-2"
-                style={{
-                  fontFamily:
-                    "Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  fontWeight: 600,
-                }}
-              >
+              <label className="block text-sm font-semibold text-charcoal mb-2 font-urbanist">
                 Set location on map
               </label>
               <MapPicker
@@ -214,24 +158,18 @@ const LocationSection: React.FC<LocationSectionProps> = ({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p
-                      className="text-xs text-charcoal/70 mb-1"
-                      style={{ fontFamily: "Urbanist, sans-serif" }}
-                    >
+                    <p className="text-xs text-charcoal/70 mb-1 font-urbanist">
                       Selected Coordinates:
                     </p>
 
-                    <p
-                      className="text-sm font-semibold text-charcoal break-words"
-                      style={{ fontFamily: "Urbanist, sans-serif" }}
-                    >
+                    <p className="text-sm font-semibold text-charcoal break-words font-urbanist">
                       {formData.lat && formData.lng
                         ? `${parseFloat(formData.lat).toFixed(6)}, ${parseFloat(
                             formData.lng
                           ).toFixed(6)}`
                         : formData.lat
-                        ? `Lat: ${formData.lat}`
-                        : `Lng: ${formData.lng}`}
+                          ? `Lat: ${formData.lat}`
+                          : `Lng: ${formData.lng}`}
                     </p>
                   </div>
 

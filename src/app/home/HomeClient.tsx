@@ -33,14 +33,16 @@ import { useHomeSearchState } from "./hooks/useHomeSearchState";
 import { useHomeRealtimeFeedSync } from "./hooks/useHomeRealtimeFeedSync";
 import { roundRobinForYouBusinesses } from "./utils/forYouRoundRobin";
 
-
 // Note: dynamic and revalidate cannot be exported from client components
 // Client components are automatically dynamic
 
 // Removed any animation / scroll-reveal classes and imports.
 
-
-export default function HomeClient({ initialTrending }: { initialTrending?: import('../components/BusinessCard/BusinessCard').Business[] }) {
+export default function HomeClient({
+  initialTrending,
+}: {
+  initialTrending?: import("../components/BusinessCard/BusinessCard").Business[];
+}) {
   const isDesktop = useIsDesktop();
   const isDev = process.env.NODE_ENV === "development";
   const prefersReducedMotion = useReducedMotion() ?? false;
@@ -48,7 +50,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   const { user } = useAuth();
   const { eventsAndSpecials, eventsAndSpecialsLoading } = useHomeEventsSpecials();
 
-  usePredefinedPageTitle('home');
+  usePredefinedPageTitle("home");
   const { heroReady } = useHomeHeroReadiness();
   const {
     liveLoading,
@@ -95,7 +97,12 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   useHomePreferencesDebug({ interests, subcategories, dealbreakers, isDev });
 
   // Fetch featured businesses from API
-  const { featuredBusinesses, loading: featuredLoading, error: featuredError, refetch: refetchFeatured } = useFeaturedBusinesses({
+  const {
+    featuredBusinesses,
+    loading: featuredLoading,
+    error: featuredError,
+    refetch: refetchFeatured,
+  } = useFeaturedBusinesses({
     limit: 12,
     region: null,
     skip: false,
@@ -105,8 +112,8 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
 
   // Smooth scroll to top when entering search mode
   useEffect(() => {
-    if (isSearchActive && typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isSearchActive && typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [isSearchActive]);
 
@@ -131,14 +138,7 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
   });
 
   useRoutePrefetch(
-    [
-      "/for-you",
-      "/trending",
-      "/discover/reviews",
-      "/events-specials",
-      "/write-review",
-      "/saved",
-    ],
+    ["/for-you", "/trending", "/discover/reviews", "/events-specials", "/write-review", "/saved"],
     { delay: 1500 }
   );
   const hasTrendingBusinesses = trendingBusinesses.length > 0;
@@ -149,27 +149,23 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
         {/* Hero Carousel - Hidden when search is active */}
         {!isSearchActive && (
           <div className="overflow-hidden">
-            {heroReady ? (
-              <HeroCarousel />
-            ) : isDesktop ? (
-              <HeroSkeleton />
-            ) : (
-              <MobileHeroSkeleton />
-            )}
+            {heroReady ? <HeroCarousel /> : isDesktop ? <HeroSkeleton /> : <MobileHeroSkeleton />}
           </div>
         )}
 
-
         <main
           suppressHydrationWarning
-          className={`relative min-h-dvh ${isSearchActive ? 'pt-2' : 'pt-8 sm:pt-10 md:pt-12'}`} 
-          style={{ fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
+          className={`relative min-h-dvh font-urbanist ${isSearchActive ? "pt-2" : "pt-8 sm:pt-10 md:pt-12"}`}
         >
           {/* Background Gradient Overlays */}
           <div className="absolute inset-0 bg-gradient-to-br from-sage/10 via-off-white to-coral/5" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(157,171,155,0.15)_0%,_transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(114,47,55,0.08)_0%,_transparent_50%)]" />
-          <div suppressHydrationWarning ref={contentRef} className="relative mx-auto w-full max-w-[2000px]">
+          <div
+            suppressHydrationWarning
+            ref={contentRef}
+            className="relative mx-auto w-full max-w-[2000px]"
+          >
             {isSearchActive ? (
               /* Search Results Mode */
               <m.div
@@ -230,7 +226,6 @@ export default function HomeClient({ initialTrending }: { initialTrending?: impo
         </main>
         <Footer />
       </div>
-
     </>
   );
 }
