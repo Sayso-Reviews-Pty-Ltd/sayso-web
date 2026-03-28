@@ -2,6 +2,7 @@
 
 import { Clock, DollarSign, Smile, Shield, CheckCircle } from "@/app/lib/icons";
 import { memo } from "react";
+import { Badge } from "@/app/components/ui/badge";
 
 interface PercentileChipProps {
   label: string;
@@ -61,7 +62,9 @@ function PercentileChip({ label, value }: PercentileChipProps) {
   const percentageText = isPlaceholder ? "—" : `${value}%`;
 
   return (
-    <div
+    <Badge
+      variant="neutral"
+      size="sm"
       role="button"
       tabIndex={0}
       title={tooltipText}
@@ -71,19 +74,17 @@ function PercentileChip({ label, value }: PercentileChipProps) {
           event.preventDefault();
         }
       }}
-      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full cursor-help group relative flex-shrink-0 transition-colors duration-200 font-urbanist ${
-        isPlaceholder ? "bg-charcoal/[0.03]" : "bg-charcoal/[0.04] hover:bg-charcoal/[0.08]"
+      className={`cursor-help flex-shrink-0 transition-colors duration-200 font-urbanist gap-0.5 border-transparent ${
+        isPlaceholder
+          ? "bg-charcoal/[0.03] text-charcoal/40"
+          : "bg-charcoal/[0.04] hover:bg-charcoal/[0.08] text-charcoal/80"
       }`}
     >
       {icon}
-      <span
-        className={`text-[10px] sm:text-[9px] font-semibold whitespace-nowrap leading-none ${
-          isPlaceholder ? "text-charcoal/40" : "text-charcoal/80"
-        }`}
-      >
+      <span className="text-[10px] sm:text-[9px] font-semibold whitespace-nowrap leading-none">
         {percentageText}
       </span>
-    </div>
+    </Badge>
   );
 }
 

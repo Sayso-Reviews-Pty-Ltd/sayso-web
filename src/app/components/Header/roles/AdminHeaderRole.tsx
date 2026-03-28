@@ -4,6 +4,7 @@ import { type ComponentType, type CSSProperties } from "react";
 import { Database, FileCheck, LogOut, Shield } from "@/app/lib/icons";
 import Logo from "../../Logo/Logo";
 import OptimizedLink from "../../Navigation/OptimizedLink";
+import { Button } from "@/app/components/ui/button";
 
 type AdminNavItem = {
   href: string;
@@ -74,15 +75,16 @@ export function AdminHeaderRole({
           })}
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="bare"
+          size="sm"
           onClick={onSignOut}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white/60 hover:text-coral transition-[color,transform] duration-200 ease-in-out sm:hover:scale-105 sm:focus-visible:scale-105"
+          className="gap-1.5 px-3 py-1.5 min-h-0 rounded-lg font-medium text-white/60 hover:text-coral transition-[color,transform] duration-200 ease-in-out sm:hover:scale-105 sm:focus-visible:scale-105"
           style={sf}
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut />
           Sign out
-        </button>
+        </Button>
       </div>
 
       <div className="flex sm:hidden flex-col w-full gap-1">
@@ -102,14 +104,15 @@ export function AdminHeaderRole({
               admin
             </span>
           </OptimizedLink>
-          <button
-            type="button"
+          <Button
+            variant="bare"
+            size="sm"
             onClick={onSignOut}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white/60 hover:text-coral transition-colors"
+            className="px-3 py-1.5 min-h-0 rounded-lg font-medium text-white/60 hover:text-coral transition-colors"
             style={sf}
           >
-            <LogOut className="w-4 h-4" />
-          </button>
+            <LogOut />
+          </Button>
         </div>
         <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar -mb-2">
           {ADMIN_NAV.map((item) => {

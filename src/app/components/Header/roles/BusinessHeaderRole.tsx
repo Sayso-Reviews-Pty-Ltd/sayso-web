@@ -6,6 +6,7 @@ import Logo from "../../Logo/Logo";
 import OptimizedLink from "../../Navigation/OptimizedLink";
 import DesktopNav from "../DesktopNav";
 import MobileMenuToggleIcon from "../MobileMenuToggleIcon";
+import { Button } from "@/app/components/ui/button";
 
 interface BusinessHeaderRoleProps {
   logoHref: string;
@@ -106,17 +107,18 @@ export function BusinessHeaderRole({
           </OptimizedLink>
         )}
 
-        <button
-          type="button"
+        <Button
+          variant="bare"
+          size="icon"
           onClick={() => setIsMobileMenuOpen(true)}
-          className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ${
+          className={`rounded-lg transition-all duration-200 ${
             whiteText ? "text-white hover:text-white/80" : "text-charcoal/80 hover:text-sage"
           }`}
           aria-label="Open menu"
           aria-expanded={isMobileMenuOpen}
         >
           <MobileMenuToggleIcon isOpen={isMobileMenuOpen} />
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import Logo from "../../Logo/Logo";
 import OptimizedLink from "../../Navigation/OptimizedLink";
 import DesktopNav from "../DesktopNav";
 import MobileMenuToggleIcon from "../MobileMenuToggleIcon";
+import { Button } from "@/app/components/ui/button";
 
 interface PersonalHeaderRoleProps {
   isHomePage: boolean;
@@ -124,16 +125,17 @@ export function PersonalHeaderRole({
 
         <div className="relative z-[2] flex items-center gap-3 ml-auto">
           {showSearch && isHomePage && !isMobileSearchOpen && (
-            <button
-              type="button"
+            <Button
+              variant="bare"
+              size="icon"
               onClick={handleMobileSearchToggle}
-              className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+              className={`transition-all duration-200 [&_svg]:size-5 ${
                 whiteText ? "text-white hover:text-white/80" : "text-charcoal/80 hover:text-sage"
               }`}
               aria-label="Open search"
             >
-              <SearchOutline className="w-5 h-5" />
-            </button>
+              <SearchOutline />
+            </Button>
           )}
 
           {!isMobileSearchOpen && (
@@ -187,17 +189,18 @@ export function PersonalHeaderRole({
           )}
 
           {!isMobileSearchOpen && (
-            <button
-              type="button"
+            <Button
+              variant="bare"
+              size="icon"
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 ${
+              className={`transition-all duration-200 ${
                 whiteText ? "text-white hover:text-white/80" : "text-charcoal/80 hover:text-sage"
               }`}
               aria-label="Open menu"
               aria-expanded={isMobileMenuOpen}
             >
               <MobileMenuToggleIcon isOpen={isMobileMenuOpen} />
-            </button>
+            </Button>
           )}
         </div>
       </div>

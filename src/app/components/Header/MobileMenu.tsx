@@ -7,6 +7,7 @@ import MobileMenuToggleIcon from "./MobileMenuToggleIcon";
 import { getMobileMenuActions, shouldShowLockIndicator } from "./headerActionsConfig";
 import Wordmark from "../Logo/Wordmark";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/app/components/ui/sheet";
+import { Button } from "@/app/components/ui/button";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -115,16 +116,17 @@ export default function MobileMenu({
           className={`rounded-[12px] border border-white/10 bg-white/[0.04] transition-all duration-300 ${mobileRevealClass}`}
           style={{ ...sf, transitionDelay: `${businessTopLinks.length * 60}ms` }}
         >
-          <button
-            type="button"
+          <Button
+            variant="bare"
+            size="md"
             onClick={() => setIsAddSectionOpen((prev) => !prev)}
-            className={`relative w-full px-3 py-2 min-h-[44px] rounded-[12px] text-base font-normal flex items-center justify-center ${mobileTapFeedbackClass} ${isAddRouteActive ? "text-sage" : "text-white hover:text-white"}`}
+            className={`relative w-full px-3 py-2 min-h-[44px] rounded-[12px] font-normal justify-center ${mobileTapFeedbackClass} ${isAddRouteActive ? "text-sage" : "text-white hover:text-white"}`}
             aria-expanded={isAddSectionOpen}
             aria-controls="mobile-add-nav"
           >
             <span className="text-center uppercase tracking-wide">Add</span>
             <ChevronDown className={`absolute right-3 w-4 h-4 transition-transform duration-300 ${isAddSectionOpen ? "rotate-180" : ""}`} />
-          </button>
+          </Button>
 
           <div
             id="mobile-add-nav"
@@ -279,13 +281,15 @@ export default function MobileMenu({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-charcoal/10 flex-shrink-0">
             <Wordmark />
-            <button
+            <Button
+              variant="bare"
+              size="icon"
               onClick={onClose}
-              className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-off-white hover:text-off-white/80 transition-colors focus:outline-none focus:ring-0"
+              className="w-12 h-12 sm:w-16 sm:h-16 text-off-white hover:text-off-white/80 transition-colors focus:ring-0 focus:ring-offset-0"
               aria-label="Close menu"
             >
               <MobileMenuToggleIcon isOpen={isOpen} />
-            </button>
+            </Button>
           </div>
 
           {/* Nav */}
