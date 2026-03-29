@@ -71,10 +71,8 @@ export default function MessagingWorkspace({
 
   return (
     <>
-      <div className={`bg-off-white ${topPaddingClassName}`}>
-        <div
-          className={`mx-auto flex w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm ${viewportClassName}`}
-        >
+      <div className={`bg-off-white flex flex-col ${viewportClassName} ${topPaddingClassName}`}>
+        <div className="mx-auto flex h-full w-full max-w-7xl overflow-hidden sm:rounded-xl sm:border sm:border-charcoal/8 sm:shadow-sm">
           {/* ── Sidebar ──────────────────────────────────────────── */}
           <ConversationListPane
             title={title}
