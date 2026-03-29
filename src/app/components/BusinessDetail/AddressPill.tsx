@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Check, Copy } from "@/app/lib/icons";
 import { useReverseGeocode } from "../../hooks/useReverseGeocode";
+import { Button } from "@/app/components/atoms/Button";
+import { cn } from "@/app/lib/utils";
 
 interface AddressPillProps {
   address?: string | null;
@@ -59,19 +61,20 @@ export default function AddressPill({
   }
 
   return (
-    <button
+    <Button
+      variant="bare"
       onClick={handleCopy}
       disabled={isLoading}
-      className={`
-        group inline-flex items-center gap-2 px-4 py-2
-        bg-off-white border border-charcoal/10 rounded-full
-        text-charcoal/80 hover:text-charcoal text-sm
-        font-normal transition-all duration-200
-        hover:border-charcoal/20 hover:bg-off-white/80
-        disabled:opacity-60 disabled:cursor-not-allowed
-        select-text cursor-pointer
-        ${className}
-      `}
+      className={cn(
+        "group inline-flex items-center gap-2 px-4 py-2",
+        "bg-off-white border border-charcoal/10 rounded-full",
+        "text-charcoal/80 hover:text-charcoal text-sm",
+        "font-normal transition-all duration-200",
+        "hover:border-charcoal/20 hover:bg-off-white/80",
+        "disabled:opacity-60 disabled:cursor-not-allowed",
+        "select-text cursor-pointer min-h-0",
+        className
+      )}
       title={displayAddress || "Copy address"}
       aria-label="Copy address"
     >
@@ -91,6 +94,6 @@ export default function AddressPill({
           )}
         </span>
       )}
-    </button>
+    </Button>
   );
 }

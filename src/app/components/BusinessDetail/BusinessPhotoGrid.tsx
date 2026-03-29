@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, m } from "framer-motion";
+import { m } from "framer-motion";
 import Image from "next/image";
 import { ArrowDown, ChevronLeft, ChevronRight, X } from "@/app/lib/icons";
 import { Card } from "@/app/components/ui/card";
+import { Dialog, DialogPortal, DialogOverlay } from "@/app/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Button } from "@/app/components/atoms/Button";
+import { cn } from "@/app/lib/utils";
 
 interface BusinessPhotoGridProps {
   businessName: string;
@@ -55,20 +59,15 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
     });
   };
 
+  // Arrow key navigation only — ESC and scroll lock are handled by Radix Dialog
   useEffect(() => {
     if (!isModalOpen) return;
     const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeModal();
       if (event.key === "ArrowLeft") goPrev();
       if (event.key === "ArrowRight") goNext();
     };
     window.addEventListener("keydown", handleKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => window.removeEventListener("keydown", handleKey);
   }, [isModalOpen, normalizedPhotos.length]);
 
   return (
@@ -84,11 +83,12 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
           <>
             <div className="grid grid-cols-3 gap-2 sm:gap-3 rounded-[12px]">
               {gridPhotos.map((photo, index) => (
-                <button
+                <Button
                   key={`${photo}-${index}`}
+                  variant="bare"
                   type="button"
                   onClick={() => openModalAt(index)}
-                  className="relative aspect-square overflow-hidden rounded-[10px] bg-off-white/60 focus:outline-none focus:ring-2 focus:ring-navbar-bg/40"
+                  className="relative aspect-square overflow-hidden rounded-[10px] bg-off-white/60 focus:outline-none focus:ring-2 focus:ring-navbar-bg/40 min-h-0 p-0 w-full"
                   aria-label={`Open photo ${index + 1}`}
                 >
                   <Image
@@ -99,17 +99,18 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
                     loading="lazy"
                     sizes="(max-width: 640px) 33vw, 220px"
                   />
-                </button>
+                </Button>
               ))}
             </div>
 
-            <button
+            <Button
+              variant="bare"
               type="button"
               onClick={() => openModalAt(0)}
-              className="mt-4 w-full rounded-full bg-navbar-bg px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-navbar-bg/90"
+              className="mt-4 w-full rounded-full bg-navbar-bg px-5 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-navbar-bg/90 min-h-0"
             >
               View More
-            </button>
+            </Button>
           </>
         ) : (
           <div className="space-y-4">
@@ -130,56 +131,68 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
               </span>
             </div>
 
-            <button
+            <Button
+              variant="bare"
               type="button"
               disabled
-              className="w-full rounded-full bg-navbar-bg/60 px-5 py-3 text-body-sm font-semibold text-white/80 cursor-not-allowed"
+              className="w-full rounded-full bg-navbar-bg/60 px-5 py-3 text-body-sm font-semibold text-white/80 cursor-not-allowed min-h-0"
             >
               View More
-            </button>
+            </Button>
           </div>
         )}
 
-        <AnimatePresence>
-          {isModalOpen && normalizedPhotos.length > 0 && (
-            <m.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] bg-charcoal/95 backdrop-blur-sm"
-              onClick={closeModal}
-              role="dialog"
-              aria-modal="true"
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogPortal>
+            <DialogOverlay className="bg-charcoal/95 backdrop-blur-sm" />
+            <DialogPrimitive.Content
               aria-label="Business photo gallery"
+              className="fixed inset-0 z-[99999] bg-transparent outline-none"
+              onEscapeKeyDown={closeModal}
             >
-              <div className="relative h-full w-full" onClick={(event) => event.stopPropagation()}>
-                <button
+              <div className="relative h-full w-full">
+                <Button
+                  variant="bare"
                   type="button"
                   onClick={closeModal}
-                  className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
+                  className={cn(
+                    "absolute right-4 top-4 z-20 h-10 w-10 rounded-full",
+                    "bg-white/15 text-white hover:bg-white/25 transition-colors",
+                    "min-h-0 p-0 [&_svg]:size-5"
+                  )}
                   aria-label="Close gallery"
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <X />
+                </Button>
 
                 {normalizedPhotos.length > 1 && (
                   <>
-                    <button
+                    <Button
+                      variant="bare"
                       type="button"
                       onClick={goPrev}
-                      className="absolute left-4 top-1/2 z-20 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
+                      className={cn(
+                        "absolute left-4 top-1/2 z-20 -translate-y-1/2",
+                        "h-11 w-11 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors",
+                        "min-h-0 p-0 [&_svg]:size-6"
+                      )}
                       aria-label="Previous photo"
                     >
-                      <ChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button
+                      <ChevronLeft />
+                    </Button>
+                    <Button
+                      variant="bare"
                       type="button"
                       onClick={goNext}
-                      className="absolute right-4 top-1/2 z-20 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
+                      className={cn(
+                        "absolute right-4 top-1/2 z-20 -translate-y-1/2",
+                        "h-11 w-11 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors",
+                        "min-h-0 p-0 [&_svg]:size-6"
+                      )}
                       aria-label="Next photo"
                     >
-                      <ChevronRight className="w-6 h-6" />
-                    </button>
+                      <ChevronRight />
+                    </Button>
                   </>
                 )}
 
@@ -202,9 +215,9 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
                   </span>
                 </div>
               </div>
-            </m.div>
-          )}
-        </AnimatePresence>
+            </DialogPrimitive.Content>
+          </DialogPortal>
+        </Dialog>
       </m.div>
     </Card>
   );

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
 import { ArrowLeft, Info } from "@/app/lib/icons";
 import BusinessInfoModal, { BusinessInfo } from "../BusinessInfo/BusinessInfoModal";
+import { Button } from "@/app/components/atoms/Button";
 
 interface ReviewHeaderProps {
   businessInfo?: BusinessInfo;
@@ -42,21 +43,16 @@ export default function ReviewHeader({ businessInfo }: ReviewHeaderProps) {
             </button>
 
             {businessInfo && (
-              <button
+              <Button
+                variant="bare"
                 ref={infoButtonRef}
-                onClick={() => {
-                  if (isInfoModalOpen) {
-                    setIsInfoModalOpen(false);
-                  } else {
-                    setIsInfoModalOpen(true);
-                  }
-                }}
-                className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 min-h-[44px] min-w-[44px]"
+                onClick={() => setIsInfoModalOpen((prev) => !prev)}
+                className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 min-h-0 p-0"
                 style={{ animation: "gentlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
                 aria-label="View business information"
               >
                 <Info className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.5} />
-              </button>
+              </Button>
             )}
           </nav>
         </div>

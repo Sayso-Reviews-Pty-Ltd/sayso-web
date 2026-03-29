@@ -10,6 +10,7 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/app/components/ui/collapsible";
+import { Button } from "@/app/components/atoms/Button";
 
 interface EventDescriptionProps {
   event: Event;
@@ -74,13 +75,14 @@ export default function EventDescription({ event }: EventDescriptionProps) {
 
           {isCollapsible && (
             <CollapsibleTrigger asChild>
-              <button
+              <Button
+                variant="bare"
                 type="button"
                 onClick={() => setIsExpanded((prev) => !prev)}
-                className="mt-3 text-sm font-semibold text-coral hover:text-coral/80 transition-colors duration-200 font-urbanist"
+                className="mt-3 text-sm font-semibold text-coral hover:text-coral/80 transition-colors duration-200 font-urbanist min-h-0 p-0 h-auto"
               >
                 {isExpanded ? "Read less" : "Read more"}
-              </button>
+              </Button>
             </CollapsibleTrigger>
           )}
         </Collapsible>

@@ -1,19 +1,17 @@
 // src/components/SearchInput/SearchInput.tsx
 "use client";
 
-import { useState, useEffect, forwardRef, useRef, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, forwardRef, useRef } from "react";
 import { Search, Sliders, Map } from "@/app/lib/icons";
-import MobileMenuToggleIcon from "../Header/MobileMenuToggleIcon";
-import { AnimatePresence, m, useReducedMotion } from "framer-motion";
-import { useLiveSearch, type LiveSearchResult } from "../../hooks/useLiveSearch";
-import { useSearchSuggestions } from "../../hooks/useSearchSuggestions";
+import { Button } from "@/app/components/atoms/Button";
+import { useSearchSuggestionState } from "./hooks/useSearchSuggestionState";
+import SearchInputSuggestions from "./parts/SearchInputSuggestions";
 
 interface SearchInputProps {
   placeholder?: string;
   mobilePlaceholder?: string;
-  onSearch?: (query: string) => void; // fires on change
-  onSubmitQuery?: (query: string) => void; // fires on Enter / submit
+  onSearch?: (query: string) => void;
+  onSubmitQuery?: (query: string) => void;
   onFilterClick?: () => void;
   onMapClick?: () => void;
   showMap?: boolean;
@@ -23,7 +21,7 @@ interface SearchInputProps {
   showSearchIcon?: boolean;
   className?: string;
   variant?: "header" | "page";
-  activeFilterCount?: number; // Number of active filters (for badge)
+  activeFilterCount?: number;
 
   /** Suggestions dropdown */
   enableSuggestions?: boolean;
@@ -62,28 +60,36 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
     },
     ref
   ) => {
-    const router = useRouter();
-    const prefersReducedMotion = useReducedMotion();
     const [searchQuery, setSearchQuery] = useState("");
     const [ph, setPh] = useState(placeholder);
-    const [isFocused, setIsFocused] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(-1);
     const rootRef = useRef<HTMLFormElement | null>(null);
-    const blurTimeoutRef = useRef<number | null>(null);
-    const dismissedQueryRef = useRef<string | null>(null);
 
     const {
-      setQuery: setLiveQuery,
-      loading: liveLoading,
-      results: liveResults,
-    } = useLiveSearch({ initialQuery: "", debounceMs: 120 });
-
-    const { suggestions: querySuggestions } = useSearchSuggestions({
-      query: enableSuggestions && suggestionsMode === "business" ? searchQuery : "",
-      debounceMs: 200,
+      activeIndex,
+      setActiveIndex,
+      isFocused,
+      setIsFocused,
+      blurTimeoutRef,
+      liveLoading,
+      businessSuggestions,
+      normalizedCustomSuggestions,
+      querySuggestions,
+      isOpen,
+      onSelectQuerySuggestion,
+      onSelectBusiness,
+      onSelectCustom,
+      dismissSuggestions,
+      handleKeyDown,
+    } = useSearchSuggestionState({
+      enableSuggestions,
+      suggestionsMode,
+      maxSuggestions,
+      customSuggestions,
+      searchQuery,
+      setSearchQuery,
+      onSearch,
+      onSubmitQuery,
     });
-
-    // ref is now the form ref
 
     useEffect(() => {
       const setByViewport = () => {
@@ -93,12 +99,6 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
       window.addEventListener("resize", setByViewport);
       return () => window.removeEventListener("resize", setByViewport);
     }, [placeholder, mobilePlaceholder]);
-
-    useEffect(() => {
-      if (!enableSuggestions) return;
-      if (suggestionsMode !== "business") return;
-      setLiveQuery(searchQuery);
-    }, [enableSuggestions, suggestionsMode, searchQuery, setLiveQuery]);
 
     // Close suggestions on outside click
     useEffect(() => {
@@ -112,26 +112,13 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
       };
       document.addEventListener("mousedown", onDown);
       return () => document.removeEventListener("mousedown", onDown);
-    }, [enableSuggestions]);
-
-    useEffect(() => {
-      return () => {
-        if (blurTimeoutRef.current != null) {
-          window.clearTimeout(blurTimeoutRef.current);
-          blurTimeoutRef.current = null;
-        }
-      };
-    }, []);
+    }, [enableSuggestions, setIsFocused, setActiveIndex]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchQuery(value);
       onSearch?.(value);
       setActiveIndex(-1);
-      // Clear dismiss when the query changes so suggestions reappear
-      if (dismissedQueryRef.current !== null && value !== dismissedQueryRef.current) {
-        dismissedQueryRef.current = null;
-      }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -141,118 +128,17 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
       setActiveIndex(-1);
     };
 
-    const businessSuggestions = useMemo(() => {
-      if (!enableSuggestions || suggestionsMode !== "business") return [];
-      const list = Array.isArray(liveResults) ? liveResults : [];
-      return list.slice(0, Math.max(1, maxSuggestions));
-    }, [enableSuggestions, suggestionsMode, liveResults, maxSuggestions]);
-
-    const normalizedCustomSuggestions = useMemo(() => {
-      if (!enableSuggestions || suggestionsMode !== "custom") return [];
-      return (Array.isArray(customSuggestions) ? customSuggestions : []).slice(
-        0,
-        Math.max(1, maxSuggestions)
-      );
-    }, [enableSuggestions, suggestionsMode, customSuggestions, maxSuggestions]);
-
-    const isOpen =
-      enableSuggestions &&
-      isFocused &&
-      searchQuery.trim().length > 0 &&
-      dismissedQueryRef.current !== searchQuery &&
-      (suggestionsMode === "business"
-        ? liveLoading || businessSuggestions.length > 0 || querySuggestions.length > 0
-        : normalizedCustomSuggestions.length > 0);
-
-    const onSelectQuerySuggestion = useCallback(
-      (q: string) => {
-        setSearchQuery(q);
-        onSearch?.(q);
-        onSubmitQuery?.(q);
-        setIsFocused(false);
-        setActiveIndex(-1);
-      },
-      [onSearch, onSubmitQuery]
-    );
-
-    const onSelectBusiness = useCallback(
-      (item: LiveSearchResult) => {
-        if (!item?.id) return;
-        setIsFocused(false);
-        setActiveIndex(-1);
-        router.push(`/business/${item.id}`);
-      },
-      [router]
-    );
-
-    const onSelectCustom = useCallback(
-      (item: { href?: string; title: string }) => {
-        setIsFocused(false);
-        setActiveIndex(-1);
-        if (item.href) {
-          router.push(item.href);
-          return;
-        }
-        setSearchQuery(item.title);
-        onSearch?.(item.title);
-        onSubmitQuery?.(item.title);
-      },
-      [router, onSearch, onSubmitQuery]
-    );
-
-    const dismissSuggestions = useCallback(() => {
-      dismissedQueryRef.current = searchQuery;
-      setIsFocused(false);
-      setActiveIndex(-1);
-      if (blurTimeoutRef.current != null) {
-        window.clearTimeout(blurTimeoutRef.current);
-        blurTimeoutRef.current = null;
-      }
-    }, [searchQuery]);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (!enableSuggestions) return;
-      if (!isOpen) return;
-
-      const max =
-        suggestionsMode === "business"
-          ? businessSuggestions.length
-          : normalizedCustomSuggestions.length;
-      if (max === 0) return;
-
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setIsFocused(false);
-        setActiveIndex(-1);
-        return;
-      }
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setActiveIndex((prev) => (prev + 1) % max);
-        return;
-      }
-
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setActiveIndex((prev) => (prev - 1 + max) % max);
-        return;
-      }
-
-      if (e.key === "Enter" && activeIndex >= 0) {
-        e.preventDefault();
-        if (suggestionsMode === "business") {
-          const chosen = businessSuggestions[activeIndex];
-          if (chosen) onSelectBusiness(chosen);
-        } else {
-          const chosen = normalizedCustomSuggestions[activeIndex];
-          if (chosen) onSelectCustom(chosen);
-        }
-      }
-    };
-
     const containerClass =
       variant === "header" ? "w-full" : "relative group w-full sm:w-[90%] md:w-[85%] lg:w-[75%]";
+
+    const prPadding =
+      showFilter && onFilterClick && showMap && onMapClick
+        ? "pr-24"
+        : (showFilter && onFilterClick) || (showMap && onMapClick)
+          ? "pr-12"
+          : showSearchIcon
+            ? "pr-10"
+            : "pr-0";
 
     return (
       <form
@@ -261,29 +147,31 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
         ref={(node) => {
           rootRef.current = node;
           if (typeof ref === "function") ref(node);
-          else if (ref) (ref as any).current = node;
+          else if (ref) (ref as React.MutableRefObject<HTMLFormElement | null>).current = node;
         }}
       >
         <div className="relative">
           {/* Action buttons on the right - Map, Filters */}
           <div className="absolute inset-y-0 right-0 flex items-center gap-1 pr-2 z-10">
             {showMap && onMapClick && (
-              <button
+              <Button
+                variant="bare"
                 type="button"
                 onClick={onMapClick}
-                className={`flex items-center text-charcoal/60 hover:text-charcoal transition-colors ${
+                className={`flex items-center text-charcoal/60 hover:text-charcoal transition-colors min-h-0 p-0 ${
                   isMapMode ? "text-coral" : ""
                 }`}
                 aria-label={isMapMode ? "Show list view" : "Show map view"}
               >
                 <Map className="w-5 h-5" strokeWidth={2} />
-              </button>
+              </Button>
             )}
             {showFilter && onFilterClick && (
-              <button
+              <Button
+                variant="bare"
                 type="button"
                 onClick={onFilterClick}
-                className="relative flex items-center text-charcoal/60 hover:text-charcoal transition-colors"
+                className="relative flex items-center text-charcoal/60 hover:text-charcoal transition-colors min-h-0 p-0"
                 aria-label="Open filters"
               >
                 <Sliders className="w-5 h-5" strokeWidth={2} />
@@ -292,9 +180,8 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                     {activeFilterCount}
                   </span>
                 )}
-              </button>
+              </Button>
             )}
-            {/* Search icon on the right when showFilter is false and showSearchIcon is true */}
             {!showFilter && !showMap && showSearchIcon && (
               <div className="flex items-center pointer-events-none">
                 <Search className="w-5 h-5 text-charcoal/60" strokeWidth={2} />
@@ -302,7 +189,6 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
             )}
           </div>
 
-          {/* input - no left icon, simple underline */}
           <input
             type="text"
             value={searchQuery}
@@ -321,7 +207,6 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
                 setIsFocused(false);
                 return;
               }
-              // Allow suggestion clicks without closing prematurely.
               blurTimeoutRef.current = window.setTimeout(() => {
                 setIsFocused(false);
                 setActiveIndex(-1);
@@ -334,142 +219,46 @@ const SearchInput = forwardRef<HTMLFormElement, SearchInputProps>(
               text-base placeholder:text-base placeholder:text-charcoal/60 font-normal text-charcoal
               focus:outline-none focus:border-charcoal/60
               hover:border-charcoal/30 transition-all duration-200
-              ${showFilter && onFilterClick && showMap && onMapClick ? "pr-24" : (showFilter && onFilterClick) || (showMap && onMapClick) ? "pr-12" : showSearchIcon ? "pr-10" : "pr-0"}
+              ${prPadding}
               py-3 px-0
             `}
             aria-label="Search"
           />
 
-          <AnimatePresence>
-            {isOpen && (
-              <m.div
-                initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.99 }}
-                transition={
-                  prefersReducedMotion
-                    ? { duration: 0 }
-                    : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+          {enableSuggestions && (
+            <div
+              className={`
+                absolute left-0 right-0 top-[calc(100%+10px)] z-[200]
+                rounded-[14px] bg-off-white/95 backdrop-blur-xl overflow-hidden
+                shadow-[0_18px_50px_rgba(0,0,0,0.18),0_8px_20px_rgba(0,0,0,0.10)]
+                transition-all duration-200 ease-out
+                ${
+                  isOpen
+                    ? "opacity-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 -translate-y-1 pointer-events-none"
                 }
-                className="absolute left-0 right-0 top-[calc(100%+10px)] z-[200] rounded-[14px]  bg-off-white/95 backdrop-blur-xl shadow-[0_18px_50px_rgba(0,0,0,0.18),0_8px_20px_rgba(0,0,0,0.10)] overflow-hidden"
-                role="listbox"
-                aria-label="Search suggestions"
-                onMouseDown={(e) => e.preventDefault()}
-              >
-                <div className="px-4 py-3 border-b border-charcoal/10 flex items-center justify-between">
-                  <div className="text-xs font-semibold text-charcoal/70">Suggestions</div>
-                  <button
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      dismissSuggestions();
-                    }}
-                    onClick={dismissSuggestions}
-                    className="w-8 h-8 flex items-center justify-center text-charcoal/60 hover:text-charcoal transition-colors focus:outline-none focus:ring-0"
-                    aria-label="Close suggestions"
-                  >
-                    <MobileMenuToggleIcon isOpen={true} />
-                  </button>
-                </div>
-
-                {/* Query suggestions — shown above business results */}
-                {suggestionsMode === "business" && querySuggestions.length > 0 && (
-                  <div className="py-1 border-b border-charcoal/6">
-                    {querySuggestions.map((s) => (
-                      <button
-                        key={`qs-${s.type}-${s.query}`}
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => onSelectQuerySuggestion(s.query)}
-                        className="mi-tap w-full text-left px-4 py-2.5 flex items-center gap-2.5 hover:bg-charcoal/5 transition-colors duration-150 group"
-                      >
-                        <Search className="w-3.5 h-3.5 text-charcoal/40 flex-shrink-0 group-hover:text-charcoal/60 transition-colors" />
-                        <span className="text-sm text-charcoal truncate flex-1">{s.query}</span>
-                        <span className="text-[11px] text-charcoal/40 flex-shrink-0">
-                          {s.type === "location" ? "area" : "category"}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="py-2">
-                  {suggestionsMode === "business" ? (
-                    liveLoading && businessSuggestions.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-charcoal/60">Searching…</div>
-                    ) : (
-                      businessSuggestions.map((item, idx) => {
-                        const isActive = idx === activeIndex;
-                        const label = (item as any).category_label ?? item.category ?? "";
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            role="option"
-                            aria-selected={isActive}
-                            onMouseEnter={() => setActiveIndex(idx)}
-                            onClick={() => onSelectBusiness(item)}
-                            className={`mi-tap w-full text-left px-4 py-3 flex items-center gap-3 transition-colors duration-150 ${
-                              isActive
-                                ? "bg-gradient-to-r from-sage/10 to-coral/5"
-                                : "hover:bg-charcoal/5"
-                            }`}
-                          >
-                            <div className="min-w-0 flex-1">
-                              <div className="text-sm font-semibold text-charcoal truncate">
-                                {item.name}
-                              </div>
-                              <div className="text-xs text-charcoal/60 truncate">
-                                {label ? `${label} • ` : ""}
-                                {item.location}
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })
-                    )
-                  ) : (
-                    normalizedCustomSuggestions.map((item, idx) => {
-                      const isActive = idx === activeIndex;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          role="option"
-                          aria-selected={isActive}
-                          onMouseEnter={() => setActiveIndex(idx)}
-                          onClick={() => onSelectCustom(item)}
-                          className={`mi-tap w-full text-left px-4 py-3 flex items-center gap-3 transition-colors duration-150 ${
-                            isActive
-                              ? "bg-gradient-to-r from-sage/10 to-coral/5"
-                              : "hover:bg-charcoal/5"
-                          }`}
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <div className="text-sm font-semibold text-charcoal truncate">
-                                {item.title}
-                              </div>
-                              {item.typeLabel && (
-                                <span className="shrink-0 rounded-full bg-charcoal/5 px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
-                                  {item.typeLabel}
-                                </span>
-                              )}
-                            </div>
-                            {item.subtitle && (
-                              <div className="text-xs text-charcoal/60 truncate">
-                                {item.subtitle}
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              </m.div>
-            )}
-          </AnimatePresence>
+              `}
+              role="listbox"
+              aria-label="Search suggestions"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {isOpen && (
+                <SearchInputSuggestions
+                  suggestionsMode={suggestionsMode}
+                  liveLoading={liveLoading}
+                  businessSuggestions={businessSuggestions}
+                  normalizedCustomSuggestions={normalizedCustomSuggestions}
+                  querySuggestions={querySuggestions}
+                  activeIndex={activeIndex}
+                  setActiveIndex={setActiveIndex}
+                  onSelectQuerySuggestion={onSelectQuerySuggestion}
+                  onSelectBusiness={onSelectBusiness}
+                  onSelectCustom={onSelectCustom}
+                  dismissSuggestions={dismissSuggestions}
+                />
+              )}
+            </div>
+          )}
         </div>
       </form>
     );

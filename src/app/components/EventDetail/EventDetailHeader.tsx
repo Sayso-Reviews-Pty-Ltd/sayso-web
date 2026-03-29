@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Share2 } from "@/app/lib/icons";
+import { Button } from "@/app/components/atoms/Button";
 
 interface EventDetailHeaderProps {
   onShare: () => void;
@@ -22,13 +23,14 @@ export default function EventDetailHeader({ onShare }: EventDetailHeaderProps) {
           </Link>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="bare"
               onClick={onShare}
-              className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20"
+              className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20 min-h-0 p-0"
               aria-label="Share event"
             >
               <Share2 className="text-white w-6 h-6 sm:w-5 sm:h-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

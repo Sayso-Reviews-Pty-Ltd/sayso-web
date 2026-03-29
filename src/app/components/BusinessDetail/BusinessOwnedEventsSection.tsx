@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { useBusinessEvents } from "../../hooks/useBusinessEvents";
 import EventsSpecials from "../EventsSpecials/EventsSpecials";
 import type { Event } from "../../lib/types/Event";
+import { Button } from "@/app/components/atoms/Button";
 
 interface BusinessOwnedEventsSectionProps {
   businessId: string;
@@ -56,15 +57,14 @@ export default function BusinessOwnedEventsSection({
       {/* Partial-error banner mirrors /events-specials handling */}
       {error && hasEvents && (
         <div className="rounded-[16px] border border-charcoal/10 bg-off-white/70 backdrop-blur-md px-4 py-3 flex items-start justify-between gap-3 mb-4">
-          <div className="text-sm text-charcoal/70">
-            Some results may be missing: {error}
-          </div>
-          <button
+          <div className="text-sm text-charcoal/70">Some results may be missing: {error}</div>
+          <Button
+            variant="secondary"
             onClick={() => mutate?.()}
-            className="shrink-0 mi-tap px-4 py-1.5 rounded-full bg-charcoal text-white text-sm font-semibold hover:bg-charcoal/90 transition"
+            className="shrink-0 mi-tap px-4 py-1.5 rounded-full text-sm min-h-0"
           >
             Retry
-          </button>
+          </Button>
         </div>
       )}
 

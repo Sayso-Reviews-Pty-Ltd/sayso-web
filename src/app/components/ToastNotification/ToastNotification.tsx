@@ -1,13 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { ProfileBadgeRibbon } from "@/app/components/Badges/ProfileBadgeRibbon";
 
 export interface ToastNotificationData {
   id: string;
-  type: "review" | "business" | "user" | "highlyRated" | "badge_earned" | "review_helpful" | "business_approved" | "claim_approved" | "comment_reply" | "gamification" | "milestone_achievement" | "message" | "otp_sent" | "otp_verified" | "claim_status_changed" | "docs_requested" | "docs_received" | "photo_approved";
+  type:
+    | "review"
+    | "business"
+    | "user"
+    | "highlyRated"
+    | "badge_earned"
+    | "review_helpful"
+    | "business_approved"
+    | "claim_approved"
+    | "comment_reply"
+    | "gamification"
+    | "milestone_achievement"
+    | "message"
+    | "otp_sent"
+    | "otp_verified"
+    | "claim_status_changed"
+    | "docs_requested"
+    | "docs_received"
+    | "photo_approved";
   message: string;
   title: string;
   timeAgo: string;
@@ -54,35 +71,30 @@ export default function ToastNotification({
   const borderClass = isBadgeEarned
     ? "border-amber-400/50 ring-amber-400/20"
     : isHighlyRated
-    ? "border-coral/60 ring-coral/30"
-    : "border-white/50 ring-white/20";
+      ? "border-coral/60 ring-coral/30"
+      : "border-white/50 ring-white/20";
 
   const progressBarBg = isBadgeEarned
     ? "bg-amber-400/10"
     : isHighlyRated
-    ? "bg-coral/10"
-    : "bg-card-bg/10";
+      ? "bg-coral/10"
+      : "bg-card-bg/10";
 
   const progressBarGradient = isBadgeEarned
     ? "from-amber-400 to-yellow-500/90"
     : isHighlyRated
-    ? "from-coral to-coral/90"
-    : "from-sage to-sage/90";
+      ? "from-coral to-coral/90"
+      : "from-sage to-sage/90";
 
   return (
-    <m.div
-      initial={{ opacity: 0, x: 100, scale: 0.8 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 100, scale: 0.8 }}
-      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+    <div
       className={`notification-toast relative bg-page-bg backdrop-blur-md border rounded-[12px] ring-1 shadow-lg overflow-hidden w-80 max-w-[calc(100vw-2rem)] ${borderClass}`}
     >
       {/* Progress bar */}
       <div className={`absolute top-0 left-0 right-0 h-1 ${progressBarBg}`}>
-        <m.div
-          className={`h-full bg-gradient-to-r ${progressBarGradient}`}
+        <div
+          className={`h-full bg-gradient-to-r ${progressBarGradient} transition-[width] duration-50`}
           style={{ width: `${progress}%` }}
-          transition={{ duration: 0.05 }}
         />
       </div>
 
@@ -126,7 +138,9 @@ export default function ToastNotification({
                     unoptimized
                   />
                 ) : (
-                  <span className="text-2xl" aria-hidden="true">🏅</span>
+                  <span className="text-2xl" aria-hidden="true">
+                    🏅
+                  </span>
                 )}
               </div>
             </ProfileBadgeRibbon>
@@ -195,6 +209,6 @@ export default function ToastNotification({
           </div>
         </div>
       )}
-    </m.div>
+    </div>
   );
 }

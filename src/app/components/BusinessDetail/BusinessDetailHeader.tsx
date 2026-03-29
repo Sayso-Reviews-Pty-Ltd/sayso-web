@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Share2, Bookmark, Calendar } from "@/app/lib/icons";
+import { Button } from "@/app/components/atoms/Button";
 
 interface BusinessDetailHeaderProps {
   isBookmarked: boolean;
@@ -34,24 +35,27 @@ export default function BusinessDetailHeader({
 
           <div className="flex items-center gap-2">
             {onSpecials && (
-              <button
+              <Button
+                variant="bare"
                 onClick={onSpecials}
-                className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20"
+                className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20 min-h-0 p-0"
                 aria-label="View events and specials"
               >
                 <Calendar className="text-white w-6 h-6 sm:w-5 sm:h-5" />
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant="bare"
               onClick={onShare}
-              className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20"
+              className="w-10 h-10 bg-gradient-to-br from-sage/10 to-sage/5 hover:from-sage/20 hover:to-sage/10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border border-sage/5 hover:border-sage/20 min-h-0 p-0"
               aria-label="Share business"
             >
               <Share2 className="text-white w-6 h-6 sm:w-5 sm:h-5" />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="bare"
               onClick={onBookmark}
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border ${
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 border min-h-0 p-0 ${
                 isBookmarked
                   ? "bg-coral text-white border-coral"
                   : "bg-gradient-to-br from-charcoal/10 to-charcoal/5 hover:from-coral/20 hover:to-coral/10 border-charcoal/5 hover:border-coral/20"
@@ -59,7 +63,7 @@ export default function BusinessDetailHeader({
               aria-label="Bookmark business"
             >
               <Bookmark className="text-white w-6 h-6 sm:w-5 sm:h-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

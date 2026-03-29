@@ -5,6 +5,7 @@ import { useState } from "react";
 import { m } from "framer-motion";
 import { Phone, Globe, MapPin, Mail, Copy, Check } from "@/app/lib/icons";
 import { Card } from "@/app/components/ui/card";
+import { Button } from "@/app/components/atoms/Button";
 
 interface BusinessContactInfoProps {
   phone?: string;
@@ -58,13 +59,14 @@ export default function BusinessContactInfo({
               {displayPhone ? (
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                   {!isPhoneVisible ? (
-                    <button
+                    <Button
+                      variant="bare"
                       type="button"
                       onClick={() => setIsPhoneVisible(true)}
-                      className="inline-flex rounded-full bg-navbar-bg px-3 py-1.5 text-body-sm text-white hover:bg-navbar-bg/90 transition-colors"
+                      className="inline-flex rounded-full bg-navbar-bg px-3 py-1.5 text-body-sm text-white hover:bg-navbar-bg/90 transition-colors min-h-0"
                     >
                       Show Contact Number
-                    </button>
+                    </Button>
                   ) : (
                     <>
                       <a
@@ -73,10 +75,11 @@ export default function BusinessContactInfo({
                       >
                         {displayPhone}
                       </a>
-                      <button
+                      <Button
+                        variant="bare"
                         type="button"
                         onClick={handleCopyPhone}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors min-h-0 p-0"
                         aria-label="Copy contact number"
                       >
                         {copiedPhone ? (
@@ -84,7 +87,7 @@ export default function BusinessContactInfo({
                         ) : (
                           <Copy className="w-3.5 h-3.5 text-charcoal/85" />
                         )}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>

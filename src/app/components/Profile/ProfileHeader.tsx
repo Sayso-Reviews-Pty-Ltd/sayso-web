@@ -20,6 +20,7 @@ import type { EnhancedProfile } from "@/app/lib/types/user";
 import XPBar from "@/app/components/XP/XPBar";
 import StreakCounter from "@/app/components/Profile/StreakCounter";
 import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/atoms/Button";
 
 interface UserProfile {
   user_id: string;
@@ -217,15 +218,16 @@ export function ProfileHeader({
               )}
 
               <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <button
+                <Button
+                  variant="bare"
                   type="button"
                   onClick={onEditClick}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-coral/90 hover:bg-charcoal/90 hover:border-white/30 text-white rounded-full text-caption sm:text-body-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-sage/20 border border-sage/20 whitespace-nowrap"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-coral/90 hover:bg-charcoal/90 hover:border-white/30 text-white rounded-full text-caption sm:text-body-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-sage/20 border border-sage/20 whitespace-nowrap min-h-0"
                   aria-label="Edit profile"
                 >
                   <MessageSquare size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
                   <span>Edit Profile</span>
-                </button>
+                </Button>
               </div>
             </div>
           </div>

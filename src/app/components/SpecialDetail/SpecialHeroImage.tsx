@@ -4,6 +4,8 @@
 import Image from "next/image";
 import { Star, Heart, Percent } from "@/app/lib/icons";
 import { m } from "framer-motion";
+import { Button } from "@/app/components/atoms/Button";
+import { cn } from "@/app/lib/utils";
 
 interface SpecialHeroImageProps {
   special: {
@@ -64,17 +66,19 @@ export default function SpecialHeroImage({
 
       {/* Like Button */}
       {onLike && (
-        <button
+        <Button
+          variant="bare"
           onClick={onLike}
-          className={`absolute bottom-4 right-4 z-20 w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 ${
+          className={cn(
+            "absolute bottom-4 right-4 z-20 w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 min-h-0 p-0",
             isLiked
               ? "bg-coral/90 text-white border-coral/50"
               : "bg-white/20 text-white border-white/30 hover:bg-white/30"
-          }`}
+          )}
           aria-label={isLiked ? "Unlike special" : "Like special"}
         >
-          <Heart className={`mx-auto w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
-        </button>
+          <Heart className={cn("mx-auto w-5 h-5", isLiked && "fill-current")} />
+        </Button>
       )}
     </m.div>
   );

@@ -6,6 +6,7 @@ import { m } from "framer-motion";
 import { IoArrowBack, IoHome } from "react-icons/io5";
 import FadeInUp from "../Animations/FadeInUp";
 import PremiumHover from "../Animations/PremiumHover";
+import { Button } from "@/app/components/atoms/Button";
 
 export type ErrorType = "404" | "401" | "403" | "500" | "503" | "error";
 
@@ -196,13 +197,14 @@ export default function ErrorPage({
               {/* Secondary Action */}
               {secondaryAction && (
                 <PremiumHover scale={1.02}>
-                  <button
+                  <Button
+                    variant="bare"
                     onClick={secondaryAction.onClick}
-                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto py-4 px-8 bg-off-white/80 backdrop-blur-sm text-charcoal font-urbanist font-600 text-base rounded-lg border border-sage/20 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white/90 group"
+                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto py-4 px-8 bg-off-white/80 backdrop-blur-sm text-charcoal font-urbanist font-600 text-base rounded-lg border border-sage/20 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white/90 group min-h-0"
                   >
                     {secondaryAction.icon}
                     <span>{secondaryAction.label}</span>
-                  </button>
+                  </Button>
                 </PremiumHover>
               )}
             </div>

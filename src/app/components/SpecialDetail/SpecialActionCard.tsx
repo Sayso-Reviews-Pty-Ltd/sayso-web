@@ -5,6 +5,7 @@ import { m } from "framer-motion";
 import { Star, Share2 } from "@/app/lib/icons";
 import Link from "next/link";
 import { Card } from "@/app/components/ui/card";
+import { Button } from "@/app/components/atoms/Button";
 
 interface SpecialActionCardProps {
   specialId?: string;
@@ -36,9 +37,12 @@ export default function SpecialActionCard({
         <h3 className="text-lg font-bold text-charcoal mb-4">Claim This Special</h3>
 
         <div className="space-y-3">
-          <button className="w-full bg-gradient-to-r from-sage to-sage/90 hover:from-sage/90 hover:to-sage/80 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 text-sm">
+          <Button
+            variant="bare"
+            className="w-full bg-gradient-to-r from-sage to-sage/90 hover:from-sage/90 hover:to-sage/80 text-white font-semibold py-3 px-5 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 text-sm min-h-0"
+          >
             Visit Venue
-          </button>
+          </Button>
 
           {specialId && (
             <Link
@@ -51,13 +55,14 @@ export default function SpecialActionCard({
           )}
 
           <div className="pt-3 border-t border-charcoal/10">
-            <button
+            <Button
+              variant="bare"
               onClick={handleShare}
-              className="w-full flex items-center justify-center gap-2 bg-white/40 backdrop-blur-sm hover:bg-charcoal text-charcoal hover:text-white py-2.5 px-4 rounded-full transition-all duration-200 border-none text-sm font-medium"
+              className="w-full flex items-center justify-center gap-2 bg-white/40 backdrop-blur-sm hover:bg-charcoal text-charcoal hover:text-white py-2.5 px-4 rounded-full transition-all duration-200 border-none text-sm font-medium min-h-0"
             >
               <Share2 className="w-4 h-4" />
               Share Special
-            </button>
+            </Button>
           </div>
         </div>
       </m.div>

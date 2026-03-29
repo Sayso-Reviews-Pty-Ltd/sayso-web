@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { Button } from "@/app/components/atoms/Button";
 
 export const DEFAULT_VISIBLE_CARD_COUNT = 4;
 
@@ -101,27 +102,29 @@ export default function ScrollableSection({
       </div>
 
       {showArrows && canScrollLeft && (
-        <button
+        <Button
+          variant="bare"
           onClick={() => scroll(-1)}
-          className={`${arrowBase} left-2 ${mobileHide} ${desktopHide}`}
+          className={`${arrowBase} left-2 ${mobileHide} ${desktopHide} min-h-0 p-0`}
           aria-label="Scroll left"
         >
           <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </Button>
       )}
 
       {showArrows && canScrollRight && (
-        <button
+        <Button
+          variant="bare"
           onClick={() => scroll(1)}
-          className={`${arrowBase} right-2 ${mobileHide} ${desktopHide}`}
+          className={`${arrowBase} right-2 ${mobileHide} ${desktopHide} min-h-0 p-0`}
           aria-label="Scroll right"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </Button>
       )}
 
       <style jsx>{`

@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "@/app/lib/icons";
+import { Button } from "@/app/components/atoms/Button";
+import { cn } from "@/app/lib/utils";
 
 interface PaginationProps {
   currentPage: number;
@@ -81,18 +83,20 @@ export default function Pagination({
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
       {/* Previous Button */}
-      <button
+      <Button
+        variant="bare"
         onClick={handlePrevious}
         disabled={currentPage === 1 || disabled}
-        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md ${
+        className={cn(
+          "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md min-h-0 p-0",
           currentPage === 1 || disabled
             ? "bg-off-white/50 text-charcoal/30 cursor-not-allowed"
             : "bg-gradient-to-br from-sage to-sage/80 hover:from-sage/90 hover:to-sage text-white hover:shadow-lg active:scale-95"
-        }`}
+        )}
         aria-label="Previous page"
       >
         <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
-      </button>
+      </Button>
 
       {/* Page Numbers */}
       <div className="flex items-center gap-1.5">
@@ -109,37 +113,41 @@ export default function Pagination({
           const isActive = pageNum === currentPage;
 
           return (
-            <button
+            <Button
               key={pageNum}
+              variant="bare"
               onClick={() => handlePageClick(pageNum)}
               disabled={disabled}
-              className={`min-w-[40px] h-10 px-4 rounded-full font-semibold transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-md ${
+              className={cn(
+                "min-w-[40px] h-10 px-4 rounded-full font-semibold transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-md min-h-0",
                 isActive
                   ? "bg-gradient-to-br from-sage to-sage/80 text-white shadow-lg scale-105"
                   : "bg-gradient-to-br from-sage/20 to-sage/10 hover:from-sage/40 hover:to-sage/20 text-charcoal hover:text-sage hover:shadow-lg active:scale-95"
-              }`}
+              )}
               aria-label={`Go to page ${pageNum}`}
               aria-current={isActive ? "page" : undefined}
             >
               {pageNum}
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {/* Next Button */}
-      <button
+      <Button
+        variant="bare"
         onClick={handleNext}
         disabled={currentPage === totalPages || disabled}
-        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md ${
+        className={cn(
+          "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-md min-h-0 p-0",
           currentPage === totalPages || disabled
             ? "bg-off-white/50 text-charcoal/30 cursor-not-allowed"
             : "bg-gradient-to-br from-sage to-sage/80 hover:from-sage/90 hover:to-sage text-white hover:shadow-lg active:scale-95"
-        }`}
+        )}
         aria-label="Next page"
       >
         <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
-      </button>
+      </Button>
     </div>
   );
 }

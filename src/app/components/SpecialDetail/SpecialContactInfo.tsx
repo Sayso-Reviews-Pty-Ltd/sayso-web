@@ -4,6 +4,7 @@
 import { Phone, Globe, MapPin } from "@/app/lib/icons";
 import { m } from "framer-motion";
 import { Card } from "@/app/components/ui/card";
+import { Button } from "@/app/components/atoms/Button";
 
 interface SpecialContactInfoProps {
   phone?: string | null;
@@ -71,12 +72,13 @@ export default function SpecialContactInfo({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium break-words font-urbanist">{location}</p>
                 {showMapLink && onViewMap && (
-                  <button
+                  <Button
+                    variant="bare"
                     onClick={onViewMap}
-                    className="text-xs text-sage hover:text-sage/80 font-medium mt-1 font-urbanist"
+                    className="text-xs text-sage hover:text-sage/80 font-medium mt-1 font-urbanist min-h-0 p-0 h-auto"
                   >
                     View on map
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

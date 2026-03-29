@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Heart } from "@/app/lib/icons";
 import type { Event } from "../../lib/types/Event";
 import GoldStar from "../Icons/GoldStar";
+import { Button } from "@/app/components/atoms/Button";
+import { cn } from "@/app/lib/utils";
 
 interface EventHeroImageProps {
   event: Event;
@@ -114,17 +116,19 @@ export default function EventHeroImage({
       )}
 
       {onLike && (
-        <button
+        <Button
+          variant="bare"
           onClick={onLike}
-          className={`absolute bottom-6 right-6 z-20 w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 ${
+          className={cn(
+            "absolute bottom-6 right-6 z-20 w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 min-h-0 p-0",
             isLiked
               ? "bg-coral/90 text-white border-coral/50"
               : "bg-white/20 text-white border-white/30 hover:bg-white/30"
-          }`}
+          )}
           aria-label={isLiked ? "Unlike event" : "Like event"}
         >
-          <Heart className={`mx-auto w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
-        </button>
+          <Heart className={cn("mx-auto w-5 h-5", isLiked && "fill-current")} />
+        </Button>
       )}
     </m.div>
   );
