@@ -3,7 +3,11 @@ import { createClient } from "@supabase/supabase-js";
 import { getServerSupabase } from "@/app/lib/supabase/server";
 import { getServiceSupabase } from "@/app/lib/admin";
 import type { Database } from "@/app/types/supabase";
-import { formatDateRangeLabel, mapEventsAndSpecialsRowToEventCard, type EventsAndSpecialsRow } from "@/app/lib/events/mapEvent";
+import {
+  formatDateRangeLabel,
+  mapEventsAndSpecialsRowToEventCard,
+  type EventsAndSpecialsRow,
+} from "@/app/lib/events/mapEvent";
 import { createEventOrSpecial } from "@/app/lib/events/createEventSpecial";
 import {
   QUICKET_CATEGORY_LABEL_BY_SLUG,
@@ -33,8 +37,14 @@ function parseEventsCursor(rawCursor: string | null): number {
   if (!rawCursor) return 0;
 
   try {
-    const decoded = JSON.parse(Buffer.from(rawCursor, "base64url").toString("utf8")) as Partial<EventsCursor>;
-    if (decoded.kind === "offset" && typeof decoded.offset === "number" && Number.isFinite(decoded.offset)) {
+    const decoded = JSON.parse(
+      Buffer.from(rawCursor, "base64url").toString("utf8")
+    ) as Partial<EventsCursor>;
+    if (
+      decoded.kind === "offset" &&
+      typeof decoded.offset === "number" &&
+      Number.isFinite(decoded.offset)
+    ) {
       return Math.max(0, Math.floor(decoded.offset));
     }
   } catch {
@@ -58,7 +68,9 @@ async function getEventsSupabase() {
   try {
     return getServiceSupabase();
   } catch {
-    console.warn("[events-and-specials] Service role not configured, falling back to anon server client.");
+    console.warn(
+      "[events-and-specials] Service role not configured, falling back to anon server client."
+    );
     return createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -98,14 +110,19 @@ const STRIP_PATTERNS = [
   /\s*\(\d+(?:\s*of\s*\d+)?\)/g,
 ];
 
-const normalizeSeriesKey = (row: Pick<EventsAndSpecialsRow, "title" | "business_id" | "location">) => {
+const normalizeSeriesKey = (
+  row: Pick<EventsAndSpecialsRow, "title" | "business_id" | "location">
+) => {
   let title = (row.title ?? "").toString().trim().toLowerCase();
 
   for (const pattern of STRIP_PATTERNS) {
     title = title.replace(pattern, "");
   }
 
-  title = title.replace(/\s+/g, " ").replace(/[-–—:,.\s]+$/, "").trim();
+  title = title
+    .replace(/\s+/g, " ")
+    .replace(/[-–—:,.\s]+$/, "")
+    .trim();
 
   const business = (row.business_id ?? "").toString().trim().toLowerCase();
   const location = (row.location ?? "").toString().trim().toLowerCase();
@@ -129,13 +146,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const typeParam = (searchParams.get("type") || "").trim().toLowerCase();
     const limitParam = parseInt(searchParams.get("limit") || "20", 10);
-    const offsetParam = parseEventsCursor(searchParams.get("cursor")) || parseInt(searchParams.get("offset") || "0", 10);
+    const offsetParam =
+      parseEventsCursor(searchParams.get("cursor")) ||
+      parseInt(searchParams.get("offset") || "0", 10);
     const excludeSoldOut = parseBooleanSearchParam(searchParams.get("excludeSoldOut"));
 
     const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 20;
     const offset = Number.isFinite(offsetParam) ? Math.max(offsetParam, 0) : 0;
 
-    const type = typeParam === "event" || typeParam === "special" ? (typeParam as "event" | "special") : null;
+    const type =
+      typeParam === "event" || typeParam === "special" ? (typeParam as "event" | "special") : null;
     const selectedCategory = normalizeQuicketCategoryParam(searchParams.get("category"));
 
     // Search param: applied as ILIKE across title, location, description
@@ -181,16 +201,24 @@ export async function GET(req: NextRequest) {
     let data: any[] | null = null;
     let error: any = null;
 
-    ({ data, error } = await withTimeout(query as any, FETCH_TIMEOUT_MS, "events-and-specials:primary") as any);
+    ({ data, error } = (await withTimeout(
+      query as any,
+      FETCH_TIMEOUT_MS,
+      "events-and-specials:primary"
+    )) as any);
 
     const errorMessage = String(error?.message ?? "");
     const isMissingOptionalColumn =
       error &&
       /does not exist/i.test(errorMessage) &&
-      /(events_and_specials\.)?(booking_url|cta_source|whatsapp_number|whatsapp_prefill_template|quicket_category_slug|quicket_category_label)/i.test(errorMessage);
+      /(events_and_specials\.)?(booking_url|cta_source|whatsapp_number|whatsapp_prefill_template|quicket_category_slug|quicket_category_label)/i.test(
+        errorMessage
+      );
 
     if (isMissingOptionalColumn) {
-      console.warn("[events-and-specials] optional columns missing; retrying without optional fields.");
+      console.warn(
+        "[events-and-specials] optional columns missing; retrying without optional fields."
+      );
       let retryQuery = supabase
         .from("events_and_specials")
         .select(baseSelect)
@@ -208,11 +236,11 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      ({ data, error } = await withTimeout(
+      ({ data, error } = (await withTimeout(
         retryQuery as any,
         FETCH_TIMEOUT_MS,
         "events-and-specials:retry-no-cta"
-      ) as any);
+      )) as any);
     }
 
     if (error) {
@@ -241,24 +269,24 @@ export async function GET(req: NextRequest) {
     // Fetch business visibility status for events with business_id
     // Events linked to hidden/system businesses should still appear,
     // but without business attribution
-    const businessIds = [...new Set(rawRows.map(r => r.business_id).filter(Boolean))];
+    const businessIds = [...new Set(rawRows.map((r) => r.business_id).filter(Boolean))];
     const hiddenOrSystemBusinessIds = new Set<string>();
-    
+
     if (businessIds.length > 0) {
       const { data: businessData } = await supabase
-        .from('businesses')
-        .select('id, is_hidden, is_system, name')
-        .in('id', businessIds);
-      
+        .from("businesses")
+        .select("id, is_hidden, is_system, name")
+        .in("id", businessIds);
+
       for (const biz of businessData || []) {
-        if (biz.is_hidden === true || biz.is_system === true || biz.name === 'Sayso System') {
+        if (biz.is_hidden === true || biz.is_system === true || biz.name === "Sayso System") {
           hiddenOrSystemBusinessIds.add(biz.id);
         }
       }
     }
-    
+
     // Clear business_id for events linked to hidden/system businesses
-    let processedRows = rawRows.map(row => {
+    let processedRows = rawRows.map((row) => {
       if (row.business_id && hiddenOrSystemBusinessIds.has(row.business_id)) {
         return { ...row, business_id: null, _isExternalEvent: true };
       }
@@ -281,12 +309,14 @@ export async function GET(req: NextRequest) {
         return {
           ...row,
           quicket_category_slug: storedSlug,
-          quicket_category_label: row.quicket_category_label ?? QUICKET_CATEGORY_LABEL_BY_SLUG[storedSlug],
+          quicket_category_label:
+            row.quicket_category_label ?? QUICKET_CATEGORY_LABEL_BY_SLUG[storedSlug],
         };
       }
 
       const categoryNames =
-        row.quicket_category_label && row.quicket_category_label.trim().toLowerCase() !== "community"
+        row.quicket_category_label &&
+        row.quicket_category_label.trim().toLowerCase() !== "community"
           ? [row.quicket_category_label]
           : [];
 
@@ -314,7 +344,7 @@ export async function GET(req: NextRequest) {
 
     if (excludeSoldOut) {
       processedRows = processedRows.filter(
-        (row) => !(row.type === "event" && row.availability_status === "sold_out"),
+        (row) => !(row.type === "event" && row.availability_status === "sold_out")
       );
     }
 
@@ -395,16 +425,29 @@ export async function GET(req: NextRequest) {
 
       if (!existing.firstNonNull.image && row.image) existing.firstNonNull.image = row.image;
       if (!existing.firstNonNull.icon && row.icon) existing.firstNonNull.icon = row.icon;
-      if (!existing.firstNonNull.description && row.description) existing.firstNonNull.description = row.description;
-      if (!existing.firstNonNull.booking_url && (row as any).booking_url) existing.firstNonNull.booking_url = (row as any).booking_url;
-      if (!existing.firstNonNull.booking_contact && (row as any).booking_contact) existing.firstNonNull.booking_contact = (row as any).booking_contact;
-      if (!existing.firstNonNull.cta_source && (row as any).cta_source) existing.firstNonNull.cta_source = (row as any).cta_source;
-      if (!existing.firstNonNull.whatsapp_number && (row as any).whatsapp_number) existing.firstNonNull.whatsapp_number = (row as any).whatsapp_number;
-      if (!existing.firstNonNull.whatsapp_prefill_template && (row as any).whatsapp_prefill_template) existing.firstNonNull.whatsapp_prefill_template = (row as any).whatsapp_prefill_template;
-      if (existing.firstNonNull.price == null && row.price != null) existing.firstNonNull.price = row.price;
-      if (existing.firstNonNull.rating == null && row.rating != null) existing.firstNonNull.rating = row.rating;
-      if (!existing.firstNonNull.quicket_category_slug && row.quicket_category_slug) existing.firstNonNull.quicket_category_slug = row.quicket_category_slug;
-      if (!existing.firstNonNull.quicket_category_label && row.quicket_category_label) existing.firstNonNull.quicket_category_label = row.quicket_category_label;
+      if (!existing.firstNonNull.description && row.description)
+        existing.firstNonNull.description = row.description;
+      if (!existing.firstNonNull.booking_url && (row as any).booking_url)
+        existing.firstNonNull.booking_url = (row as any).booking_url;
+      if (!existing.firstNonNull.booking_contact && (row as any).booking_contact)
+        existing.firstNonNull.booking_contact = (row as any).booking_contact;
+      if (!existing.firstNonNull.cta_source && (row as any).cta_source)
+        existing.firstNonNull.cta_source = (row as any).cta_source;
+      if (!existing.firstNonNull.whatsapp_number && (row as any).whatsapp_number)
+        existing.firstNonNull.whatsapp_number = (row as any).whatsapp_number;
+      if (
+        !existing.firstNonNull.whatsapp_prefill_template &&
+        (row as any).whatsapp_prefill_template
+      )
+        existing.firstNonNull.whatsapp_prefill_template = (row as any).whatsapp_prefill_template;
+      if (existing.firstNonNull.price == null && row.price != null)
+        existing.firstNonNull.price = row.price;
+      if (existing.firstNonNull.rating == null && row.rating != null)
+        existing.firstNonNull.rating = row.rating;
+      if (!existing.firstNonNull.quicket_category_slug && row.quicket_category_slug)
+        existing.firstNonNull.quicket_category_slug = row.quicket_category_slug;
+      if (!existing.firstNonNull.quicket_category_label && row.quicket_category_label)
+        existing.firstNonNull.quicket_category_label = row.quicket_category_label;
     }
 
     const consolidated = Array.from(series.values())
@@ -437,7 +480,66 @@ export async function GET(req: NextRequest) {
           isExternalEvent: s.isExternalEvent,
         });
       })
-      .sort((a, b) => new Date(a.startDateISO || a.startDate).getTime() - new Date(b.startDateISO || b.startDate).getTime());
+      .sort(
+        (a, b) =>
+          new Date(a.startDateISO || a.startDate).getTime() -
+          new Date(b.startDateISO || b.startDate).getTime()
+      );
+
+    // Fetch review counts for ALL consolidated items before sorting so that
+    // reviewed events can be promoted to the top of every page.
+    const allEventIds = consolidated.filter((item) => item.type === "event").map((item) => item.id);
+    const allSpecialIds = consolidated
+      .filter((item) => item.type === "special")
+      .map((item) => item.id);
+
+    const [allEventReviewRows, allSpecialReviewRows] = await Promise.all([
+      allEventIds.length > 0
+        ? supabase
+            .from("event_reviews")
+            .select("event_id")
+            .in("event_id", allEventIds)
+            .then(({ data, error }) => {
+              if (error) {
+                console.warn("[events-and-specials] event review count query error:", error);
+                return [] as Array<{ event_id: string }>;
+              }
+              return (data ?? []) as Array<{ event_id: string }>;
+            })
+        : Promise.resolve([] as Array<{ event_id: string }>),
+      allSpecialIds.length > 0
+        ? supabase
+            .from("special_reviews")
+            .select("special_id")
+            .in("special_id", allSpecialIds)
+            .then(({ data, error }) => {
+              if (error) {
+                console.warn("[events-and-specials] special review count query error:", error);
+                return [] as Array<{ special_id: string }>;
+              }
+              return (data ?? []) as Array<{ special_id: string }>;
+            })
+        : Promise.resolve([] as Array<{ special_id: string }>),
+    ]);
+
+    const reviewCounts = new Map<string, number>();
+    for (const row of allEventReviewRows) {
+      reviewCounts.set(row.event_id, (reviewCounts.get(row.event_id) ?? 0) + 1);
+    }
+    for (const row of allSpecialReviewRows) {
+      reviewCounts.set(row.special_id, (reviewCounts.get(row.special_id) ?? 0) + 1);
+    }
+
+    // Re-sort: reviewed items first (by review count desc), then by start_date asc.
+    consolidated.sort((a, b) => {
+      const aReviews = reviewCounts.get(a.id) ?? 0;
+      const bReviews = reviewCounts.get(b.id) ?? 0;
+      if (bReviews !== aReviews) return bReviews - aReviews;
+      return (
+        new Date(a.startDateISO || a.startDate).getTime() -
+        new Date(b.startDateISO || b.startDate).getTime()
+      );
+    });
 
     const quicketCategoryCounts = new Map<string, number>();
     for (const item of consolidated) {
@@ -457,51 +559,12 @@ export async function GET(req: NextRequest) {
     // For normal browsing, apply server-side pagination.
     const pagedBase = searchParam ? consolidated : consolidated.slice(offset, offset + limit);
 
-    const eventIds = pagedBase.filter((item) => item.type === "event").map((item) => item.id);
-    const specialIds = pagedBase.filter((item) => item.type === "special").map((item) => item.id);
-
-    const [eventReviewRows, specialReviewRows] = await Promise.all([
-      eventIds.length > 0
-        ? supabase
-            .from("event_reviews")
-            .select("event_id")
-            .in("event_id", eventIds)
-            .then(({ data, error }) => {
-              if (error) {
-                console.warn("[events-and-specials] event review count query error:", error);
-                return [] as Array<{ event_id: string }>;
-              }
-              return (data ?? []) as Array<{ event_id: string }>;
-            })
-        : Promise.resolve([] as Array<{ event_id: string }>),
-      specialIds.length > 0
-        ? supabase
-            .from("special_reviews")
-            .select("special_id")
-            .in("special_id", specialIds)
-            .then(({ data, error }) => {
-              if (error) {
-                console.warn("[events-and-specials] special review count query error:", error);
-                return [] as Array<{ special_id: string }>;
-              }
-              return (data ?? []) as Array<{ special_id: string }>;
-            })
-        : Promise.resolve([] as Array<{ special_id: string }>),
-    ]);
-
-    const reviewCounts = new Map<string, number>();
-    for (const row of eventReviewRows) {
-      reviewCounts.set(row.event_id, (reviewCounts.get(row.event_id) ?? 0) + 1);
-    }
-    for (const row of specialReviewRows) {
-      reviewCounts.set(row.special_id, (reviewCounts.get(row.special_id) ?? 0) + 1);
-    }
-
     const paged = pagedBase.map((item) => ({
       ...item,
       reviews: reviewCounts.get(item.id) ?? 0,
     }));
-    const nextCursor = consolidated.length > offset + limit ? encodeEventsCursor(offset + limit) : null;
+    const nextCursor =
+      consolidated.length > offset + limit ? encodeEventsCursor(offset + limit) : null;
 
     const response = NextResponse.json({
       items: paged,
@@ -569,7 +632,7 @@ export async function POST(req: NextRequest) {
     console.error("[events-and-specials] create error:", error);
     return NextResponse.json(
       { error: "Failed to create listing", details: error?.message ?? "Unknown error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
