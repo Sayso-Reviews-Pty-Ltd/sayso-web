@@ -198,7 +198,11 @@ export function generateOrganizationSchema(): object {
       containedInPlace: { "@type": "Country", name: "South Africa" },
     },
     foundingLocation: { "@type": "Place", name: "Cape Town, South Africa" },
-    sameAs: ["https://www.instagram.com/sayso_za", "https://www.facebook.com/sayso.co.za"],
+    sameAs: [
+      "https://www.instagram.com/sayso_za",
+      "https://www.facebook.com/sayso.co.za",
+      "https://www.tiktok.com/@sayso_za",
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       email: "info@sayso.co.za",
@@ -299,30 +303,37 @@ export function generateItemListSchema(
 function parseDayOfWeek(hours: string): string {
   // Expected format: "Monday 09:00-17:00" or "Mo-Fr 09:00-17:00"
   const dayMatch = hours.match(/^([A-Za-z]+(?:\-[A-Za-z]+)?)/);
-  if (!dayMatch) return "Monday";
+  if (!dayMatch) return "https://schema.org/Monday";
 
   const day = dayMatch[1];
   const dayMap: Record<string, string> = {
-    Mo: "Monday",
-    Tu: "Tuesday",
-    We: "Wednesday",
-    Th: "Thursday",
-    Fr: "Friday",
-    Sa: "Saturday",
-    Su: "Sunday",
+    Mo: "https://schema.org/Monday",
+    Tu: "https://schema.org/Tuesday",
+    We: "https://schema.org/Wednesday",
+    Th: "https://schema.org/Thursday",
+    Fr: "https://schema.org/Friday",
+    Sa: "https://schema.org/Saturday",
+    Su: "https://schema.org/Sunday",
+    Monday: "https://schema.org/Monday",
+    Tuesday: "https://schema.org/Tuesday",
+    Wednesday: "https://schema.org/Wednesday",
+    Thursday: "https://schema.org/Thursday",
+    Friday: "https://schema.org/Friday",
+    Saturday: "https://schema.org/Saturday",
+    Sunday: "https://schema.org/Sunday",
   };
 
-  return dayMap[day] || day;
+  return dayMap[day] || `https://schema.org/${day}`;
 }
 
 function parseOpens(hours: string): string {
   const timeMatch = hours.match(/(\d{2}:\d{2})/);
-  return timeMatch ? timeMatch[1] : "09:00";
+  return timeMatch ? `${timeMatch[1]}:00` : "09:00:00";
 }
 
 function parseCloses(hours: string): string {
   const timeMatches = hours.match(/(\d{2}:\d{2})/g);
-  return timeMatches && timeMatches.length > 1 ? timeMatches[1] : "17:00";
+  return timeMatches && timeMatches.length > 1 ? `${timeMatches[1]}:00` : "17:00:00";
 }
 
 /**

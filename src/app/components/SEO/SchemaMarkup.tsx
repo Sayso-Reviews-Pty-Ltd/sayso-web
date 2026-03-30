@@ -9,7 +9,7 @@ interface SchemaMarkupProps {
 
 export default function SchemaMarkup({ schemas }: SchemaMarkupProps) {
   const schemaArray = Array.isArray(schemas) ? schemas : [schemas];
-  
+
   return (
     <>
       {schemaArray.map((schema, index) => (
@@ -18,11 +18,10 @@ export default function SchemaMarkup({ schemas }: SchemaMarkupProps) {
           id={`schema-ld-json-${index}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schema, null, 2),
+            __html: JSON.stringify(schema).replace(/</g, "\u003c"),
           }}
         />
       ))}
     </>
   );
 }
-
