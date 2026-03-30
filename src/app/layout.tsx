@@ -229,10 +229,13 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
         {/* Canonical tag removed - set per page via metadata */}
+
+        {/* Site-wide JSON-LD schemas in <head> for Google sitelinks signal.
+            WebSite (with SearchAction) + SiteNavigationElement for the 6 target pages. */}
         <SchemaMarkup
           schemas={[
-            generateOrganizationSchema(),
             generateWebSiteSchema(),
+            generateOrganizationSchema(),
             generateSiteNavigationSchema(),
           ]}
         />

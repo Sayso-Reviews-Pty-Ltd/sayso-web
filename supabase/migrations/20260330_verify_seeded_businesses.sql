@@ -1,0 +1,5 @@
+-- This migration was intentionally left empty.
+-- The trustworthiness dealbreaker in recommend_for_you_unified is correct as-is:
+-- imported businesses (overpass/foursquare/xlsx) remain verified=false until claimed by
+-- their owner. Owner-uploaded businesses are now auto-verified at creation time via the
+-- businessCreate handler (verified: true).

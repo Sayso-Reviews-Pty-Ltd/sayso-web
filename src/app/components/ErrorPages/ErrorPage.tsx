@@ -200,10 +200,10 @@ export default function ErrorPage({
                   <Button
                     variant="bare"
                     onClick={secondaryAction.onClick}
+                    leftIcon={secondaryAction.icon}
                     className="inline-flex items-center justify-center gap-2 w-full sm:w-auto py-4 px-8 bg-off-white/80 backdrop-blur-sm text-charcoal font-urbanist font-600 text-base rounded-lg border border-sage/20 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white/90 group min-h-0"
                   >
-                    {secondaryAction.icon}
-                    <span>{secondaryAction.label}</span>
+                    {secondaryAction.label}
                   </Button>
                 </PremiumHover>
               )}

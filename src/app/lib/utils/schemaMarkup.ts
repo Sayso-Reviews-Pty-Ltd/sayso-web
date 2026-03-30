@@ -3,7 +3,7 @@
  * Generates JSON-LD schema markup for SEO and rich results
  */
 
-import { SITE_NAME, SITE_URL } from './seoMetadata';
+import { SITE_NAME, SITE_URL } from "./seoMetadata";
 
 export interface BusinessSchema {
   name: string;
@@ -47,8 +47,8 @@ export interface ReviewSchema {
  */
 export function generateLocalBusinessSchema(business: BusinessSchema): object {
   const schema: any = {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
     name: business.name,
     description: business.description,
     url: business.url,
@@ -68,18 +68,18 @@ export function generateLocalBusinessSchema(business: BusinessSchema): object {
 
   if (business.address) {
     schema.address = {
-      '@type': 'PostalAddress',
+      "@type": "PostalAddress",
       streetAddress: business.address.streetAddress,
       addressLocality: business.address.addressLocality,
       ...(business.address.addressRegion && { addressRegion: business.address.addressRegion }),
       ...(business.address.postalCode && { postalCode: business.address.postalCode }),
-      addressCountry: business.address.addressCountry || 'ZA',
+      addressCountry: business.address.addressCountry || "ZA",
     };
   }
 
   if (business.geo) {
     schema.geo = {
-      '@type': 'GeoCoordinates',
+      "@type": "GeoCoordinates",
       latitude: business.geo.latitude,
       longitude: business.geo.longitude,
     };
@@ -91,7 +91,7 @@ export function generateLocalBusinessSchema(business: BusinessSchema): object {
 
   if (business.aggregateRating) {
     schema.aggregateRating = {
-      '@type': 'AggregateRating',
+      "@type": "AggregateRating",
       ratingValue: business.aggregateRating.ratingValue,
       reviewCount: business.aggregateRating.reviewCount,
       bestRating: business.aggregateRating.bestRating || 5,
@@ -101,7 +101,7 @@ export function generateLocalBusinessSchema(business: BusinessSchema): object {
 
   if (business.openingHours && business.openingHours.length > 0) {
     schema.openingHoursSpecification = business.openingHours.map((hours) => ({
-      '@type': 'OpeningHoursSpecification',
+      "@type": "OpeningHoursSpecification",
       dayOfWeek: parseDayOfWeek(hours),
       opens: parseOpens(hours),
       closes: parseCloses(hours),
@@ -115,17 +115,17 @@ export function generateLocalBusinessSchema(business: BusinessSchema): object {
   if (business.category) {
     // Map category to Schema.org types
     const categoryMap: Record<string, string> = {
-      'Restaurant': 'Restaurant',
-      'Cafe': 'CafeOrCoffeeShop',
-      'Bar': 'BarOrPub',
-      'Beauty': 'BeautySalon',
-      'Spa': 'HealthAndBeautyBusiness',
-      'Gym': 'ExerciseGym',
-      'Salon': 'BeautySalon',
-      'Store': 'Store',
-      'Service': 'LocalBusiness',
+      Restaurant: "Restaurant",
+      Cafe: "CafeOrCoffeeShop",
+      Bar: "BarOrPub",
+      Beauty: "BeautySalon",
+      Spa: "HealthAndBeautyBusiness",
+      Gym: "ExerciseGym",
+      Salon: "BeautySalon",
+      Store: "Store",
+      Service: "LocalBusiness",
     };
-    schema['@type'] = categoryMap[business.category] || 'LocalBusiness';
+    schema["@type"] = categoryMap[business.category] || "LocalBusiness";
   }
 
   return schema;
@@ -136,14 +136,14 @@ export function generateLocalBusinessSchema(business: BusinessSchema): object {
  */
 export function generateReviewSchema(reviews: ReviewSchema[]): object[] {
   return reviews.map((review) => ({
-    '@context': 'https://schema.org',
-    '@type': 'Review',
+    "@context": "https://schema.org",
+    "@type": "Review",
     author: {
-      '@type': 'Person',
+      "@type": "Person",
       name: review.author,
     },
     reviewRating: {
-      '@type': 'Rating',
+      "@type": "Rating",
       ratingValue: review.ratingValue,
       bestRating: 5,
       worstRating: 1,
@@ -158,10 +158,10 @@ export function generateReviewSchema(reviews: ReviewSchema[]): object[] {
  */
 export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>): object {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
       item: item.url,
@@ -174,17 +174,17 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
  */
 export function generateOrganizationSchema(): object {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': `${SITE_URL}/#organization`,
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      'Sayso is a hyper-local reviews and discovery platform for Cape Town. Explore restaurants, salons, gyms, events, and more — with real community ratings.',
-    foundingDate: '2024',
+      "Sayso is a hyper-local reviews and discovery platform for Cape Town. Explore restaurants, salons, gyms, events, and more — with real community ratings.",
+    foundingDate: "2024",
     logo: {
-      '@type': 'ImageObject',
-      '@id': `${SITE_URL}/#logo`,
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/#logo`,
       url: `${SITE_URL}/logos/logo.png`,
       contentUrl: `${SITE_URL}/logos/logo.png`,
       width: 512,
@@ -193,20 +193,17 @@ export function generateOrganizationSchema(): object {
     },
     image: `${SITE_URL}/logos/logo.png`,
     areaServed: {
-      '@type': 'City',
-      name: 'Cape Town',
-      containedInPlace: { '@type': 'Country', name: 'South Africa' },
+      "@type": "City",
+      name: "Cape Town",
+      containedInPlace: { "@type": "Country", name: "South Africa" },
     },
-    foundingLocation: { '@type': 'Place', name: 'Cape Town, South Africa' },
-    sameAs: [
-      'https://www.instagram.com/sayso_za',
-      'https://www.facebook.com/sayso.co.za',
-    ],
+    foundingLocation: { "@type": "Place", name: "Cape Town, South Africa" },
+    sameAs: ["https://www.instagram.com/sayso_za", "https://www.facebook.com/sayso.co.za"],
     contactPoint: {
-      '@type': 'ContactPoint',
-      email: 'info@sayso.co.za',
-      contactType: 'Customer Service',
-      availableLanguage: ['English'],
+      "@type": "ContactPoint",
+      email: "info@sayso.co.za",
+      contactType: "Customer Service",
+      availableLanguage: ["English"],
     },
   };
 }
@@ -224,17 +221,17 @@ export function generateEventSchema(event: {
   url: string;
 }): object {
   const schema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
+    "@context": "https://schema.org",
+    "@type": "Event",
     name: event.name,
     url: event.url,
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    eventStatus: 'https://schema.org/EventScheduled',
-    organizer: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    organizer: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     location: {
-      '@type': 'Place',
-      name: event.location || 'Cape Town',
-      address: event.location || 'Cape Town, South Africa',
+      "@type": "Place",
+      name: event.location || "Cape Town",
+      address: event.location || "Cape Town, South Africa",
     },
   };
   if (event.description) schema.description = event.description;
@@ -254,8 +251,8 @@ export function generatePersonSchema(person: {
   description?: string;
 }): object {
   const schema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
+    "@context": "https://schema.org",
+    "@type": "Person",
     name: person.name,
     url: person.url,
   };
@@ -273,20 +270,20 @@ export function generateItemListSchema(
   items: Array<{ name: string; url: string; image?: string; rating?: number }>
 ): object {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    "@context": "https://schema.org",
+    "@type": "ItemList",
     name,
     description,
     numberOfItems: items.length,
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
       url: item.url,
       ...(item.image && { image: item.image }),
       ...(item.rating && {
         aggregateRating: {
-          '@type': 'AggregateRating',
+          "@type": "AggregateRating",
           ratingValue: item.rating,
           bestRating: 5,
           worstRating: 1,
@@ -302,30 +299,30 @@ export function generateItemListSchema(
 function parseDayOfWeek(hours: string): string {
   // Expected format: "Monday 09:00-17:00" or "Mo-Fr 09:00-17:00"
   const dayMatch = hours.match(/^([A-Za-z]+(?:\-[A-Za-z]+)?)/);
-  if (!dayMatch) return 'Monday';
-  
+  if (!dayMatch) return "Monday";
+
   const day = dayMatch[1];
   const dayMap: Record<string, string> = {
-    'Mo': 'Monday',
-    'Tu': 'Tuesday',
-    'We': 'Wednesday',
-    'Th': 'Thursday',
-    'Fr': 'Friday',
-    'Sa': 'Saturday',
-    'Su': 'Sunday',
+    Mo: "Monday",
+    Tu: "Tuesday",
+    We: "Wednesday",
+    Th: "Thursday",
+    Fr: "Friday",
+    Sa: "Saturday",
+    Su: "Sunday",
   };
-  
+
   return dayMap[day] || day;
 }
 
 function parseOpens(hours: string): string {
   const timeMatch = hours.match(/(\d{2}:\d{2})/);
-  return timeMatch ? timeMatch[1] : '09:00';
+  return timeMatch ? timeMatch[1] : "09:00";
 }
 
 function parseCloses(hours: string): string {
   const timeMatches = hours.match(/(\d{2}:\d{2})/g);
-  return timeMatches && timeMatches.length > 1 ? timeMatches[1] : '17:00';
+  return timeMatches && timeMatches.length > 1 ? timeMatches[1] : "17:00";
 }
 
 /**
@@ -333,14 +330,19 @@ function parseCloses(hours: string): string {
  */
 export function generateWebSiteSchema(): object {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
     name: SITE_NAME,
     url: SITE_URL,
+    description: "Hyper-local reviews & discovery for Cape Town",
     potentialAction: {
-      '@type': 'SearchAction',
-      target: `${SITE_URL}/search?q={search_term_string}`,
-      'query-input': 'required name=search_term_string',
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
     },
   };
 }
@@ -358,13 +360,13 @@ export function generateCollectionPageSchema({
   url: string;
 }): object {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
     name,
     description,
     url,
     isPartOf: {
-      '@type': 'WebSite',
+      "@type": "WebSite",
       name: SITE_NAME,
       url: SITE_URL,
     },
@@ -376,22 +378,20 @@ export function generateCollectionPageSchema({
  */
 export function generateSiteNavigationSchema(): object {
   const navItems = [
-    { name: 'Home', url: `${SITE_URL}/home` },
-    { name: 'For You', url: `${SITE_URL}/for-you` },
-    { name: 'Trending', url: `${SITE_URL}/trending` },
-    { name: 'Events & Specials', url: `${SITE_URL}/events-specials` },
-    { name: 'Explore Cape Town', url: `${SITE_URL}/search` },
-    { name: 'Leaderboard', url: `${SITE_URL}/leaderboard` },
-    { name: 'About Sayso', url: `${SITE_URL}/about` },
-    { name: 'Contact', url: `${SITE_URL}/contact` },
+    { name: "Home", url: `${SITE_URL}/home` },
+    { name: "For You", url: `${SITE_URL}/for-you` },
+    { name: "Trending", url: `${SITE_URL}/trending` },
+    { name: "Events & Specials", url: `${SITE_URL}/events-specials` },
+    { name: "Leaderboard", url: `${SITE_URL}/leaderboard` },
+    { name: "Sign In", url: `${SITE_URL}/login` },
   ];
 
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'Site Navigation',
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Site Navigation",
     itemListElement: navItems.map((item, index) => ({
-      '@type': 'SiteNavigationElement',
+      "@type": "SiteNavigationElement",
       position: index + 1,
       name: item.name,
       url: item.url,
@@ -418,4 +418,3 @@ export function generateBusinessPageSchema(
 
   return schemas;
 }
-
