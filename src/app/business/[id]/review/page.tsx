@@ -634,15 +634,17 @@ function WriteReviewContent() {
                       </div>
                     </div>
 
-                    <ReviewsList
-                      reviews={reviews}
-                      loading={reviewsLoading}
-                      error={null}
-                      showBusinessInfo={false}
-                      businessId={businessId}
-                      onUpdate={refetchReviews}
-                      emptyMessage="Be the first to review this business!"
-                    />
+                    <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-2">
+                      <ReviewsList
+                        reviews={reviews}
+                        loading={reviewsLoading}
+                        error={null}
+                        showBusinessInfo={false}
+                        businessId={businessId}
+                        onUpdate={refetchReviews}
+                        emptyMessage="Be the first to review this business!"
+                      />
+                    </div>
                   </section>
                 </div>
               </div>
