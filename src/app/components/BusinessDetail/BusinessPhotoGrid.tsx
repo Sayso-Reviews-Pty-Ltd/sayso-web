@@ -81,7 +81,7 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
 
         {hasPhotos ? (
           <>
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 rounded-[12px]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-3 rounded-[12px]">
               {gridPhotos.map((photo, index) => (
                 <Button
                   key={`${photo}-${index}`}
@@ -97,7 +97,7 @@ export default function BusinessPhotoGrid({ businessName, photos = [] }: Busines
                     fill
                     className="object-cover"
                     loading="lazy"
-                    sizes="(max-width: 640px) 33vw, 220px"
+                    sizes="(max-width: 639px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1279px) 22vw, (max-width: 1535px) 18vw, 15vw"
                   />
                 </Button>
               ))}
