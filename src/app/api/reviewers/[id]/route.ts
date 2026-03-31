@@ -312,7 +312,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       username: profile.username,
       profilePicture:
         profile.avatar_url ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name || "User")}&background=random`,
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name || "User")}&background=random&format=png`,
       reviewCount: transformedReviews.length,
       rating: Math.round(avgRating * 10) / 10,
       badge: profile.is_top_reviewer ? ("top" as const) : undefined,

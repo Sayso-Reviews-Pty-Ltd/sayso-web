@@ -14,11 +14,7 @@ interface TooltipProps {
   position?: "top" | "bottom" | "left" | "right";
 }
 
-export default function BusinessTooltip({
-  content,
-  children,
-  position = "top",
-}: TooltipProps) {
+export default function BusinessTooltip({ content, children, position = "top" }: TooltipProps) {
   const [isTruncated, setIsTruncated] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
 
@@ -40,15 +36,13 @@ export default function BusinessTooltip({
   return (
     <TooltipProvider>
       {/* open={false} disables the tooltip when text is not truncated */}
-      <Tooltip open={isTruncated ? undefined : false}>
+      <Tooltip open={isTruncated ? true : false}>
         <TooltipTrigger asChild>
           <div ref={triggerRef} className="w-full">
             {children}
           </div>
         </TooltipTrigger>
-        <TooltipContent side={position}>
-          {content}
-        </TooltipContent>
+        <TooltipContent side={position}>{content}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
