@@ -3,6 +3,7 @@
 import { use, useRef } from "react";
 import { useEventDetail } from "../../hooks/useEventDetail";
 import { useSavedEvent } from "../../hooks/useSavedEvent";
+import { useEventRatings } from "../../hooks/useEventRatings";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,6 +68,7 @@ export default function SpecialDetailPage({ params }: SpecialDetailPageProps) {
   const organiser = quicketEvent?.organiser ?? null;
 
   const { isSaved: isLiked, toggle: toggleSaved } = useSavedEvent(special?.id ?? null);
+  const { rating: liveRating } = useEventRatings(resolvedParams.id, rawEvent?.rating ?? 0, 0);
 
   const normalizedDescription =
     normalizeDescriptionText(special?.description) ||
@@ -298,7 +300,7 @@ export default function SpecialDetailPage({ params }: SpecialDetailPageProps) {
                       <div className="flex items-center gap-1">
                         <Star className="text-amber-400 fill-amber-400" size={16} />
                         <span className="font-urbanist text-sm font-semibold text-charcoal">
-                          {special.rating}
+                          {liveRating != null ? Number(liveRating).toFixed(1) : special.rating}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-charcoal/70">

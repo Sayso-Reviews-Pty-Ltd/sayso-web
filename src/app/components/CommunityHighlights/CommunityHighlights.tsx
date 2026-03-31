@@ -45,7 +45,7 @@ export default function CommunityHighlights({
     return <CommunityHighlightsSkeleton />;
   }
 
-  const hasReviewers = !!topReviewers && topReviewers.length > 5;
+  const hasReviewers = !!topReviewers && topReviewers.length >= 3;
   const hasCoordinateBusinesses = (
     Array.isArray(businessesOfTheMonth) ? businessesOfTheMonth : []
   ).some(

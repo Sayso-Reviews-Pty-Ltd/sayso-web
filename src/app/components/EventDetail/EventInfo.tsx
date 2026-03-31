@@ -9,9 +9,11 @@ import type { Event } from "../../lib/types/Event";
 interface EventInfoProps {
   event: Event;
   sharedTitleLayoutId?: string;
+  liveRating?: number | null;
 }
 
-export default function EventInfo({ event, sharedTitleLayoutId }: EventInfoProps) {
+export default function EventInfo({ event, sharedTitleLayoutId, liveRating }: EventInfoProps) {
+  const displayRating = liveRating ?? event.rating;
   return (
     <m.div
       className="font-urbanist"
@@ -27,11 +29,11 @@ export default function EventInfo({ event, sharedTitleLayoutId }: EventInfoProps
       </m.h1>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        {event.rating != null && (
+        {displayRating != null && (
           <div className="inline-flex items-center gap-1 rounded-full bg-off-white/95 backdrop-blur-xl px-3 py-1.5 text-charcoal border-none">
             <GoldStar size={14} className="w-3.5 h-3.5" />
             <span className="text-body-sm font-semibold text-charcoal">
-              {Number(event.rating).toFixed(1)}
+              {Number(displayRating).toFixed(1)}
             </span>
           </div>
         )}

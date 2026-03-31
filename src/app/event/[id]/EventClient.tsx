@@ -225,7 +225,11 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   {/* Left Column - Main Content */}
                   <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
                     <EventHeroImage event={event} sharedLayoutId={eventMediaLayoutId} />
-                    <EventInfo event={event} sharedTitleLayoutId={eventTitleLayoutId} />
+                    <EventInfo
+                      event={event}
+                      sharedTitleLayoutId={eventTitleLayoutId}
+                      liveRating={liveRating}
+                    />
                     <EventDescription event={event} />
 
                     {hasTicketInformation && (
