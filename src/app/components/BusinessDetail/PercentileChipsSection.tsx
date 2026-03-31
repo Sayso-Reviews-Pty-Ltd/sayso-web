@@ -67,12 +67,14 @@ function PercentileChipsSection({
             const Icon = metric.icon;
             const isPlaceholder = metric.value === 0;
 
-            // Calculate color intensity based on value
+            // Quartile-aligned thresholds based on pure tag rate
+            // ≥75 = top quartile (excellent), ≥50 = above median (good),
+            // ≥25 = below median (fair), <25 = bottom quartile (low), 0 = no data
             const getColor = (value: number) => {
               if (value === 0) return "text-charcoal/30";
-              if (value >= 80) return "text-navbar-bg";
-              if (value >= 60) return "text-navbar-bg/70";
-              if (value >= 40) return "text-amber-600";
+              if (value >= 75) return "text-navbar-bg";
+              if (value >= 50) return "text-navbar-bg/70";
+              if (value >= 25) return "text-amber-600";
               return "text-coral";
             };
 
