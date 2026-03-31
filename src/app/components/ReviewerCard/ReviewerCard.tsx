@@ -12,7 +12,7 @@ import BadgePill, { BadgePillData } from "../Badges/BadgePill";
 
 import { m } from "framer-motion";
 import { Star, User, Heart, ChevronRight, MapPin } from "@/app/lib/icons";
-import { RAIL_CARD_RADIUS, RAIL_CARD_WIDTH } from "../HomeSectionRow/cardDimensions";
+import { RAIL_CARD_RADIUS } from "../HomeSectionRow/cardDimensions";
 
 interface ReviewerCardProps {
   review?: Review;
@@ -21,6 +21,8 @@ interface ReviewerCardProps {
   variant?: "reviewer" | "review";
   index?: number;
 }
+
+const REVIEWER_CARD_WIDTH = "w-full sm:w-[220px] md:w-[300px]";
 
 export default function ReviewerCard({
   review,
@@ -80,40 +82,22 @@ export default function ReviewerCard({
     return (
       <div
         id={idForSnap}
-        className={`snap-center snap-always ${RAIL_CARD_WIDTH} flex-shrink-0 h-full`}
+        className={`snap-center snap-always ${REVIEWER_CARD_WIDTH} flex-shrink-0 h-full`}
       >
         <Link href={cardHref} className="block group/card h-full">
           <div
-            className={`relative ${RAIL_CARD_RADIUS} overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col cursor-pointer group-hover/card:-translate-y-1 font-urbanist ${
+            className={`relative ${RAIL_CARD_RADIUS} overflow-hidden shadow-md h-full flex flex-col cursor-pointer font-urbanist border-none ${
               isTopReviewer ? "bg-[#1c1712]" : "bg-card-bg"
             }`}
           >
-            {/* Top accent */}
-            <div
-              className={`h-[3px] w-full flex-shrink-0 ${
-                isTopReviewer
-                  ? "bg-gradient-to-r from-amber-500 via-yellow-300 to-orange-400"
-                  : "bg-gradient-to-r from-coral/50 via-sage/60 to-coral/30"
-              }`}
-            />
-
             {/* Ambient glow layer */}
             {isTopReviewer && (
               <div className="absolute inset-0 bg-gradient-to-b from-amber-900/20 via-transparent to-transparent pointer-events-none" />
             )}
 
-            {/* Hover tint */}
-            <div
-              className={`absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl ${
-                isTopReviewer
-                  ? "bg-gradient-to-br from-amber-400/[0.06] to-transparent"
-                  : "bg-gradient-to-br from-transparent to-sage/[0.03]"
-              }`}
-            />
-
-            <div className="relative p-4 flex flex-col gap-3.5 h-full">
+            <div className="relative p-3 flex flex-col gap-2.5 h-full">
               {/* ── IDENTITY ROW ── avatar + name + status */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {/* Avatar */}
                 <div className="relative flex-shrink-0">
                   {isTopReviewer && (
@@ -125,9 +109,9 @@ export default function ReviewerCard({
                     <Image
                       src={reviewerData.profilePicture}
                       alt={reviewerData?.name || "Reviewer"}
-                      width={48}
-                      height={48}
-                      className={`relative w-12 h-12 object-cover rounded-full shadow-sm ${
+                      width={40}
+                      height={40}
+                      className={`relative w-10 h-10 object-cover rounded-full shadow-sm ${
                         isTopReviewer ? "ring-2 ring-amber-400/50" : "ring-2 ring-white"
                       }`}
                       priority={false}
@@ -135,7 +119,7 @@ export default function ReviewerCard({
                     />
                   ) : (
                     <div
-                      className={`relative w-12 h-12 flex items-center justify-center rounded-full shadow-sm ${
+                      className={`relative w-10 h-10 flex items-center justify-center rounded-full shadow-sm ${
                         isTopReviewer
                           ? "bg-gradient-to-br from-amber-900/60 to-orange-900/40 ring-2 ring-amber-400/30"
                           : "bg-gradient-to-br from-sage/25 to-coral/15 ring-2 ring-white"
@@ -143,7 +127,7 @@ export default function ReviewerCard({
                     >
                       <User
                         className={isTopReviewer ? "text-amber-300/50" : "text-charcoal/40"}
-                        size={20}
+                        size={16}
                         strokeWidth={1.8}
                       />
                     </div>
@@ -158,8 +142,8 @@ export default function ReviewerCard({
                     </div>
                   )}
                   {isTopReviewer && (
-                    <div className="absolute -right-0.5 -bottom-0.5 z-20 w-[18px] h-[18px] rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center ring-2 ring-[#1c1712] shadow-sm">
-                      <Star className="w-2.5 h-2.5 fill-white text-white" />
+                    <div className="absolute -right-0.5 -bottom-0.5 z-20 w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center ring-2 ring-[#1c1712] shadow-sm">
+                      <Star className="w-2 h-2 fill-white text-white" />
                     </div>
                   )}
                 </div>
@@ -167,7 +151,7 @@ export default function ReviewerCard({
                 {/* Name + status label */}
                 <div className="flex-1 min-w-0">
                   <h3
-                    className={`text-[15px] font-bold truncate leading-tight tracking-[-0.02em] ${
+                    className={`text-[14px] font-bold truncate leading-tight tracking-[-0.02em] ${
                       isTopReviewer ? "text-amber-100" : "text-charcoal"
                     }`}
                   >
@@ -180,8 +164,8 @@ export default function ReviewerCard({
                       Top Reviewer
                     </span>
                   ) : reviewerData?.location ? (
-                    <p className="flex items-center gap-0.5 text-[12px] text-charcoal/45 font-medium mt-0.5 truncate">
-                      <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                    <p className="flex items-center gap-0.5 text-[11px] text-charcoal/45 font-medium mt-0.5 truncate">
+                      <MapPin className="w-2 h-2 flex-shrink-0" />
                       {reviewerData.location}
                     </p>
                   ) : null}
@@ -199,7 +183,7 @@ export default function ReviewerCard({
                   animation: stat-tick 0.45s cubic-bezier(0.22,1,0.36,1) both;
                 }
               `}</style>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-3 gap-1">
                 {[
                   { value: reviewerData?.reviewCount ?? 0, label: "Reviews", delay: "0ms" },
                   {
@@ -214,14 +198,14 @@ export default function ReviewerCard({
                 ].map(({ value, label, delay }) => (
                   <div
                     key={label}
-                    className={`flex flex-col items-center px-2 py-2 rounded-xl transition-colors overflow-hidden border ${
+                    className={`flex flex-col items-center px-1.5 py-1.5 rounded-lg transition-colors overflow-hidden border ${
                       isTopReviewer
-                        ? "bg-amber-950/40 border-amber-400/[0.12] hover:bg-amber-950/60"
-                        : "bg-off-white/70 border-charcoal/[0.06] hover:bg-off-white/90 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
+                        ? "bg-amber-950/40 border-amber-400/[0.12]"
+                        : "bg-off-white/70 border-charcoal/[0.06] shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
                     }`}
                   >
                     <span
-                      className={`stat-tick text-[22px] font-black leading-none tracking-tight ${
+                      className={`stat-tick text-[18px] font-black leading-none tracking-tight ${
                         isTopReviewer ? "text-amber-300" : "text-charcoal"
                       }`}
                       style={{ animationDelay: delay }}
@@ -229,7 +213,7 @@ export default function ReviewerCard({
                       {value}
                     </span>
                     <span
-                      className={`text-[9px] font-semibold uppercase tracking-[0.08em] mt-0.5 ${
+                      className={`text-[8px] font-semibold uppercase tracking-[0.08em] mt-0 ${
                         isTopReviewer ? "text-amber-400/45" : "text-charcoal/40"
                       }`}
                     >
@@ -264,24 +248,24 @@ export default function ReviewerCard({
               {/* ── CURIOSITY GAP ── latest review snippet */}
               {latestReview && (
                 <div
-                  className={`rounded-xl px-3 py-2.5 relative overflow-hidden border ${
+                  className={`rounded-xl px-2.5 py-2 relative overflow-hidden border ${
                     isTopReviewer
                       ? "bg-amber-950/25 border-amber-400/[0.08]"
                       : "bg-off-white/50 border-charcoal/[0.06]"
                   }`}
                 >
                   <span
-                    className={`absolute -top-1 -right-1 text-[48px] leading-none font-serif select-none pointer-events-none ${
+                    className={`absolute -top-1 -right-1 text-[40px] leading-none font-serif select-none pointer-events-none ${
                       isTopReviewer ? "text-amber-400/[0.08]" : "text-charcoal/[0.05]"
                     }`}
                   >
                     &rdquo;
                   </span>
 
-                  <div className="flex items-center gap-1.5 mb-1.5">
+                  <div className="flex items-center gap-1.5 mb-1">
                     {renderStars((latestReview as any)?.rating ?? 5, "w-[10px] h-[10px]")}
                     <span
-                      className={`text-[9px] font-semibold uppercase tracking-[0.08em] ${
+                      className={`text-[8px] font-semibold uppercase tracking-[0.08em] ${
                         isTopReviewer ? "text-amber-400/35" : "text-charcoal/35"
                       }`}
                     >
@@ -289,7 +273,7 @@ export default function ReviewerCard({
                     </span>
                   </div>
                   <p
-                    className={`text-[12px] leading-snug line-clamp-2 font-medium italic tracking-tight ${
+                    className={`text-[11px] leading-snug line-clamp-2 font-medium italic tracking-tight ${
                       isTopReviewer ? "text-amber-100/45" : "text-charcoal/60"
                     }`}
                   >
@@ -297,18 +281,6 @@ export default function ReviewerCard({
                   </p>
                 </div>
               )}
-
-              {/* ── HOVER CTA ── reveals on card hover */}
-              <div className="flex items-center justify-end -mt-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
-                <span
-                  className={`text-[10px] font-semibold flex items-center gap-0.5 ${
-                    isTopReviewer ? "text-amber-400/55" : "text-sage/65"
-                  }`}
-                >
-                  View profile
-                  <ChevronRight className="w-3 h-3" />
-                </span>
-              </div>
             </div>
           </div>
         </Link>
