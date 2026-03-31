@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { m } from "framer-motion";
 import { Award } from "@/app/lib/icons";
-import { ProfileBadgeRibbon } from "@/app/components/Badges/ProfileBadgeRibbon";
 
 interface ReviewerBadge {
   id: string;
@@ -45,29 +44,25 @@ export default function ReviewerBadgesSection({ badges }: ReviewerBadgesSectionP
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: idx * 0.04, type: "spring", stiffness: 300, damping: 25 }}
             whileHover={{ scale: 1.05, y: -3 }}
-            className="cursor-default transition-all duration-300 bg-off-white/70 rounded-xl ring-1 ring-black/5 shadow-sm hover:shadow-lg p-2"
+            className="cursor-default transition-all duration-300 bg-off-white/70 rounded-xl ring-1 ring-black/5 shadow-sm hover:shadow-lg p-3 flex flex-col items-center text-center gap-1.5"
           >
-            <ProfileBadgeRibbon>
-              <div className="flex h-full w-full flex-col items-center justify-center text-center px-1.5 py-1 sm:px-2">
-                <div className="relative mb-1 h-7 w-7 sm:h-8 sm:w-8">
-                  <Image
-                    src={badge.icon}
-                    alt={badge.name}
-                    width={32}
-                    height={32}
-                    sizes="(max-width: 640px) 28px, 32px"
-                    className="h-7 w-7 object-contain drop-shadow-sm sm:h-8 sm:w-8"
-                    unoptimized
-                  />
-                </div>
-                <h4 className="line-clamp-1 text-[10px] font-bold leading-tight text-charcoal/95 sm:text-[11px]">
-                  {badge.name}
-                </h4>
-                <p className="line-clamp-2 text-[9px] leading-tight text-charcoal/75 sm:text-[10px]">
-                  {badge.description}
-                </p>
-              </div>
-            </ProfileBadgeRibbon>
+            <div className="relative h-10 w-10 sm:h-12 sm:w-12">
+              <Image
+                src={badge.icon}
+                alt={badge.name}
+                width={48}
+                height={48}
+                sizes="(max-width: 640px) 40px, 48px"
+                className="h-10 w-10 object-contain drop-shadow-sm sm:h-12 sm:w-12"
+                unoptimized
+              />
+            </div>
+            <h4 className="line-clamp-1 text-[10px] font-bold leading-tight text-charcoal/95 sm:text-[11px]">
+              {badge.name}
+            </h4>
+            <p className="line-clamp-2 text-[9px] leading-tight text-charcoal/75 sm:text-[10px]">
+              {badge.description}
+            </p>
           </m.div>
         ))}
       </div>
