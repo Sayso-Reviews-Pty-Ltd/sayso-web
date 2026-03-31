@@ -141,7 +141,7 @@ export default function ReviewerProfilePage() {
                   <ReviewerStatsGrid
                     helpfulVotes={reviewer.helpfulVotes}
                     badgesCount={reviewer.badgesCount}
-                    impactScore={reviewer.impactScore}
+                    reviewCount={reviewer.reviewCount}
                     averageRating={reviewer.averageRating}
                   />
 

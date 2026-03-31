@@ -3,7 +3,7 @@ import { Award, ThumbsUp, TrendingUp } from "@/app/lib/icons";
 interface ReviewerStatsGridProps {
   helpfulVotes: number;
   badgesCount: number;
-  impactScore: number;
+  reviewCount: number;
   averageRating: number;
 }
 
@@ -16,7 +16,7 @@ const iconPillClass =
 export default function ReviewerStatsGrid({
   helpfulVotes,
   badgesCount,
-  impactScore,
+  reviewCount,
   averageRating,
 }: ReviewerStatsGridProps) {
   return (
@@ -48,10 +48,10 @@ export default function ReviewerStatsGrid({
           <span className={iconPillClass}>
             <TrendingUp className="w-4 h-4 text-charcoal/85" />
           </span>
-          <span className="text-sm text-charcoal/70">Impact</span>
+          <span className="text-sm text-charcoal/70">Reviews</span>
         </div>
-        <p className="text-2xl font-bold text-charcoal">{impactScore.toLocaleString("en-US")}</p>
-        <p className="text-xs text-charcoal/60">Score</p>
+        <p className="text-2xl font-bold text-charcoal">{reviewCount.toLocaleString("en-US")}</p>
+        <p className="text-xs text-charcoal/60">Total written</p>
       </div>
 
       <div className={cardClass}>

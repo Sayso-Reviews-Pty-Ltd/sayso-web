@@ -10,7 +10,7 @@ interface ReviewerHeaderCardProps {
   profilePicture: string;
   badge?: "top" | "verified" | "local";
   trophyBadge?: "gold" | "silver" | "bronze" | "rising-star" | "community-favorite";
-  location: string;
+  location: string | null;
   memberSince: string;
   averageRating: number;
   reviewCount: number;
@@ -91,12 +91,14 @@ export default function ReviewerHeaderCard({
               </div>
 
               <div className="flex items-center gap-3 mb-4 text-body-sm text-charcoal/70 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
-                    <MapPin className="w-3 h-3 text-charcoal/85" />
-                  </span>
-                  <span>{location}</span>
-                </div>
+                {location && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
+                      <MapPin className="w-3 h-3 text-charcoal/85" />
+                    </span>
+                    <span>{location}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5">
                   <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
                     <Calendar className="w-3 h-3 text-charcoal/85" />
