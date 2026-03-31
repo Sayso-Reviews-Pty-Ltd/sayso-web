@@ -1,6 +1,12 @@
 "use client";
 
-import Tooltip from "../../Tooltip/Tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
+import { useIsDesktop } from "@/app/hooks/useIsDesktop";
 import Stars from "../../Stars/Stars";
 import { getCategoryIcon } from "../BusinessOfTheMonthCard.constants";
 import { getCategoryLabelFromBusiness } from "../../../utils/subcategoryPlaceholders";
@@ -28,6 +34,8 @@ export default function BusinessOfTheMonthCardContent({
   isSaved,
   onBookmark,
 }: BusinessOfTheMonthCardContentProps) {
+  const isDesktop = useIsDesktop();
+
   return (
     <div className="px-5 pt-2.5 sm:px-6 sm:pt-1 md:pt-2 lg:pt-2.5 pb-2.5 flex-1 relative flex-shrink-0 flex flex-col justify-start bg-card-bg/10 z-10 rounded-b-[12px]">
       <div className="flex flex-col">
@@ -37,7 +45,25 @@ export default function BusinessOfTheMonthCardContent({
           <div className="flex flex-col items-center text-center relative z-10 space-y-0.5">
             {/* Business Name */}
             <div className="flex items-center justify-center w-full min-w-0">
-              <Tooltip content={business.name} position="top">
+              {isDesktop ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={onCardClick}
+                        className="group w-full max-w-full min-w-0 text-charcoal transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-coral/40 rounded-lg px-2 py-1 flex items-center justify-center"
+                        aria-label={`View ${business.name} details`}
+                      >
+                        <h3 className="text-h2 sm:text-h1 font-bold text-inherit text-center leading-[1.3] truncate tracking-tight transition-colors duration-300 group-hover:text-navbar-bg/90 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                          {business.name}
+                        </h3>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">{business.name}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
                 <button
                   type="button"
                   onClick={onCardClick}
@@ -48,7 +74,7 @@ export default function BusinessOfTheMonthCardContent({
                     {business.name}
                   </h3>
                 </button>
-              </Tooltip>
+              )}
             </div>
 
             {/* Category with icon */}

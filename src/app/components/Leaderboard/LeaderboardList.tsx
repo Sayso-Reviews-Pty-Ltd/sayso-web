@@ -20,83 +20,64 @@ interface LeaderboardListProps {
   onToggleFullLeaderboard: () => void;
 }
 
-function LeaderboardList({ 
-  users, 
-  showFullLeaderboard, 
-  onToggleFullLeaderboard 
+function LeaderboardList({
+  users,
+  showFullLeaderboard,
+  onToggleFullLeaderboard,
 }: LeaderboardListProps) {
   // Memoize the user arrays to prevent unnecessary recalculations
-  const visibleUsers = useMemo(() => 
-    showFullLeaderboard ? users : users.slice(0, 5), 
+  const visibleUsers = useMemo(
+    () => (showFullLeaderboard ? users : users.slice(0, 5)),
     [users, showFullLeaderboard]
   );
-  
-  const hiddenUsers = useMemo(() => 
-    users.slice(5), 
-    [users]
-  );
+
+  const hiddenUsers = useMemo(() => users.slice(5), [users]);
 
   return (
     <>
       {/* Mobile: Vertical stacked list */}
-      <div className="md:hidden space-y-2 sm:space-y-3">
+      <div className="md:hidden space-y-3 sm:space-y-4">
         {visibleUsers.map((user, index) => (
-          <LeaderboardUser 
-            key={user.rank} 
-            user={user} 
-            index={index}
-            isMobile={true}
-          />
+          <LeaderboardUser key={user.rank} user={user} index={index} isMobile={true} />
         ))}
 
         <AnimatePresence>
-          {showFullLeaderboard && hiddenUsers.map((user, index) => (
-            <m.div
-              key={user.rank}
-              initial={{ opacity: 0, height: 0, y: -20 }}
-              animate={{ opacity: 1, height: 'auto', y: 0 }}
-              exit={{ opacity: 0, height: 0, y: -20 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="mt-3 sm:mt-4"
-            >
-              <LeaderboardUser 
-                user={user} 
-                index={index + 5}
-                isMobile={true}
-              />
-            </m.div>
-          ))}
+          {showFullLeaderboard &&
+            hiddenUsers.map((user, index) => (
+              <m.div
+                key={user.rank}
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="mt-4 sm:mt-5"
+              >
+                <LeaderboardUser user={user} index={index + 5} isMobile={true} />
+              </m.div>
+            ))}
         </AnimatePresence>
       </div>
 
       {/* Desktop: Vertical list */}
-      <div className="hidden md:block space-y-2 sm:space-y-3">
+      <div className="hidden md:block space-y-3 sm:space-y-4">
         {visibleUsers.map((user, index) => (
-          <LeaderboardUser 
-            key={user.rank} 
-            user={user} 
-            index={index}
-            isMobile={false}
-          />
+          <LeaderboardUser key={user.rank} user={user} index={index} isMobile={false} />
         ))}
 
         <AnimatePresence>
-          {showFullLeaderboard && hiddenUsers.map((user, index) => (
-            <m.div
-              key={user.rank}
-              initial={{ opacity: 0, height: 0, y: -20 }}
-              animate={{ opacity: 1, height: 'auto', y: 0 }}
-              exit={{ opacity: 0, height: 0, y: -20 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="mt-3 sm:mt-4"
-            >
-              <LeaderboardUser 
-                user={user} 
-                index={index + 5}
-                isMobile={false}
-              />
-            </m.div>
-          ))}
+          {showFullLeaderboard &&
+            hiddenUsers.map((user, index) => (
+              <m.div
+                key={user.rank}
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="mt-4 sm:mt-5"
+              >
+                <LeaderboardUser user={user} index={index + 5} isMobile={false} />
+              </m.div>
+            ))}
         </AnimatePresence>
       </div>
 

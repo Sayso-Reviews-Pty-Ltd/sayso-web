@@ -1,7 +1,13 @@
 "use client";
 
 import { m } from "framer-motion";
-import Tooltip from "../../Tooltip/Tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
+import { useIsDesktop } from "@/app/hooks/useIsDesktop";
 import BusinessCardCategory from "./BusinessCardCategory";
 import BusinessCardReviews from "./BusinessCardReviews";
 import BusinessCardPercentiles from "./BusinessCardPercentiles";
@@ -47,6 +53,8 @@ export default function BusinessCardContent({
   onWriteReview,
   isBusinessAccount,
 }: BusinessCardContentProps) {
+  const isDesktop = useIsDesktop();
+
   return (
     <div
       className={`px-4 pt-3 sm:px-4 sm:pt-2 md:pt-3 lg:pt-3 pb-3 ${
@@ -60,7 +68,28 @@ export default function BusinessCardContent({
           <div className="flex flex-col items-center text-center relative z-10 space-y-0.5">
             {/* Business Name */}
             <div className="flex items-center justify-center w-full min-w-0 relative">
-              <Tooltip content={business.name} position="top">
+              {isDesktop ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={onCardClick}
+                        className="group w-full max-w-full min-w-0 text-charcoal transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-coral/40 rounded-lg px-2 py-1 flex items-center justify-center relative"
+                        aria-label={`View ${business.name} details`}
+                      >
+                        <m.h3
+                          layoutId={businessTitleLayoutId}
+                          className="text-h2 sm:text-h1 font-bold text-center leading-[1.3] truncate tracking-tight transition-colors duration-300 group-hover:text-navbar-bg/90 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap relative z-[1]"
+                        >
+                          {business.name}
+                        </m.h3>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">{business.name}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
                 <button
                   type="button"
                   onClick={onCardClick}
@@ -74,7 +103,7 @@ export default function BusinessCardContent({
                     {business.name}
                   </m.h3>
                 </button>
-              </Tooltip>
+              )}
               {ownerView && (business as { status?: string }).status === "pending_approval" && (
                 <span className="mt-1.5 inline-flex items-center rounded-full bg-off-white px-2.5 py-1 text-xs font-semibold text-charcoal">
                   Pending Approval
