@@ -76,7 +76,7 @@ export default function ReviewsList({
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="border-charcoal/8 bg-off-white p-4 shadow-none">
             <div className="flex items-start gap-3">
@@ -168,7 +168,7 @@ export default function ReviewsList({
       </CollapsibleTrigger>
 
       <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-        <div className="pt-3 space-y-3">
+        <div className="pt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
           {reviews.map((review) => (
             <ReviewCard
               key={review.id}

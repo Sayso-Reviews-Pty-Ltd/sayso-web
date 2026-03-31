@@ -35,9 +35,7 @@ export function ReviewHeader({
   return (
     <div className="flex items-start space-x-4">
       {/* Avatar */}
-      <div
-        className={`flex-shrink-0 ${isDesktop ? "" : "transition-transform duration-300 hover:scale-110 hover:rotate-[5deg]"}`}
-      >
+      <div className="flex-shrink-0">
         {(() => {
           const displayName =
             review.user?.name ||
@@ -50,9 +48,7 @@ export function ReviewHeader({
           const src = review.user.avatar_url?.trim() || undefined;
           return (
             <div className="w-12 h-12 rounded-full p-0.5 bg-off-white ring-2 ring-white/40">
-              <Avatar
-                className={`w-full h-full ${isDesktop ? "" : "group-hover:ring-2 group-hover:ring-sage/40 transition-all duration-300"}`}
-              >
+              <Avatar className="w-full h-full">
                 {src && <AvatarImage src={src} alt={displayName} />}
                 <AvatarFallback
                   delayMs={src ? 200 : 0}
@@ -72,9 +68,7 @@ export function ReviewHeader({
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <div className="flex min-w-0 flex-nowrap items-center gap-2">
                 <span
-                  className={`min-w-0 truncate font-urbanist text-lg font-600 leading-tight text-charcoal-700 ${
-                    isDesktop ? "" : "transition-colors duration-300 group-hover:text-sage"
-                  }`}
+                  className="min-w-0 truncate font-urbanist text-lg font-600 leading-tight text-charcoal-700"
                   title={
                     review.user?.name ||
                     getDisplayUsername(
@@ -167,20 +161,20 @@ export function ReviewHeader({
                 <button
                   type="button"
                   onClick={onEdit}
-                  className="min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-navbar-bg rounded-full flex items-center justify-center active:scale-95 hover:scale-110 hover:bg-navbar-bg/90 transition-all duration-200 touch-manipulation"
+                  className="min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-charcoal/8 rounded-full flex items-center justify-center active:scale-95 transition-colors duration-200 touch-manipulation"
                   aria-label="Edit review"
                   title="Edit review"
                 >
-                  <Edit className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-white" />
+                  <Edit className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-charcoal/60" />
                 </button>
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-navbar-bg rounded-full flex items-center justify-center active:scale-95 hover:scale-110 hover:bg-navbar-bg/90 transition-all duration-200 touch-manipulation"
+                  className="min-w-[44px] min-h-[44px] sm:min-w-[28px] sm:min-h-[28px] w-11 h-11 sm:w-7 sm:h-7 bg-charcoal/8 rounded-full flex items-center justify-center active:scale-95 transition-colors duration-200 touch-manipulation"
                   aria-label="Delete review"
                   title="Delete review"
                 >
-                  <Trash2 className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-white" />
+                  <Trash2 className="w-5 h-5 sm:w-[18px] sm:h-[18px] text-charcoal/60" />
                 </button>
               </div>
             )}

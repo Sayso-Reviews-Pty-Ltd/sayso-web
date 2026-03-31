@@ -165,13 +165,7 @@ function ReviewCard({
   };
 
   return (
-    <Card
-      className={`relative bg-gradient-to-br from-off-white via-off-white to-off-white/95 backdrop-blur-sm p-6 border-none shadow-none ${
-        isDesktop
-          ? ""
-          : "transition-all duration-300 group hover:scale-[1.01] hover:translate-x-1 hover:-translate-y-1"
-      }`}
-    >
+    <Card className="relative bg-gradient-to-br from-off-white via-off-white to-off-white/95 backdrop-blur-sm p-4 border-none shadow-none">
       <ReviewHeader
         review={review}
         userBadges={userBadges}
