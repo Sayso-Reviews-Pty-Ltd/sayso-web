@@ -88,6 +88,22 @@ const nextConfig: NextConfig = {
         hostname: "picsum.photos",
         pathname: "/**",
       },
+      // Business websites with publicly accessible image assets
+      {
+        protocol: "https",
+        hostname: "mitchellsalehouse.co.za",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "yogis.co.za",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "hussargrill.co.za",
+        pathname: "/images/**",
+      },
     ],
 
     // Content Security Policy for images
