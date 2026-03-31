@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useReviewerProfile } from "../../hooks/useReviewerProfile";
-import { ChevronUp } from "@/app/lib/icons";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -23,16 +22,9 @@ import ReviewerBadgesSection from "./parts/ReviewerBadgesSection";
 export default function ReviewerProfilePage() {
   const params = useParams();
   const reviewerId = params?.id as string;
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const { reviewer, loading, isRealtimeConnected } = useReviewerProfile(reviewerId || null);
-
-  useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   if (loading) {
     return (
@@ -180,16 +172,6 @@ export default function ReviewerProfilePage() {
           </main>
         </div>
       </div>
-
-      {showScrollTop && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-8 right-8 z-40 w-14 h-14 bg-gradient-to-r from-navbar-bg to-navbar-bg/90 hover:from-navbar-bg/90 hover:to-navbar-bg backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl border border-white/30 hover:scale-110 transition-all duration-300"
-          aria-label="Scroll to top"
-        >
-          <ChevronUp className="w-7 h-7 text-white" strokeWidth={2.5} />
-        </button>
-      )}
 
       <Footer />
     </>

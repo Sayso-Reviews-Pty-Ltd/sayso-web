@@ -168,7 +168,7 @@ export default function ReviewsList({
       </CollapsibleTrigger>
 
       <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
-        <div className="pt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="pt-3 grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
           {reviews.map((review) => (
             <ReviewCard
               key={review.id}

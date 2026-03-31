@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
-import { getServiceSupabase } from '@/app/lib/admin';
-import { getCategoryLabelFromBusiness } from '@/app/utils/subcategoryPlaceholders';
-import { getInterestIdForSubcategory } from '@/app/lib/onboarding/subcategoryMapping';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
+import { getServiceSupabase } from "@/app/lib/admin";
+import { getCategoryLabelFromBusiness } from "@/app/utils/subcategoryPlaceholders";
+import { getInterestIdForSubcategory } from "@/app/lib/onboarding/subcategoryMapping";
 import {
   selectColdStartTrending,
   getTrendingSeed,
   type ColdStartCandidate,
-} from '@/app/utils/trendingColdStart';
+} from "@/app/utils/trendingColdStart";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 const FETCH_TIMEOUT_MS = 1500;
-const CACHE_CONTROL = 'public, s-maxage=30, stale-while-revalidate=300';
+const CACHE_CONTROL = "public, s-maxage=30, stale-while-revalidate=300";
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -41,7 +41,7 @@ const TRENDING_POOL_SIZE = 1500;
 const TRENDING_TIME_BUCKET_MINUTES = 15;
 
 type TrendingCursor = {
-  kind: 'offset';
+  kind: "offset";
   offset: number;
 };
 
@@ -49,8 +49,14 @@ function parseTrendingCursor(rawCursor: string | null): number {
   if (!rawCursor) return 0;
 
   try {
-    const decoded = JSON.parse(Buffer.from(rawCursor, 'base64url').toString('utf8')) as Partial<TrendingCursor>;
-    if (decoded.kind === 'offset' && typeof decoded.offset === 'number' && Number.isFinite(decoded.offset)) {
+    const decoded = JSON.parse(
+      Buffer.from(rawCursor, "base64url").toString("utf8")
+    ) as Partial<TrendingCursor>;
+    if (
+      decoded.kind === "offset" &&
+      typeof decoded.offset === "number" &&
+      Number.isFinite(decoded.offset)
+    ) {
       return Math.max(0, Math.floor(decoded.offset));
     }
   } catch {
@@ -61,7 +67,7 @@ function parseTrendingCursor(rawCursor: string | null): number {
 }
 
 function encodeTrendingCursor(offset: number): string {
-  return Buffer.from(JSON.stringify({ kind: 'offset', offset }), 'utf8').toString('base64url');
+  return Buffer.from(JSON.stringify({ kind: "offset", offset }), "utf8").toString("base64url");
 }
 
 function logSampleRows(label: string, rows: unknown[], debug: boolean) {
@@ -80,7 +86,7 @@ function logSampleRows(label: string, rows: unknown[], debug: boolean) {
 
 export async function GET(request: NextRequest) {
   const start = Date.now();
-  console.log('[TRENDING API] GET start at', new Date().toISOString());
+  console.log("[TRENDING API] GET start at", new Date().toISOString());
   try {
     let supabase;
     try {
@@ -88,29 +94,32 @@ export async function GET(request: NextRequest) {
     } catch {
       supabase = await getServerSupabase();
       console.warn(
-        '[TRENDING API] Service role not configured, using anon (guests may get empty if RLS restricts)',
+        "[TRENDING API] Service role not configured, using anon (guests may get empty if RLS restricts)"
       );
     }
     const { searchParams } = new URL(request.url);
 
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 50);
-    const cursorOffset = parseTrendingCursor(searchParams.get('cursor'));
-    const category = searchParams.get('category')?.trim() || null;
-    const city = searchParams.get('city')?.trim() || null;
-    const debug = searchParams.get('debug') === '1';
+    const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 50);
+    const cursorOffset = parseTrendingCursor(searchParams.get("cursor"));
+    const category = searchParams.get("category")?.trim() || null;
+    const city = searchParams.get("city")?.trim() || null;
+    const debug = searchParams.get("debug") === "1";
 
     // 1. Cold-start candidate pool (metadata-only score, no stats)
-    const { data: candidateRows, error: candidatesError } = await withTimeout(
-      supabase.rpc('get_trending_cold_start_candidates', {
+    const { data: candidateRows, error: candidatesError } = (await withTimeout(
+      supabase.rpc("get_trending_cold_start_candidates", {
         p_pool_size: TRENDING_POOL_SIZE,
         p_city: city || null,
       }) as any,
       FETCH_TIMEOUT_MS,
-      'trending:candidates'
-    ) as any;
+      "trending:candidates"
+    )) as any;
 
     if (candidatesError) {
-      console.warn('[TRENDING API] get_trending_cold_start_candidates error:', candidatesError.message);
+      console.warn(
+        "[TRENDING API] get_trending_cold_start_candidates error:",
+        candidatesError.message
+      );
     }
     const rawCandidates = (Array.isArray(candidateRows) ? candidateRows : []) as Array<{
       id: string;
@@ -119,8 +128,8 @@ export async function GET(request: NextRequest) {
       primary_subcategory_slug: string;
       primary_subcategory_label?: string | null;
     }>;
-    console.log('[TRENDING API] cold_start_candidates rows:', rawCandidates.length);
-    logSampleRows('cold_start_candidates', rawCandidates, debug);
+    console.log("[TRENDING API] cold_start_candidates rows:", rawCandidates.length);
+    logSampleRows("cold_start_candidates", rawCandidates, debug);
 
     let candidates: ColdStartCandidate[] = rawCandidates.map((r) => ({
       id: r.id,
@@ -133,9 +142,9 @@ export async function GET(request: NextRequest) {
     if (category) {
       const cat = category.trim().toLowerCase();
       candidates = candidates.filter(
-        (c) => (c.primary_subcategory_slug ?? '').trim().toLowerCase() === cat,
+        (c) => (c.primary_subcategory_slug ?? "").trim().toLowerCase() === cat
       );
-      console.log('[TRENDING API] after category filter:', candidates.length);
+      console.log("[TRENDING API] after category filter:", candidates.length);
     }
 
     // 2. Diversity-first selection (round-based, deterministic seed)
@@ -153,7 +162,7 @@ export async function GET(request: NextRequest) {
         meta: { count: 0, refreshedAt: new Date().toISOString(), category },
       };
       const response = NextResponse.json(payload);
-      response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=1800');
+      response.headers.set("Cache-Control", "public, s-maxage=900, stale-while-revalidate=1800");
       return response;
     }
 
@@ -161,50 +170,55 @@ export async function GET(request: NextRequest) {
     if (debug) {
       const byKey = new Map<string, number>();
       for (const c of selected) {
-        const key = (c.primary_subcategory_slug ?? 'miscellaneous').trim().toLowerCase();
+        const key = (c.primary_subcategory_slug ?? "miscellaneous").trim().toLowerCase();
         byKey.set(key, (byKey.get(key) ?? 0) + 1);
       }
       console.log(
-        '[TRENDING API][debug] selected key counts:',
-        Object.fromEntries([...byKey.entries()].sort((a, b) => b[1] - a[1])),
+        "[TRENDING API][debug] selected key counts:",
+        Object.fromEntries([...byKey.entries()].sort((a, b) => b[1] - a[1]))
       );
     }
 
     // 3. Enrich: businesses (primary_* columns) + business_stats (rating/reviews)
-    const { data: businessRows, error: businessError } = await withTimeout(
+    const { data: businessRows, error: businessError } = (await withTimeout(
       supabase
-        .from('businesses')
+        .from("businesses")
         .select(
-          'id, name, description, primary_subcategory_slug, primary_subcategory_label, primary_category_slug, location, address, image_url, verified, price_range, badge, slug, lat, lng, status, is_system',
+          "id, name, description, primary_subcategory_slug, primary_subcategory_label, primary_category_slug, location, address, image_url, verified, price_range, badge, slug, lat, lng, status, is_system"
         )
-        .in('id', selectedIds) as any,
+        .in("id", selectedIds) as any,
       FETCH_TIMEOUT_MS,
-      'trending:businesses'
-    ) as any;
+      "trending:businesses"
+    )) as any;
 
     if (businessError) {
-      console.warn('[TRENDING API] businesses enrich error:', businessError.message);
+      console.warn("[TRENDING API] businesses enrich error:", businessError.message);
     }
     const businessList = Array.isArray(businessRows) ? businessRows : [];
-    const businessById = new Map(businessList.map((b: Record<string, unknown>) => [b.id as string, b]));
+    const businessById = new Map(
+      businessList.map((b: Record<string, unknown>) => [b.id as string, b])
+    );
 
-    const { data: statsRows } = await withTimeout(
+    const { data: statsRows } = (await withTimeout(
       supabase
-        .from('business_stats')
-        .select('business_id, total_reviews, average_rating, percentiles')
-        .in('business_id', selectedIds) as any,
+        .from("business_stats")
+        .select("business_id, total_reviews, average_rating, percentiles")
+        .in("business_id", selectedIds) as any,
       FETCH_TIMEOUT_MS,
-      'trending:business_stats'
-    ) as any;
+      "trending:business_stats"
+    )) as any;
     const statsById = new Map(
-      (Array.isArray(statsRows) ? statsRows : []).map((s: { business_id: string }) => [s.business_id, s]),
+      (Array.isArray(statsRows) ? statsRows : []).map((s: { business_id: string }) => [
+        s.business_id,
+        s,
+      ])
     );
 
     // Preserve selection order; guardrail: only return active businesses
     const businesses: Record<string, unknown>[] = [];
     for (const id of selectedIds) {
       const b = businessById.get(id) as Record<string, unknown> | undefined;
-      if (!b || (b.status as string) !== 'active' || b.is_system === true) continue;
+      if (!b || (b.status as string) !== "active" || b.is_system) continue;
       const stats = statsById.get(id) as
         | { total_reviews?: number; average_rating?: number; percentiles?: unknown }
         | undefined;
@@ -222,21 +236,18 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. Fetch images
-    let imagesByBusinessId: Record<
-      string,
-      Array<{ url: string; is_primary: boolean | null }>
-    > = {};
+    let imagesByBusinessId: Record<string, Array<{ url: string; is_primary: boolean | null }>> = {};
     if (selectedIds.length > 0) {
-      const { data: imagesData } = await withTimeout(
+      const { data: imagesData } = (await withTimeout(
         supabase
-          .from('business_images')
-          .select('business_id, url, is_primary')
-          .in('business_id', selectedIds)
-          .order('is_primary', { ascending: false })
-          .order('created_at', { ascending: false }) as any,
+          .from("business_images")
+          .select("business_id, url, is_primary")
+          .in("business_id", selectedIds)
+          .order("is_primary", { ascending: false })
+          .order("created_at", { ascending: false }) as any,
         FETCH_TIMEOUT_MS,
-        'trending:images'
-      ) as any;
+        "trending:images"
+      )) as any;
 
       for (const img of imagesData || []) {
         const bid = (img as { business_id: string }).business_id;
@@ -247,19 +258,18 @@ export async function GET(request: NextRequest) {
 
     // 5. Transform to card shape (same as before for hooks/UI)
     const transformed = businesses.map((business: Record<string, unknown>) => {
-      const images = imagesByBusinessId[(business.id as string) || ''] || [];
+      const images = imagesByBusinessId[(business.id as string) || ""] || [];
       const primaryImage = images.find((img) => img.is_primary) || images[0];
       const uploadedImageUrls = images.map((img) => img.url).filter(Boolean);
-      const slug = (business.primary_subcategory_slug ?? business.category ?? '')
+      const slug = (business.primary_subcategory_slug ?? business.category ?? "")
         .toString()
         .trim()
         .toLowerCase();
       const dbLabel =
-        business.primary_subcategory_label && typeof business.primary_subcategory_label === 'string'
+        business.primary_subcategory_label && typeof business.primary_subcategory_label === "string"
           ? business.primary_subcategory_label.trim()
-          : '';
-      const categoryLabel =
-        dbLabel || getCategoryLabelFromBusiness(business) || 'Miscellaneous';
+          : "";
+      const categoryLabel = dbLabel || getCategoryLabelFromBusiness(business) || "Miscellaneous";
       const lat = business.lat ?? business.latitude ?? null;
       const lng = business.lng ?? business.longitude ?? null;
       const avgRating = Number(business.average_rating ?? 0);
@@ -296,7 +306,7 @@ export async function GET(request: NextRequest) {
         slug: (business.slug as string) ?? (business.id as string),
         href: `/business/${business.slug || business.id}`,
         verified: Boolean(business.verified),
-        priceRange: business.price_range || '$$',
+        priceRange: business.price_range || "$$",
         hasRating: avgRating > 0,
         percentiles: business.percentiles ?? undefined,
         trendingScore: null,
@@ -315,25 +325,22 @@ export async function GET(request: NextRequest) {
     };
 
     const totalMs = Date.now() - start;
-    console.log('[TRENDING API] GET end total ms:', totalMs);
+    console.log("[TRENDING API] GET end total ms:", totalMs);
     const response = NextResponse.json(payload);
-    response.headers.set('Cache-Control', CACHE_CONTROL);
-    response.headers.set('X-Query-Duration-MS', String(totalMs));
+    response.headers.set("Cache-Control", CACHE_CONTROL);
+    response.headers.set("X-Query-Duration-MS", String(totalMs));
     return response;
   } catch (error: unknown) {
     const totalMs = Date.now() - start;
     const msg = error instanceof Error ? error.message : String(error);
     if (/timeout|timed out|abort/i.test(msg)) {
-      console.warn('[TRENDING API] GET timed out / aborted:', msg, 'total ms:', totalMs);
+      console.warn("[TRENDING API] GET timed out / aborted:", msg, "total ms:", totalMs);
     }
-    console.error('[TRENDING API] GET end (error) total ms:', totalMs);
-    console.error('[TRENDING API] Unexpected error:', error);
-    const response = NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
-    response.headers.set('Cache-Control', CACHE_CONTROL);
-    response.headers.set('X-Query-Duration-MS', String(totalMs));
+    console.error("[TRENDING API] GET end (error) total ms:", totalMs);
+    console.error("[TRENDING API] Unexpected error:", error);
+    const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    response.headers.set("Cache-Control", CACHE_CONTROL);
+    response.headers.set("X-Query-Duration-MS", String(totalMs));
     return response;
   }
 }
