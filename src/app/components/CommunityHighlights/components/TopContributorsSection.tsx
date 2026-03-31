@@ -41,7 +41,7 @@ export default function TopContributorsSection({
   hideCarouselArrowsOnDesktop,
   onSeeMoreContributors,
 }: TopContributorsSectionProps) {
-  const reviewerRailCardClass = `snap-center snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+  const reviewerRailCardClass = `snap-center snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[20%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
 
   return (
     <>

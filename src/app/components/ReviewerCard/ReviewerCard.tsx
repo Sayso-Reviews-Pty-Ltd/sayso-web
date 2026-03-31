@@ -198,7 +198,7 @@ export default function ReviewerCard({
                 ].map(({ value, label, delay }) => (
                   <div
                     key={label}
-                    className={`flex flex-col items-center px-1.5 py-1.5 rounded-lg transition-colors overflow-hidden border ${
+                    className={`flex flex-col items-center px-1.5 py-1.5 rounded-lg overflow-hidden border ${
                       isTopReviewer
                         ? "bg-amber-950/40 border-amber-400/[0.12]"
                         : "bg-off-white/70 border-charcoal/[0.06] shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
@@ -230,17 +230,15 @@ export default function ReviewerCard({
                     <BadgePill key={badge.id} badge={badge} size="sm" />
                   ))}
                   {overflowCount > 0 && (
-                    <m.div
+                    <div
                       className={`inline-flex items-center px-1.5 py-[3px] rounded-full text-[10px] font-semibold cursor-default select-none flex-shrink-0 border shadow-sm backdrop-blur-sm ${
                         isTopReviewer
                           ? "text-amber-400/60 bg-amber-950/40 border-amber-400/[0.12]"
                           : "text-charcoal/60 bg-off-white/80 border-charcoal/[0.13]"
                       }`}
-                      whileHover={{ scale: 1.03, y: -1 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     >
                       +{overflowCount}
-                    </m.div>
+                    </div>
                   )}
                 </div>
               )}
