@@ -122,30 +122,30 @@ export default function ToastNotification({
       </button>
 
       {isBadgeEarned ? (
-        /* ── Badge-earned specialized layout ─────────────────────────── */
-        <div className="flex flex-col gap-2 p-4 pt-5">
-          <div className="w-full px-1">
-            <ProfileBadgeRibbon>
-              <div className="flex items-center justify-center w-full h-full">
-                {notification.image && notification.image.trim() !== "" ? (
-                  <Image
-                    src={notification.image}
-                    alt={notification.imageAlt || "Badge"}
-                    width={44}
-                    height={44}
-                    sizes="44px"
-                    className="object-contain drop-shadow-sm"
-                    unoptimized
-                  />
-                ) : (
-                  <span className="text-2xl" aria-hidden="true">
-                    🏅
-                  </span>
-                )}
-              </div>
-            </ProfileBadgeRibbon>
-          </div>
-          <div className="flex flex-col gap-0.5 px-1">
+        /* ── Badge-earned: ribbon spans full width as background ──────── */
+        <div className="flex flex-col">
+          {/* Ribbon edge-to-edge — badge image centred on it */}
+          <ProfileBadgeRibbon>
+            <div className="flex items-center justify-center w-full h-full">
+              {notification.image && notification.image.trim() !== "" ? (
+                <Image
+                  src={notification.image}
+                  alt={notification.imageAlt || "Badge"}
+                  width={44}
+                  height={44}
+                  sizes="44px"
+                  className="object-contain drop-shadow-sm"
+                  unoptimized
+                />
+              ) : (
+                <span className="text-2xl" aria-hidden="true">
+                  🏅
+                </span>
+              )}
+            </div>
+          </ProfileBadgeRibbon>
+          {/* Text content below the ribbon */}
+          <div className="flex flex-col gap-0.5 px-4 py-3">
             <p className="font-urbanist text-xs font-600 text-charcoal/70">
               {notification.message}
             </p>
