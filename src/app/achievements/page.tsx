@@ -1,52 +1,28 @@
 "use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { m } from 'framer-motion';
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { m } from "framer-motion";
 import { Trophy, Zap, ChevronLeft, ArrowRight } from "@/app/lib/icons";
-import useSWR from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { Loader } from '../components/Loader';
-import BadgeModal from '../components/Badges/BadgeModal';
-import { Badge } from '../components/Badges/BadgeCard';
-import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
-import { swrConfig } from '../lib/swrConfig';
-import { BADGE_MAPPINGS } from '../lib/badgeMappings';
-import { ProgressRing } from './parts/ProgressRing';
-import { FloatingParticles } from './parts/FloatingParticles';
-import { BadgeMarquee } from './parts/BadgeMarquee';
-import { BadgeSection } from './parts/BadgeSection';
-import WeeklyChallengesPanel from '../components/Challenges/WeeklyChallengesPanel';
-import NextBadgeNudge from '../components/Badges/NextBadgeNudge';
-
-interface BadgeStats {
-  total: number;
-  earned: number;
-  percentage: number;
-}
-
-interface GroupedBadges {
-  explorer: Badge[];
-  specialist: Badge[];
-  milestone: Badge[];
-  community: Badge[];
-}
-
-async function fetchBadgeData(url: string) {
-  const response = await fetch(url, { credentials: 'include' });
-  if (!response.ok) throw new Error('Failed to fetch badges');
-  return response.json();
-}
+import { useAuth } from "../contexts/AuthContext";
+import { Loader } from "../components/Loader";
+import BadgeModal from "../components/Badges/BadgeModal";
+import { Badge } from "../components/Badges/BadgeCard";
+import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
+import { BADGE_MAPPINGS } from "../lib/badgeMappings";
+import { useAchievements } from "../hooks/useAchievements";
+import { ProgressRing } from "./parts/ProgressRing";
+import { FloatingParticles } from "./parts/FloatingParticles";
+import { BadgeMarquee } from "./parts/BadgeMarquee";
+import { BadgeSection } from "./parts/BadgeSection";
+import WeeklyChallengesPanel from "../components/Challenges/WeeklyChallengesPanel";
+import NextBadgeNudge from "../components/Badges/NextBadgeNudge";
 
 export default function AchievementsPage() {
   const { user } = useAuth();
-  const swrKey = user ? `/api/badges/user?user_id=${user.id}` : null;
-  const { data, isLoading, error } = useSWR(swrKey, fetchBadgeData, swrConfig);
+  const { grouped, stats, isLoading, error } = useAchievements();
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
-
-  const grouped: GroupedBadges | null = data?.grouped ?? null;
-  const stats: BadgeStats | null = data?.stats ?? null;
 
   const allMappings = Object.values(BADGE_MAPPINGS);
 
@@ -64,7 +40,7 @@ export default function AchievementsPage() {
     return (
       <ProtectedRoute requiresAuth={true}>
         <div className="min-h-[100dvh] bg-navbar-bg flex items-center justify-center">
-          <p className="text-red-400 font-urbanist">Error loading badges: {(error as Error).message}</p>
+          <p className="text-red-400 font-urbanist">Error loading badges: {error}</p>
         </div>
       </ProtectedRoute>
     );
@@ -96,7 +72,7 @@ export default function AchievementsPage() {
           <m.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col lg:flex-row items-center lg:items-start gap-10"
           >
             {/* Text side */}
@@ -108,11 +84,13 @@ export default function AchievementsPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-400/15 border border-amber-400/30 mb-6"
               >
                 <Zap className="w-4 h-4 text-amber-400" />
-                <span className="font-urbanist font-600 text-sm text-amber-400">Hall of Achievements</span>
+                <span className="font-urbanist font-600 text-sm text-amber-400">
+                  Hall of Achievements
+                </span>
               </m.div>
 
               <h1 className="font-urbanist font-800 text-5xl sm:text-6xl text-white leading-tight mb-4">
-                Collect.{' '}
+                Collect.{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
                   Conquer.
                 </span>
@@ -123,8 +101,8 @@ export default function AchievementsPage() {
               </h1>
 
               <p className="font-urbanist text-lg text-white/60 max-w-md mb-8">
-                Every review you write, every business you discover — earns you a badge.
-                Build your legacy on Sayso.
+                Every review you write, every business you discover — earns you a badge. Build your
+                legacy on Sayso.
               </p>
 
               {stats && (
@@ -151,14 +129,20 @@ export default function AchievementsPage() {
               <m.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2, type: 'spring', stiffness: 200, damping: 20 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.2,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 20,
+                }}
                 className="flex flex-col items-center gap-4"
               >
                 <div className="relative">
                   {/* Glow halo */}
                   <div
                     className="absolute inset-0 rounded-full blur-2xl"
-                    style={{ background: 'rgba(251,191,36,0.2)', transform: 'scale(1.3)' }}
+                    style={{ background: "rgba(251,191,36,0.2)", transform: "scale(1.3)" }}
                   />
                   <div className="relative p-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
                     <ProgressRing percentage={stats.percentage} size={200} />
@@ -168,14 +152,14 @@ export default function AchievementsPage() {
                   <Trophy className="w-4 h-4 text-amber-400" />
                   <span className="font-urbanist font-700 text-sm text-amber-300">
                     {stats.percentage < 25
-                      ? 'Just getting started!'
+                      ? "Just getting started!"
                       : stats.percentage < 50
-                      ? 'Making moves!'
-                      : stats.percentage < 75
-                      ? 'On a roll!'
-                      : stats.percentage < 100
-                      ? 'Almost there!'
-                      : 'Badge Legend!'}
+                        ? "Making moves!"
+                        : stats.percentage < 75
+                          ? "On a roll!"
+                          : stats.percentage < 100
+                            ? "Almost there!"
+                            : "Badge Legend!"}
                   </span>
                 </div>
               </m.div>
@@ -204,7 +188,7 @@ export default function AchievementsPage() {
         <div className="relative z-10 max-w-6xl mx-auto px-4">
           {grouped && (
             <>
-              {(['explorer', 'specialist', 'milestone', 'community'] as const).map((group) => (
+              {(["explorer", "specialist", "milestone", "community"] as const).map((group) => (
                 <BadgeSection
                   key={group}
                   group={group}
@@ -227,9 +211,7 @@ export default function AchievementsPage() {
             <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-4">
               <Trophy className="w-8 h-8 text-amber-400" />
             </div>
-            <h3 className="font-urbanist font-800 text-2xl text-white mb-2">
-              Ready to level up?
-            </h3>
+            <h3 className="font-urbanist font-800 text-2xl text-white mb-2">Ready to level up?</h3>
             <p className="font-urbanist text-white/50 text-sm mb-6 max-w-sm mx-auto">
               Write reviews, explore new categories and watch your badge collection grow.
             </p>
