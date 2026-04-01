@@ -22,7 +22,7 @@ import Footer from "../../../components/Footer/Footer";
 import WavyTypedTitle from "@/app/components/Animations/WavyTypedTitle";
 import { isPlaceholderImage } from "../../../utils/subcategoryPlaceholders";
 import { useDealbreakerQuickTags } from "../../../hooks/useDealbreakerQuickTags";
-import { useBusinessDetail } from "../../../hooks/useBusinessDetail";
+import { useBusinessDetail, invalidateBusinessDetail } from "../../../hooks/useBusinessDetail";
 import { fireBadgeCelebration } from "../../../lib/celebration/badgeCelebration";
 
 // CSS animations removed - using Framer Motion instead
@@ -464,11 +464,14 @@ function WriteReviewContent() {
 
     resetForm();
 
-    // Navigate back to business profile with a full page load to guarantee fresh data.
-    // router.push uses Next.js client-side cache which can serve stale reviews.
+    // Invalidate the business detail SWR cache so the destination page
+    // revalidates immediately and shows the new review without a hard reload.
+    if (actualBusinessId) {
+      invalidateBusinessDetail(actualBusinessId);
+    }
     setTimeout(() => {
       const targetId = business?.slug || business?.id || businessId;
-      window.location.href = `/business/${targetId}`;
+      router.push(`/business/${targetId}`);
     }, 1500);
   };
 
