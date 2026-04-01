@@ -205,9 +205,6 @@ function HeaderSuggestionsDropdown({
                         {item.location}
                       </div>
                     </div>
-                    <div className="text-xs text-charcoal/40" style={sf}>
-                      Enter
-                    </div>
                   </button>
                 );
               })

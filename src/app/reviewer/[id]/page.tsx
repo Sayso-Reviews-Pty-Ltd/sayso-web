@@ -140,7 +140,7 @@ export default function ReviewerProfilePage() {
                   <ReviewerBadgesSection badges={reviewer.badges} />
 
                   <section
-                    className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8"
+                    className="bg-off-white/90 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8"
                     aria-label="Reviews written by this reviewer"
                   >
                     <ReviewsList
@@ -164,6 +164,7 @@ export default function ReviewerProfilePage() {
                       title={`Reviews by ${reviewer.name}`}
                       initialDisplayCount={2}
                       showToggle={true}
+                      className="!bg-off-white/90"
                     />
                   </section>
                 </div>
