@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { createClient } from '@supabase/supabase-js';
-import { getServerSupabase } from '../../lib/supabase/server';
-import { ReviewValidator } from '../../lib/utils/validation';
-import { ContentModerator } from '../../lib/utils/contentModeration';
-import { invalidateBusinessCache } from '../../lib/utils/optimizedQueries';
+import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@supabase/supabase-js";
+import { getServerSupabase } from "../../lib/supabase/server";
+import { ReviewValidator } from "../../lib/utils/validation";
+import { ContentModerator } from "../../lib/utils/contentModeration";
+import { invalidateBusinessCache } from "../../lib/utils/optimizedQueries";
 import {
   applyAnonymousCookie,
   detectSpamSignals,
@@ -12,11 +12,11 @@ import {
   getRateLimitWindowStart,
   getUserAgentHash,
   resolveAnonymousId,
-} from '../../lib/utils/anonymousReviews';
+} from "../../lib/utils/anonymousReviews";
 
 // Environment sanity check on module load
-if (typeof window === 'undefined') {
-  console.log('[Review API] Environment check', {
+if (typeof window === "undefined") {
+  console.log("[Review API] Environment check", {
     hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -29,38 +29,38 @@ if (typeof window === 'undefined') {
 // ============================================================================
 
 type ReviewErrorCode =
-  | 'NOT_AUTHENTICATED'
-  | 'EMAIL_NOT_VERIFIED'
-  | 'MISSING_FIELDS'
-  | 'INVALID_RATING'
-  | 'CONTENT_TOO_SHORT'
-  | 'CONTENT_TOO_LONG'
-  | 'TITLE_TOO_LONG'
-  | 'VALIDATION_FAILED'
-  | 'CONTENT_MODERATION_FAILED'
-  | 'BUSINESS_NOT_FOUND'
-  | 'EVENT_NOT_FOUND'
-  | 'SPECIAL_NOT_FOUND'
-  | 'DUPLICATE_REVIEW'
-  | 'DUPLICATE_ANON_REVIEW'
-  | 'RATE_LIMITED'
-  | 'SPAM_DETECTED'
-  | 'RLS_BLOCKED'
-  | 'DB_ERROR'
-  | 'IMAGE_UPLOAD_FAILED'
-  | 'SERVER_ERROR'
-  | 'SERVER_MISCONFIG';
+  | "NOT_AUTHENTICATED"
+  | "EMAIL_NOT_VERIFIED"
+  | "MISSING_FIELDS"
+  | "INVALID_RATING"
+  | "CONTENT_TOO_SHORT"
+  | "CONTENT_TOO_LONG"
+  | "TITLE_TOO_LONG"
+  | "VALIDATION_FAILED"
+  | "CONTENT_MODERATION_FAILED"
+  | "BUSINESS_NOT_FOUND"
+  | "EVENT_NOT_FOUND"
+  | "SPECIAL_NOT_FOUND"
+  | "DUPLICATE_REVIEW"
+  | "DUPLICATE_ANON_REVIEW"
+  | "RATE_LIMITED"
+  | "SPAM_DETECTED"
+  | "RLS_BLOCKED"
+  | "DB_ERROR"
+  | "IMAGE_UPLOAD_FAILED"
+  | "SERVER_ERROR"
+  | "SERVER_MISCONFIG";
 
 type ReviewStep =
-  | 'env_check'
-  | 'business_resolution_start'
-  | 'resolve_by_slug'
-  | 'resolve_by_id'
-  | 'resolve_by_old_slug'
-  | 'rate_limit_check'
-  | 'insert_review'
-  | 'update_business_stats'
-  | 'image_upload';
+  | "env_check"
+  | "business_resolution_start"
+  | "resolve_by_slug"
+  | "resolve_by_id"
+  | "resolve_by_old_slug"
+  | "rate_limit_check"
+  | "insert_review"
+  | "update_business_stats"
+  | "image_upload";
 
 interface ReviewErrorResponse {
   success: false;
@@ -83,11 +83,7 @@ function errorResponse(
   return NextResponse.json(body, { status });
 }
 
-function logStepError(
-  step: ReviewStep,
-  error: any,
-  isAnonymous: boolean
-) {
+function logStepError(step: ReviewStep, error: any, isAnonymous: boolean) {
   console.error(`[Review API] Step failed: ${step}`, {
     step,
     message: error?.message,
@@ -102,26 +98,130 @@ function logStepError(
 
 // Simple text sanitization function (strips HTML tags and decodes basic entities)
 function sanitizeText(text: string): string {
-  if (!text) return '';
-  let sanitized = text.replace(/<[^>]*>/g, '');
+  if (!text) return "";
+  let sanitized = text.replace(/<[^>]*>/g, "");
   sanitized = sanitized
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+    .replace(/&nbsp;/g, " ");
   return sanitized.trim();
 }
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+function normalizeRole(
+  value: string | null | undefined
+): "admin" | "business_owner" | "user" {
+  const role = String(value || "")
+    .toLowerCase()
+    .trim();
+
+  if (role === "admin" || role === "super_admin" || role === "superadmin") {
+    return "admin";
+  }
+  if (role === "business_owner" || role === "business" || role === "owner") {
+    return "business_owner";
+  }
+  return "user";
+}
+
+function toValidUsername(input: string | null | undefined, userId: string): string {
+  const cleaned = String(input || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "");
+  const trimmed = cleaned.slice(0, 20);
+
+  if (trimmed.length >= 3) return trimmed;
+
+  const userFallback = `user_${userId.replace(/-/g, "").slice(0, 8)}`;
+  return userFallback.slice(0, 20);
+}
+
+async function ensureProfileForAuthenticatedUser(
+  supabase: Awaited<ReturnType<typeof getServerSupabase>>,
+  user: any
+): Promise<boolean> {
+  try {
+    const { data: existingProfile, error: existingProfileError } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existingProfileError) {
+      console.warn("[Review API] profile_check_warning", {
+        message: existingProfileError.message,
+        code: existingProfileError.code,
+      });
+    }
+
+    if (existingProfile?.user_id) return true;
+
+    const requestedRole = normalizeRole(
+      (user.user_metadata?.account_type as string | undefined) ||
+        (user.user_metadata?.accountType as string | undefined) ||
+        (user.user_metadata?.role as string | undefined) ||
+        (user.app_metadata?.role as string | undefined)
+    );
+
+    const rawBaseUsername =
+      (user.user_metadata?.username as string | undefined) || user.email || user.id;
+    const baseUsername = toValidUsername(rawBaseUsername, user.id);
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const suffix = attempt === 0 ? "" : `_${Math.floor(100 + Math.random() * 900)}`;
+      const username = toValidUsername(`${baseUsername}${suffix}`, user.id);
+
+      const { error: profileUpsertError } = await supabase.from("profiles").upsert(
+        {
+          user_id: user.id,
+          email: user.email ? String(user.email).toLowerCase().trim() : null,
+          username,
+          role: requestedRole,
+          account_role: requestedRole,
+          onboarding_step: requestedRole === "business_owner" ? "business_setup" : "interests",
+          onboarding_complete: false,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+      if (!profileUpsertError) return true;
+
+      const combinedErrorText =
+        `${profileUpsertError.message || ""} ${profileUpsertError.details || ""}`.toLowerCase();
+      const isUsernameConflict =
+        profileUpsertError.code === "23505" && combinedErrorText.includes("username");
+
+      if (isUsernameConflict) continue;
+
+      console.error("[Review API] profile_upsert_failed", {
+        message: profileUpsertError.message,
+        code: profileUpsertError.code,
+        details: profileUpsertError.details,
+      });
+      return false;
+    }
+
+    console.error("[Review API] profile_upsert_failed: exhausted username retries", {
+      userId: user.id,
+    });
+    return false;
+  } catch (error) {
+    console.error("[Review API] profile_upsert_unexpected_error", error);
+    return false;
+  }
+}
+
 /** Extract and validate a Bearer token, returning the authenticated user if valid. */
 async function resolveUserFromBearer(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
+  const authHeader = req.headers.get("authorization");
   if (!authHeader) return null;
   const [scheme, token] = authHeader.trim().split(/\s+/, 2);
-  if (scheme?.toLowerCase() !== 'bearer' || !token?.trim()) return null;
+  if (scheme?.toLowerCase() !== "bearer" || !token?.trim()) return null;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -132,10 +232,16 @@ async function resolveUserFromBearer(req: NextRequest) {
       auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
       global: { headers: { Authorization: `Bearer ${token.trim()}` } },
     });
-    const { data: { user }, error } = await bearerClient.auth.getUser(token.trim());
+    const {
+      data: { user },
+      error,
+    } = await bearerClient.auth.getUser(token.trim());
     if (error || !user) return null;
     // Cast: bearer client has the same API surface as the SSR client for our purposes.
-    return { user, supabase: bearerClient as unknown as Awaited<ReturnType<typeof getServerSupabase>> };
+    return {
+      user,
+      supabase: bearerClient as unknown as Awaited<ReturnType<typeof getServerSupabase>>,
+    };
   } catch {
     return null;
   }
@@ -146,106 +252,109 @@ export async function POST(req: NextRequest) {
     // Try Bearer token auth first (mobile clients send Authorization header, not cookies).
     const bearerAuth = await resolveUserFromBearer(req);
 
-    const supabase = bearerAuth?.supabase ?? await getServerSupabase(req);
+    const supabase = bearerAuth?.supabase ?? (await getServerSupabase(req));
 
     // Auth: server-trusted; only treat as authenticated if user exists and no auth error
-    const { data: { user: cookieUser }, error: authError } = bearerAuth
+    const {
+      data: { user: cookieUser },
+      error: authError,
+    } = bearerAuth
       ? { data: { user: bearerAuth.user }, error: null }
       : await supabase.auth.getUser();
     const user = cookieUser;
     const isAnonymous = !user || !!authError;
 
     // Fail-fast when service role is required (anonymous mode) and key is missing
-    const hasServiceRoleKey = !!(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY.trim());
+    const hasServiceRoleKey = !!(
+      process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY.trim()
+    );
     if (isAnonymous && !hasServiceRoleKey) {
-      console.error('[Review API] env_check: SUPABASE_SERVICE_ROLE_KEY missing or empty (required for anonymous)', { hasServiceRoleKey: false });
+      console.error(
+        "[Review API] env_check: SUPABASE_SERVICE_ROLE_KEY missing or empty (required for anonymous)",
+        { hasServiceRoleKey: false }
+      );
       return errorResponse(
-        'SERVER_MISCONFIG',
-        'Server configuration issue. Please contact support.',
+        "SERVER_MISCONFIG",
+        "Server configuration issue. Please contact support.",
         500,
         undefined,
-        'env_check'
+        "env_check"
       );
     }
-    
+
     const { anonymousId, setCookie } = resolveAnonymousId(req);
     const clientIp = getClientIp(req);
     const userAgentHash = getUserAgentHash(req);
 
     const formData = await req.formData();
-    const businessIdentifier = formData.get('business_id')?.toString();
-    const targetId = formData.get('target_id')?.toString();
-    const reviewType = formData.get('type')?.toString(); // 'event' | 'special' | undefined => legacy business
-    const ratingRaw = formData.get('rating')?.toString();
+    const businessIdentifier = formData.get("business_id")?.toString();
+    const targetId = formData.get("target_id")?.toString();
+    const reviewType = formData.get("type")?.toString(); // 'event' | 'special' | undefined => legacy business
+    const ratingRaw = formData.get("rating")?.toString();
     const rating = ratingRaw ? parseInt(ratingRaw, 10) : null;
-    const title = formData.get('title')?.toString() || null;
-    const content = formData.get('content')?.toString() || null;
-    const tags = formData.getAll('tags').map(t => t.toString()).filter(Boolean);
+    const title = formData.get("title")?.toString() || null;
+    const content = formData.get("content")?.toString() || null;
+    const tags = formData
+      .getAll("tags")
+      .map((t) => t.toString())
+      .filter(Boolean);
 
-    const honeypot = formData.get('website_url')?.toString() || '';
+    const honeypot = formData.get("website_url")?.toString() || "";
 
     const imageFiles = formData
-      .getAll('images')
+      .getAll("images")
       .filter((file): file is File => file instanceof File && file.size > 0);
 
     // Strict image limits: 2 images max, 2MB each
     const MAX_REVIEW_IMAGES = 2;
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB per image
-    const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     const uploadErrors: any[] = [];
     const uploadedImages: any[] = [];
 
     // Determine review type
     let isEventReview = false;
     let isSpecialReview = false;
-    let targetTable = 'reviews';
-    let targetColumn = 'business_id';
+    let targetTable = "reviews";
+    let targetColumn = "business_id";
 
-    if (reviewType === 'event') {
+    if (reviewType === "event") {
       isEventReview = true;
-      targetTable = 'event_reviews';
-      targetColumn = 'event_id';
+      targetTable = "event_reviews";
+      targetColumn = "event_id";
       if (!targetId) {
-        return errorResponse(
-          'MISSING_FIELDS',
-          'Please select an event to review.',
-          400
-        );
+        return errorResponse("MISSING_FIELDS", "Please select an event to review.", 400);
       }
-    } else if (reviewType === 'special') {
+    } else if (reviewType === "special") {
       isSpecialReview = true;
-      targetTable = 'special_reviews';
-      targetColumn = 'special_id';
+      targetTable = "special_reviews";
+      targetColumn = "special_id";
       if (!targetId) {
-        return errorResponse(
-          'MISSING_FIELDS',
-          'Please select a special to review.',
-          400
-        );
+        return errorResponse("MISSING_FIELDS", "Please select a special to review.", 400);
       }
     } else {
       // legacy business review — anonymous allowed
       if (!businessIdentifier) {
-        return errorResponse(
-          'MISSING_FIELDS',
-          'Please select a business to review.',
-          400
-        );
+        return errorResponse("MISSING_FIELDS", "Please select a business to review.", 400);
       }
     }
 
     // Honeypot check — bots fill hidden fields, real users don't
     if (honeypot) {
-      return NextResponse.json({ success: true, message: 'Review created successfully', review: {} });
+      return NextResponse.json({
+        success: true,
+        message: "Review created successfully",
+        review: {},
+      });
     }
 
     // Basic anti-spam checks before DB work
-    const contentForSpamCheck = (content || '').toString();
+    const contentForSpamCheck = (content || "").toString();
     const spamSignals = detectSpamSignals(contentForSpamCheck);
-    if (spamSignals.includes('contains_link') || spamSignals.includes('excessive_repetition')) {
+    if (spamSignals.includes("contains_link") || spamSignals.includes("excessive_repetition")) {
       return errorResponse(
-        'SPAM_DETECTED',
-        'Your review looks automated. Please revise and try again.',
+        "SPAM_DETECTED",
+        "Your review looks automated. Please revise and try again.",
         400,
         { signals: spamSignals }
       );
@@ -266,34 +375,34 @@ export async function POST(req: NextRequest) {
     // This is ONLY available for legacy business branch; for special/event we won't assume it exists.
     let resolvedBusiness: { id: string; name: string; slug: string | null } | null = null;
 
-    console.log('[Review API] business_resolution_start', {
+    console.log("[Review API] business_resolution_start", {
       isAnonymous,
-      reviewType: isEventReview ? 'event' : isSpecialReview ? 'special' : 'business',
+      reviewType: isEventReview ? "event" : isSpecialReview ? "special" : "business",
       hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     });
 
     if (isEventReview) {
       const { data: eventData, error: eventError } = await verifyClient
-        .from('events_and_specials')
-        .select('id, title, business_id')
-        .eq('id', targetId)
-        .eq('type', 'event')
+        .from("events_and_specials")
+        .select("id, title, business_id")
+        .eq("id", targetId)
+        .eq("type", "event")
         .maybeSingle();
 
       if (eventError) {
-        logStepError('business_resolution_start', eventError, isAnonymous);
+        logStepError("business_resolution_start", eventError, isAnonymous);
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't verify the event. Please try again.",
           500,
           undefined,
-          'business_resolution_start'
+          "business_resolution_start"
         );
       }
 
       if (!eventData) {
         return errorResponse(
-          'EVENT_NOT_FOUND',
+          "EVENT_NOT_FOUND",
           "We couldn't find that event. It may have been removed.",
           404
         );
@@ -302,25 +411,25 @@ export async function POST(req: NextRequest) {
       targetData = eventData;
     } else if (isSpecialReview) {
       const { data: specialData, error: specialError } = await verifyClient
-        .from('events_and_specials')
-        .select('id, title, business_id, businesses:business_id(name, slug)')
-        .eq('id', targetId)
-        .eq('type', 'special')
+        .from("events_and_specials")
+        .select("id, title, business_id, businesses:business_id(name, slug)")
+        .eq("id", targetId)
+        .eq("type", "special")
         .maybeSingle();
 
       if (specialError) {
-        logStepError('business_resolution_start', specialError, isAnonymous);
+        logStepError("business_resolution_start", specialError, isAnonymous);
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't verify the special. Please try again.",
           500,
           undefined,
-          'business_resolution_start'
+          "business_resolution_start"
         );
       }
       if (!specialData) {
         return errorResponse(
-          'SPECIAL_NOT_FOUND',
+          "SPECIAL_NOT_FOUND",
           "We couldn't find that special. It may have expired or been removed.",
           404
         );
@@ -336,15 +445,15 @@ export async function POST(req: NextRequest) {
 
       targetData = {
         ...specialData,
-        business_name: businessName || 'Unknown Business',
+        business_name: businessName || "Unknown Business",
         business_slug: businessSlug || null,
       };
 
       // For cache invalidation later
-      if (typeof specialData.business_id === 'string' && UUID_REGEX.test(specialData.business_id)) {
+      if (typeof specialData.business_id === "string" && UUID_REGEX.test(specialData.business_id)) {
         resolvedBusiness = {
           id: specialData.business_id,
-          name: businessName || 'Unknown Business',
+          name: businessName || "Unknown Business",
           slug: businessSlug || null,
         };
       }
@@ -354,20 +463,20 @@ export async function POST(req: NextRequest) {
 
       // Try slug
       const { data: slugData, error: slugError } = await verifyClient
-        .from('businesses')
-        .select('id, name, slug')
-        .eq('slug', businessIdentifier)
-        .eq('status', 'active')
+        .from("businesses")
+        .select("id, name, slug")
+        .eq("slug", businessIdentifier)
+        .eq("status", "active")
         .maybeSingle();
 
       if (slugError) {
-        logStepError('resolve_by_slug', slugError, isAnonymous);
+        logStepError("resolve_by_slug", slugError, isAnonymous);
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't find that business. Please try again.",
           500,
           undefined,
-          'resolve_by_slug'
+          "resolve_by_slug"
         );
       }
       if (slugData?.id) {
@@ -381,20 +490,20 @@ export async function POST(req: NextRequest) {
         // Try uuid
         if (UUID_REGEX.test(businessIdentifier!)) {
           const { data: idData, error: idError } = await verifyClient
-            .from('businesses')
-            .select('id, name, slug')
-            .eq('id', businessIdentifier)
-            .eq('status', 'active')
+            .from("businesses")
+            .select("id, name, slug")
+            .eq("id", businessIdentifier)
+            .eq("status", "active")
             .maybeSingle();
 
           if (idError) {
-            logStepError('resolve_by_id', idError, isAnonymous);
+            logStepError("resolve_by_id", idError, isAnonymous);
             return errorResponse(
-              'DB_ERROR',
+              "DB_ERROR",
               "We couldn't find that business. Please try again.",
               500,
               undefined,
-              'resolve_by_id'
+              "resolve_by_id"
             );
           }
           if (idData?.id) {
@@ -410,16 +519,16 @@ export async function POST(req: NextRequest) {
 
       if (!business_id || !resolvedBusiness) {
         return errorResponse(
-          'BUSINESS_NOT_FOUND',
+          "BUSINESS_NOT_FOUND",
           "We couldn't find that business. Please try again.",
           404
         );
       }
 
       if (!UUID_REGEX.test(business_id)) {
-        console.error('[API] Invalid UUID format for business_id in POST:', business_id);
+        console.error("[API] Invalid UUID format for business_id in POST:", business_id);
         return errorResponse(
-          'BUSINESS_NOT_FOUND',
+          "BUSINESS_NOT_FOUND",
           "Invalid business. Please select a valid business to review.",
           400
         );
@@ -430,7 +539,7 @@ export async function POST(req: NextRequest) {
 
     // Anonymous protections: one review per target/device + cooldown (max 3/hour).
     if (isAnonymous) {
-      console.log('[Review API] Starting rate limit check', { anonymousId });
+      console.log("[Review API] Starting rate limit check", { anonymousId });
       // Reuse verifyClient (admin) for rate-limit queries
       const rateLimitAdmin = verifyClient;
 
@@ -444,52 +553,52 @@ export async function POST(req: NextRequest) {
 
       const { count: recentCount, error: rateError } = await rateLimitAdmin
         .from(targetTable)
-        .select('*', { count: 'exact', head: true })
-        .eq('anonymous_id', anonymousId)
-        .gte('created_at', oneHourAgo);
+        .select("*", { count: "exact", head: true })
+        .eq("anonymous_id", anonymousId)
+        .gte("created_at", oneHourAgo);
 
       if (rateError) {
-        logStepError('rate_limit_check', rateError, isAnonymous);
+        logStepError("rate_limit_check", rateError, isAnonymous);
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't complete your request. Please try again.",
           500,
           undefined,
-          'rate_limit_check'
+          "rate_limit_check"
         );
       }
 
       if ((recentCount ?? 0) >= 3) {
         return errorResponse(
-          'RATE_LIMITED',
-          'You reached the anonymous review limit. Try again in about an hour.',
-          429,
+          "RATE_LIMITED",
+          "You reached the anonymous review limit. Try again in about an hour.",
+          429
         );
       }
 
       if (targetIdentifier) {
         const { count: duplicateCount, error: duplicateError } = await rateLimitAdmin
           .from(targetTable)
-          .select('*', { count: 'exact', head: true })
+          .select("*", { count: "exact", head: true })
           .eq(targetColumn, targetIdentifier)
-          .eq('anonymous_id', anonymousId);
+          .eq("anonymous_id", anonymousId);
 
         if (duplicateError) {
-          logStepError('rate_limit_check', duplicateError, isAnonymous);
+          logStepError("rate_limit_check", duplicateError, isAnonymous);
           return errorResponse(
-            'DB_ERROR',
+            "DB_ERROR",
             "We couldn't complete your request. Please try again.",
             500,
             undefined,
-            'rate_limit_check'
+            "rate_limit_check"
           );
         }
 
         if ((duplicateCount ?? 0) > 0) {
           return errorResponse(
-            'DUPLICATE_ANON_REVIEW',
-            'You already posted an anonymous review for this item.',
-            409,
+            "DUPLICATE_ANON_REVIEW",
+            "You already posted an anonymous review for this item.",
+            409
           );
         }
       }
@@ -506,26 +615,29 @@ export async function POST(req: NextRequest) {
     if (!validationResult.isValid) {
       // Create user-friendly message from validation errors
       const errors = validationResult.errors || [];
-      let userMessage = 'Please check your review and try again.';
-      
-      if (errors.some((e: string) => e.toLowerCase().includes('rating'))) {
-        userMessage = 'Please select a rating (1-5 stars).';
-      } else if (errors.some((e: string) => e.toLowerCase().includes('content') && e.toLowerCase().includes('short'))) {
-        userMessage = 'Your review is too short. Please write at least 10 characters.';
-      } else if (errors.some((e: string) => e.toLowerCase().includes('content') && e.toLowerCase().includes('long'))) {
-        userMessage = 'Your review is too long. Please keep it under 5000 characters.';
-      } else if (errors.some((e: string) => e.toLowerCase().includes('content'))) {
-        userMessage = 'Please write a review describing your experience.';
-      } else if (errors.some((e: string) => e.toLowerCase().includes('title'))) {
-        userMessage = 'Review title is too long. Please keep it under 100 characters.';
+      let userMessage = "Please check your review and try again.";
+
+      if (errors.some((e: string) => e.toLowerCase().includes("rating"))) {
+        userMessage = "Please select a rating (1-5 stars).";
+      } else if (
+        errors.some(
+          (e: string) => e.toLowerCase().includes("content") && e.toLowerCase().includes("short")
+        )
+      ) {
+        userMessage = "Your review is too short. Please write at least 10 characters.";
+      } else if (
+        errors.some(
+          (e: string) => e.toLowerCase().includes("content") && e.toLowerCase().includes("long")
+        )
+      ) {
+        userMessage = "Your review is too long. Please keep it under 5000 characters.";
+      } else if (errors.some((e: string) => e.toLowerCase().includes("content"))) {
+        userMessage = "Please write a review describing your experience.";
+      } else if (errors.some((e: string) => e.toLowerCase().includes("title"))) {
+        userMessage = "Review title is too long. Please keep it under 100 characters.";
       }
 
-      return errorResponse(
-        'VALIDATION_FAILED',
-        userMessage,
-        400,
-        { errors }
-      );
+      return errorResponse("VALIDATION_FAILED", userMessage, 400, { errors });
     }
 
     // Sanitize + moderate
@@ -535,8 +647,8 @@ export async function POST(req: NextRequest) {
     const moderationResult = ContentModerator.moderate(sanitizedContent);
     if (!moderationResult.isClean) {
       return errorResponse(
-        'CONTENT_MODERATION_FAILED',
-        'Your review contains content that doesn\'t meet our community guidelines. Please revise and try again.',
+        "CONTENT_MODERATION_FAILED",
+        "Your review contains content that doesn't meet our community guidelines. Please revise and try again.",
         400,
         { reasons: moderationResult.reasons }
       );
@@ -550,7 +662,7 @@ export async function POST(req: NextRequest) {
     // Create review
     let review: any = null;
     try {
-      console.log('[Review API] Starting review insert', {
+      console.log("[Review API] Starting review insert", {
         isAnonymous,
         targetTable,
         hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -560,7 +672,7 @@ export async function POST(req: NextRequest) {
         rating: rating!,
         title: sanitizedTitle ?? null,
         content: finalContent,
-        tags: tags.filter(t => t.trim().length > 0),
+        tags: tags.filter((t) => t.trim().length > 0),
         helpful_count: 0,
         ...(isAnonymous
           ? {
@@ -571,14 +683,14 @@ export async function POST(req: NextRequest) {
           : {}),
       };
 
-      let selectQuery = '';
+      let selectQuery = "";
 
       if (isEventReview) {
         reviewInsertData.event_id = targetId;
-        selectQuery = '*';
+        selectQuery = "*";
       } else if (isSpecialReview) {
         reviewInsertData.special_id = targetId;
-        selectQuery = '*';
+        selectQuery = "*";
       } else {
         reviewInsertData.business_id = (targetData as any).id;
         selectQuery = `
@@ -601,64 +713,97 @@ export async function POST(req: NextRequest) {
           )
         : supabase;
 
-      const { data: reviewData, error: reviewError } = await insertClient
-        .from(targetTable)
-        .insert(reviewInsertData)
-        .select(selectQuery)
-        .single();
+      const runReviewInsert = async () =>
+        insertClient.from(targetTable).insert(reviewInsertData).select(selectQuery).single();
+
+      let { data: reviewData, error: reviewError } = await runReviewInsert();
+
+      const reviewErrorText =
+        `${reviewError?.message || ""} ${reviewError?.details || ""}`.toLowerCase();
+      const isMissingProfileFk =
+        !isAnonymous &&
+        targetTable === "reviews" &&
+        reviewError?.code === "23503" &&
+        reviewErrorText.includes("reviews_user_id_fkey");
+
+      // Self-heal legacy users missing a profiles row, then retry review insert once.
+      if (isMissingProfileFk && user?.id) {
+        const profileReady = await ensureProfileForAuthenticatedUser(supabase, user);
+        if (profileReady) {
+          ({ data: reviewData, error: reviewError } = await runReviewInsert());
+        }
+      }
 
       if (reviewError) {
-        logStepError('insert_review', reviewError, isAnonymous);
+        logStepError("insert_review", reviewError, isAnonymous);
 
-        if (reviewError.message?.includes('permission') || reviewError.code === '42501') {
+        if (reviewError.message?.includes("permission") || reviewError.code === "42501") {
           return errorResponse(
-            'RLS_BLOCKED',
+            "RLS_BLOCKED",
             "We couldn't save your review right now. Please try again.",
             403,
             undefined,
-            'insert_review'
+            "insert_review"
           );
         }
 
-        if (reviewError.code === '23505' || reviewError.message?.includes('duplicate')) {
+        if (reviewError.code === "23505" || reviewError.message?.includes("duplicate")) {
           return errorResponse(
-            'DUPLICATE_REVIEW',
+            "DUPLICATE_REVIEW",
             "You've already reviewed this. You can edit your existing review instead.",
             409
           );
         }
 
+        if (
+          reviewError.code === "23503" &&
+          `${reviewError.message || ""} ${reviewError.details || ""}`.includes(
+            "reviews_business_id_fkey"
+          )
+        ) {
+          return errorResponse(
+            "BUSINESS_NOT_FOUND",
+            "We couldn't find that business. It may have been removed.",
+            404,
+            undefined,
+            "insert_review"
+          );
+        }
+
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't save your review. Please try again.",
           500,
           undefined,
-          'insert_review'
+          "insert_review"
         );
       }
 
       if (!reviewData) {
         return errorResponse(
-          'DB_ERROR',
+          "DB_ERROR",
           "We couldn't save your review. Please try again.",
           500,
           undefined,
-          'insert_review'
+          "insert_review"
         );
       }
 
       review = reviewData;
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[Review API] Review created', { reviewId: review?.id, businessId: reviewInsertData?.business_id ?? null });
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[Review API] Review created", {
+          reviewId: review?.id,
+          businessId: reviewInsertData?.business_id ?? null,
+        });
       }
     } catch (error) {
-      console.error('[Review API] Unexpected error creating review:', error);
+      console.error("[Review API] Unexpected error creating review:", error);
       return errorResponse(
-        'DB_ERROR',
+        "DB_ERROR",
         "We couldn't save your review. Please try again.",
         500,
         undefined,
-        'insert_review'
+        "insert_review"
       );
     }
 
@@ -672,15 +817,15 @@ export async function POST(req: NextRequest) {
     // - event review: likely no business_id (skip)
     let statsBusinessId: string | null = null;
 
-    if (reviewInsertData?.business_id && typeof reviewInsertData.business_id === 'string') {
+    if (reviewInsertData?.business_id && typeof reviewInsertData.business_id === "string") {
       statsBusinessId = reviewInsertData.business_id;
-    } else if (isSpecialReview && typeof targetData?.business_id === 'string') {
+    } else if (isSpecialReview && typeof targetData?.business_id === "string") {
       statsBusinessId = targetData.business_id;
     }
 
     if (statsBusinessId && UUID_REGEX.test(statsBusinessId)) {
       try {
-        console.log('[Review API] Starting stats update', { businessId: statsBusinessId });
+        console.log("[Review API] Starting stats update", { businessId: statsBusinessId });
         // Use service role client for stats update so anonymous reviews also trigger it
         const statsClient = isAnonymous
           ? createClient(
@@ -690,7 +835,7 @@ export async function POST(req: NextRequest) {
             )
           : supabase;
         for (let attempt = 0; attempt < 3; attempt++) {
-          const { error: statsUpdateError } = await statsClient.rpc('update_business_stats', {
+          const { error: statsUpdateError } = await statsClient.rpc("update_business_stats", {
             p_business_id: statsBusinessId,
           });
           if (!statsUpdateError) {
@@ -700,12 +845,12 @@ export async function POST(req: NextRequest) {
           statsError = statsUpdateError;
         }
         if (statsError) {
-          logStepError('update_business_stats', statsError, isAnonymous);
-        } else if (statsUpdateSuccess && process.env.NODE_ENV !== 'production') {
-          console.log('[Review API] Aggregates updated', { businessId: statsBusinessId });
+          logStepError("update_business_stats", statsError, isAnonymous);
+        } else if (statsUpdateSuccess && process.env.NODE_ENV !== "production") {
+          console.log("[Review API] Aggregates updated", { businessId: statsBusinessId });
         }
       } catch (err) {
-        logStepError('update_business_stats', err, isAnonymous);
+        logStepError("update_business_stats", err, isAnonymous);
         statsError = err;
       }
     }
@@ -713,7 +858,7 @@ export async function POST(req: NextRequest) {
     // Upload review images using service role client (bypasses RLS for anonymous reviews)
     if (imageFiles.length > 0 && review?.id) {
       const validImages = imageFiles
-        .filter(f => ALLOWED_IMAGE_TYPES.includes(f.type) && f.size <= MAX_IMAGE_SIZE)
+        .filter((f) => ALLOWED_IMAGE_TYPES.includes(f.type) && f.size <= MAX_IMAGE_SIZE)
         .slice(0, MAX_REVIEW_IMAGES);
 
       const adminClient = createClient(
@@ -724,16 +869,16 @@ export async function POST(req: NextRequest) {
 
       // Each review type has its own images table
       const imageTable = isEventReview
-        ? 'event_review_images'
+        ? "event_review_images"
         : isSpecialReview
-          ? 'special_review_images'
-          : 'review_images';
-      const storageBucket = 'review_images';
+          ? "special_review_images"
+          : "review_images";
+      const storageBucket = "review_images";
 
       for (let i = 0; i < validImages.length; i++) {
         const file = validImages[i];
         try {
-          const fileExt = file.name.split('.').pop() || 'jpg';
+          const fileExt = file.name.split(".").pop() || "jpg";
           const filePath = `reviews/${review.id}/${Date.now()}-${i}.${fileExt}`;
 
           const arrayBuffer = await file.arrayBuffer();
@@ -742,14 +887,12 @@ export async function POST(req: NextRequest) {
             .upload(filePath, arrayBuffer, { contentType: file.type, upsert: false });
 
           if (storageError) {
-            logStepError('image_upload', storageError, isAnonymous);
+            logStepError("image_upload", storageError, isAnonymous);
             uploadErrors.push({ file: file.name, error: storageError.message });
             continue;
           }
 
-          const { data: urlData } = adminClient.storage
-            .from(storageBucket)
-            .getPublicUrl(filePath);
+          const { data: urlData } = adminClient.storage.from(storageBucket).getPublicUrl(filePath);
 
           const { data: imageRecord, error: insertError } = await adminClient
             .from(imageTable)
@@ -763,7 +906,7 @@ export async function POST(req: NextRequest) {
             .single();
 
           if (insertError) {
-            console.error('[Review API] Image record insert error:', insertError);
+            console.error("[Review API] Image record insert error:", insertError);
             await adminClient.storage.from(storageBucket).remove([filePath]);
             uploadErrors.push({ file: file.name, error: insertError.message });
             continue;
@@ -778,14 +921,18 @@ export async function POST(req: NextRequest) {
             created_at: imageRecord.created_at,
           });
         } catch (imgErr) {
-          console.error('[Review API] Image processing error:', imgErr);
-          uploadErrors.push({ file: file.name, error: 'Processing failed' });
+          console.error("[Review API] Image processing error:", imgErr);
+          uploadErrors.push({ file: file.name, error: "Processing failed" });
         }
       }
     }
 
     // Fetch complete review (table-aware)
-    const fetchTable = isEventReview ? 'event_reviews' : isSpecialReview ? 'special_reviews' : 'reviews';
+    const fetchTable = isEventReview
+      ? "event_reviews"
+      : isSpecialReview
+        ? "special_reviews"
+        : "reviews";
 
     const fetchSelect = isEventReview
       ? `
@@ -800,7 +947,7 @@ export async function POST(req: NextRequest) {
         )
       `
       : isSpecialReview
-      ? `
+        ? `
         *,
         special_review_images (
           id,
@@ -811,7 +958,7 @@ export async function POST(req: NextRequest) {
           created_at
         )
       `
-      : `
+        : `
         *,
         profile:profiles!reviews_user_id_fkey (
           user_id,
@@ -833,7 +980,7 @@ export async function POST(req: NextRequest) {
     const { data: completeReviewData } = await verifyClient
       .from(fetchTable)
       .select(fetchSelect)
-      .eq('id', review.id)
+      .eq("id", review.id)
       .maybeSingle();
 
     const reviewToReturn = completeReviewData || review;
@@ -841,12 +988,16 @@ export async function POST(req: NextRequest) {
     // Username generation utility
     let getDisplayUsername: any;
     try {
-      const usernameModule = await import('../../lib/utils/generateUsernameServer');
+      const usernameModule = await import("../../lib/utils/generateUsernameServer");
       getDisplayUsername = usernameModule.getDisplayUsername;
     } catch (importError) {
-      console.error('Error importing getDisplayUsername:', importError);
-      getDisplayUsername = (username: string | null, displayName: string | null, _email: string | null, userId: string) =>
-        displayName || username || `Anonymous`;
+      console.error("Error importing getDisplayUsername:", importError);
+      getDisplayUsername = (
+        username: string | null,
+        displayName: string | null,
+        _email: string | null,
+        userId: string
+      ) => displayName || username || `Anonymous`;
     }
 
     // Normalize profile shape
@@ -856,17 +1007,17 @@ export async function POST(req: NextRequest) {
     }
 
     const profile = serializableReview.profile || {};
-    const user_id = profile.user_id ?? serializableReview.user_id ?? (user?.id ?? null);
+    const user_id = profile.user_id ?? serializableReview.user_id ?? user?.id ?? null;
 
     let displayName: string;
     if (user_id == null) {
-      displayName = 'Anonymous';
+      displayName = "Anonymous";
     } else {
       try {
         displayName = getDisplayUsername(profile.username, profile.display_name, null, user_id);
       } catch (nameError) {
-        console.error('Error generating display name:', nameError);
-        displayName = profile.display_name || profile.username || 'Anonymous';
+        console.error("Error generating display name:", nameError);
+        displayName = profile.display_name || profile.username || "Anonymous";
       }
     }
 
@@ -874,7 +1025,7 @@ export async function POST(req: NextRequest) {
       id: user_id,
       name: displayName,
       username: profile.username ?? null,
-      display_name: user_id == null ? 'Anonymous' : (profile.display_name ?? null),
+      display_name: user_id == null ? "Anonymous" : (profile.display_name ?? null),
       email: null,
       avatar_url: profile.avatar_url ?? null,
     };
@@ -893,7 +1044,7 @@ export async function POST(req: NextRequest) {
     try {
       JSON.stringify(serializableReview);
     } catch (serializeError) {
-      console.error('Error serializing review object:', serializeError);
+      console.error("Error serializing review object:", serializeError);
       serializableReview = {
         id: review.id,
         user_id: review.user_id,
@@ -917,34 +1068,37 @@ export async function POST(req: NextRequest) {
         if (resolvedBusiness.slug && resolvedBusiness.slug !== resolvedBusiness.id) {
           revalidatePath(`/business/${resolvedBusiness.slug}`);
         }
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('[Review API] Revalidation done', { businessId: resolvedBusiness.id, slug: resolvedBusiness.slug ?? null });
+        if (process.env.NODE_ENV !== "production") {
+          console.log("[Review API] Revalidation done", {
+            businessId: resolvedBusiness.id,
+            slug: resolvedBusiness.slug ?? null,
+          });
         }
       }
       // Revalidate the event or special detail page so the rating updates immediately
-      if (reviewType === 'event' && targetId) {
+      if (reviewType === "event" && targetId) {
         revalidatePath(`/event/${targetId}`);
-      } else if (reviewType === 'special' && targetId) {
+      } else if (reviewType === "special" && targetId) {
         revalidatePath(`/special/${targetId}`);
       }
       // Also revalidate profile page for logged-in users
       if (!isAnonymous) {
-        revalidatePath('/profile');
+        revalidatePath("/profile");
       }
     } catch (cacheError) {
-      console.warn('Error invalidating business cache / revalidating:', cacheError);
+      console.warn("Error invalidating business cache / revalidating:", cacheError);
     }
 
     // Fire and forget badge awarding (skip for anonymous reviews)
     if (!isAnonymous && user?.id) {
-      fetch(`${req.headers.get('origin') || 'http://localhost:3000'}/api/badges/check-and-award`, {
-        method: 'POST',
+      fetch(`${req.headers.get("origin") || "http://localhost:3000"}/api/badges/check-and-award`, {
+        method: "POST",
         headers: {
-          Cookie: req.headers.get('cookie') || '',
-          'Content-Type': 'application/json',
+          Cookie: req.headers.get("cookie") || "",
+          "Content-Type": "application/json",
         },
-      }).catch(err => {
-        console.warn('[Review Create] Error triggering badge check:', err);
+      }).catch((err) => {
+        console.warn("[Review Create] Error triggering badge check:", err);
       });
     }
 
@@ -956,17 +1110,22 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(
       {
         success: true,
-        message: 'Review created successfully',
+        message: "Review created successfully",
         review: serializableReview,
-        warnings: uploadErrors.length > 0
-          ? {
-              imageUploads: uploadErrors,
-              message: 'Some images failed to upload, but the review was created successfully',
-            }
-          : undefined,
+        warnings:
+          uploadErrors.length > 0
+            ? {
+                imageUploads: uploadErrors,
+                message: "Some images failed to upload, but the review was created successfully",
+              }
+            : undefined,
         stats: {
           updated: statsUpdateSuccess,
-          error: statsUpdateSuccess ? null : statsError ? String(statsError?.message || statsError) : null,
+          error: statsUpdateSuccess
+            ? null
+            : statsError
+              ? String(statsError?.message || statsError)
+              : null,
         },
         rateLimit: {
           remainingAttempts: rateLimitResult.remainingAttempts - 1,
@@ -975,9 +1134,9 @@ export async function POST(req: NextRequest) {
       },
       {
         headers: {
-          'X-RateLimit-Limit': '10',
-          'X-RateLimit-Remaining': (rateLimitResult.remainingAttempts - 1).toString(),
-          'X-RateLimit-Reset': Math.floor(rateLimitResult.resetAt.getTime() / 1000).toString(),
+          "X-RateLimit-Limit": "10",
+          "X-RateLimit-Remaining": (rateLimitResult.remainingAttempts - 1).toString(),
+          "X-RateLimit-Reset": Math.floor(rateLimitResult.resetAt.getTime() / 1000).toString(),
         },
       }
     );
@@ -986,10 +1145,10 @@ export async function POST(req: NextRequest) {
     }
     return response;
   } catch (error) {
-    console.error('[Review API] Unexpected error:', error);
+    console.error("[Review API] Unexpected error:", error);
     return errorResponse(
-      'SERVER_ERROR',
-      'Something went wrong on our side. Please try again.',
+      "SERVER_ERROR",
+      "Something went wrong on our side. Please try again.",
       500
     );
   }
@@ -1000,16 +1159,16 @@ export async function GET(req: Request) {
     const supabase = await getServerSupabase(req);
     const { searchParams } = new URL(req.url);
 
-    const businessIdentifier = searchParams.get('business_id');
-    const userId = searchParams.get('user_id');
+    const businessIdentifier = searchParams.get("business_id");
+    const userId = searchParams.get("user_id");
 
-    const requestedLimit = parseInt(searchParams.get('limit') || '10', 10);
+    const requestedLimit = parseInt(searchParams.get("limit") || "10", 10);
     const limit = Math.min(Math.max(requestedLimit, 1), 50);
-    const requestedOffset = parseInt(searchParams.get('offset') || '0', 10);
+    const requestedOffset = parseInt(searchParams.get("offset") || "0", 10);
     const offset = Math.max(requestedOffset, 0);
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[/api/reviews] GET request:', { businessIdentifier, userId, limit, offset });
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[/api/reviews] GET request:", { businessIdentifier, userId, limit, offset });
     }
 
     // Resolve business identifier -> UUID
@@ -1017,27 +1176,27 @@ export async function GET(req: Request) {
 
     if (businessIdentifier) {
       const { data: slugData, error: slugError } = await supabase
-        .from('businesses')
-        .select('id')
-        .eq('slug', businessIdentifier)
-        .eq('status', 'active')
+        .from("businesses")
+        .select("id")
+        .eq("slug", businessIdentifier)
+        .eq("status", "active")
         .maybeSingle();
 
       if (slugError) {
-        console.error('[API] Error checking slug in reviews endpoint:', slugError);
+        console.error("[API] Error checking slug in reviews endpoint:", slugError);
       } else if (slugData?.id) {
         businessId = slugData.id;
       } else {
         if (UUID_REGEX.test(businessIdentifier)) {
           const { data: idData, error: idError } = await supabase
-            .from('businesses')
-            .select('id')
-            .eq('id', businessIdentifier)
-            .eq('status', 'active')
+            .from("businesses")
+            .select("id")
+            .eq("id", businessIdentifier)
+            .eq("status", "active")
             .maybeSingle();
 
           if (idError) {
-            console.error('[API] Error checking business ID in reviews endpoint:', idError);
+            console.error("[API] Error checking business ID in reviews endpoint:", idError);
           } else if (idData?.id) {
             businessId = businessIdentifier;
           }
@@ -1045,13 +1204,16 @@ export async function GET(req: Request) {
       }
 
       if (businessId) {
-        if (typeof businessId !== 'string' || !UUID_REGEX.test(businessId)) {
-          console.error('[API] Invalid UUID format for businessId:', businessId);
-          return NextResponse.json({ error: 'Invalid business identifier format' }, { status: 400 });
+        if (typeof businessId !== "string" || !UUID_REGEX.test(businessId)) {
+          console.error("[API] Invalid UUID format for businessId:", businessId);
+          return NextResponse.json(
+            { error: "Invalid business identifier format" },
+            { status: 400 }
+          );
         }
       } else {
         return NextResponse.json(
-          { error: 'Business not found', details: 'Invalid business identifier' },
+          { error: "Business not found", details: "Invalid business identifier" },
           { status: 404 }
         );
       }
@@ -1118,18 +1280,18 @@ export async function GET(req: Request) {
       `;
 
     let query = supabase
-      .from('reviews')
+      .from("reviews")
       .select(selectFields)
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (businessId) query = query.eq('business_id', businessId);
-    if (userId) query = query.eq('user_id', userId);
+    if (businessId) query = query.eq("business_id", businessId);
+    if (userId) query = query.eq("user_id", userId);
 
     const { data: reviews, error } = await query;
 
     if (error) {
-      console.error('[/api/reviews] GET error fetching reviews:', {
+      console.error("[/api/reviews] GET error fetching reviews:", {
         message: error.message,
         code: error.code,
         details: error.details,
@@ -1138,7 +1300,7 @@ export async function GET(req: Request) {
 
       return NextResponse.json(
         {
-          error: 'Failed to fetch reviews',
+          error: "Failed to fetch reviews",
           details: error.message,
           code: error.code,
           supabase: { message: error.message, code: error.code },
@@ -1149,12 +1311,16 @@ export async function GET(req: Request) {
 
     let getDisplayUsername: any;
     try {
-      const usernameModule = await import('../../lib/utils/generateUsernameServer');
+      const usernameModule = await import("../../lib/utils/generateUsernameServer");
       getDisplayUsername = usernameModule.getDisplayUsername;
     } catch (importError) {
-      console.error('Error importing getDisplayUsername:', importError);
-      getDisplayUsername = (username: string | null, displayName: string | null, _email: string | null, userId: string) =>
-        displayName || username || 'Anonymous';
+      console.error("Error importing getDisplayUsername:", importError);
+      getDisplayUsername = (
+        username: string | null,
+        displayName: string | null,
+        _email: string | null,
+        userId: string
+      ) => displayName || username || "Anonymous";
     }
 
     const transformedReviews = (reviews || []).map((review: any) => {
@@ -1164,13 +1330,13 @@ export async function GET(req: Request) {
 
         let displayName: string;
         if (user_id == null) {
-          displayName = 'Anonymous';
+          displayName = "Anonymous";
         } else {
           try {
             displayName = getDisplayUsername(profile.username, profile.display_name, null, user_id);
           } catch (nameError) {
-            console.error('Error generating display name:', nameError);
-            displayName = profile.display_name || profile.username || 'Anonymous';
+            console.error("Error generating display name:", nameError);
+            displayName = profile.display_name || profile.username || "Anonymous";
           }
         }
 
@@ -1180,7 +1346,7 @@ export async function GET(req: Request) {
             id: user_id,
             name: displayName,
             username: profile.username ?? null,
-            display_name: user_id == null ? 'Anonymous' : (profile.display_name ?? null),
+            display_name: user_id == null ? "Anonymous" : (profile.display_name ?? null),
             email: null,
             avatar_url: profile.avatar_url ?? null,
           },
@@ -1188,14 +1354,14 @@ export async function GET(req: Request) {
           images: review.review_images || [],
         };
       } catch (transformError) {
-        console.error('Error transforming review:', transformError, { review_id: review?.id });
+        console.error("Error transforming review:", transformError, { review_id: review?.id });
         return {
           ...review,
           user: {
             id: review.user_id ?? null,
-            name: 'Anonymous',
+            name: "Anonymous",
             username: null,
-            display_name: 'Anonymous',
+            display_name: "Anonymous",
             email: null,
             avatar_url: null,
           },
@@ -1211,15 +1377,15 @@ export async function GET(req: Request) {
       count: transformedReviews.length,
     });
   } catch (error) {
-    console.error('[/api/reviews] GET unexpected error:', error);
+    console.error("[/api/reviews] GET unexpected error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
 
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
-        stack: process.env.NODE_ENV === 'development' ? errorStack : undefined,
+        error: "Internal server error",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        stack: process.env.NODE_ENV === "development" ? errorStack : undefined,
       },
       { status: 500 }
     );
