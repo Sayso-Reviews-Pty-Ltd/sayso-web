@@ -22,9 +22,9 @@ export function useRealtimeStatus() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (status === 'subscribed') {
+    if (status === "subscribed") {
       setIsConnected(true);
-    } else if (status === 'closed' || status === 'channel_error' || status === 'timed_out') {
+    } else if (status === "closed" || status === "channel_error" || status === "timed_out") {
       setIsConnected(false);
     }
   }, [status]);
@@ -49,69 +49,70 @@ export function useRealtimeReviews(
     setReviews(initialReviews);
   }, [initialReviews]);
 
-  const fetchUserData = useCallback(async (userId: string) => {
+  const fetchUserData = useCallback(async (userId: string | null) => {
+    if (!userId) return null;
     try {
       const { data, error } = await supabase.current
-        .from('profiles')
-        .select('user_id, display_name, username, avatar_url, is_top_reviewer')
-        .eq('user_id', userId)
+        .from("profiles")
+        .select("user_id, display_name, username, avatar_url, is_top_reviewer")
+        .eq("user_id", userId)
         .single();
 
       if (error) throw error;
       return data ? { ...data, id: data.user_id } : null;
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
       return null;
     }
   }, []);
 
-  const handleInsert = useCallback(async (payload: RealtimePostgresChangesPayload<any>) => {
-    if (payload.new && payload.new.business_id === businessId) {
-      // Fetch user data for the new review
-      const userData = await fetchUserData(payload.new.user_id);
-      
-      const newReview: ReviewWithUser = {
-        ...payload.new,
-        user: userData || {
-          id: payload.new.user_id,
-          display_name: 'Anonymous User',
-          username: 'anonymous',
-        },
-      };
+  const handleInsert = useCallback(
+    async (payload: RealtimePostgresChangesPayload<any>) => {
+      if (payload.new && payload.new.business_id === businessId) {
+        // Fetch user data for the new review
+        const userData = await fetchUserData(payload.new.user_id);
 
-      setReviews((prev) => [newReview, ...prev]);
-    }
-  }, [businessId, fetchUserData]);
+        const newReview: ReviewWithUser = {
+          ...payload.new,
+          user: userData || {
+            id: payload.new.user_id,
+            display_name: "Anonymous User",
+            username: "anonymous",
+          },
+        };
 
-  const handleUpdate = useCallback(async (payload: RealtimePostgresChangesPayload<any>) => {
-    const newRecord = payload.new as any;
-    if (newRecord && newRecord.business_id === businessId) {
-      setReviews((prev) =>
-        prev.map((review) =>
-          review.id === newRecord.id
-            ? { ...review, ...newRecord }
-            : review
-        )
-      );
-    }
-  }, [businessId]);
+        setReviews((prev) => [newReview, ...prev]);
+      }
+    },
+    [businessId, fetchUserData]
+  );
 
-  const handleDelete = useCallback((payload: RealtimePostgresChangesPayload<any>) => {
-    const oldRecord = payload.old as any;
-    if (oldRecord && oldRecord.business_id === businessId) {
-      setReviews((prev) => prev.filter((review) => review.id !== oldRecord.id));
-    }
-  }, [businessId]);
+  const handleUpdate = useCallback(
+    async (payload: RealtimePostgresChangesPayload<any>) => {
+      const newRecord = payload.new as any;
+      if (newRecord && newRecord.business_id === businessId) {
+        setReviews((prev) =>
+          prev.map((review) => (review.id === newRecord.id ? { ...review, ...newRecord } : review))
+        );
+      }
+    },
+    [businessId]
+  );
+
+  const handleDelete = useCallback(
+    (payload: RealtimePostgresChangesPayload<any>) => {
+      const oldRecord = payload.old as any;
+      if (oldRecord && oldRecord.business_id === businessId) {
+        setReviews((prev) => prev.filter((review) => review.id !== oldRecord.id));
+      }
+    },
+    [businessId]
+  );
 
   useEffect(() => {
     if (!businessId) return;
 
-    const channel = subscribeToReviews(
-      businessId,
-      handleInsert,
-      handleUpdate,
-      handleDelete
-    );
+    const channel = subscribeToReviews(businessId, handleInsert, handleUpdate, handleDelete);
 
     channelRef.current = channel;
     setIsLive(true);
@@ -140,9 +141,9 @@ export function useRealtimeHelpfulVotes(
   const updateHelpfulCount = useCallback(async (reviewId: string) => {
     try {
       const { count, error } = await supabase.current
-        .from('review_helpful_votes')
-        .select('*', { count: 'exact', head: true })
-        .eq('review_id', reviewId);
+        .from("review_helpful_votes")
+        .select("*", { count: "exact", head: true })
+        .eq("review_id", reviewId);
 
       if (error) throw error;
 
@@ -151,7 +152,7 @@ export function useRealtimeHelpfulVotes(
         [reviewId]: count || 0,
       }));
     } catch (error) {
-      console.error('Error fetching helpful count:', error);
+      console.error("Error fetching helpful count:", error);
     }
   }, []);
 
@@ -159,14 +160,17 @@ export function useRealtimeHelpfulVotes(
     createDebouncedHandler((reviewId: string) => updateHelpfulCount(reviewId), 500)
   );
 
-  const handleVoteChange = useCallback((payload: RealtimePostgresChangesPayload<any>) => {
-    const newRecord = payload.new as any;
-    const oldRecord = payload.old as any;
-    const reviewId = newRecord?.review_id || oldRecord?.review_id;
-    if (reviewId && reviewIds.includes(reviewId)) {
-      debouncedUpdate.current(reviewId);
-    }
-  }, [reviewIds]);
+  const handleVoteChange = useCallback(
+    (payload: RealtimePostgresChangesPayload<any>) => {
+      const newRecord = payload.new as any;
+      const oldRecord = payload.old as any;
+      const reviewId = newRecord?.review_id || oldRecord?.review_id;
+      if (reviewId && reviewIds.includes(reviewId)) {
+        debouncedUpdate.current(reviewId);
+      }
+    },
+    [reviewIds]
+  );
 
   useEffect(() => {
     if (!businessId) return;
@@ -195,34 +199,37 @@ export function useRealtimeBadges(userId: string | null | undefined) {
   const fetchBadgeDetails = useCallback(async (badgeId: string) => {
     try {
       const { data, error } = await supabase.current
-        .from('badges')
-        .select('*')
-        .eq('id', badgeId)
+        .from("badges")
+        .select("*")
+        .eq("id", badgeId)
         .single();
 
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error fetching badge details:', error);
+      console.error("Error fetching badge details:", error);
       return null;
     }
   }, []);
 
-  const handleBadgeInsert = useCallback(async (payload: RealtimePostgresChangesPayload<any>) => {
-    if (payload.new && payload.new.user_id === userId) {
-      const badgeDetails = await fetchBadgeDetails(payload.new.badge_id);
-      
-      if (badgeDetails) {
-        const newBadge = {
-          ...badgeDetails,
-          awarded_at: payload.new.awarded_at,
-        };
-        
-        setNewBadges((prev) => [...prev, newBadge]);
-        setHasNewBadge(true);
+  const handleBadgeInsert = useCallback(
+    async (payload: RealtimePostgresChangesPayload<any>) => {
+      if (payload.new && payload.new.user_id === userId) {
+        const badgeDetails = await fetchBadgeDetails(payload.new.badge_id);
+
+        if (badgeDetails) {
+          const newBadge = {
+            ...badgeDetails,
+            awarded_at: payload.new.awarded_at,
+          };
+
+          setNewBadges((prev) => [...prev, newBadge]);
+          setHasNewBadge(true);
+        }
       }
-    }
-  }, [userId, fetchBadgeDetails]);
+    },
+    [userId, fetchBadgeDetails]
+  );
 
   useEffect(() => {
     if (!userId) return;
@@ -251,11 +258,14 @@ export function useRealtimeBusinessStats(businessId: string | null | undefined) 
   const [stats, setStats] = useState<any>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
-  const handleStatsUpdate = useCallback((payload: RealtimePostgresChangesPayload<any>) => {
-    if (payload.new && payload.new.business_id === businessId) {
-      setStats(payload.new);
-    }
-  }, [businessId]);
+  const handleStatsUpdate = useCallback(
+    (payload: RealtimePostgresChangesPayload<any>) => {
+      if (payload.new && payload.new.business_id === businessId) {
+        setStats(payload.new);
+      }
+    },
+    [businessId]
+  );
 
   useEffect(() => {
     if (!businessId) return;
