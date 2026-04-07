@@ -8,10 +8,7 @@ import ReviewerCard from "../../ReviewerCard/ReviewerCard";
 import ReviewerCardSkeleton from "../../ReviewerCard/ReviewerCardSkeleton";
 import type { Review, Reviewer } from "../../../types/community";
 import { badgePreviews, sampleReviewTexts } from "../communityHighlights.constants";
-import {
-  HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS,
-  HOME_SECTION_RAIL_CLASS,
-} from "../../HomeSectionRow/homeSectionLayout";
+import { HOME_SECTION_RAIL_CLASS } from "../../HomeSectionRow/homeSectionLayout";
 import CardRail from "../../CardRail/CardRail";
 
 interface TopContributorsSectionProps {
@@ -41,7 +38,7 @@ export default function TopContributorsSection({
   hideCarouselArrowsOnDesktop,
   onSeeMoreContributors,
 }: TopContributorsSectionProps) {
-  const reviewerRailCardClass = `snap-center snap-always flex-shrink-0 h-full ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[20%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+  const reviewerRailCardClass = `snap-center snap-always flex-shrink-0 h-full w-[calc((100vw-37px)/1.5)] sm:w-auto sm:min-w-[25%] md:min-w-[20%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
 
   return (
     <>
