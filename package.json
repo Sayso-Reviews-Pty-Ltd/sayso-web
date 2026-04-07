@@ -19,7 +19,6 @@
     "dev:clean": "npm run clean && npm run dev",
     "perf:check": "node scripts/dev-performance.js",
     "perf:audit": "node scripts/performance-audit.js",
-    "fetch-events": "node scripts/fetch-events.js",
     "seed:fsq": "tsx scripts/seed-foursquare-businesses.ts",
     "seed:osm": "tsx scripts/seed-osm-businesses.ts",
     "test": "jest",

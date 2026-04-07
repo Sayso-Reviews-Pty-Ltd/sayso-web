@@ -6,38 +6,55 @@ Hyper-local business discovery and review platform for South Africa. Users find,
 
 ## Table of contents
 
-1. [Tech stack](#tech-stack)
-2. [Prerequisites](#prerequisites)
-3. [Local setup](#local-setup)
-4. [Environment variables](#environment-variables)
-5. [Project structure](#project-structure)
-6. [Architecture](#architecture)
-7. [Database](#database)
-8. [Testing](#testing)
-9. [Scripts](#scripts)
-10. [Deployment](#deployment)
-11. [Further reading](#further-reading)
+1. [Overview & status](#overview--status)
+2. [Tech stack](#tech-stack)
+3. [Prerequisites](#prerequisites)
+4. [Local setup](#local-setup)
+5. [Environment variables](#environment-variables)
+6. [Access & credentials](#access--credentials)
+7. [Project structure](#project-structure)
+8. [Architecture](#architecture)
+9. [Database](#database)
+10. [Codebase flows](#codebase-flows)
+11. [Testing](#testing)
+12. [Scripts](#scripts)
+13. [Operational runbook](#operational-runbook)
+14. [Deployment](#deployment)
+15. [Relationships & context](#relationships--context)
+16. [Active work & migration](#active-work--migration)
+17. [Open items / tech debt](#open-items--tech-debt)
+18. [Further reading](#further-reading)
+
+---
+
+## Overview & status
+
+- Purpose: hyper-local business discovery/reviews for South Africa with personalised feeds, realtime notifications, and gamified achievements.
+- Current state: web app feature-complete; remaining major task is **full migration to an Expo mobile app** while reusing backend/search stack.
+- Hosting: Vercel (web); Supabase for auth/db/storage/realtime; Algolia for search; Mapbox for maps.
 
 ---
 
 ## Tech stack
 
-| Layer | Technology | Version |
-|---|---|---|
-| Framework | Next.js (App Router) | ^16.0.7 |
-| UI library | React | 19.2.1 |
-| Language | TypeScript | 5.9.3 |
-| Styling | Tailwind CSS | ^4.1.13 |
-| Animations | Framer Motion | ^12.23.12 |
-| Data fetching | SWR | ^2.4.0 |
-| Database / Auth | Supabase (PostgreSQL + Auth + Realtime + Storage) | ^2.75.0 |
-| Search | Algolia | ^5.49.2 |
-| Maps | Mapbox GL | ^3.17.0 |
-| Charts | Recharts | ^3.7.0 |
-| AI | OpenAI | ^4.104.0 |
-| Email | Postmark / Resend | ^4.0.7 / ^6.5.2 |
-| Testing | Jest + Playwright | ^29.7.0 / ^1.40.0 |
-| Deployment | Vercel | — |
+| Layer           | Technology                                        | Version           |
+| --------------- | ------------------------------------------------- | ----------------- |
+| Framework       | Next.js (App Router)                              | ^16.0.7           |
+| UI library      | React                                             | 19.2.1            |
+| Language        | TypeScript                                        | 5.9.3             |
+| Styling         | Tailwind CSS                                      | ^4.1.13           |
+| Animations      | Framer Motion                                     | ^12.23.12         |
+| Data fetching   | SWR                                               | ^2.4.0            |
+| Database / Auth | Supabase (PostgreSQL + Auth + Realtime + Storage) | ^2.75.0           |
+| Search          | Algolia                                           | ^5.49.2           |
+| Maps            | Mapbox GL                                         | ^3.17.0           |
+| Charts          | Recharts                                          | ^3.7.0            |
+| AI              | OpenAI                                            | ^4.104.0          |
+| Email           | Postmark / Resend                                 | ^4.0.7 / ^6.5.2   |
+| Testing         | Jest + Playwright                                 | ^29.7.0 / ^1.40.0 |
+| Deployment      | Vercel                                            | —                 |
+
+Rationale: Next.js App Router for server components + edge rendering, SWR for fetch dedupe/optimistic updates, Supabase for unified auth/DB/realtime/storage, Algolia for low-latency search, Mapbox for maps; Jest/Playwright for unit/E2E coverage. Architectural notes live under `docs/02_architecture/` (see `PROJECT_STRUCTURE.md`, `BACKEND_STATUS.md`).
 
 ---
 
@@ -90,28 +107,46 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). The app uses Turbopack for fast reloads.
 
+**Notes & tools (macOS/Linux):**
+
+- Install Supabase CLI (`npm i -g supabase`) for local db and migrations.
+- Playwright browsers: `npx playwright install --with-deps` (needed for E2E).
+- Optional for migration: Expo CLI (`npm i -g expo-cli`).
+- macOS: if you hit OpenSSL errors install `brew install openssl`; if file watcher limits occur run `ulimit -n 1024`. Keychain prompts for npm auth are expected.
+
 ---
 
 ## Environment variables
 
 Copy `env.example` to `.env`. Variables are grouped by concern — see the comments in that file for descriptions. A quick summary:
 
-| Group | Variables | Required? |
-|---|---|---|
-| Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `DATABASE_URL` | Yes |
-| App URL | `NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_BASE_URL` | Yes |
-| Algolia | `ALGOLIA_APP_ID`, `ALGOLIA_SEARCH_KEY`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SYNC_SECRET` | Yes |
-| Maps | `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | Yes |
-| System IDs | `SYSTEM_BUSINESS_ID`, `SYSTEM_USER_ID` | Yes |
-| Email | `NEXT_POSTMARK_API_KEY`, `FROM_EMAIL`, `FROM_NAME` | Recommended |
-| AI | `OPENAI_API_KEY` | Optional |
-| Events | `TICKETMASTER_API_KEY`, `QUICKET_API_KEY`, `FOURSQUARE_API_KEY` | Optional |
-| SMS / OTP | `AFRICAS_TALKING_API_KEY`, `TWILIO_ACCOUNT_SID`, `OTP_PEPPER` | Optional |
-| Push | `PUSH_DISPATCH_SECRET`, `EXPO_ACCESS_TOKEN` | Optional |
-| Cron | `CRON_SECRET` | Optional |
-| E2E tests | `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`, `E2E_PERSONAL_ACCOUNT_EMAIL`, `E2E_PERSONAL_ACCOUNT_PASSWORD` | For E2E only |
+| Group      | Variables                                                                                                                       | Required?    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Supabase   | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `DATABASE_URL` | Yes          |
+| App URL    | `NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_BASE_URL`                                                      | Yes          |
+| Algolia    | `ALGOLIA_APP_ID`, `ALGOLIA_SEARCH_KEY`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SYNC_SECRET`                                              | Yes          |
+| Maps       | `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`                                                                                               | Yes          |
+| System IDs | `SYSTEM_BUSINESS_ID`, `SYSTEM_USER_ID`                                                                                          | Yes          |
+| Email      | `NEXT_POSTMARK_API_KEY`, `FROM_EMAIL`, `FROM_NAME`                                                                              | Recommended  |
+| AI         | `OPENAI_API_KEY`                                                                                                                | Optional     |
+| Events     | `TICKETMASTER_API_KEY`, `QUICKET_API_KEY`, `FOURSQUARE_API_KEY`                                                                 | Optional     |
+| SMS / OTP  | `AFRICAS_TALKING_API_KEY`, `TWILIO_ACCOUNT_SID`, `OTP_PEPPER`                                                                   | Optional     |
+| Push       | `PUSH_DISPATCH_SECRET`, `EXPO_ACCESS_TOKEN`                                                                                     | Optional     |
+| Cron       | `CRON_SECRET`                                                                                                                   | Optional     |
+| E2E tests  | `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`, `E2E_PERSONAL_ACCOUNT_EMAIL`, `E2E_PERSONAL_ACCOUNT_PASSWORD`                          | For E2E only |
 
 `VERCEL_URL` is injected automatically by Vercel at build time — do not set it manually.
+
+Where to get them: Supabase dashboard (API keys + JWT + DB URL), Algolia dashboard (app/search/admin keys), Mapbox account (access token), Vercel project settings (hosted env), OpenAI dashboard (API key), ticketing providers for event keys.
+
+---
+
+## Access & credentials
+
+- Local secrets: `.env` (from `env.example`).
+- Cloud: Vercel project env vars mirror `.env` (set all required keys before deploy). Supabase service role/JWT live in Supabase dashboard → Settings → API. Algolia keys in Algolia dashboard. Mapbox token from Mapbox account.
+- Storage: Supabase buckets for avatars/review photos/business images (policies in `docs/01_setup/SETUP_STORAGE_POLICIES.md`).
+- TODO: add links to any shared credential vaults or password managers if they exist.
 
 ---
 
@@ -154,7 +189,6 @@ sayso-web/
 ├── agents/                    # Claude Code agent definitions
 ├── docs/                      # Internal documentation (see Further reading)
 ├── scripts/                   # Seeding, performance, and build scripts
-├── services/                  # External service integrations
 ├── env.example                # All environment variables with descriptions
 ├── next.config.ts
 ├── tailwind.config.js
@@ -169,9 +203,17 @@ The API layer is split across ~39 route groups:
 
 `admin` · `algolia` · `auth` · `badges` · `business` · `business-images` · `business-ownership` · `business-stats` · `contact` · `conversations` · `cron` · `curated` · `deal-breakers` · `events` · `event-sources` · `featured` · `geocode` · `images` · `interests` · `internal` · `leaderboard` · `notifications` · `og` · `onboarding` · `reverse-geocode` · `reviewers` · `reviews` · `saved` · `search` · `seed` · `similar-businesses` · `specials` · `subcategories` · `subscribe` · `ticketmaster` · `trending` · `user` · `verification`
 
+Note: most subfolders do not yet contain per-folder README files — consider adding lightweight READMEs during future cleanup.
+
 ---
 
 ## Architecture
+
+### System architecture (text)
+
+Web (Next.js App Router) ⇄ Supabase (Auth / Postgres / Storage / Realtime) ⇄ Algolia (search) ⇄ Mapbox (maps)
+
+Supporting services: email via Postmark/Resend; AI helpers via OpenAI. Deployed on Vercel.
 
 ### Authentication
 
@@ -203,14 +245,14 @@ Prefer `useSWR` and `useSWRInfinite` for all data reads. Use `mutate` with an op
 
 No Redux. State lives in React Context + hooks:
 
-| Context | Responsibility |
-|---|---|
-| `AuthContext` | Session, user profile, role switching |
+| Context                | Responsibility                                  |
+| ---------------------- | ----------------------------------------------- |
+| `AuthContext`          | Session, user profile, role switching           |
 | `NotificationsContext` | Real-time notifications, toast queue, mark-read |
-| `RealtimeContext` | Supabase Realtime channel coordination |
-| `SavedItemsContext` | Saved businesses and events |
-| `ToastContext` | Toast dispatch and dismissal |
-| `OnboardingContext` | Onboarding step tracking |
+| `RealtimeContext`      | Supabase Realtime channel coordination          |
+| `SavedItemsContext`    | Saved businesses and events                     |
+| `ToastContext`         | Toast dispatch and dismissal                    |
+| `OnboardingContext`    | Onboarding step tracking                        |
 
 ### Real-time notifications
 
@@ -227,9 +269,9 @@ Supabase INSERT on notifications table
 
 There are two Supabase client instances — use the right one for the context:
 
-| File | Used in |
-|---|---|
-| `src/app/lib/supabase/client.ts` | Client components (`"use client"`) |
+| File                             | Used in                                           |
+| -------------------------------- | ------------------------------------------------- |
+| `src/app/lib/supabase/client.ts` | Client components (`"use client"`)                |
 | `src/app/lib/supabase/server.ts` | Server components, Route Handlers, Server Actions |
 
 Never import `client.ts` from a Server Component or a Route Handler.
@@ -261,6 +303,17 @@ Key tables: `profiles` · `businesses` · `business_images` · `business_ownersh
 Custom PostgreSQL functions handle business stats aggregation, recommendation queries, trending calculations, and leaderboard ranking.
 
 See `docs/02_architecture/DATABASE_ARCHITECTURE.md` for the full schema.
+
+---
+
+## Codebase flows
+
+- **Auth & role switching**: `AuthContext` + middleware (`src/middleware.ts`) handle session refresh and redirects; dual-account patterns documented in `docs/02_architecture/DUAL_ACCOUNT_ARCHITECTURE.md`.
+- **Reviews**: API `src/app/api/reviews/route.ts` with validation/sanitisation, rate limiting (`src/app/lib/utils/rateLimiter.ts`), and storage uploads to Supabase buckets.
+- **Search & discovery**: DB changes trigger Algolia sync via `/api/algolia/sync` (secret `ALGOLIA_SYNC_SECRET`). Client queries go through server routes under `src/app/api/search` to avoid exposing admin keys.
+- **Notifications**: Realtime channel per user with SWR polling fallback; confetti celebration in `src/app/lib/celebration/`.
+- **Events ingestion**: Ticketmaster/Quicket ingestors are currently removed; clean up or disable related cron entries if not needed.
+- **Gotchas**: Do not import `supabase/client.ts` into server code; always use SWR for data access (no raw fetch/axios in components); migrations in `supabase/migrations` are immutable; logging is console/Vercel only (no Sentry yet).
 
 ---
 
@@ -333,10 +386,18 @@ npm run perf:audit        # detailed performance analysis
 # Data
 npm run seed:fsq          # seed businesses from Foursquare
 npm run seed:osm          # seed businesses from OpenStreetMap
-npm run fetch-events      # ingest events from Ticketmaster and Quicket
 ```
 
 ---
+
+## Operational runbook
+
+- **Deploy (Vercel)**: ensure `.env` parity with Vercel project settings, then deploy via Vercel dashboard/CLI. Run Supabase migrations first (`npx supabase db push`) when schema changes are present.
+- **Cache & headers**: security headers and static caching are set in `next.config.ts`; keep them intact on new routes.
+- **Rollback**: promote previous Vercel deployment; for data, use Supabase PITR/backups (verify snapshots before restore).
+- **Monitoring/Logging**: today = Vercel logs + `console.*`. TODO: add structured logging + Sentry/APM.
+- **Common errors**: missing env keys (Supabase/Algolia/Mapbox), RLS blocking inserts, Ticketmaster/Quicket API rate limits, Mapbox token domain mismatch.
+- **Scheduled jobs**: only `/api/internal/push/dispatch` (every 5 minutes) remains enabled in `vercel.json`.
 
 ## Deployment
 
@@ -353,18 +414,51 @@ See `docs/07_deployment/` for production readiness checklists.
 
 ---
 
+## Relationships & context
+
+- Jessica-Claire — Design (preferred channel: TODO)
+- Lude — Admin/Ops (preferred channel: TODO)
+- TODO: add product, QA, infra, vendor contacts as they come online.
+
+---
+
+## Active work & migration
+
+- Status: All web work is done; the remaining major effort is **full migration of the app to Expo**.
+- Expo migration checklist:
+  - Reuse Supabase, Algolia, Mapbox (or Expo-friendly map lib), and existing API routes.
+  - Map web routes to mobile screens; use Expo Router for navigation.
+  - Auth via `@supabase/supabase-js`; keep role-switching UX aligned with dual-account docs.
+  - Data layer: use **React Query** for offline + retries (keep SWR patterns in web-only code).
+  - UI parity targets: home/discovery, business detail, reviews, notifications, saved, events.
+  - Native concerns: file uploads to Supabase Storage, maps token handling, push via Expo, deep links.
+  - Testing: Detox (or Playwright webview) for E2E; unit tests to match existing coverage depth.
+  - Release: Expo EAS build, store submissions (Apple/Play Store), versioning + changelog.
+- Transition timeline: TODO overlap window + final handoff date.
+
+---
+
+## Open items / tech debt
+
+- No structured logging/error tracking (Sentry/APM pending).
+- Notification preferences backend/UI incomplete.
+- `/api/user/interests` route missing (see `docs/02_architecture/BACKEND_STATUS.md`).
+- DB CHECK constraints for review fields not enforced at the database level.
+
+---
+
 ## Further reading
 
 The `docs/` directory contains detailed internal documentation:
 
-| Directory | Contents |
-|---|---|
-| `docs/01_setup/` | Setup guides, storage policies, badge setup |
-| `docs/02_architecture/` | Auth flows, DB schema, dual-account architecture, realtime config |
-| `docs/03_features/` | Reviews, onboarding, recommendations, messaging, SEO |
-| `docs/04_optimization/` | Performance guide, DB optimisation, bundle analysis |
-| `docs/05_design/` | Design system, animation guidelines |
-| `docs/07_deployment/` | Deployment checklist, production readiness |
-| `docs/08_testing/` | Testing strategy and setup |
-| `docs/09_troubleshooting/` | Common issues and fixes |
-| `docs/10_specs/` | API specifications |
+| Directory                  | Contents                                                          |
+| -------------------------- | ----------------------------------------------------------------- |
+| `docs/01_setup/`           | Setup guides, storage policies, badge setup                       |
+| `docs/02_architecture/`    | Auth flows, DB schema, dual-account architecture, realtime config |
+| `docs/03_features/`        | Reviews, onboarding, recommendations, messaging, SEO              |
+| `docs/04_optimization/`    | Performance guide, DB optimisation, bundle analysis               |
+| `docs/05_design/`          | Design system, animation guidelines                               |
+| `docs/07_deployment/`      | Deployment checklist, production readiness                        |
+| `docs/08_testing/`         | Testing strategy and setup                                        |
+| `docs/09_troubleshooting/` | Common issues and fixes                                           |
+| `docs/10_specs/`           | API specifications                                                |
