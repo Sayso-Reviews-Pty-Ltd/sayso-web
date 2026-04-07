@@ -63,7 +63,7 @@ export function ProfileAchievements({ achievements, userId }: ProfileAchievement
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.04, type: "spring", stiffness: 300, damping: 25 }}
                 whileHover={{ scale: 1.05, y: -3 }}
-                className="cursor-default transition-all duration-300 bg-off-white/70 rounded-xl ring-1 ring-black/5 shadow-sm hover:shadow-lg p-3 flex flex-col items-center justify-center text-center gap-1.5 aspect-square"
+                className="cursor-default transition-all duration-300 bg-off-white/70 rounded-xl ring-1 ring-black/5 shadow-sm hover:shadow-lg p-3 flex flex-col items-center justify-center text-center gap-1.5 aspect-square overflow-hidden"
               >
                 <div className="relative h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
                   <Image
