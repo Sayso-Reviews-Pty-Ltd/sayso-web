@@ -14,7 +14,7 @@ export function BadgeTile({ badge, onClick }: { badge: Badge; onClick: () => voi
   return (
     <m.button
       onClick={onClick}
-      className={`relative flex flex-col items-center justify-center p-4 rounded-2xl border text-left w-full aspect-square
+      className={`relative flex flex-col items-center justify-center p-1.5 rounded-2xl border text-left w-full aspect-square
         ${isLocked ? "border-white/10 bg-white/5" : "border-white/20 bg-white/10 shadow-lg"}
         hover:scale-105 active:scale-95 transition-transform cursor-pointer`}
       whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
@@ -32,7 +32,7 @@ export function BadgeTile({ badge, onClick }: { badge: Badge; onClick: () => voi
         />
       )}
 
-      <div className="relative w-14 h-14 mb-3 flex-shrink-0">
+      <div className="relative w-8 h-8 mb-1 flex-shrink-0">
         <Image
           src={pngPath}
           alt={badge.name}
@@ -42,19 +42,19 @@ export function BadgeTile({ badge, onClick }: { badge: Badge; onClick: () => voi
         />
         {isLocked && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-6 h-6 rounded-full bg-black/40 flex items-center justify-center">
-              <Lock className="w-3 h-3 text-white/70" />
+            <div className="w-4 h-4 rounded-full bg-black/40 flex items-center justify-center">
+              <Lock className="w-2 h-2 text-white/70" />
             </div>
           </div>
         )}
         {!isLocked && (
           <m.div
-            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center shadow-lg"
+            className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-400 flex items-center justify-center shadow-lg"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.3 }}
           >
-            <Star className="w-2.5 h-2.5 text-amber-900 fill-amber-900" />
+            <Star className="w-1.5 h-1.5 text-amber-900 fill-amber-900" />
           </m.div>
         )}
       </div>
