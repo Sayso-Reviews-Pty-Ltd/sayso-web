@@ -1,8 +1,8 @@
-import { Metadata } from 'next';
-import { createClient } from '@supabase/supabase-js';
-import { generateSEOMetadata, SITE_URL } from '../../lib/utils/seoMetadata';
-import SchemaMarkup from '../../components/SEO/SchemaMarkup';
-import { generatePersonSchema, generateBreadcrumbSchema } from '../../lib/utils/schemaMarkup';
+import { Metadata } from "next";
+import { createClient } from "@supabase/supabase-js";
+import { generateSEOMetadata, SITE_URL } from "../../lib/utils/seoMetadata";
+import SchemaMarkup from "../../components/SEO/SchemaMarkup";
+import { generatePersonSchema, generateBreadcrumbSchema } from "../../lib/utils/schemaMarkup";
 
 function getSupabase() {
   return createClient(
@@ -15,9 +15,9 @@ async function getReviewerProfile(id: string) {
   try {
     const supabase = getSupabase();
     const { data } = await supabase
-      .from('profiles')
-      .select('username, display_name, avatar_url, reviews_count, bio')
-      .eq('user_id', id)
+      .from("profiles")
+      .select("username, display_name, avatar_url, reviews_count, bio")
+      .eq("user_id", id)
       .single();
     return data;
   } catch {
@@ -25,32 +25,37 @@ async function getReviewerProfile(id: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const profile = await getReviewerProfile(id);
 
   if (profile) {
-    const name = profile.display_name || profile.username || 'Reviewer';
+    const name = profile.display_name || profile.username || "Reviewer";
     const reviewCount = profile.reviews_count || 0;
     const canonicalPath = `/reviewer/${id}`;
 
     return generateSEOMetadata({
       title: `${name}'s Cape Town reviews | Sayso`,
-      description: `${name} has written ${reviewCount} review${reviewCount !== 1 ? 's' : ''} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
-      keywords: [name, 'reviewer profile', 'cape town reviews', 'sayso community'],
+      description: `${name} has written ${reviewCount} review${reviewCount !== 1 ? "s" : ""} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
+      keywords: [name, "reviewer profile", "cape town reviews", "sayso community"],
       image: profile.avatar_url || undefined,
       url: canonicalPath,
-      type: 'profile',
+      type: "profile",
     });
   }
 
   return generateSEOMetadata({
-    title: 'Reviewer profile | Sayso',
-    description: "View this reviewer's activity on Sayso, Cape Town's hyper-local reviews and discovery app.",
+    title: "Reviewer profile | Sayso",
+    description:
+      "View this reviewer's activity on Sayso, Cape Town's hyper-local reviews and discovery app.",
     url: `/reviewer/${id}`,
     noindex: true,
     nofollow: true,
-    type: 'profile',
+    type: "profile",
   });
 }
 
@@ -68,7 +73,7 @@ export default async function ReviewerLayout({
   let reviewerSummary: { name: string; reviewsCount: number } | null = null;
 
   if (profile) {
-    const name = profile.display_name || profile.username || 'Reviewer';
+    const name = profile.display_name || profile.username || "Reviewer";
     const reviewerUrl = `${SITE_URL}/reviewer/${id}`;
     reviewerSummary = {
       name,
@@ -83,8 +88,8 @@ export default async function ReviewerLayout({
         description: profile.bio || undefined,
       }),
       generateBreadcrumbSchema([
-        { name: 'Home', url: `${SITE_URL}/` },
-        { name: 'Leaderboard', url: `${SITE_URL}/leaderboard` },
+        { name: "Home", url: `${SITE_URL}/` },
+        { name: "Leaderboard", url: `${SITE_URL}/leaderboard` },
         { name, url: reviewerUrl },
       ])
     );
@@ -97,7 +102,8 @@ export default async function ReviewerLayout({
         <article aria-label="Reviewer summary" className="sr-only">
           <h1>{reviewerSummary.name}</h1>
           <p>
-            {reviewerSummary.name} has contributed {reviewerSummary.reviewsCount} review{reviewerSummary.reviewsCount === 1 ? '' : 's'} on Sayso.
+            {reviewerSummary.name} has contributed {reviewerSummary.reviewsCount} review
+            {reviewerSummary.reviewsCount === 1 ? "" : "s"} on Sayso.
           </p>
         </article>
       )}
