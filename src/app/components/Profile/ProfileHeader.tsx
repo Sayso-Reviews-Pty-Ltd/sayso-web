@@ -3,16 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { m } from "framer-motion";
-import {
-  Award,
-  Calendar,
-  MapPin,
-  MessageSquare,
-  ThumbsUp,
-  User,
-  Check,
-  Briefcase,
-} from "@/app/lib/icons";
+import { Award, Calendar, MapPin, ThumbsUp, User, Check, Briefcase } from "@/app/lib/icons";
 import { LiveIndicator } from "@/app/components/Realtime/RealtimeIndicators";
 import { ProfileBadgeRibbon } from "@/app/components/Badges/ProfileBadgeRibbon";
 import type { AuthUser } from "@/app/lib/types/database";
@@ -222,11 +213,10 @@ export function ProfileHeader({
                   variant="bare"
                   type="button"
                   onClick={onEditClick}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-coral/90 hover:bg-charcoal/90 hover:border-white/30 text-white rounded-full text-caption sm:text-body-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-sage/20 border border-sage/20 whitespace-nowrap min-h-0"
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 bg-coral/90 hover:bg-charcoal/90 hover:border-white/30 !text-white rounded-full text-caption sm:text-body-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-sage/20 border border-sage/20 whitespace-nowrap min-h-0"
                   aria-label="Edit profile"
                 >
-                  <MessageSquare size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
-                  <span>Edit Profile</span>
+                  <span className="text-white">Edit Profile</span>
                 </Button>
               </div>
             </div>
