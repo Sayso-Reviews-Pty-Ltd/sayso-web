@@ -1,15 +1,15 @@
 const mockGetServerSupabase = jest.fn();
 const mockCreateClient = jest.fn();
 
-jest.mock('@/app/lib/supabase/server', () => ({
+jest.mock("@/app/lib/supabase/server", () => ({
   getServerSupabase: (...args: any[]) => mockGetServerSupabase(...args),
 }));
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock("@supabase/supabase-js", () => ({
   createClient: (...args: any[]) => mockCreateClient(...args),
 }));
 
-import { GET } from '@/app/api/notifications/business/route';
+import { GET } from "@/app/api/notifications/business/route";
 
 type MockNotification = {
   id: string;
@@ -60,7 +60,7 @@ function buildBusinessNotificationsSupabase(params: {
       }),
     },
     from: jest.fn((table: string) => {
-      if (table === 'profiles') {
+      if (table === "profiles") {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
@@ -71,7 +71,7 @@ function buildBusinessNotificationsSupabase(params: {
         };
       }
 
-      if (table === 'notifications') {
+      if (table === "notifications") {
         const builder = makeNotificationsBuilder(notifications, params.unreadCount ?? 0);
         queryBuilders.push(builder);
         return builder;
@@ -84,24 +84,24 @@ function buildBusinessNotificationsSupabase(params: {
   return { supabase, queryBuilders };
 }
 
-describe('GET /api/notifications/business', () => {
+describe("GET /api/notifications/business", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('allows business owners and returns notifications payload', async () => {
+  it("allows business owners and returns notifications payload", async () => {
     const { supabase, queryBuilders } = buildBusinessNotificationsSupabase({
-      userId: 'owner-1',
-      role: 'business_owner',
+      userId: "owner-1",
+      role: "business_owner",
       notifications: [
         {
-          id: 'n-1',
-          user_id: 'owner-1',
-          type: 'review',
-          title: 'Reply on Review',
-          message: 'Someone replied',
+          id: "n-1",
+          user_id: "owner-1",
+          type: "review",
+          title: "Reply on Review",
+          message: "Someone replied",
           read: false,
-          created_at: '2026-03-02T00:00:00.000Z',
+          created_at: "2026-03-02T00:00:00.000Z",
         },
       ],
       unreadCount: 1,
@@ -109,7 +109,9 @@ describe('GET /api/notifications/business', () => {
 
     mockGetServerSupabase.mockResolvedValue(supabase);
 
-    const req = new Request('http://localhost/api/notifications/business?unread=true&type=review&limit=2&offset=1') as any;
+    const req = new Request(
+      "http://localhost/api/notifications/business?unread=true&type=review&limit=2&offset=1"
+    ) as any;
     const res = await GET(req);
     const body = await res.json();
 
@@ -119,28 +121,28 @@ describe('GET /api/notifications/business', () => {
     expect(body.unreadCount).toBe(1);
 
     const listQuery = queryBuilders[0];
-    expect(listQuery.eq).toHaveBeenCalledWith('user_id', 'owner-1');
-    expect(listQuery.eq).toHaveBeenCalledWith('read', false);
-    expect(listQuery.eq).toHaveBeenCalledWith('type', 'review');
-    expect(listQuery.order).toHaveBeenCalledWith('created_at', { ascending: false });
+    expect(listQuery.eq).toHaveBeenCalledWith("user_id", "owner-1");
+    expect(listQuery.eq).toHaveBeenCalledWith("read", false);
+    expect(listQuery.eq).toHaveBeenCalledWith("type", "review");
+    expect(listQuery.order).toHaveBeenCalledWith("created_at", { ascending: false });
     expect(listQuery.range).toHaveBeenCalledWith(1, 2);
   });
 
-  it('rejects non-business users with 403', async () => {
+  it("rejects non-business users with 403", async () => {
     const { supabase } = buildBusinessNotificationsSupabase({
-      userId: 'user-1',
-      role: 'user',
+      userId: "user-1",
+      role: "user",
     });
 
     mockGetServerSupabase.mockResolvedValue(supabase);
 
-    const req = new Request('http://localhost/api/notifications/business') as any;
+    const req = new Request("http://localhost/api/notifications/business") as any;
     const res = await GET(req);
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('/api/notifications/business');
-    expect(supabase.from).toHaveBeenCalledWith('profiles');
-    expect(supabase.from).not.toHaveBeenCalledWith('notifications');
+    expect(body.error).toContain("/api/notifications/business");
+    expect(supabase.from).toHaveBeenCalledWith("profiles");
+    expect(supabase.from).not.toHaveBeenCalledWith("notifications");
   });
 });

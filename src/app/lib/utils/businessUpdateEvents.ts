@@ -15,10 +15,10 @@ class BusinessUpdateEventEmitter {
    */
   onUpdate(listener: BusinessUpdateListener): () => void {
     this.updateListeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
-      this.updateListeners = this.updateListeners.filter(l => l !== listener);
+      this.updateListeners = this.updateListeners.filter((l) => l !== listener);
     };
   }
 
@@ -27,10 +27,10 @@ class BusinessUpdateEventEmitter {
    */
   onDelete(listener: BusinessDeleteListener): () => void {
     this.deleteListeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
-      this.deleteListeners = this.deleteListeners.filter(l => l !== listener);
+      this.deleteListeners = this.deleteListeners.filter((l) => l !== listener);
     };
   }
 
@@ -38,11 +38,11 @@ class BusinessUpdateEventEmitter {
    * Emit business update event
    */
   emitUpdate(businessId: string): void {
-    this.updateListeners.forEach(listener => {
+    this.updateListeners.forEach((listener) => {
       try {
         listener(businessId);
       } catch (error) {
-        console.error('Error in business update listener:', error);
+        console.error("Error in business update listener:", error);
       }
     });
   }
@@ -51,11 +51,11 @@ class BusinessUpdateEventEmitter {
    * Emit business deletion event
    */
   emitDelete(businessId: string): void {
-    this.deleteListeners.forEach(listener => {
+    this.deleteListeners.forEach((listener) => {
       try {
         listener(businessId);
       } catch (error) {
-        console.error('Error in business delete listener:', error);
+        console.error("Error in business delete listener:", error);
       }
     });
   }
@@ -77,4 +77,3 @@ export function notifyBusinessUpdated(businessId: string): void {
 export function notifyBusinessDeleted(businessId: string): void {
   businessUpdateEvents.emitDelete(businessId);
 }
-

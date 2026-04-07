@@ -10,10 +10,6 @@ export const metadata: Metadata = generateSEOMetadata({
   type: "website",
 });
 
-export default function TrendingNowLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TrendingNowLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo } from 'react';
-import type { Business } from '../../components/BusinessCard/BusinessCard';
-import { ITEMS_PER_PAGE } from '../ForYouClient.constants';
+import { useMemo } from "react";
+import type { Business } from "../../components/BusinessCard/BusinessCard";
+import { ITEMS_PER_PAGE } from "../ForYouClient.constants";
 
 export function useForYouBusinessData(
   businesses: Business[],

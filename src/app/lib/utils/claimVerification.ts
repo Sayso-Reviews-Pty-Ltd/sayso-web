@@ -6,9 +6,25 @@
 
 /** Free/personal email domains that cannot auto-verify (Tier 1). */
 const PERSONAL_EMAIL_DOMAINS = new Set([
-  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.za', 'outlook.com', 'hotmail.com',
-  'live.com', 'icloud.com', 'me.com', 'mac.com', 'aol.com', 'mail.com', 'protonmail.com',
-  'zoho.com', 'yandex.com', 'gmx.com', 'webmail.co.za', 'mweb.co.za', 'telkomsa.net',
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.co.za",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "aol.com",
+  "mail.com",
+  "protonmail.com",
+  "zoho.com",
+  "yandex.com",
+  "gmx.com",
+  "webmail.co.za",
+  "mweb.co.za",
+  "telkomsa.net",
 ]);
 
 /**
@@ -16,8 +32,8 @@ const PERSONAL_EMAIL_DOMAINS = new Set([
  * e.g. "Info@AbcPlumbing.co.za" → "abcplumbing.co.za"
  */
 export function getEmailDomain(email: string | null | undefined): string | null {
-  if (!email || typeof email !== 'string') return null;
-  const parts = email.trim().toLowerCase().split('@');
+  if (!email || typeof email !== "string") return null;
+  const parts = email.trim().toLowerCase().split("@");
   return parts.length === 2 && parts[1].length > 0 ? parts[1] : null;
 }
 
@@ -27,10 +43,15 @@ export function getEmailDomain(email: string | null | undefined): string | null 
  * We compare normalized: strip "www." for comparison so www.abcplumbing.co.za matches abcplumbing.co.za.
  */
 export function getWebsiteDomain(website: string | null | undefined): string | null {
-  if (!website || typeof website !== 'string') return null;
-  const raw = website.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0] || '';
+  if (!website || typeof website !== "string") return null;
+  const raw =
+    website
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .split("/")[0] || "";
   if (!raw) return null;
-  return raw.startsWith('www.') ? raw.slice(4) : raw;
+  return raw.startsWith("www.") ? raw.slice(4) : raw;
 }
 
 /**

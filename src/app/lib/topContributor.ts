@@ -13,10 +13,7 @@ export const TOP_CONTRIBUTOR_MIN_HELPFUL = 5;
 /**
  * Returns true when the user qualifies as a Top Contributor.
  */
-export function isTopContributor(
-  reviewCount: number,
-  helpfulVotesReceived: number = 0,
-): boolean {
+export function isTopContributor(reviewCount: number, helpfulVotesReceived: number = 0): boolean {
   return (
     reviewCount >= TOP_CONTRIBUTOR_MIN_REVIEWS ||
     helpfulVotesReceived >= TOP_CONTRIBUTOR_MIN_HELPFUL

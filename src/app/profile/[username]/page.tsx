@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
-import { createClient } from '@supabase/supabase-js';
-import { notFound, redirect } from 'next/navigation';
-import { generateSEOMetadata } from '../../lib/utils/seoMetadata';
+import type { Metadata } from "next";
+import { createClient } from "@supabase/supabase-js";
+import { notFound, redirect } from "next/navigation";
+import { generateSEOMetadata } from "../../lib/utils/seoMetadata";
 
 interface PublicProfilePageProps {
   params: Promise<{ username: string }>;
@@ -20,9 +20,9 @@ async function getProfileByUsername(username: string) {
 
   const supabase = getSupabase();
   const { data } = await supabase
-    .from('profiles')
-    .select('user_id, username, display_name, avatar_url, reviews_count')
-    .ilike('username', normalized)
+    .from("profiles")
+    .select("user_id, username, display_name, avatar_url, reviews_count")
+    .ilike("username", normalized)
     .maybeSingle();
 
   return data;
@@ -35,11 +35,11 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   if (!profile) {
     return generateSEOMetadata({
       title: `${username} profile | Sayso`,
-      description: 'Public reviewer profile on Sayso.',
+      description: "Public reviewer profile on Sayso.",
       url: `/profile/${username}`,
       noindex: true,
       nofollow: true,
-      type: 'profile',
+      type: "profile",
     });
   }
 
@@ -48,11 +48,11 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
 
   return generateSEOMetadata({
     title: `${displayName}'s Cape Town reviews | Sayso`,
-    description: `${displayName} has written ${reviewCount} review${reviewCount === 1 ? '' : 's'} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
+    description: `${displayName} has written ${reviewCount} review${reviewCount === 1 ? "" : "s"} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
     image: profile.avatar_url || undefined,
-    keywords: [displayName, 'cape town reviewer', 'sayso profile'],
+    keywords: [displayName, "cape town reviewer", "sayso profile"],
     url: `/profile/${profile.username || username}`,
-    type: 'profile',
+    type: "profile",
   });
 }
 

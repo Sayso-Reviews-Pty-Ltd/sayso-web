@@ -1,8 +1,8 @@
 "use client";
 
 import { m, useAnimationControls } from "framer-motion";
-import { colors } from '@/app/(dev)/design-system/tokens';
-import { useState } from 'react';
+import { colors } from "@/app/(dev)/design-system/tokens";
+import { useState } from "react";
 
 interface SaysoLogoProps {
   size?: "small" | "medium" | "large" | "xl";
@@ -17,7 +17,7 @@ export default function SaysoLogo({
   className = "",
   animated = true,
   variant = "default",
-  interactive = false
+  interactive = false,
 }: SaysoLogoProps) {
   const [hoveredLetter, setHoveredLetter] = useState<string | null>(null);
 
@@ -26,16 +26,16 @@ export default function SaysoLogo({
     small: "text-2xl sm:text-lg",
     medium: "text-2xl sm:text-lg md:text-4xl",
     large: "text-2xl sm:text-4xl md:text-5xl lg:text-6xl",
-    xl: "text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+    xl: "text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl",
   };
 
   // Color mappings for each letter using design system tokens
   const letterColors = {
-    S: colors.primary.sage[500],     // Sage
-    A: colors.primary.coral[700],   // Red (Navbar burgundy)
-    Y: colors.primary.sage[500],     // Sage
-    S2: colors.primary.coral[700],  // Red (Navbar burgundy)
-    O: colors.primary.sage[500]     // Sage
+    S: colors.primary.sage[500], // Sage
+    A: colors.primary.coral[700], // Red (Navbar burgundy)
+    Y: colors.primary.sage[500], // Sage
+    S2: colors.primary.coral[700], // Red (Navbar burgundy)
+    O: colors.primary.sage[500], // Sage
   };
 
   // Enhanced variant styles
@@ -54,7 +54,7 @@ export default function SaysoLogo({
           backgroundSize: isHovered ? "200% 200%" : "100% 100%",
           filter: isHovered ? "brightness(1.2)" : "brightness(1)",
           textShadow: `0 0 20px ${baseColor}40`,
-          transition: "all 0.3s ease"
+          transition: "all 0.3s ease",
         };
       case "outline":
         return {
@@ -64,7 +64,7 @@ export default function SaysoLogo({
             ? `0 0 20px ${baseColor}60, 0 0 40px ${baseColor}30`
             : `0 0 8px ${baseColor}20`,
           filter: isHovered ? "brightness(1.3)" : "brightness(1)",
-          transition: "all 0.3s ease"
+          transition: "all 0.3s ease",
         };
       case "glow":
         return {
@@ -73,25 +73,23 @@ export default function SaysoLogo({
             ? `0 0 10px ${baseColor}80, 0 0 20px ${baseColor}60, 0 0 30px ${baseColor}40, 0 0 40px ${baseColor}20`
             : `0 0 8px ${baseColor}60, 0 0 16px ${baseColor}30`,
           filter: isHovered ? "brightness(1.3) saturate(1.2)" : "brightness(1.1)",
-          transition: "all 0.3s ease"
+          transition: "all 0.3s ease",
         };
       default:
         return {
           color: baseColor,
-          textShadow: isHovered
-            ? `0 4px 12px ${baseColor}40`
-            : "none",
+          textShadow: isHovered ? `0 4px 12px ${baseColor}40` : "none",
           filter: isHovered ? "brightness(1.2) saturate(1.1)" : "brightness(1)",
           transition: "all 0.3s ease",
-          transform: isHovered ? "translateY(-2px)" : "translateY(0)"
+          transform: isHovered ? "translateY(-2px)" : "translateY(0)",
         };
     }
   };
 
   const logoContent = (
-    <span 
+    <span
       className={`font-700 tracking-tight ${sizeClasses[size]} ${className}`}
-      style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+      style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, letterSpacing: "-0.02em" }}
     >
       {["S", "A", "Y", "S2", "O"].map((letter, index) => (
         <span
@@ -121,9 +119,13 @@ export default function SaysoLogo({
       }}
       className="inline-block"
     >
-      <span 
+      <span
         className={`font-700 tracking-tight ${sizeClasses[size]} ${className}`}
-        style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+        style={{
+          fontFamily: '"Playfair Display", serif',
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
+        }}
       >
         {["S", "A", "Y", "S2", "O"].map((letter, index) => (
           <m.span
@@ -140,13 +142,17 @@ export default function SaysoLogo({
               type: "spring",
               bounce: 0.4,
               stiffness: 200,
-              damping: 15
+              damping: 15,
             }}
-            whileHover={interactive ? {
-              y: -4,
-              scale: 1.1,
-              transition: { duration: 0.2, type: "spring", stiffness: 400 }
-            } : undefined}
+            whileHover={
+              interactive
+                ? {
+                    y: -4,
+                    scale: 1.1,
+                    transition: { duration: 0.2, type: "spring", stiffness: 400 },
+                  }
+                : undefined
+            }
             style={getLetterStyle(letter as keyof typeof letterColors, hoveredLetter === letter)}
             className={interactive ? "inline-block cursor-pointer select-none" : "inline-block"}
             onMouseEnter={() => interactive && setHoveredLetter(letter)}

@@ -5,6 +5,6 @@
 
 export const swrConfig = {
   revalidateOnFocus: false, // We handle visibility-based refetch in hooks
-  dedupingInterval: 5000,   // Avoid duplicate requests within 5s
+  dedupingInterval: 5000, // Avoid duplicate requests within 5s
   revalidateOnReconnect: true,
 } as const;

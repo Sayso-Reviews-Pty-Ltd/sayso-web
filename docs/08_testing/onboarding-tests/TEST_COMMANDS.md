@@ -111,16 +111,16 @@ npm run test -- __tests__/onboarding --updateSnapshot
 
 ## Quick Reference
 
-| Test File | Command |
-|-----------|---------|
-| **OnboardingContext** | `npm run test -- __tests__/onboarding/OnboardingContext.test.tsx` |
-| **InterestsPage** | `npm run test -- __tests__/onboarding/InterestsPage.test.tsx` |
-| **SubcategoriesPage** | `npm run test -- __tests__/onboarding/SubcategoriesPage.test.tsx` |
-| **DealBreakersPage** | `npm run test -- __tests__/onboarding/DealBreakersPage.test.tsx` |
-| **OnboardingGuard** | `npm run test -- __tests__/onboarding/OnboardingGuard.test.tsx` |
+| Test File                 | Command                                                               |
+| ------------------------- | --------------------------------------------------------------------- |
+| **OnboardingContext**     | `npm run test -- __tests__/onboarding/OnboardingContext.test.tsx`     |
+| **InterestsPage**         | `npm run test -- __tests__/onboarding/InterestsPage.test.tsx`         |
+| **SubcategoriesPage**     | `npm run test -- __tests__/onboarding/SubcategoriesPage.test.tsx`     |
+| **DealBreakersPage**      | `npm run test -- __tests__/onboarding/DealBreakersPage.test.tsx`      |
+| **OnboardingGuard**       | `npm run test -- __tests__/onboarding/OnboardingGuard.test.tsx`       |
 | **Regression Guardrails** | `npm run test -- __tests__/onboarding/regression-guardrails.test.tsx` |
-| **API Route** | `npm run test:api -- __tests__/api/onboarding-route.test.ts` |
-| **All Onboarding** | `npm run test -- __tests__/onboarding` |
+| **API Route**             | `npm run test:api -- __tests__/api/onboarding-route.test.ts`          |
+| **All Onboarding**        | `npm run test -- __tests__/onboarding`                                |
 
 ## Troubleshooting
 
@@ -147,4 +147,3 @@ npm run test -- __tests__/onboarding --runInBand
 # Run with Node debugger
 node --inspect-brk node_modules/.bin/jest __tests__/onboarding/InterestsPage.test.tsx
 ```
-

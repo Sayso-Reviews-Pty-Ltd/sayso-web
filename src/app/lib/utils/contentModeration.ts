@@ -36,12 +36,10 @@ export class ContentModerator {
     const lowerContent = content.toLowerCase().trim();
 
     // Check for profanity
-    const hasProfanity = PROFANITY_WORDS.some(word => 
-      lowerContent.includes(word.toLowerCase())
-    );
+    const hasProfanity = PROFANITY_WORDS.some((word) => lowerContent.includes(word.toLowerCase()));
 
     if (hasProfanity) {
-      reasons.push('Content contains inappropriate language');
+      reasons.push("Content contains inappropriate language");
     }
 
     // Check for spam patterns
@@ -49,10 +47,10 @@ export class ContentModerator {
       const matches = content.match(pattern);
       if (matches && matches.length > 2) {
         return [
-          'Excessive URLs detected',
-          'Excessive capitalization',
-          'Excessive punctuation',
-          'Repeated characters detected',
+          "Excessive URLs detected",
+          "Excessive capitalization",
+          "Excessive punctuation",
+          "Repeated characters detected",
         ][index];
       }
       return null;
@@ -62,12 +60,12 @@ export class ContentModerator {
 
     // Check content length (should be validated separately, but check here too)
     if (content.trim().length < 10) {
-      reasons.push('Content is too short');
+      reasons.push("Content is too short");
     }
 
     // Basic sanitization - remove excessive whitespace
     const sanitizedContent = content
-      .replace(/\s+/g, ' ') // Multiple spaces to single space
+      .replace(/\s+/g, " ") // Multiple spaces to single space
       .trim();
 
     return {
@@ -90,7 +88,6 @@ export class ContentModerator {
    */
   static hasProfanity(content: string): boolean {
     const lowerContent = content.toLowerCase();
-    return PROFANITY_WORDS.some(word => lowerContent.includes(word.toLowerCase()));
+    return PROFANITY_WORDS.some((word) => lowerContent.includes(word.toLowerCase()));
   }
 }
-

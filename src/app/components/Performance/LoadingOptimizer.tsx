@@ -11,11 +11,11 @@ interface LoadingOptimizerProps {
   minHeight?: string;
 }
 
-export default function LoadingOptimizer({ 
-  children, 
+export default function LoadingOptimizer({
+  children,
   fallback,
   delay = 100,
-  minHeight = "200px"
+  minHeight = "200px",
 }: LoadingOptimizerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);

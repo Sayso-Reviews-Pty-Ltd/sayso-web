@@ -3,14 +3,14 @@
  * Uses SWR for caching, deduplication, and optimistic invalidation.
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { businessUpdateEvents } from '../lib/utils/businessUpdateEvents';
-import { authenticatedFetch } from '../lib/api/authenticatedFetch';
-import { swrKeys } from '../lib/swrKeys';
+import { useEffect } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { businessUpdateEvents } from "../lib/utils/businessUpdateEvents";
+import { authenticatedFetch } from "../lib/api/authenticatedFetch";
+import { swrKeys } from "../lib/swrKeys";
 
 async function fetchBusiness([, businessId]: [string, string]): Promise<any> {
   const response = await authenticatedFetch(`/api/businesses/${businessId}`);
@@ -30,7 +30,7 @@ interface UseBusinessDetailOptions {
 
 export function useBusinessDetail(
   businessId: string | null | undefined,
-  options: UseBusinessDetailOptions = {},
+  options: UseBusinessDetailOptions = {}
 ) {
   const swrKey = swrKeys.businessDetail(businessId);
 
@@ -48,15 +48,15 @@ export function useBusinessDetail(
     if (!swrKey) return;
     let visibilityTimer: ReturnType<typeof setTimeout> | null = null;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         if (visibilityTimer) clearTimeout(visibilityTimer);
         visibilityTimer = setTimeout(() => mutate(), VISIBILITY_REFETCH_DEBOUNCE_MS);
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       if (visibilityTimer) clearTimeout(visibilityTimer);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [swrKey, mutate]);
 

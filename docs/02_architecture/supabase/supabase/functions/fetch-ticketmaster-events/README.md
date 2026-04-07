@@ -13,6 +13,7 @@ In Supabase Dashboard, go to **Edge Functions > Secrets** and set:
 - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key (usually auto-configured)
 
 Or via CLI:
+
 ```bash
 supabase secrets set TICKETMASTER_API_KEY=your_api_key_here
 ```
@@ -26,10 +27,12 @@ supabase functions deploy fetch-ticketmaster-events
 ### 3. Schedule the Function
 
 #### Option A: Using Supabase Dashboard
+
 1. Go to **Database > Cron Jobs** (if available)
 2. Or use **Database > Extensions > pg_cron** to schedule HTTP requests
 
 #### Option B: Using External Cron Service
+
 Use a service like [cron-job.org](https://cron-job.org) or [EasyCron](https://www.easycron.com) to call:
 
 ```
@@ -44,6 +47,7 @@ Body (optional):
 ```
 
 #### Option C: Using pg_cron (if enabled)
+
 ```sql
 -- Schedule to run every 6 hours
 SELECT cron.schedule(
@@ -112,4 +116,3 @@ curl -X POST \
 - Events are upserted based on `ticketmaster_id` (updates existing, inserts new)
 - The function handles errors gracefully and continues processing
 - Make sure the `ticketmaster_events` table exists (see migration: `20250106_create_ticketmaster_cron.sql`)
-

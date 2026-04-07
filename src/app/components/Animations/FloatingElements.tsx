@@ -77,29 +77,30 @@ export default function FloatingElements() {
       />
 
       {/* Subtle sparkles - only render after hydration */}
-      {mounted && sparkles.map((sparkle) => (
-        <m.div
-          key={sparkle.id}
-          className="absolute w-1 h-1 bg-card-bg/20 rounded-full"
-          style={{
-            left: `${sparkle.x}%`,
-            top: `${sparkle.y}%`,
-          }}
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1.5, 0],
-          }}
-          transition={{
-            duration: sparkle.duration,
-            repeat: Infinity,
-            delay: sparkle.delay,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+      {mounted &&
+        sparkles.map((sparkle) => (
+          <m.div
+            key={sparkle.id}
+            className="absolute w-1 h-1 bg-card-bg/20 rounded-full"
+            style={{
+              left: `${sparkle.x}%`,
+              top: `${sparkle.y}%`,
+            }}
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1.5, 0],
+            }}
+            transition={{
+              duration: sparkle.duration,
+              repeat: Infinity,
+              delay: sparkle.delay,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
     </div>
   );
 }

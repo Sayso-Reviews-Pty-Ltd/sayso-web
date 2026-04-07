@@ -21,7 +21,12 @@ export default function WelcomeModal() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
+    >
       <DialogContent className="max-w-lg p-0 gap-0 max-h-[90vh] overflow-y-auto">
         <DialogTitle className="sr-only">Welcome to sayso</DialogTitle>
         <DialogDescription className="sr-only">Discover places real locals love</DialogDescription>
@@ -46,12 +51,16 @@ export default function WelcomeModal() {
           <div>
             <h3 className="font-urbanist text-lg font-600 text-charcoal mb-4">What is sayso?</h3>
             <p className="font-urbanist text-sm text-charcoal/70 leading-relaxed">
-              sayso is a community-driven platform where locals share their favorite spots—from hidden cafes to trending restaurants. No ads, no sponsored content—just authentic recommendations from real people.
+              sayso is a community-driven platform where locals share their favorite spots—from
+              hidden cafes to trending restaurants. No ads, no sponsored content—just authentic
+              recommendations from real people.
             </p>
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-urbanist text-lg font-600 text-charcoal">How you can contribute:</h3>
+            <h3 className="font-urbanist text-lg font-600 text-charcoal">
+              How you can contribute:
+            </h3>
 
             <div className="flex gap-3 items-start">
               <div className="w-10 h-10 bg-card-bg/10 rounded-[12px] flex items-center justify-center flex-shrink-0">
@@ -59,7 +68,9 @@ export default function WelcomeModal() {
               </div>
               <div className="flex-1">
                 <h4 className="font-urbanist text-sm font-600 text-charcoal mb-1">Leave Reviews</h4>
-                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">Share your experiences and help others discover great places</p>
+                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">
+                  Share your experiences and help others discover great places
+                </p>
               </div>
             </div>
 
@@ -68,8 +79,12 @@ export default function WelcomeModal() {
                 <Heart className="w-5 h-5 text-coral" />
               </div>
               <div className="flex-1">
-                <h4 className="font-urbanist text-sm font-600 text-charcoal mb-1">Save Favourites</h4>
-                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">Create lists of your favourite spots to revisit anytime</p>
+                <h4 className="font-urbanist text-sm font-600 text-charcoal mb-1">
+                  Save Favourites
+                </h4>
+                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">
+                  Create lists of your favourite spots to revisit anytime
+                </p>
               </div>
             </div>
 
@@ -78,8 +93,12 @@ export default function WelcomeModal() {
                 <MessageCircle className="w-5 h-5 text-charcoal" />
               </div>
               <div className="flex-1">
-                <h4 className="font-urbanist text-sm font-600 text-charcoal mb-1">Join the Community</h4>
-                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">Connect with fellow locals and share recommendations</p>
+                <h4 className="font-urbanist text-sm font-600 text-charcoal mb-1">
+                  Join the Community
+                </h4>
+                <p className="font-urbanist text-sm sm:text-xs text-charcoal/60 leading-relaxed">
+                  Connect with fellow locals and share recommendations
+                </p>
               </div>
             </div>
           </div>

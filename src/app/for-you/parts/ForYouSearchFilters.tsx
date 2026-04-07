@@ -17,8 +17,8 @@ interface ForYouSearchFiltersProps {
   filters: FilterState;
   onDistanceChange: (distance: string) => void;
   onRatingChange: (rating: number) => void;
-  onRemoveFilter: (filterType: 'minRating' | 'distance') => void;
-  onUpdateFilter: (filterType: 'minRating' | 'distance', value: number | string | null) => void;
+  onRemoveFilter: (filterType: "minRating" | "distance") => void;
+  onUpdateFilter: (filterType: "minRating" | "distance", value: number | string | null) => void;
   onClearAll: () => void;
   searchWrapRef: RefObject<HTMLDivElement>;
 }
@@ -55,9 +55,7 @@ export function ForYouSearchFilters({
         />
       </m.div>
 
-      <m.div
-        {...getChoreoItemMotion({ order: 3, intent: "section", enabled: choreoEnabled })}
-      >
+      <m.div {...getChoreoItemMotion({ order: 3, intent: "section", enabled: choreoEnabled })}>
         <InlineFilters
           show={isSearchActive && debouncedSearchQuery.trim().length > 0}
           filters={filters}
@@ -66,9 +64,7 @@ export function ForYouSearchFilters({
         />
       </m.div>
 
-      <m.div
-        {...getChoreoItemMotion({ order: 4, intent: "section", enabled: choreoEnabled })}
-      >
+      <m.div {...getChoreoItemMotion({ order: 4, intent: "section", enabled: choreoEnabled })}>
         <ActiveFilterBadges
           filters={filters}
           onRemoveFilter={onRemoveFilter}

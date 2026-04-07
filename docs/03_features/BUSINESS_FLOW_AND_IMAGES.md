@@ -21,6 +21,7 @@ BusinessCard Component receives business prop
 ### 2. **Key Files in the Flow**
 
 #### **Frontend Pages** (Where businesses are displayed)
+
 - `src/app/home/page.tsx` - Home page with business feed
 - `src/app/explore/page.tsx` - Explore/search page
 - `src/app/for-you/page.tsx` - Personalized feed
@@ -28,6 +29,7 @@ BusinessCard Component receives business prop
 - `src/app/category/[slug]/page.tsx` - Category pages
 
 #### **Data Fetching Hook**
+
 - `src/app/hooks/useBusinesses.ts` - React hook that:
   - Builds query parameters
   - Calls `/api/businesses`
@@ -35,6 +37,7 @@ BusinessCard Component receives business prop
   - Returns businesses array
 
 #### **API Endpoint**
+
 - `src/app/api/businesses/route.ts` - Server-side endpoint that:
   - Accepts filters (category, location, interests, search query)
   - Queries Supabase `businesses` table
@@ -43,6 +46,7 @@ BusinessCard Component receives business prop
   - Returns JSON: `{ businesses: [...], cursorId: ... }`
 
 #### **Business Card Component**
+
 - `src/app/components/BusinessCard/BusinessCard.tsx` - Displays:
   - Business image (with fallback logic)
   - Business name, category, location
@@ -70,12 +74,13 @@ The `BusinessCard` component uses this priority order to determine which image t
 ### **Image Source Types**
 
 #### **1. Uploaded Images** (`uploaded_image`)
+
 - **Source**: Supabase Storage bucket `business-images`
 - **Upload Flow**:
   ```
-  User uploads image → 
-  Upload to Supabase Storage (`business-images` bucket) → 
-  Get public URL → 
+  User uploads image →
+  Upload to Supabase Storage (`business-images` bucket) →
+  Get public URL →
   Save URL to `businesses.uploaded_image` field
   ```
 - **Location**: `business-images/{businessId}/{filename}`
@@ -83,11 +88,13 @@ The `BusinessCard` component uses this priority order to determine which image t
 - **Used in**: Business cards, profile pages, edit pages
 
 #### **2. External Images** (`image_url`)
+
 - **Source**: External APIs (Foursquare, Google Places, etc.)
 - **Example**: `https://images.unsplash.com/photo-...`
 - **Used as**: Fallback when no uploaded image exists
 
 #### **3. Category PNG Icons** (Fallback)
+
 - **Source**: Local static assets in `/public/png/`
 - **Mapping**: `src/app/utils/categoryToPngMapping.ts`
 - **Logic**: Maps category/subcategory → PNG icon path
@@ -101,9 +108,7 @@ The system detects PNG icons vs. real images:
 ```typescript
 // Checks if image is a PNG icon (not a real photo)
 function isPngIcon(url: string): boolean {
-  return url.includes('/png/') || 
-         url.endsWith('.png') || 
-         url.includes('category-icon');
+  return url.includes("/png/") || url.endsWith(".png") || url.includes("category-icon");
 }
 
 // If detected as PNG, uses different display style:
@@ -193,7 +198,7 @@ Located at `src/app/components/Performance/OptimizedImage.tsx`:
 
 2. API Endpoint Processes Request
    └─> Queries Supabase:
-       SELECT id, name, slug, uploaded_image, image_url, 
+       SELECT id, name, slug, uploaded_image, image_url,
               category, location, ...
        FROM businesses
        JOIN business_stats ON businesses.id = business_stats.business_id
@@ -237,7 +242,7 @@ Located at `src/app/components/Performance/OptimizedImage.tsx`:
        ├─> If uploaded_image exists → use it
        ├─> Else if image_url exists → use it
        └─> Else → use category PNG fallback
-       
+
        └─> OptimizedImage component loads image
            ├─> Shows loading spinner
            ├─> Loads image (lazy or eager)
@@ -255,12 +260,12 @@ CREATE TABLE businesses (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT,
-  
+
   -- Image fields (priority order)
   uploaded_image TEXT,  -- Supabase Storage URL (highest priority)
   image_url TEXT,       -- External URL (fallback)
   image TEXT,           -- Legacy field (deprecated)
-  
+
   category TEXT,
   location TEXT,
   ...
@@ -290,12 +295,13 @@ CREATE TABLE businesses (
 ## 🔍 Debugging Image Issues
 
 ### **Check Image Source**
+
 ```typescript
 // In BusinessCard component, log the image source:
-console.log('Business:', business.name);
-console.log('uploaded_image:', business.uploaded_image);
-console.log('image_url:', business.image_url);
-console.log('Final displayImage:', displayImage);
+console.log("Business:", business.name);
+console.log("uploaded_image:", business.uploaded_image);
+console.log("image_url:", business.image_url);
+console.log("Final displayImage:", displayImage);
 ```
 
 ### **Common Issues**
@@ -313,4 +319,3 @@ console.log('Final displayImage:', displayImage);
    - Check if using `OptimizedImage` component
    - Verify lazy loading is enabled
    - Check image file size (should be optimized before upload)
-

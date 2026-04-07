@@ -24,15 +24,15 @@ export function ProfilePreferences({ locationStatus, requestLocation }: Props) {
         <div className="min-w-0">
           <p className="text-sm font-semibold text-charcoal">Location Distance</p>
           <p className="text-xs text-charcoal/60 mt-0.5">
-            {locationStatus === 'granted'
-              ? 'Enabled — distances are shown on business cards'
-              : locationStatus === 'denied'
-                ? 'Blocked — update in your browser settings, then tap retry'
-                : 'Allow location to see how far businesses are from you'}
+            {locationStatus === "granted"
+              ? "Enabled — distances are shown on business cards"
+              : locationStatus === "denied"
+                ? "Blocked — update in your browser settings, then tap retry"
+                : "Allow location to see how far businesses are from you"}
           </p>
         </div>
 
-        {locationStatus === 'granted' ? (
+        {locationStatus === "granted" ? (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sage/15 text-sage text-xs font-semibold whitespace-nowrap border border-sage/20">
             <Check size={14} strokeWidth={2.5} />
             Enabled
@@ -40,15 +40,21 @@ export function ProfilePreferences({ locationStatus, requestLocation }: Props) {
         ) : (
           <button
             onClick={requestLocation}
-            disabled={locationStatus === 'loading'}
+            disabled={locationStatus === "loading"}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-coral/90 hover:bg-coral text-white text-xs font-semibold whitespace-nowrap transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
           >
-            {locationStatus === 'loading' ? (
+            {locationStatus === "loading" ? (
               "Requesting..."
-            ) : locationStatus === 'denied' ? (
-              <><Navigation size={14} />Retry</>
+            ) : locationStatus === "denied" ? (
+              <>
+                <Navigation size={14} />
+                Retry
+              </>
             ) : (
-              <><Navigation size={14} />Allow</>
+              <>
+                <Navigation size={14} />
+                Allow
+              </>
             )}
           </button>
         )}

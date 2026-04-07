@@ -1,4 +1,4 @@
-export type MessagingRole = 'user' | 'business';
+export type MessagingRole = "user" | "business";
 
 export interface ConversationBusiness {
   id: string;
@@ -35,9 +35,9 @@ export interface ConversationsResponse {
   unread_total: number;
 }
 
-export type MessageStatus = 'sent' | 'delivered' | 'read';
-export type MessageSenderType = 'user' | 'business';
-export type MessageClientState = 'sending' | 'failed' | null;
+export type MessageStatus = "sent" | "delivered" | "read";
+export type MessageSenderType = "user" | "business";
+export type MessageClientState = "sending" | "failed" | null;
 
 export interface ConversationMessage {
   id: string;

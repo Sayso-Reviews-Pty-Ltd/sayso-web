@@ -38,4 +38,3 @@ const child = spawn(command, args, {
 child.on("close", (code) => {
   process.exit(code ?? 0);
 });
-

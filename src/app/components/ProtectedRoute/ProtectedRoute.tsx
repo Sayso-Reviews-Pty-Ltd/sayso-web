@@ -1,8 +1,8 @@
 "use client";
 
-import { ReactNode } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { PageLoader } from '../Loader';
+import { ReactNode } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { PageLoader } from "../Loader";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ export default function ProtectedRoute({
   requiresAuth = true,
   requiresOnboarding = false,
   allowedOnboardingSteps = [],
-  redirectTo: _redirectTo
+  redirectTo: _redirectTo,
 }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const onboardingStep = user?.profile?.onboarding_step ?? null;
@@ -54,34 +54,16 @@ export default function ProtectedRoute({
 
 // Convenience wrapper components
 export function PublicRoute({ children }: { children: ReactNode }) {
-  return (
-    <ProtectedRoute requiresAuth={false}>
-      {children}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute requiresAuth={false}>{children}</ProtectedRoute>;
 }
 
 export function PrivateRoute({ children }: { children: ReactNode }) {
-  return (
-    <ProtectedRoute requiresAuth={true}>
-      {children}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute requiresAuth={true}>{children}</ProtectedRoute>;
 }
 
-export function OnboardingRoute({
-  children,
-  step
-}: {
-  children: ReactNode;
-  step: string;
-}) {
+export function OnboardingRoute({ children, step }: { children: ReactNode; step: string }) {
   return (
-    <ProtectedRoute
-      requiresAuth={true}
-      requiresOnboarding={true}
-      allowedOnboardingSteps={[step]}
-    >
+    <ProtectedRoute requiresAuth={true} requiresOnboarding={true} allowedOnboardingSteps={[step]}>
       {children}
     </ProtectedRoute>
   );

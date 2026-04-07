@@ -1,3 +1,2 @@
-export { SettingsCard } from './SettingsCard';
-export type { SettingsCardProps } from './SettingsCard';
-
+export { SettingsCard } from "./SettingsCard";
+export type { SettingsCardProps } from "./SettingsCard";

@@ -60,8 +60,8 @@ If you encounter this error when running the migration, you need to create the s
     )
     OR
     (storage.foldername(name))[1] IN (
-      SELECT business_id::text 
-      FROM business_owners 
+      SELECT business_id::text
+      FROM business_owners
       WHERE user_id = auth.uid()
     )
   )
@@ -83,7 +83,7 @@ Or run the SQL from `supabase/migrations/20250115_fix_business_images_rls_polici
 After creating the policies, verify they exist:
 
 ```sql
-SELECT 
+SELECT
   policyname,
   cmd,
   roles,
@@ -112,4 +112,3 @@ You should see 4 policies listed.
 - Make sure the policy is enabled (not disabled in the Dashboard)
 - Check that the bucket_id matches exactly: `'business_images'`
 - For UPDATE policy, ensure both USING and WITH CHECK expressions are set correctly
-

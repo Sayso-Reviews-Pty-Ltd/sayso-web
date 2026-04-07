@@ -1,6 +1,6 @@
 # Manual Storage Policy Update Instructions
 
-This migration updates storage RLS policies but requires elevated permissions. 
+This migration updates storage RLS policies but requires elevated permissions.
 Run these SQL statements manually via **Supabase Dashboard > Storage > Policies**.
 
 ## Steps
@@ -28,6 +28,7 @@ Run these SQL statements manually via **Supabase Dashboard > Storage > Policies*
 **Target Roles:** `public`
 
 **USING expression:**
+
 ```sql
 bucket_id = 'business_images'
 ```
@@ -43,6 +44,7 @@ bucket_id = 'business_images'
 **Target Roles:** `authenticated`
 
 **WITH CHECK expression:**
+
 ```sql
 bucket_id = 'business_images' AND
 (storage.foldername(name))[1] IS NOT NULL
@@ -61,11 +63,13 @@ bucket_id = 'business_images' AND
 **Target Roles:** `authenticated`
 
 **USING expression:**
+
 ```sql
 bucket_id = 'business_images'
 ```
 
 **WITH CHECK expression:**
+
 ```sql
 bucket_id = 'business_images'
 ```
@@ -83,6 +87,7 @@ bucket_id = 'business_images'
 **Target Roles:** `authenticated`
 
 **USING expression:**
+
 ```sql
 bucket_id = 'business_images' AND
 EXISTS (
@@ -119,4 +124,3 @@ supabase db push
 ```
 
 Or run the SQL directly in SQL Editor with service role permissions (requires database admin access).
-

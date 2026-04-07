@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const BREADCRUMB_TEXT_SELECTOR = 'nav[aria-label="Breadcrumb"] li a, nav[aria-label="Breadcrumb"] li span';
+const BREADCRUMB_TEXT_SELECTOR =
+  'nav[aria-label="Breadcrumb"] li a, nav[aria-label="Breadcrumb"] li span';
 
 function syncBreadcrumbTitles() {
   if (typeof document === "undefined") {

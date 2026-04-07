@@ -1,15 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { mapEventsAndSpecialsRowToEventCard } from '@/app/lib/events/mapEvent';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { mapEventsAndSpecialsRowToEventCard } from "@/app/lib/events/mapEvent";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: eventId } = await params;
-  const limit = Math.min(parseInt(req.nextUrl.searchParams.get('limit') ?? '4'), 8);
+  const limit = Math.min(parseInt(req.nextUrl.searchParams.get("limit") ?? "4"), 8);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,18 +15,21 @@ export async function GET(
 
   // First fetch the current event to get city/type
   const { data: current } = await supabase
-    .from('events_and_specials')
-    .select('id, location, type, start_date')
-    .eq('id', eventId)
+    .from("events_and_specials")
+    .select("id, location, type, start_date")
+    .eq("id", eventId)
     .maybeSingle();
 
   if (!current) return NextResponse.json({ events: [] });
 
   // Parse city from "venue • city • country" location string
   let city: string | null = null;
-  const locationStr: string = current.location ?? '';
-  if (locationStr.includes(' \u2022 ')) {
-    const parts = locationStr.split(' \u2022 ').map((s: string) => s.trim()).filter(Boolean);
+  const locationStr: string = current.location ?? "";
+  if (locationStr.includes(" \u2022 ")) {
+    const parts = locationStr
+      .split(" \u2022 ")
+      .map((s: string) => s.trim())
+      .filter(Boolean);
     city = parts[1] ?? null;
   }
 
@@ -39,13 +39,15 @@ export async function GET(
 
   // Find upcoming events in the same city, same type, excluding current
   const { data: rows } = await supabase
-    .from('events_and_specials')
-    .select('id, title, type, location, start_date, end_date, image, icon, price, rating, booking_url, description, availability_status')
-    .neq('id', eventId)
-    .eq('type', current.type)
-    .ilike('location', `%${city}%`)
-    .gte('start_date', now)
-    .order('start_date', { ascending: true })
+    .from("events_and_specials")
+    .select(
+      "id, title, type, location, start_date, end_date, image, icon, price, rating, booking_url, description, availability_status"
+    )
+    .neq("id", eventId)
+    .eq("type", current.type)
+    .ilike("location", `%${city}%`)
+    .gte("start_date", now)
+    .order("start_date", { ascending: true })
     .limit(limit);
 
   const events = (rows ?? []).map((row: any) =>

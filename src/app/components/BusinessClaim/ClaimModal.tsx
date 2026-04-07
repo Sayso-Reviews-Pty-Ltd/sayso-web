@@ -13,7 +13,8 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   MISSING_FIELDS: "Please fill in all required details.",
   INVALID_EMAIL: "Please enter a valid email address.",
   INVALID_PHONE: "Please enter a valid phone number.",
-  EMAIL_DOMAIN_MISMATCH: "This email doesn't match the business website domain. Use an official business email.",
+  EMAIL_DOMAIN_MISMATCH:
+    "This email doesn't match the business website domain. Use an official business email.",
   DUPLICATE_CLAIM: "You already have a claim in progress for this business.",
   ALREADY_OWNER: "You already own this business.",
   BUSINESS_NOT_FOUND: "We couldn't find that business. Please try again.",
@@ -127,7 +128,11 @@ export function ClaimModal({ business, onClose, onSuccess }: ClaimModalProps) {
       }
 
       if (result.status === "verified") {
-        showToast(result.message || "Business verified. You can now manage your listing.", "success", 5000);
+        showToast(
+          result.message || "Business verified. You can now manage your listing.",
+          "success",
+          5000
+        );
         onSuccess();
         onClose();
         router.push(`/my-businesses/${business.id}`);
@@ -135,9 +140,11 @@ export function ClaimModal({ business, onClose, onSuccess }: ClaimModalProps) {
       }
 
       showToast(
-        result.message || result.display_status || "Claim submitted. Complete the requested verification step.",
+        result.message ||
+          result.display_status ||
+          "Claim submitted. Complete the requested verification step.",
         "success",
-        5000,
+        5000
       );
       onSuccess();
       onClose();
@@ -150,14 +157,25 @@ export function ClaimModal({ business, onClose, onSuccess }: ClaimModalProps) {
   };
 
   return (
-    <Dialog open onOpenChange={(open) => { if (!open && !isSubmitting) onClose(); }}>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open && !isSubmitting) onClose();
+      }}
+    >
       <DialogContent
         className="max-w-2xl p-0 gap-0 max-h-[90vh] overflow-y-auto"
-        onEscapeKeyDown={(e) => { if (isSubmitting) e.preventDefault(); }}
-        onInteractOutside={(e) => { if (isSubmitting) e.preventDefault(); }}
+        onEscapeKeyDown={(e) => {
+          if (isSubmitting) e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          if (isSubmitting) e.preventDefault();
+        }}
       >
         <DialogTitle className="sr-only">Claim Business</DialogTitle>
-        <DialogDescription className="sr-only">Submit a claim for {business.name}</DialogDescription>
+        <DialogDescription className="sr-only">
+          Submit a claim for {business.name}
+        </DialogDescription>
         <div className="bg-card-bg rounded-[16px] overflow-hidden">
           <div className="flex max-h-[92dvh] sm:max-h-[90dvh] min-h-0 flex-col">
             <div className="shrink-0 border-b border-white/20 px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between">

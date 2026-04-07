@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/geocode/reverse
@@ -10,46 +10,46 @@ export async function POST(req: NextRequest) {
     const { latitude, longitude } = await req.json();
 
     if (!latitude || !longitude) {
-      return NextResponse.json(
-        { error: 'Latitude and longitude are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Latitude and longitude are required" }, { status: 400 });
     }
 
     // Try Google Maps Geocoding API first (if API key exists)
     if (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
       try {
         const googleUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
-        
+
         const response = await fetch(googleUrl, {
           signal: AbortSignal.timeout(5000), // 5 second timeout
         });
 
         if (!response.ok) {
-          console.warn(`[Reverse Geocode] Google Maps returned ${response.status}, trying Nominatim`);
+          console.warn(
+            `[Reverse Geocode] Google Maps returned ${response.status}, trying Nominatim`
+          );
         } else {
           const data = await response.json();
 
           if (data.results && data.results.length > 0) {
             // Extract street address from the results
-            const streetAddress = data.results
-              .find((result: any) => result.types.includes('street_address'))?.formatted_address 
-              || data.results
-              .find((result: any) => result.types.includes('route'))?.formatted_address
-              || data.results[0]?.formatted_address;
+            const streetAddress =
+              data.results.find((result: any) => result.types.includes("street_address"))
+                ?.formatted_address ||
+              data.results.find((result: any) => result.types.includes("route"))
+                ?.formatted_address ||
+              data.results[0]?.formatted_address;
 
             if (streetAddress) {
               return NextResponse.json({
                 success: true,
                 address: streetAddress,
                 formatted_address: streetAddress,
-                source: 'google'
+                source: "google",
               });
             }
           }
         }
       } catch (error) {
-        console.warn('[Reverse Geocode] Google Maps error:', error);
+        console.warn("[Reverse Geocode] Google Maps error:", error);
         // Fall through to Nominatim
       }
     }
@@ -57,10 +57,10 @@ export async function POST(req: NextRequest) {
     // Fallback: Use OpenStreetMap Nominatim (free, no API key required)
     try {
       const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`;
-      
+
       const response = await fetch(nominatimUrl, {
         headers: {
-          'User-Agent': 'sayso-app/1.0', // Required by Nominatim
+          "User-Agent": "sayso-app/1.0", // Required by Nominatim
         },
         signal: AbortSignal.timeout(5000), // 5 second timeout
       });
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
           success: true,
           address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
           formatted_address: `Coordinates: ${latitude}, ${longitude}`,
-          source: 'coordinates'
+          source: "coordinates",
         });
       }
 
@@ -80,51 +80,50 @@ export async function POST(req: NextRequest) {
 
       if (data.address) {
         // Build street address from components
-        const street = data.address.road || data.address.pedestrian || '';
-        const number = data.address.house_number || '';
-        const suburb = data.address.suburb || data.address.neighbourhood || '';
-        const city = data.address.city || data.address.town || '';
-        
+        const street = data.address.road || data.address.pedestrian || "";
+        const number = data.address.house_number || "";
+        const suburb = data.address.suburb || data.address.neighbourhood || "";
+        const city = data.address.city || data.address.town || "";
+
         // Format address: "123 Main Street, Suburb, City"
-        const parts = [
-          number && street ? `${number} ${street}` : street,
-          suburb,
-          city
-        ].filter(Boolean);
-        
-        const streetAddress = parts.join(', ') || data.address.name || data.display_name || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        const parts = [number && street ? `${number} ${street}` : street, suburb, city].filter(
+          Boolean
+        );
+
+        const streetAddress =
+          parts.join(", ") ||
+          data.address.name ||
+          data.display_name ||
+          `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
 
         return NextResponse.json({
           success: true,
           address: streetAddress,
           formatted_address: data.display_name,
-          source: 'nominatim'
+          source: "nominatim",
         });
       } else {
         // No address found, return coordinates as fallback
-        console.warn('[Reverse Geocode] No address in Nominatim response, using coordinates');
+        console.warn("[Reverse Geocode] No address in Nominatim response, using coordinates");
         return NextResponse.json({
           success: true,
           address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
           formatted_address: `Coordinates: ${latitude}, ${longitude}`,
-          source: 'coordinates'
+          source: "coordinates",
         });
       }
     } catch (error) {
-      console.error('[Reverse Geocode] Nominatim error:', error);
+      console.error("[Reverse Geocode] Nominatim error:", error);
       // Always return something - coordinates as last resort
       return NextResponse.json({
         success: true,
         address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
         formatted_address: `Coordinates: ${latitude}, ${longitude}`,
-        source: 'coordinates'
+        source: "coordinates",
       });
     }
   } catch (error) {
-    console.error('[Reverse Geocode] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to reverse geocode coordinates' },
-      { status: 500 }
-    );
+    console.error("[Reverse Geocode] Error:", error);
+    return NextResponse.json({ error: "Failed to reverse geocode coordinates" }, { status: 500 });
   }
 }

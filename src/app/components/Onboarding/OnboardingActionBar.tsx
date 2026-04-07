@@ -20,11 +20,13 @@ export default function OnboardingActionBar({
   }[align];
 
   return (
-    <div className={`
+    <div
+      className={`
       flex ${alignClass} gap-3 mt-8 pb-6 px-2
       animate-fade-in-up delay-200
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );

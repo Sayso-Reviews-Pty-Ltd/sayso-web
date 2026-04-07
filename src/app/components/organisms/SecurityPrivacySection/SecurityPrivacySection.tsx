@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { Lock, Key, Shield } from "@/app/lib/icons";
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { ExpandableSection } from '@/components/atoms/ExpandableSection';
-import { PasswordChangeForm } from '../PasswordChangeForm';
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { ExpandableSection } from "@/components/atoms/ExpandableSection";
+import { PasswordChangeForm } from "../PasswordChangeForm";
 
 export interface SecurityPrivacySectionProps {
   activeSection: string | null;
@@ -42,8 +42,8 @@ export const SecurityPrivacySection: React.FC<SecurityPrivacySectionProps> = ({
         <ExpandableSection
           icon={Key}
           label="Change Password"
-          isExpanded={activeSection === 'password'}
-          onToggle={() => onToggleSection('password')}
+          isExpanded={activeSection === "password"}
+          onToggle={() => onToggleSection("password")}
           showBorder={false}
         >
           <PasswordChangeForm {...passwordFormProps} />
@@ -54,8 +54,8 @@ export const SecurityPrivacySection: React.FC<SecurityPrivacySectionProps> = ({
       <ExpandableSection
         icon={Shield}
         label="Privacy Settings"
-        isExpanded={activeSection === 'privacy'}
-        onToggle={() => onToggleSection('privacy')}
+        isExpanded={activeSection === "privacy"}
+        onToggle={() => onToggleSection("privacy")}
         showBorder={false}
         className="mb-0"
       >
@@ -69,4 +69,3 @@ export const SecurityPrivacySection: React.FC<SecurityPrivacySectionProps> = ({
     </SettingsCard>
   );
 };
-

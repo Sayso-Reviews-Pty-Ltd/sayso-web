@@ -96,17 +96,15 @@ async function handleBusinessEvent(
   if (!record) return;
 
   // Skip hidden, system, or inactive businesses
-  if (
-    record.is_hidden === true ||
-    record.is_system === true ||
-    record.status !== "active"
-  ) {
+  if (record.is_hidden === true || record.is_system === true || record.status !== "active") {
     // If it was previously indexed (UPDATE), remove it
     if (type === "UPDATE" && record.id) {
-      await client.deleteObject({
-        indexName: ALGOLIA_INDICES.BUSINESSES,
-        objectID: record.id as string,
-      }).catch(() => {}); // safe — object may not exist
+      await client
+        .deleteObject({
+          indexName: ALGOLIA_INDICES.BUSINESSES,
+          objectID: record.id as string,
+        })
+        .catch(() => {}); // safe — object may not exist
     }
     return;
   }
@@ -232,7 +230,10 @@ const SERIES_STRIP_PATTERNS = [
 // Strip HTML tags and truncate. Algolia hard limit is 10KB per record.
 function truncateDescription(desc: unknown, maxChars = 500): string | null {
   if (!desc || typeof desc !== "string") return null;
-  const stripped = desc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const stripped = desc
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (!stripped) return null;
   return stripped.length > maxChars ? stripped.slice(0, maxChars).trimEnd() + "…" : stripped;
 }
@@ -242,7 +243,10 @@ function buildSeriesKey(record: Record<string, unknown>): string {
   for (const pattern of SERIES_STRIP_PATTERNS) {
     title = title.replace(pattern, "");
   }
-  title = title.replace(/\s+/g, " ").replace(/[-–—:,.\s]+$/, "").trim();
+  title = title
+    .replace(/\s+/g, " ")
+    .replace(/[-–—:,.\s]+$/, "")
+    .trim();
   const business = ((record.business_id as string) ?? "").trim().toLowerCase();
   const location = ((record.location as string) ?? "").trim().toLowerCase();
   return `${title}|${business}|${location}`;
@@ -265,8 +269,8 @@ async function handleEventsAndSpecialsEvent(
     rowType === "event"
       ? ALGOLIA_INDICES.EVENTS
       : rowType === "special"
-      ? ALGOLIA_INDICES.SPECIALS
-      : null;
+        ? ALGOLIA_INDICES.SPECIALS
+        : null;
 
   if (!indexName) return; // unknown type — skip silently
 
@@ -284,14 +288,11 @@ async function handleEventsAndSpecialsEvent(
   const nowSeconds = Date.now() / 1000;
   const endTs = toUnixSeconds(record.end_date);
   const startTs = toUnixSeconds(record.start_date);
-  const isExpired =
-    endTs !== null ? endTs < nowSeconds : startTs !== null && startTs < nowSeconds;
+  const isExpired = endTs !== null ? endTs < nowSeconds : startTs !== null && startTs < nowSeconds;
 
   if (isExpired) {
     if (type === "UPDATE" && record.id) {
-      await client
-        .deleteObject({ indexName, objectID: record.id as string })
-        .catch(() => {}); // safe — object may not be indexed yet
+      await client.deleteObject({ indexName, objectID: record.id as string }).catch(() => {}); // safe — object may not be indexed yet
     }
     return;
   }

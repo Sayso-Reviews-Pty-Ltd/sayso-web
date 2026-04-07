@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { Lock, Eye, Globe, Database, Download } from "@/app/lib/icons";
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { ExpandableSection } from '@/components/atoms/ExpandableSection';
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { ExpandableSection } from "@/components/atoms/ExpandableSection";
 
 export interface DataRightsSectionProps {
   activeSection: string | null;
@@ -24,8 +24,8 @@ export const DataRightsSection: React.FC<DataRightsSectionProps> = ({
         <ExpandableSection
           icon={Eye}
           label="Access Your Data"
-          isExpanded={activeSection === 'access'}
-          onToggle={() => onToggleSection('access')}
+          isExpanded={activeSection === "access"}
+          onToggle={() => onToggleSection("access")}
           showBorder={false}
         >
           <div className="mt-4 space-y-4">
@@ -45,13 +45,14 @@ export const DataRightsSection: React.FC<DataRightsSectionProps> = ({
         <ExpandableSection
           icon={Globe}
           label="Data Sharing"
-          isExpanded={activeSection === 'sharing'}
-          onToggle={() => onToggleSection('sharing')}
+          isExpanded={activeSection === "sharing"}
+          onToggle={() => onToggleSection("sharing")}
           showBorder={false}
         >
           <div className="mt-4 space-y-4">
             <p className="text-sm text-charcoal/70 mb-2">
-              We only share your data with trusted partners and services to provide you with the best experience:
+              We only share your data with trusted partners and services to provide you with the
+              best experience:
             </p>
             <ul className="list-disc list-inside text-sm text-charcoal/70 space-y-2 ml-2">
               <li>Service providers and analytics tools</li>
@@ -67,13 +68,14 @@ export const DataRightsSection: React.FC<DataRightsSectionProps> = ({
         <ExpandableSection
           icon={Database}
           label="Delete All Data"
-          isExpanded={activeSection === 'delete'}
-          onToggle={() => onToggleSection('delete')}
+          isExpanded={activeSection === "delete"}
+          onToggle={() => onToggleSection("delete")}
           showBorder={false}
         >
           <div className="mt-4 space-y-4">
             <p className="text-sm text-charcoal/70">
-              Permanently delete all your personal data from our systems. This action cannot be undone.
+              Permanently delete all your personal data from our systems. This action cannot be
+              undone.
             </p>
             <button
               onClick={onDeleteData}
@@ -87,4 +89,3 @@ export const DataRightsSection: React.FC<DataRightsSectionProps> = ({
     </SettingsCard>
   );
 };
-

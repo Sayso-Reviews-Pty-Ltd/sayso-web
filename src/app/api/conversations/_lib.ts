@@ -1,6 +1,6 @@
-import type { PostgrestError } from '@supabase/supabase-js';
+import type { PostgrestError } from "@supabase/supabase-js";
 
-export type MessagingRole = 'user' | 'business';
+export type MessagingRole = "user" | "business";
 
 export interface ConversationRow {
   id: string;
@@ -26,38 +26,38 @@ export interface DecodedCursor {
 }
 
 const CONVERSATION_SCHEMA_DRIFT_MARKERS = [
-  'schema cache',
-  'does not exist',
-  'last_message_preview',
-  'user_unread_count',
-  'business_unread_count',
-  'relationship between',
+  "schema cache",
+  "does not exist",
+  "last_message_preview",
+  "user_unread_count",
+  "business_unread_count",
+  "relationship between",
 ];
 
 const CONVERSATION_ACCESS_SELECT_V2 =
-  'id, user_id, owner_id, business_id, last_message_at, last_message_preview, user_unread_count, business_unread_count, created_at';
+  "id, user_id, owner_id, business_id, last_message_at, last_message_preview, user_unread_count, business_unread_count, created_at";
 const CONVERSATION_ACCESS_SELECT_LEGACY =
-  'id, user_id, owner_id, business_id, last_message_at, created_at';
+  "id, user_id, owner_id, business_id, last_message_at, created_at";
 
 export function parseRole(value: string | null): MessagingRole {
-  return value === 'business' ? 'business' : 'user';
+  return value === "business" ? "business" : "user";
 }
 
 export function parsePositiveInt(value: string | null, fallback: number, max: number): number {
-  const parsed = Number.parseInt(value || '', 10);
+  const parsed = Number.parseInt(value || "", 10);
   if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
   return Math.min(parsed, max);
 }
 
 export function encodeCursor(createdAt: string, id: string): string {
-  return Buffer.from(`${createdAt}|${id}`, 'utf8').toString('base64url');
+  return Buffer.from(`${createdAt}|${id}`, "utf8").toString("base64url");
 }
 
 export function decodeCursor(value: string | null): DecodedCursor | null {
   if (!value) return null;
   try {
-    const decoded = Buffer.from(value, 'base64url').toString('utf8');
-    const [createdAt, id] = decoded.split('|');
+    const decoded = Buffer.from(value, "base64url").toString("utf8");
+    const [createdAt, id] = decoded.split("|");
     if (!createdAt || !id) return null;
     return { createdAt, id };
   } catch {
@@ -66,20 +66,15 @@ export function decodeCursor(value: string | null): DecodedCursor | null {
 }
 
 export function isNotFoundError(error: PostgrestError | null | undefined): boolean {
-  return error?.code === 'PGRST116';
+  return error?.code === "PGRST116";
 }
 
 export function isConversationSchemaDriftError(error: any): boolean {
   if (!error) return false;
 
-  const haystack = [
-    error?.code,
-    error?.message,
-    error?.details,
-    error?.hint,
-  ]
+  const haystack = [error?.code, error?.message, error?.details, error?.hint]
     .filter(Boolean)
-    .join(' ')
+    .join(" ")
     .toLowerCase();
 
   return CONVERSATION_SCHEMA_DRIFT_MARKERS.some((marker) => haystack.includes(marker));
@@ -90,7 +85,7 @@ export function normalizeConversationRow(row: any): ConversationRow {
     ...row,
     owner_id: row?.owner_id ?? null,
     business_id: row?.business_id ?? null,
-    last_message_preview: row?.last_message_preview ?? '',
+    last_message_preview: row?.last_message_preview ?? "",
     user_unread_count: Number(row?.user_unread_count ?? 0),
     business_unread_count: Number(row?.business_unread_count ?? 0),
   } as ConversationRow;
@@ -98,24 +93,18 @@ export function normalizeConversationRow(row: any): ConversationRow {
 
 export async function getOwnedBusinessIds(supabase: any, userId: string): Promise<string[]> {
   const [ownerLinksResult, ownedBusinessesResult] = await Promise.all([
-    supabase
-      .from('business_owners')
-      .select('business_id')
-      .eq('user_id', userId),
-    supabase
-      .from('businesses')
-      .select('id')
-      .eq('owner_id', userId),
+    supabase.from("business_owners").select("business_id").eq("user_id", userId),
+    supabase.from("businesses").select("id").eq("owner_id", userId),
   ]);
 
   const ids = new Set<string>();
 
   for (const row of ownerLinksResult.data || []) {
-    if (typeof row?.business_id === 'string') ids.add(row.business_id);
+    if (typeof row?.business_id === "string") ids.add(row.business_id);
   }
 
   for (const row of ownedBusinessesResult.data || []) {
-    if (typeof row?.id === 'string') ids.add(row.id);
+    if (typeof row?.id === "string") ids.add(row.id);
   }
 
   return Array.from(ids);
@@ -127,9 +116,9 @@ export async function getConversationAccessContext(
   userId: string
 ): Promise<ConversationAccessContext | null> {
   const { data: modernConversation, error: modernError } = await supabase
-    .from('conversations')
+    .from("conversations")
     .select(CONVERSATION_ACCESS_SELECT_V2)
-    .eq('id', conversationId)
+    .eq("id", conversationId)
     .maybeSingle();
 
   let conversation = modernConversation;
@@ -137,9 +126,9 @@ export async function getConversationAccessContext(
 
   if (accessError && isConversationSchemaDriftError(accessError)) {
     const { data: legacyConversation, error: legacyError } = await supabase
-      .from('conversations')
+      .from("conversations")
       .select(CONVERSATION_ACCESS_SELECT_LEGACY)
-      .eq('id', conversationId)
+      .eq("id", conversationId)
       .maybeSingle();
     conversation = legacyConversation;
     accessError = legacyError;
@@ -154,7 +143,7 @@ export async function getConversationAccessContext(
   if (normalizedConversation.user_id === userId) {
     return {
       conversation: normalizedConversation,
-      role: 'user',
+      role: "user",
       ownedBusinessIds: [],
     };
   }
@@ -162,7 +151,8 @@ export async function getConversationAccessContext(
   const ownedBusinessIds = await getOwnedBusinessIds(supabase, userId);
 
   const isBusinessParticipant =
-    (normalizedConversation.business_id && ownedBusinessIds.includes(normalizedConversation.business_id)) ||
+    (normalizedConversation.business_id &&
+      ownedBusinessIds.includes(normalizedConversation.business_id)) ||
     normalizedConversation.owner_id === userId;
 
   if (!isBusinessParticipant) {
@@ -171,15 +161,20 @@ export async function getConversationAccessContext(
 
   return {
     conversation: normalizedConversation,
-    role: 'business',
+    role: "business",
     ownedBusinessIds,
   };
 }
 
-export function formatConversationListItem(conversation: any, role: MessagingRole, participantProfile?: any) {
-  const unreadCount = role === 'business'
-    ? Number(conversation.business_unread_count || 0)
-    : Number(conversation.user_unread_count || 0);
+export function formatConversationListItem(
+  conversation: any,
+  role: MessagingRole,
+  participantProfile?: any
+) {
+  const unreadCount =
+    role === "business"
+      ? Number(conversation.business_unread_count || 0)
+      : Number(conversation.user_unread_count || 0);
 
   const business = Array.isArray(conversation.businesses)
     ? conversation.businesses[0]
@@ -191,7 +186,7 @@ export function formatConversationListItem(conversation: any, role: MessagingRol
     owner_id: conversation.owner_id ?? null,
     business_id: conversation.business_id,
     last_message_at: conversation.last_message_at,
-    last_message_preview: conversation.last_message_preview || '',
+    last_message_preview: conversation.last_message_preview || "",
     unread_count: unreadCount,
     created_at: conversation.created_at,
     business: business
@@ -204,17 +199,18 @@ export function formatConversationListItem(conversation: any, role: MessagingRol
           slug: business.slug,
         }
       : null,
-    participant: role === 'business'
-      ? {
-          user_id: conversation.user_id,
-          display_name:
-            participantProfile?.display_name ||
-            participantProfile?.username ||
-            participantProfile?.full_name ||
-            'Unknown',
-          username: participantProfile?.username || null,
-          avatar_url: participantProfile?.avatar_url || null,
-        }
-      : null,
+    participant:
+      role === "business"
+        ? {
+            user_id: conversation.user_id,
+            display_name:
+              participantProfile?.display_name ||
+              participantProfile?.username ||
+              participantProfile?.full_name ||
+              "Unknown",
+            username: participantProfile?.username || null,
+            avatar_url: participantProfile?.avatar_url || null,
+          }
+        : null,
   };
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { m, HTMLMotionProps } from 'framer-motion';
-import { usePageAnimation } from '../../hooks/useStaggeredAnimation';
-import { useIsDesktop } from '../../hooks/useIsDesktop';
+import { m, HTMLMotionProps } from "framer-motion";
+import { usePageAnimation } from "../../hooks/useStaggeredAnimation";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 
-interface StaggeredContainerProps extends HTMLMotionProps<'div'> {
+interface StaggeredContainerProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   className?: string;
 }
@@ -15,7 +15,7 @@ interface StaggeredContainerProps extends HTMLMotionProps<'div'> {
  */
 export default function StaggeredContainer({
   children,
-  className = '',
+  className = "",
   ...props
 }: StaggeredContainerProps) {
   const isDesktop = useIsDesktop();
@@ -30,15 +30,8 @@ export default function StaggeredContainer({
   }
 
   return (
-    <m.div
-      initial="hidden"
-      animate="visible"
-      variants={variants}
-      className={className}
-      {...props}
-    >
+    <m.div initial="hidden" animate="visible" variants={variants} className={className} {...props}>
       {children}
     </m.div>
   );
 }
-

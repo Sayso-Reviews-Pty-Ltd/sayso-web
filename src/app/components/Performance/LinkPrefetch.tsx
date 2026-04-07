@@ -4,13 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // Critical routes to prefetch
-const CRITICAL_ROUTES = [
-  "/home",
-  "/saved", 
-  "/leaderboard",
-  "/profile",
-  "/claim-business"
-];
+const CRITICAL_ROUTES = ["/home", "/saved", "/leaderboard", "/profile", "/claim-business"];
 
 export default function LinkPrefetch() {
   const router = useRouter();
@@ -28,7 +22,7 @@ export default function LinkPrefetch() {
 
     // Prefetch critical routes after initial load
     const prefetchRoutes = () => {
-      CRITICAL_ROUTES.forEach(route => {
+      CRITICAL_ROUTES.forEach((route) => {
         router.prefetch(route);
       });
     };

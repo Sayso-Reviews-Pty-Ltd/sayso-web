@@ -5,6 +5,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## ✅ Code Performance
 
 ### React Components
+
 - [ ] Use `React.memo()` for expensive pure components
 - [ ] Implement `useMemo()` for expensive calculations
 - [ ] Use `useCallback()` for event handlers passed to children
@@ -14,6 +15,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Avoid deep component nesting (keep < 5 levels)
 
 ### State Management
+
 - [ ] Minimize state updates
 - [ ] Use local state when possible (avoid global state)
 - [ ] Batch state updates together
@@ -21,6 +23,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Avoid unnecessary re-renders with proper dependency arrays
 
 ### Data Fetching
+
 - [ ] Implement proper loading states
 - [ ] Cache API responses where appropriate
 - [ ] Use SWR or React Query for data fetching
@@ -31,6 +34,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🎨 UI/UX Performance
 
 ### Images
+
 - [ ] Use Next.js `Image` component
 - [ ] Specify width and height
 - [ ] Use appropriate image formats (WebP when possible)
@@ -40,6 +44,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Implement responsive images with `srcset`
 
 ### CSS
+
 - [ ] Avoid large CSS files (split by route)
 - [ ] Use CSS modules or Tailwind for scoping
 - [ ] Minimize runtime style calculations
@@ -48,6 +53,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Prefer transforms over layout properties for animations
 
 ### Fonts
+
 - [ ] Use `next/font` for font optimization
 - [ ] Preload critical fonts
 - [ ] Use `font-display: swap` or `optional`
@@ -55,6 +61,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Use system fonts when appropriate
 
 ### Animations
+
 - [ ] Use CSS transforms (not top/left)
 - [ ] Use `transform` and `opacity` for GPU acceleration
 - [ ] Keep animations under 16ms per frame
@@ -64,14 +71,16 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🗄️ Database Performance
 
 ### Queries
+
 - [ ] Add indexes for frequently queried columns
 - [ ] Use `EXPLAIN ANALYZE` to verify query plans
-- [ ] Avoid SELECT * (select only needed columns)
+- [ ] Avoid SELECT \* (select only needed columns)
 - [ ] Use pagination for large result sets
 - [ ] Implement query result caching
 - [ ] Use database views for complex queries
 
 ### Writes
+
 - [ ] Batch inserts when possible
 - [ ] Use upserts to avoid duplicate checks
 - [ ] Minimize transaction scope
@@ -79,6 +88,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Implement optimistic locking for conflicts
 
 ### Schema
+
 - [ ] Denormalize for read-heavy tables
 - [ ] Use appropriate column types
 - [ ] Add foreign key constraints
@@ -88,6 +98,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🌐 API Performance
 
 ### Route Handlers
+
 - [ ] Implement request validation
 - [ ] Add rate limiting
 - [ ] Use streaming for large responses
@@ -96,6 +107,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Use caching headers appropriately
 
 ### External APIs
+
 - [ ] Add timeout limits
 - [ ] Implement retry logic with backoff
 - [ ] Cache responses when appropriate
@@ -105,6 +117,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 📦 Build Performance
 
 ### Bundle Size
+
 - [ ] Code split by route
 - [ ] Use dynamic imports for heavy libraries
 - [ ] Remove unused dependencies
@@ -113,6 +126,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Use production builds for deployment
 
 ### Build Time
+
 - [ ] Use incremental builds
 - [ ] Minimize file watching overhead
 - [ ] Parallelize build tasks
@@ -122,6 +136,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🔒 Security Performance
 
 ### Authentication
+
 - [ ] Use secure session management
 - [ ] Implement proper token expiration
 - [ ] Add CSRF protection
@@ -129,6 +144,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Implement rate limiting on auth endpoints
 
 ### Data Protection
+
 - [ ] Enable RLS on all tables
 - [ ] Validate all user inputs
 - [ ] Sanitize data before storage
@@ -138,6 +154,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 📊 Monitoring & Metrics
 
 ### Logging
+
 - [ ] Log errors with context
 - [ ] Track performance metrics
 - [ ] Monitor API response times
@@ -145,6 +162,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Implement user analytics
 
 ### Error Handling
+
 - [ ] Add error boundaries
 - [ ] Implement graceful degradation
 - [ ] Show user-friendly error messages
@@ -154,6 +172,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🧪 Testing Performance
 
 ### Test Strategy
+
 - [ ] Write unit tests for utilities
 - [ ] Add integration tests for critical paths
 - [ ] Implement E2E tests for user flows
@@ -161,6 +180,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Test loading states
 
 ### Performance Testing
+
 - [ ] Run Lighthouse audits
 - [ ] Test on slow networks
 - [ ] Test on low-end devices
@@ -170,6 +190,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 📱 Mobile Performance
 
 ### Responsive Design
+
 - [ ] Test on multiple screen sizes
 - [ ] Implement touch-friendly UI (44px minimum)
 - [ ] Optimize for mobile networks
@@ -177,6 +198,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Test with mobile device emulation
 
 ### Mobile Optimization
+
 - [ ] Reduce JavaScript bundle for mobile
 - [ ] Implement service workers (PWA)
 - [ ] Use native browser features
@@ -186,6 +208,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## 🔄 Continuous Optimization
 
 ### Regular Audits
+
 - [ ] Run Lighthouse monthly
 - [ ] Review bundle size weekly
 - [ ] Check database query performance
@@ -193,6 +216,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 - [ ] Review user feedback
 
 ### Performance Budget
+
 - [ ] Set size budget for bundles
 - [ ] Set performance budgets for metrics
 - [ ] Enforce budgets in CI/CD
@@ -202,6 +226,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## Tools & Resources
 
 ### Measurement
+
 - Chrome DevTools Performance tab
 - Lighthouse
 - WebPageTest
@@ -209,12 +234,14 @@ Use this checklist to ensure your code follows performance best practices for KL
 - React DevTools Profiler
 
 ### Optimization
+
 - Next.js Image Optimization
 - Supabase Query Performance
 - React Performance DevTools
 - Webpack Bundle Analyzer
 
 ### Monitoring
+
 - Vercel Analytics
 - Sentry Error Tracking
 - PostHog Analytics
@@ -223,6 +250,7 @@ Use this checklist to ensure your code follows performance best practices for KL
 ## Quick Wins
 
 Start with these for immediate improvements:
+
 1. ✅ Add `React.memo()` to expensive components
 2. ✅ Use Next.js `Image` component everywhere
 3. ✅ Add database indexes for common queries
@@ -248,4 +276,3 @@ Start with these for immediate improvements:
 - [React Performance](https://react.dev/learn/render-and-commit)
 - [Web.dev Performance](https://web.dev/performance/)
 - [Supabase Performance Tips](https://supabase.com/docs/guides/platform/performance)
-

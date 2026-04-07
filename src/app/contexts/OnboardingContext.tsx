@@ -1,10 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, ReactNode, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from './AuthContext';
-import { useToast } from './ToastContext';
-import { Profile } from '../lib/types/database';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  ReactNode,
+  useRef,
+} from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./AuthContext";
+import { useToast } from "./ToastContext";
+import { Profile } from "../lib/types/database";
 
 /**
  * ONBOARDING CONTEXT
@@ -36,7 +45,7 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
 
 // Mobile detection for performance optimizations
 const isMobileDevice = () => {
-  if (typeof navigator === 'undefined') return false;
+  if (typeof navigator === "undefined") return false;
   return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 };
 
@@ -82,24 +91,64 @@ interface OnboardingProviderProps {
   children: ReactNode;
 }
 
-const ONBOARDING_STEPS = [
-  'interests',
-  'subcategories',
-  'deal-breakers',
-  'complete'
-];
+const ONBOARDING_STEPS = ["interests", "subcategories", "deal-breakers", "complete"];
 
 // Fallback data in case API fails
 const FALLBACK_INTERESTS: Interest[] = [
-  { id: 'food-drink', name: 'Food & Drink', description: 'Restaurants, cafes, and culinary experiences', icon: 'restaurant' },
-  { id: 'beauty-wellness', name: 'Beauty & Wellness', description: 'Gyms, spas, and personal care services', icon: 'cut' },
-  { id: 'professional-services', name: 'Professional Services', description: 'Home improvement and professional services', icon: 'home' },
-  { id: 'travel', name: 'Travel', description: 'Accommodation, transport, and travel services', icon: 'airplane' },
-  { id: 'outdoors-adventure', name: 'Outdoors & Adventure', description: 'Outdoor activities and adventures', icon: 'bicycle' },
-  { id: 'experiences-entertainment', name: 'Entertainment & Experiences', description: 'Movies, shows, and nightlife', icon: 'musical-notes' },
-  { id: 'arts-culture', name: 'Arts & Culture', description: 'Museums, galleries, and cultural experiences', icon: 'color-palette' },
-  { id: 'family-pets', name: 'Family & Pets', description: 'Family activities and pet services', icon: 'heart' },
-  { id: 'shopping-lifestyle', name: 'Shopping & Lifestyle', description: 'Retail stores and lifestyle services', icon: 'bag' }
+  {
+    id: "food-drink",
+    name: "Food & Drink",
+    description: "Restaurants, cafes, and culinary experiences",
+    icon: "restaurant",
+  },
+  {
+    id: "beauty-wellness",
+    name: "Beauty & Wellness",
+    description: "Gyms, spas, and personal care services",
+    icon: "cut",
+  },
+  {
+    id: "professional-services",
+    name: "Professional Services",
+    description: "Home improvement and professional services",
+    icon: "home",
+  },
+  {
+    id: "travel",
+    name: "Travel",
+    description: "Accommodation, transport, and travel services",
+    icon: "airplane",
+  },
+  {
+    id: "outdoors-adventure",
+    name: "Outdoors & Adventure",
+    description: "Outdoor activities and adventures",
+    icon: "bicycle",
+  },
+  {
+    id: "experiences-entertainment",
+    name: "Entertainment & Experiences",
+    description: "Movies, shows, and nightlife",
+    icon: "musical-notes",
+  },
+  {
+    id: "arts-culture",
+    name: "Arts & Culture",
+    description: "Museums, galleries, and cultural experiences",
+    icon: "color-palette",
+  },
+  {
+    id: "family-pets",
+    name: "Family & Pets",
+    description: "Family activities and pet services",
+    icon: "heart",
+  },
+  {
+    id: "shopping-lifestyle",
+    name: "Shopping & Lifestyle",
+    description: "Retail stores and lifestyle services",
+    icon: "bag",
+  },
 ];
 
 export function OnboardingProvider({ children }: OnboardingProviderProps) {
@@ -122,12 +171,12 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const [isLoading, setIsLoading] = useState(false); // Internal loading state for API calls
   const [error, setError] = useState<string | null>(null);
 
-  const currentStep = user?.profile?.onboarding_step || 'interests';
+  const currentStep = user?.profile?.onboarding_step || "interests";
 
   // Consolidated initialization: Clear stale data + Load localStorage in single pass
   // CRITICAL: Wait for auth to be ready before loading localStorage to prevent stale data
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Don't initialize until auth is fully settled (prevents race condition where server
     // snapshot reports "guest" but client session hasn't been verified yet).
@@ -145,10 +194,10 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       const userChanged = lastUserIdRef.current !== null && lastUserIdRef.current !== currentUserId;
 
       if (!user || userChanged) {
-        console.log('[OnboardingContext] Clearing localStorage - no user or user changed');
-        localStorage.removeItem('onboarding_interests');
-        localStorage.removeItem('onboarding_subcategories');
-        localStorage.removeItem('onboarding_dealbreakers');
+        console.log("[OnboardingContext] Clearing localStorage - no user or user changed");
+        localStorage.removeItem("onboarding_interests");
+        localStorage.removeItem("onboarding_subcategories");
+        localStorage.removeItem("onboarding_dealbreakers");
         setSelectedInterestsState([]);
         setSelectedSubInterestsState([]);
         setSelectedDealbreakerssState([]);
@@ -160,9 +209,9 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
         if (hasDatabaseData) {
           try {
-            const response = await fetch('/api/user/onboarding', {
-              credentials: 'include',
-              cache: 'no-store'
+            const response = await fetch("/api/user/onboarding", {
+              credentials: "include",
+              cache: "no-store",
             });
 
             if (response.ok) {
@@ -170,7 +219,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
               const dbInterests = Array.isArray(data.interests) ? data.interests : [];
               const dbSubcategories = Array.isArray(data.subcategories)
                 ? data.subcategories
-                    .map((sub) => String(sub?.subcategory_id ?? sub?.id ?? sub ?? '').trim())
+                    .map((sub) => String(sub?.subcategory_id ?? sub?.id ?? sub ?? "").trim())
                     .filter((id) => id.length > 0)
                 : [];
               const dbDealbreakers = Array.isArray(data.dealbreakers) ? data.dealbreakers : [];
@@ -179,14 +228,14 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
               setSelectedSubInterestsState(dbSubcategories);
               setSelectedDealbreakerssState(dbDealbreakers);
 
-              localStorage.setItem('onboarding_interests', JSON.stringify(dbInterests));
-              localStorage.setItem('onboarding_subcategories', JSON.stringify(dbSubcategories));
-              localStorage.setItem('onboarding_dealbreakers', JSON.stringify(dbDealbreakers));
+              localStorage.setItem("onboarding_interests", JSON.stringify(dbInterests));
+              localStorage.setItem("onboarding_subcategories", JSON.stringify(dbSubcategories));
+              localStorage.setItem("onboarding_dealbreakers", JSON.stringify(dbDealbreakers));
             } else {
               shouldLoadStorage = true;
             }
           } catch (error) {
-            console.error('[OnboardingContext] Failed to load onboarding from DB:', error);
+            console.error("[OnboardingContext] Failed to load onboarding from DB:", error);
             shouldLoadStorage = true;
           }
         } else {
@@ -197,19 +246,19 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       if (shouldLoadStorage) {
         try {
           const stored = {
-            interests: localStorage.getItem('onboarding_interests'),
-            subcategories: localStorage.getItem('onboarding_subcategories'),
-            dealbreakers: localStorage.getItem('onboarding_dealbreakers'),
+            interests: localStorage.getItem("onboarding_interests"),
+            subcategories: localStorage.getItem("onboarding_subcategories"),
+            dealbreakers: localStorage.getItem("onboarding_dealbreakers"),
           };
 
           if (stored.interests) setSelectedInterestsState(JSON.parse(stored.interests));
           if (stored.subcategories) setSelectedSubInterestsState(JSON.parse(stored.subcategories));
           if (stored.dealbreakers) setSelectedDealbreakerssState(JSON.parse(stored.dealbreakers));
         } catch (e) {
-          console.error('[OnboardingContext] Failed to parse stored data:', e);
-          localStorage.removeItem('onboarding_interests');
-          localStorage.removeItem('onboarding_subcategories');
-          localStorage.removeItem('onboarding_dealbreakers');
+          console.error("[OnboardingContext] Failed to parse stored data:", e);
+          localStorage.removeItem("onboarding_interests");
+          localStorage.removeItem("onboarding_subcategories");
+          localStorage.removeItem("onboarding_dealbreakers");
           setSelectedInterestsState([]);
           setSelectedSubInterestsState([]);
           setSelectedDealbreakerssState([]);
@@ -226,12 +275,15 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   // Debounced localStorage save for mobile performance (300ms)
   const debouncedSaveRef = useRef(
     debounce((key: string, value: string) => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         // Use requestIdleCallback for even better mobile performance
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => {
-            localStorage.setItem(key, value);
-          }, { timeout: 1000 });
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(
+            () => {
+              localStorage.setItem(key, value);
+            },
+            { timeout: 1000 }
+          );
         } else {
           localStorage.setItem(key, value);
         }
@@ -242,17 +294,17 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   // Wrapper functions that persist to localStorage (optimized for mobile)
   const setSelectedInterests = useCallback((interests: string[]) => {
     setSelectedInterestsState(interests);
-    debouncedSaveRef.current('onboarding_interests', JSON.stringify(interests));
+    debouncedSaveRef.current("onboarding_interests", JSON.stringify(interests));
   }, []);
 
   const setSelectedSubInterests = useCallback((subcategories: string[]) => {
     setSelectedSubInterestsState(subcategories);
-    debouncedSaveRef.current('onboarding_subcategories', JSON.stringify(subcategories));
+    debouncedSaveRef.current("onboarding_subcategories", JSON.stringify(subcategories));
   }, []);
 
   const setSelectedDealbreakers = useCallback((dealbreakers: string[]) => {
     setSelectedDealbreakerssState(dealbreakers);
-    debouncedSaveRef.current('onboarding_dealbreakers', JSON.stringify(dealbreakers));
+    debouncedSaveRef.current("onboarding_dealbreakers", JSON.stringify(dealbreakers));
   }, []);
 
   const loadInterests = useCallback(async () => {
@@ -261,7 +313,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       setError(null);
 
       // Load from catalog API - no cache for fresh data
-      const response = await fetch('/api/interests', { cache: 'no-store' });
+      const response = await fetch("/api/interests", { cache: "no-store" });
       if (response.ok) {
         const data = await response.json();
         if (data.interests && Array.isArray(data.interests)) {
@@ -271,11 +323,11 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       }
 
       // Fallback to static data if API fails
-      console.warn('Interests API failed, using fallback data');
+      console.warn("Interests API failed, using fallback data");
       setInterests(FALLBACK_INTERESTS);
     } catch (error) {
-      console.error('Error loading interests:', error);
-      setError('Failed to load interests');
+      console.error("Error loading interests:", error);
+      setError("Failed to load interests");
       // Use fallback data even on error
       setInterests(FALLBACK_INTERESTS);
     } finally {
@@ -298,8 +350,8 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       setSubInterests(Array.isArray(subcategories) ? subcategories : []);
       console.log("loaded subInterests", subcategories);
     } catch (error) {
-      console.error('Error loading sub-interests:', error);
-      setError('Failed to load sub-interests');
+      console.error("Error loading sub-interests:", error);
+      setError("Failed to load sub-interests");
       setSubInterests([]);
     } finally {
       setIsLoading(false);
@@ -309,29 +361,35 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const getNextStep = (current: string): string => {
     const currentIndex = ONBOARDING_STEPS.indexOf(current);
     if (currentIndex === -1 || currentIndex === ONBOARDING_STEPS.length - 1) {
-      return 'complete';
+      return "complete";
     }
     return ONBOARDING_STEPS[currentIndex + 1];
   };
 
-  const getStepCompletionMessage = useCallback((step: string): string => {
-    switch (step) {
-      case 'interests':
-        return `Great! ${selectedInterests.length} interests selected. Let's explore sub-categories!`;
-      case 'subcategories':
-        return `Perfect! ${selectedSubInterests.length} sub-interests added. Now let's set your dealbreakers.`;
-      case 'deal-breakers':
-        return `Excellent! ${selectedDealbreakers.length} dealbreakers set. Almost done!`;
-      default:
-        return 'Step completed successfully!';
-    }
-  }, [selectedInterests.length, selectedSubInterests.length, selectedDealbreakers.length]);
+  const getStepCompletionMessage = useCallback(
+    (step: string): string => {
+      switch (step) {
+        case "interests":
+          return `Great! ${selectedInterests.length} interests selected. Let's explore sub-categories!`;
+        case "subcategories":
+          return `Perfect! ${selectedSubInterests.length} sub-interests added. Now let's set your dealbreakers.`;
+        case "deal-breakers":
+          return `Excellent! ${selectedDealbreakers.length} dealbreakers set. Almost done!`;
+        default:
+          return "Step completed successfully!";
+      }
+    },
+    [selectedInterests.length, selectedSubInterests.length, selectedDealbreakers.length]
+  );
 
   // Helper function to get interest_id for a subcategory
-  const getInterestIdForSubcategory = useCallback((subcategoryId: string): string => {
-    const subcategory = subInterests.find(sub => sub.id === subcategoryId);
-    return subcategory?.interest_id || '';
-  }, [subInterests]);
+  const getInterestIdForSubcategory = useCallback(
+    (subcategoryId: string): string => {
+      const subcategory = subInterests.find((sub) => sub.id === subcategoryId);
+      return subcategory?.interest_id || "";
+    },
+    [subInterests]
+  );
 
   const nextStep = useCallback(async () => {
     if (!user) return;
@@ -344,33 +402,32 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
       // Show success toast for step completion
       const completionMessage = getStepCompletionMessage(currentStep);
-      showToast(completionMessage, 'success', 2000);
+      showToast(completionMessage, "success", 2000);
 
       // Conditional prefetching: Only on desktop or good connections
-      const shouldPrefetch = !isMobileDevice() || 
-        (typeof navigator !== 'undefined' && 
-         (navigator as any).connection?.effectiveType === '4g');
-      
+      const shouldPrefetch =
+        !isMobileDevice() ||
+        (typeof navigator !== "undefined" && (navigator as any).connection?.effectiveType === "4g");
+
       if (shouldPrefetch) {
         // Prefetch all next onboarding pages early for instant navigation
-        const allNextRoutes = ['/subcategories', '/deal-breakers', '/complete'];
-        allNextRoutes.forEach(route => router.prefetch(route));
+        const allNextRoutes = ["/subcategories", "/deal-breakers", "/complete"];
+        allNextRoutes.forEach((route) => router.prefetch(route));
       }
 
       // Navigate immediately (no delay) - prefetching makes it instant
       // Use exact step-to-route mapping to ensure correct navigation
       const STEP_TO_ROUTE: Record<string, string> = {
-        'interests': '/interests',
-        'subcategories': '/subcategories',
-        'deal-breakers': '/deal-breakers',
-        'complete': '/complete',
+        interests: "/interests",
+        subcategories: "/subcategories",
+        "deal-breakers": "/deal-breakers",
+        complete: "/complete",
       };
-      
-      if (nextStepName === 'subcategories' && currentStep === 'interests') {
+
+      if (nextStepName === "subcategories" && currentStep === "interests") {
         // Pass selected interests as URL params to subcategories
-        const interestParams = selectedInterests.length > 0
-          ? `?interests=${selectedInterests.join(',')}`
-          : '';
+        const interestParams =
+          selectedInterests.length > 0 ? `?interests=${selectedInterests.join(",")}` : "";
         const nextUrl = `/subcategories${interestParams}`;
         router.replace(nextUrl);
       } else {
@@ -379,8 +436,8 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       }
       // Don't call router.refresh() - it causes unnecessary re-renders
     } catch (error) {
-      console.error('Error proceeding to next step:', error);
-      setError('Failed to navigate to next step');
+      console.error("Error proceeding to next step:", error);
+      setError("Failed to navigate to next step");
     } finally {
       setIsLoading(false);
     }
@@ -398,55 +455,60 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       setError(null);
 
       if (selectedDealbreakers.length < 1 || selectedDealbreakers.length > 3) {
-        throw new Error('Please select 1-3 dealbreakers');
+        throw new Error("Please select 1-3 dealbreakers");
       }
 
-      const response = await fetch('/api/onboarding/dealbreakers', {
-        method: 'POST',
+      const response = await fetch("/api/onboarding/dealbreakers", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           dealbreakers: selectedDealbreakers,
         }),
       });
 
       let payload: Record<string, unknown> | null = null;
-      try { payload = await response.json(); } catch {}
+      try {
+        payload = await response.json();
+      } catch {}
 
       if (response.status === 401) {
-        setError('Your session expired. Please log in again.');
-        showToast('Your session expired. Please log in again.', 'warning', 3000);
-        router.replace('/login');
+        setError("Your session expired. Please log in again.");
+        showToast("Your session expired. Please log in again.", "warning", 3000);
+        router.replace("/login");
         return;
       }
 
       if (!response.ok) {
-        const errorMsg = (payload?.error as string) || (payload?.message as string) || 'Failed to complete onboarding';
+        const errorMsg =
+          (payload?.error as string) ||
+          (payload?.message as string) ||
+          "Failed to complete onboarding";
         setError(errorMsg);
         throw new Error(errorMsg);
       }
 
       try {
-        await fetch('/api/onboarding/complete', { method: 'POST', credentials: 'include' });
+        await fetch("/api/onboarding/complete", { method: "POST", credentials: "include" });
       } catch {
         // Non-fatal — /complete page will retry via handleContinue()
       }
 
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('onboarding_interests');
-        localStorage.removeItem('onboarding_subcategories');
-        localStorage.removeItem('onboarding_dealbreakers');
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("onboarding_interests");
+        localStorage.removeItem("onboarding_subcategories");
+        localStorage.removeItem("onboarding_dealbreakers");
       }
 
-      showToast('Welcome to sayso! Your profile is now complete.', 'success', 4000);
-      router.replace('/complete');
+      showToast("Welcome to sayso! Your profile is now complete.", "success", 4000);
+      router.replace("/complete");
     } catch (error: unknown) {
-      console.error('Error completing onboarding:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Failed to complete onboarding';
+      console.error("Error completing onboarding:", error);
+      const errorMsg = error instanceof Error ? error.message : "Failed to complete onboarding";
       setError(errorMsg);
-      showToast(errorMsg, 'error', 3000);
+      showToast(errorMsg, "error", 3000);
     } finally {
       setIsLoading(false);
     }
@@ -458,63 +520,62 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     setSelectedDealbreakers([]);
     setError(null);
     // Clear localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('onboarding_interests');
-      localStorage.removeItem('onboarding_subcategories');
-      localStorage.removeItem('onboarding_dealbreakers');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("onboarding_interests");
+      localStorage.removeItem("onboarding_subcategories");
+      localStorage.removeItem("onboarding_dealbreakers");
     }
   }, [setSelectedInterests, setSelectedSubInterests, setSelectedDealbreakers]);
 
-  const value = useMemo<OnboardingContextType>(() => ({
-    // Data
-    interests,
-    subInterests,
-    selectedInterests,
-    selectedSubInterests,
-    selectedDealbreakers,
+  const value = useMemo<OnboardingContextType>(
+    () => ({
+      // Data
+      interests,
+      subInterests,
+      selectedInterests,
+      selectedSubInterests,
+      selectedDealbreakers,
 
-    // State
-    error,
-    currentStep,
+      // State
+      error,
+      currentStep,
 
-    // Actions
-    loadInterests,
-    loadSubInterests,
-    setSelectedInterests,
-    setSelectedSubInterests,
-    setSelectedDealbreakers,
-    nextStep,
-    completeOnboarding,
-    resetOnboarding
-  }), [
-    interests,
-    subInterests,
-    selectedInterests,
-    selectedSubInterests,
-    selectedDealbreakers,
-    error,
-    currentStep,
-    loadInterests,
-    loadSubInterests,
-    setSelectedInterests,
-    setSelectedSubInterests,
-    setSelectedDealbreakers,
-    nextStep,
-    completeOnboarding,
-    resetOnboarding
-  ]);
-
-  return (
-    <OnboardingContext.Provider value={value}>
-      {children}
-    </OnboardingContext.Provider>
+      // Actions
+      loadInterests,
+      loadSubInterests,
+      setSelectedInterests,
+      setSelectedSubInterests,
+      setSelectedDealbreakers,
+      nextStep,
+      completeOnboarding,
+      resetOnboarding,
+    }),
+    [
+      interests,
+      subInterests,
+      selectedInterests,
+      selectedSubInterests,
+      selectedDealbreakers,
+      error,
+      currentStep,
+      loadInterests,
+      loadSubInterests,
+      setSelectedInterests,
+      setSelectedSubInterests,
+      setSelectedDealbreakers,
+      nextStep,
+      completeOnboarding,
+      resetOnboarding,
+    ]
   );
+
+  return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>;
 }
 
 export function useOnboarding() {
   const context = useContext(OnboardingContext);
   if (context === undefined) {
-    throw new Error('useOnboarding must be used within an OnboardingProvider');
+    throw new Error("useOnboarding must be used within an OnboardingProvider");
   }
   return context;
 }

@@ -33,10 +33,14 @@ export function AuthAlert({ message, tone = "error", id, className = "" }: AuthA
   const ariaLive = tone === "error" ? "assertive" : "polite";
 
   return (
-    <div id={id} role={role} aria-live={ariaLive} className={`${toneClassMap[tone]} ${className}`.trim()}>
+    <div
+      id={id}
+      role={role}
+      aria-live={ariaLive}
+      className={`${toneClassMap[tone]} ${className}`.trim()}
+    >
       <Icon className="auth-alert-icon" aria-hidden="true" />
       <p className="auth-alert-message">{message}</p>
     </div>
   );
 }
-

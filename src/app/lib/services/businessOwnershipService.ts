@@ -48,8 +48,7 @@ export class BusinessOwnershipService {
       let businessId: string | null = null;
 
       // Validate UUID format
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const isUUID = uuidRegex.test(businessIdentifier);
 
       if (isUUID) {
@@ -205,10 +204,7 @@ export class BusinessOwnershipService {
           `
           )
           .eq("user_id", userId),
-        supabase
-          .from("businesses")
-          .select(businessSelectColumns)
-          .eq("owner_id", userId),
+        supabase.from("businesses").select(businessSelectColumns).eq("owner_id", userId),
         supabase
           .from("business_claims")
           .select(
@@ -224,13 +220,22 @@ export class BusinessOwnershipService {
       ]);
 
       if (ownerJoinResult.error) {
-        console.error("Error fetching businesses for owner via business_owners:", ownerJoinResult.error);
+        console.error(
+          "Error fetching businesses for owner via business_owners:",
+          ownerJoinResult.error
+        );
       }
       if (directOwnerResult.error) {
-        console.error("Error fetching businesses for owner via businesses.owner_id:", directOwnerResult.error);
+        console.error(
+          "Error fetching businesses for owner via businesses.owner_id:",
+          directOwnerResult.error
+        );
       }
       if (verifiedClaimsResult.error) {
-        console.error("Error fetching businesses for owner via verified claims:", verifiedClaimsResult.error);
+        console.error(
+          "Error fetching businesses for owner via verified claims:",
+          verifiedClaimsResult.error
+        );
       }
 
       const hasOwnerJoinError = Boolean(ownerJoinResult.error);
@@ -256,9 +261,9 @@ export class BusinessOwnershipService {
         return [];
       }
 
-      const rows = ((ownerJoinResult.data ?? []) as unknown) as OwnerJoinRow[];
-      const claimRows = ((verifiedClaimsResult.data ?? []) as unknown) as ClaimJoinRow[];
-      const directlyOwnedBusinesses = ((directOwnerResult.data ?? []) as unknown) as Business[];
+      const rows = (ownerJoinResult.data ?? []) as unknown as OwnerJoinRow[];
+      const claimRows = (verifiedClaimsResult.data ?? []) as unknown as ClaimJoinRow[];
+      const directlyOwnedBusinesses = (directOwnerResult.data ?? []) as unknown as Business[];
 
       // Normalize to flat list
       const flattened: Business[] = [...directlyOwnedBusinesses];
@@ -324,8 +329,7 @@ export class BusinessOwnershipService {
       const supabase = this.getSupabase();
 
       // Resolve business identifier (slug or UUID) to actual UUID
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const isUUID = uuidRegex.test(businessIdentifier);
 
       let businessId: string | null = null;

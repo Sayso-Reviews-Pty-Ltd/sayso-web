@@ -48,13 +48,21 @@ describe("Quicket ingest mapper", () => {
         hashTag: "#MusicNight",
         organiserPageUrl: "https://www.quicket.co.za/organisers/nightlifeorg",
       },
-      categories: [{ id: 1, name: "Music" }, { id: 2, name: "Arts & Culture" }],
+      categories: [
+        { id: 1, name: "Music" },
+        { id: 2, name: "Arts & Culture" },
+      ],
       tickets: [
         { id: 1, name: "General", soldOut: false, donation: false, price: 200 },
         { id: 2, name: "VIP", soldOut: true, donation: false, price: 450 },
       ],
       schedules: [
-        { id: 1, name: "Doors Open", startDate: "2026-03-20T17:00:00Z", endDate: "2026-03-20T18:00:00Z" },
+        {
+          id: 1,
+          name: "Doors Open",
+          startDate: "2026-03-20T17:00:00Z",
+          endDate: "2026-03-20T18:00:00Z",
+        },
       ],
     };
 
@@ -68,7 +76,7 @@ describe("Quicket ingest mapper", () => {
       baseEvent,
       detailEvent,
       "00000000-0000-4000-8000-000000000111",
-      "00000000-0000-4000-8000-000000000222",
+      "00000000-0000-4000-8000-000000000222"
     );
 
     expect(row).not.toBeNull();
@@ -109,7 +117,7 @@ describe("Quicket ingest mapper", () => {
       },
       null,
       bizId,
-      userId,
+      userId
     );
 
     const rowB = mapEvent(
@@ -127,7 +135,7 @@ describe("Quicket ingest mapper", () => {
       },
       null,
       bizId,
-      userId,
+      userId
     );
 
     expect(rowA).not.toBeNull();

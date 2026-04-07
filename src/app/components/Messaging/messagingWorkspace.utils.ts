@@ -1,4 +1,4 @@
-import type { ConversationListItem, MessagingRole } from '@/app/hooks/messaging';
+import type { ConversationListItem, MessagingRole } from "@/app/hooks/messaging";
 
 export interface BusinessOption {
   id: string;
@@ -29,8 +29,8 @@ export function getConversationTitle(
   role: MessagingRole,
   fallbackBusinessName?: string
 ): string {
-  if (role === 'business') return conversation.participant?.display_name || 'Unknown';
-  return conversation.business?.name || fallbackBusinessName || 'Unknown';
+  if (role === "business") return conversation.participant?.display_name || "Unknown";
+  return conversation.business?.name || fallbackBusinessName || "Unknown";
 }
 
 export function getConversationSubtitle(
@@ -38,11 +38,19 @@ export function getConversationSubtitle(
   role: MessagingRole,
   fallbackBusinessName?: string
 ): string {
-  if (role === 'business') return conversation.business?.name || fallbackBusinessName || 'Unknown';
-  return conversation.business?.category || conversation.business?.name || fallbackBusinessName || 'Unknown';
+  if (role === "business") return conversation.business?.name || fallbackBusinessName || "Unknown";
+  return (
+    conversation.business?.category ||
+    conversation.business?.name ||
+    fallbackBusinessName ||
+    "Unknown"
+  );
 }
 
-export function getConversationAvatar(conversation: ConversationListItem, role: MessagingRole): string | null {
-  if (role === 'business') return conversation.participant?.avatar_url || null;
+export function getConversationAvatar(
+  conversation: ConversationListItem,
+  role: MessagingRole
+): string | null {
+  if (role === "business") return conversation.participant?.avatar_url || null;
   return conversation.business?.image_url || null;
 }

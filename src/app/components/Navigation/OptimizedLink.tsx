@@ -14,14 +14,14 @@ interface OptimizedLinkProps {
   [key: string]: any;
 }
 
-export default function OptimizedLink({ 
-  href, 
-  children, 
-  className, 
+export default function OptimizedLink({
+  href,
+  children,
+  className,
   prefetch = true,
   useNativeViewTransition = false,
   onClick,
-  ...props 
+  ...props
 }: OptimizedLinkProps) {
   const router = useRouter();
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,10 +62,9 @@ export default function OptimizedLink({
     // Debounce a little so quick fly-overs don't spam prefetches.
     hoverTimeoutRef.current = setTimeout(() => {
       if (typeof g.requestIdleCallback === "function") {
-        idleCallbackRef.current = g.requestIdleCallback(
-          () => router.prefetch(href),
-          { timeout: 1000 },
-        );
+        idleCallbackRef.current = g.requestIdleCallback(() => router.prefetch(href), {
+          timeout: 1000,
+        });
       } else {
         router.prefetch(href);
       }
@@ -123,7 +122,7 @@ export default function OptimizedLink({
         router.push(href, { scroll: false });
       }
     },
-    [href, onClick, router, target],
+    [href, onClick, router, target]
   );
 
   return (

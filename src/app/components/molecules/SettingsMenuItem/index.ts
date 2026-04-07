@@ -1,2 +1,2 @@
-export { SettingsMenuItem } from './SettingsMenuItem';
-export type { SettingsMenuItemProps, SettingsMenuItemVariant } from './SettingsMenuItem';
+export { SettingsMenuItem } from "./SettingsMenuItem";
+export type { SettingsMenuItemProps, SettingsMenuItemVariant } from "./SettingsMenuItem";

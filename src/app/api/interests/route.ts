@@ -4,15 +4,60 @@ import { cachedJsonResponse, CachePresets } from "@/app/lib/utils/httpCache";
 
 // Fallback interests data - matches the structure expected by OnboardingContext
 const FALLBACK_INTERESTS = [
-  { id: 'food-drink', name: 'Food & Drink', description: 'Restaurants, cafes, and culinary experiences', icon: 'restaurant' },
-  { id: 'beauty-wellness', name: 'Beauty & Wellness', description: 'Gyms, spas, and personal care services', icon: 'cut' },
-  { id: 'professional-services', name: 'Professional Services', description: 'Home improvement and professional services', icon: 'home' },
-  { id: 'travel', name: 'Travel', description: 'Accommodation, transport, and travel services', icon: 'airplane' },
-  { id: 'outdoors-adventure', name: 'Outdoors & Adventure', description: 'Outdoor activities and adventures', icon: 'bicycle' },
-  { id: 'experiences-entertainment', name: 'Entertainment & Experiences', description: 'Movies, shows, and nightlife', icon: 'musical-notes' },
-  { id: 'arts-culture', name: 'Arts & Culture', description: 'Museums, galleries, and cultural experiences', icon: 'color-palette' },
-  { id: 'family-pets', name: 'Family & Pets', description: 'Family activities and pet services', icon: 'heart' },
-  { id: 'shopping-lifestyle', name: 'Shopping & Lifestyle', description: 'Retail stores and lifestyle services', icon: 'bag' }
+  {
+    id: "food-drink",
+    name: "Food & Drink",
+    description: "Restaurants, cafes, and culinary experiences",
+    icon: "restaurant",
+  },
+  {
+    id: "beauty-wellness",
+    name: "Beauty & Wellness",
+    description: "Gyms, spas, and personal care services",
+    icon: "cut",
+  },
+  {
+    id: "professional-services",
+    name: "Professional Services",
+    description: "Home improvement and professional services",
+    icon: "home",
+  },
+  {
+    id: "travel",
+    name: "Travel",
+    description: "Accommodation, transport, and travel services",
+    icon: "airplane",
+  },
+  {
+    id: "outdoors-adventure",
+    name: "Outdoors & Adventure",
+    description: "Outdoor activities and adventures",
+    icon: "bicycle",
+  },
+  {
+    id: "experiences-entertainment",
+    name: "Entertainment & Experiences",
+    description: "Movies, shows, and nightlife",
+    icon: "musical-notes",
+  },
+  {
+    id: "arts-culture",
+    name: "Arts & Culture",
+    description: "Museums, galleries, and cultural experiences",
+    icon: "color-palette",
+  },
+  {
+    id: "family-pets",
+    name: "Family & Pets",
+    description: "Family activities and pet services",
+    icon: "heart",
+  },
+  {
+    id: "shopping-lifestyle",
+    name: "Shopping & Lifestyle",
+    description: "Retail stores and lifestyle services",
+    icon: "bag",
+  },
 ];
 
 /**
@@ -23,16 +68,16 @@ const FALLBACK_INTERESTS = [
 export async function GET() {
   try {
     const supabase = await getServerSupabase();
-    
+
     // Try to fetch from database if interests table exists
     const { data: dbInterests, error } = await supabase
-      .from('interests')
-      .select('id, name, description, icon')
-      .order('name');
-    
+      .from("interests")
+      .select("id, name, description, icon")
+      .order("name");
+
     // If database query succeeds and returns data, use it
     if (!error && dbInterests && dbInterests.length > 0) {
-      const normalizedDbInterests = dbInterests.map(interest => ({
+      const normalizedDbInterests = dbInterests.map((interest) => ({
         id: interest.id,
         name: interest.name,
         description: interest.description || undefined,
@@ -66,13 +111,11 @@ export async function GET() {
     }
 
     // Fallback to static data
-    console.log('[Interests API] Using fallback data');
+    console.log("[Interests API] Using fallback data");
     return cachedJsonResponse({ interests: FALLBACK_INTERESTS }, CachePresets.api(3600));
-
   } catch (error) {
-    console.error('[Interests API] Error:', error);
+    console.error("[Interests API] Error:", error);
     // Return fallback data even on error
     return NextResponse.json({ interests: FALLBACK_INTERESTS });
   }
 }
-

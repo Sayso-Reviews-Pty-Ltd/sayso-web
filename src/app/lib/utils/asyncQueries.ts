@@ -17,7 +17,7 @@ export type QueryResult<T> = {
 export async function executeParallelQueries<T extends any[]>(
   queries: Array<() => Promise<QueryResult<T[number]>>>
 ): Promise<QueryResult<T[number]>[]> {
-  const promises = queries.map(query => query());
+  const promises = queries.map((query) => query());
   return Promise.all(promises);
 }
 
@@ -30,15 +30,13 @@ export async function executeBatchedQueries<T>(
   batchSize: number = 5
 ): Promise<QueryResult<T>[]> {
   const results: QueryResult<T>[] = [];
-  
+
   for (let i = 0; i < queries.length; i += batchSize) {
     const batch = queries.slice(i, i + batchSize);
-    const batchResults = await Promise.all(
-      batch.map(query => query())
-    );
+    const batchResults = await Promise.all(batch.map((query) => query()));
     results.push(...batchResults);
   }
-  
+
   return results;
 }
 
@@ -53,7 +51,7 @@ export async function executeWithTimeout<T>(
     setTimeout(() => {
       resolve({
         data: null,
-        error: new Error(`Query timeout after ${timeoutMs}ms`)
+        error: new Error(`Query timeout after ${timeoutMs}ms`),
       });
     }, timeoutMs);
   });
@@ -70,26 +68,26 @@ export async function executeWithRetry<T>(
   initialDelay: number = 100
 ): Promise<QueryResult<T>> {
   let lastError: any = null;
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const result = await query();
-    
+
     if (!result.error) {
       return result;
     }
-    
+
     lastError = result.error;
-    
+
     // Don't retry on the last attempt
     if (attempt < maxRetries) {
       const delay = initialDelay * Math.pow(2, attempt);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
-  
+
   return {
     data: null,
-    error: lastError
+    error: lastError,
   };
 }
 
@@ -101,7 +99,7 @@ export async function batchFetchByIds<T>(
   client: SupabaseClient,
   table: string,
   ids: string[],
-  select: string = '*',
+  select: string = "*",
   chunkSize: number = 100
 ): Promise<QueryResult<T[]>> {
   if (ids.length === 0) {
@@ -115,16 +113,16 @@ export async function batchFetchByIds<T>(
   }
 
   // Execute chunks in parallel
-  const chunkPromises = chunks.map(chunk =>
+  const chunkPromises = chunks.map((chunk) =>
     client
       .from(table)
       .select(select)
-      .in('id', chunk)
+      .in("id", chunk)
       .then(({ data, error }) => ({ data: data as T[] | null, error }))
   );
 
   const results = await Promise.all(chunkPromises);
-  
+
   // Combine results
   const allData: T[] = [];
   let hasError = false;
@@ -141,7 +139,7 @@ export async function batchFetchByIds<T>(
 
   return {
     data: hasError ? null : allData,
-    error: hasError ? lastError : null
+    error: hasError ? lastError : null,
   };
 }
 
@@ -154,13 +152,13 @@ export async function executeWithPriority<T>(
 ): Promise<QueryResult<T>[]> {
   // Sort by priority (higher first)
   const sorted = [...queries].sort((a, b) => b.priority - a.priority);
-  
+
   // Execute in priority order
   const results: QueryResult<T>[] = [];
   for (const { query } of sorted) {
     results.push(await query());
   }
-  
+
   return results;
 }
 
@@ -173,15 +171,14 @@ export async function* streamQueryResults<T>(
   chunkSize: number = 50
 ): AsyncGenerator<T[], void, unknown> {
   const result = await query();
-  
+
   if (result.error || !result.data) {
     return;
   }
-  
+
   const data = result.data;
-  
+
   for (let i = 0; i < data.length; i += chunkSize) {
     yield data.slice(i, i + chunkSize);
   }
 }
-

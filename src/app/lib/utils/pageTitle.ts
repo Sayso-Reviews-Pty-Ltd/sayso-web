@@ -8,29 +8,26 @@ const SITE_NAME = "SAYSO";
 /**
  * Generate a beautiful page title with consistent formatting
  * Format: SAYSO (Page Name) | Description
- * 
+ *
  * @param pageName - The page-specific name (e.g., "Home", "Profile", "Business Name")
  * @param description - The page description (optional)
  * @returns Formatted title string
- * 
+ *
  * @example
  * // "SAYSO (Home) | Discover trusted local gems near you"
  * generatePageTitle("Home", "Discover trusted local gems near you")
- * 
+ *
  * @example
  * // "SAYSO (The Green Table) | Read reviews and see photos"
  * generatePageTitle("The Green Table", "Read reviews and see photos")
  */
-export function generatePageTitle(
-  pageName: string,
-  description?: string
-): string {
+export function generatePageTitle(pageName: string, description?: string): string {
   let title = `${SITE_NAME} (${pageName})`;
-  
+
   if (description) {
     title = `${title} | ${description}`;
   }
-  
+
   return title;
 }
 
@@ -104,4 +101,3 @@ export function getReviewerPageTitle(username: string): string {
 export function getEventPageTitle(eventName: string, description?: string): string {
   return generatePageTitle(eventName, description || "Discover event details and more");
 }
-

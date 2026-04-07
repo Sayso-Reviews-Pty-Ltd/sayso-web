@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
 import {
   getUserProfile,
   updateUserProfile,
   updateLastActive,
-} from '@/app/lib/services/userService';
-import { validateProfileUpdate } from '@/app/lib/utils/validation';
-import type { ApiResponse, EnhancedProfile, UpdateProfilePayload } from '@/app/lib/types/user';
+} from "@/app/lib/services/userService";
+import { validateProfileUpdate } from "@/app/lib/utils/validation";
+import type { ApiResponse, EnhancedProfile, UpdateProfilePayload } from "@/app/lib/types/user";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/user/profile
@@ -19,24 +19,42 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
     try {
       await updateLastActive(supabase, user.id);
     } catch (lastActiveError: any) {
-      console.warn('[Profile API] Failed to update last active:', lastActiveError?.message);
+      console.warn("[Profile API] Failed to update last active:", lastActiveError?.message);
     }
 
     const profile = await getUserProfile(supabase, user.id);
 
     if (!profile) {
-      console.error('[Profile API] Profile not found for user:', user.id);
+      console.error("[Profile API] Profile not found for user:", user.id);
       return NextResponse.json(
-        { data: null, error: { message: 'Profile not found', code: 'NOT_FOUND', details: `No profile record found for user ${user.id}` } },
+        {
+          data: null,
+          error: {
+            message: "Profile not found",
+            code: "NOT_FOUND",
+            details: `No profile record found for user ${user.id}`,
+          },
+        },
         { status: 404 }
       );
     }
 
     return NextResponse.json<ApiResponse<EnhancedProfile>>({ data: profile, error: null });
   } catch (error: any) {
-    console.error('[Profile API] Unexpected error:', { message: error?.message, stack: error?.stack, name: error?.name });
+    console.error("[Profile API] Unexpected error:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
     return NextResponse.json(
-      { data: null, error: { message: error?.message || 'Internal server error', code: 'INTERNAL_ERROR', details: error?.stack || String(error) } },
+      {
+        data: null,
+        error: {
+          message: error?.message || "Internal server error",
+          code: "INTERNAL_ERROR",
+          details: error?.stack || String(error),
+        },
+      },
       { status: 500 }
     );
   }
@@ -53,31 +71,34 @@ export const PATCH = withUser(async (req: NextRequest, { user, supabase }) => {
 
     if (display_name === undefined) {
       return NextResponse.json(
-        { data: null, error: { message: 'display_name is required', code: 'VALIDATION_ERROR' } },
+        { data: null, error: { message: "display_name is required", code: "VALIDATION_ERROR" } },
         { status: 400 }
       );
     }
 
-    const trimmed = typeof display_name === 'string' ? display_name.trim() : null;
+    const trimmed = typeof display_name === "string" ? display_name.trim() : null;
 
     const { error } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({ display_name: trimmed || null, updated_at: new Date().toISOString() })
-      .eq('user_id', user.id);
+      .eq("user_id", user.id);
 
     if (error) {
-      console.error('[Profile API] PATCH error:', error);
+      console.error("[Profile API] PATCH error:", error);
       return NextResponse.json(
-        { data: null, error: { message: 'Failed to update profile', code: 'UPDATE_FAILED' } },
+        { data: null, error: { message: "Failed to update profile", code: "UPDATE_FAILED" } },
         { status: 500 }
       );
     }
 
     return NextResponse.json({ data: { display_name: trimmed }, error: null });
   } catch (error: any) {
-    console.error('[Profile API] PATCH unexpected error:', error);
+    console.error("[Profile API] PATCH unexpected error:", error);
     return NextResponse.json(
-      { data: null, error: { message: error.message || 'Internal server error', code: 'INTERNAL_ERROR' } },
+      {
+        data: null,
+        error: { message: error.message || "Internal server error", code: "INTERNAL_ERROR" },
+      },
       { status: 500 }
     );
   }
@@ -94,7 +115,7 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
     const validation = validateProfileUpdate(body);
     if (!validation.valid) {
       return NextResponse.json<ApiResponse<EnhancedProfile>>(
-        { data: null, error: { message: validation.errors.join(', '), code: 'VALIDATION_ERROR' } },
+        { data: null, error: { message: validation.errors.join(", "), code: "VALIDATION_ERROR" } },
         { status: 400 }
       );
     }
@@ -103,7 +124,7 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
 
     if (!updatedProfile) {
       return NextResponse.json<ApiResponse<EnhancedProfile>>(
-        { data: null, error: { message: 'Failed to update profile', code: 'UPDATE_FAILED' } },
+        { data: null, error: { message: "Failed to update profile", code: "UPDATE_FAILED" } },
         { status: 500 }
       );
     }
@@ -112,9 +133,12 @@ export const PUT = withUser(async (req: NextRequest, { user, supabase }) => {
 
     return NextResponse.json<ApiResponse<EnhancedProfile>>({ data: updatedProfile, error: null });
   } catch (error: any) {
-    console.error('[Profile API] Error:', error);
+    console.error("[Profile API] Error:", error);
     return NextResponse.json<ApiResponse<EnhancedProfile>>(
-      { data: null, error: { message: error.message || 'Internal server error', code: 'INTERNAL_ERROR' } },
+      {
+        data: null,
+        error: { message: error.message || "Internal server error", code: "INTERNAL_ERROR" },
+      },
       { status: 500 }
     );
   }

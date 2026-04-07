@@ -4,7 +4,7 @@ import PercentileChip from "../../PercentileChip/PercentileChip";
 interface BusinessCardPercentilesProps {
   percentiles?: {
     punctuality?: number;
-    'cost-effectiveness'?: number;
+    "cost-effectiveness"?: number;
     friendliness?: number;
     trustworthiness?: number;
   };
@@ -13,7 +13,7 @@ interface BusinessCardPercentilesProps {
 const BusinessCardPercentiles: React.FC<BusinessCardPercentilesProps> = ({ percentiles }) => (
   <div className="flex items-center justify-between sm:justify-center gap-1.5 md:gap-2 bg-transparent rounded-full flex-nowrap min-h-[24px] sm:min-h-[22px] py-0.5 overflow-hidden w-[92%] mx-auto">
     <PercentileChip label="punctuality" value={percentiles?.punctuality || 0} />
-    <PercentileChip label="cost-effectiveness" value={percentiles?.['cost-effectiveness'] || 0} />
+    <PercentileChip label="cost-effectiveness" value={percentiles?.["cost-effectiveness"] || 0} />
     <PercentileChip label="friendliness" value={percentiles?.friendliness || 0} />
     <PercentileChip label="trustworthiness" value={percentiles?.trustworthiness || 0} />
   </div>

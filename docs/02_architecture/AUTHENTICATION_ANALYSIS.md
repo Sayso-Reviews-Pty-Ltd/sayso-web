@@ -5,6 +5,7 @@
 ### ✅ What's Currently in Place
 
 #### 1. **Basic User Authentication**
+
 - **Location**: `src/app/lib/auth.ts`, `src/app/contexts/AuthContext.tsx`
 - **Features**:
   - Email/password signup and login
@@ -15,6 +16,7 @@
   - Auto-profile creation on signup (database trigger)
 
 #### 2. **User Profiles**
+
 - **Location**: `src/app/lib/setup-database.sql`
 - **Schema**: `profiles` table with:
   - User metadata (username, display_name, avatar_url)
@@ -23,6 +25,7 @@
   - Reviewer stats (reviews_count, badges_count, is_top_reviewer)
 
 #### 3. **Route Protection**
+
 - **Location**: `src/middleware.ts`
 - **Features**:
   - Protected routes require authentication + email verification
@@ -31,6 +34,7 @@
   - Auth routes redirect authenticated users away
 
 #### 4. **Business Schema**
+
 - **Location**: `src/app/lib/schema/businesses.sql`
 - **Features**:
   - `businesses` table with `owner_id` field (references `auth.users`)
@@ -40,7 +44,8 @@
     - **Owners can update their businesses** (using `auth.uid() = owner_id`)
 
 #### 5. **Business Pages (UI Only)**
-- **Location**: 
+
+- **Location**:
   - `src/app/business/login/page.tsx` - Business login page
   - `src/app/manage-business/page.tsx` - Business management dashboard
   - `src/app/claim-business/page.tsx` - Business claiming page
@@ -51,66 +56,84 @@
 ## ❌ What's Missing
 
 ### 1. **Role-Based Access Control (RBAC)**
+
 **Current State**: No role system exists
+
 - No user roles (admin, business_owner, regular_user)
 - No role assignment in database
 - No role-based permissions
 
 **What's Needed**:
+
 - Add `role` field to `profiles` table (or separate `user_roles` table)
 - Define roles: `user`, `business_owner`, `admin`
 - Create role-based permission checks
 
 ### 2. **Business Owner Authentication**
+
 **Current State**: Business login uses regular auth
+
 - `business/login` page uses `useAuth().login()` (same as regular users)
 - No distinction between business owners and regular users
 - No business owner verification process
 
 **What's Needed**:
+
 - Separate business owner authentication flow
 - Business owner verification/claiming process
 - Business owner dashboard access control
 
 ### 3. **Business Ownership Verification**
+
 **Current State**: `owner_id` exists but no verification
+
 - Businesses have `owner_id` field
 - No verification that user actually owns the business
 - No claiming/verification workflow
 
 **What's Needed**:
+
 - Business claiming workflow
 - Ownership verification (email, documents, etc.)
 - Pending/verified status for business ownership
 
 ### 4. **Permission System**
+
 **Current State**: Basic RLS only
+
 - RLS policies check `auth.uid() = owner_id` for updates
 - No granular permissions (read, write, delete, manage)
 - No permission checks in application code
 
 **What's Needed**:
+
 - Permission definitions (e.g., `business:read`, `business:write`, `business:delete`)
 - Permission checking utilities
 - Role-permission mapping
 
 ### 5. **Business-Specific Route Protection**
+
 **Current State**: No business-specific protection
+
 - Business management pages (`/manage-business`, `/business/[id]/edit`) not protected
 - No check if user owns the business before allowing edits
 
 **What's Needed**:
+
 - Middleware/guards for business owner routes
 - Check business ownership before allowing access
 - Redirect non-owners appropriately
 
 ### 6. **Admin Role & Privileges**
+
 **Current State**: No admin system
+
 - No admin users
 - No admin dashboard
 - No admin privileges (moderate reviews, manage businesses, etc.)
 
 **What's Needed**:
+
 - Admin role definition
 - Admin authentication/authorization
 - Admin dashboard and tools
@@ -122,10 +145,11 @@
 ### 1. **Database Schema Changes**
 
 #### Add Role System
+
 ```sql
 -- Option 1: Add role to profiles table
-ALTER TABLE profiles 
-ADD COLUMN role TEXT DEFAULT 'user' 
+ALTER TABLE profiles
+ADD COLUMN role TEXT DEFAULT 'user'
 CHECK (role IN ('user', 'business_owner', 'admin'));
 
 -- Option 2: Create separate user_roles table (more flexible)
@@ -138,9 +162,10 @@ CREATE TABLE user_roles (
 ```
 
 #### Add Business Ownership Verification
+
 ```sql
 -- Add verification status to businesses
-ALTER TABLE businesses 
+ALTER TABLE businesses
 ADD COLUMN owner_verified BOOLEAN DEFAULT FALSE,
 ADD COLUMN owner_verification_requested_at TIMESTAMPTZ,
 ADD COLUMN owner_verification_documents JSONB;
@@ -162,6 +187,7 @@ CREATE TABLE business_ownership_requests (
 ### 2. **Authentication Service Changes**
 
 #### Add Role Management
+
 ```typescript
 // src/app/lib/auth.ts
 static async getUserRole(userId: string): Promise<string | null> {
@@ -182,6 +208,7 @@ static async getBusinessesForOwner(userId: string): Promise<Business[]> {
 ```
 
 #### Add Business Owner Authentication
+
 ```typescript
 static async signInAsBusinessOwner({ email, password }): Promise<{ user, error }> {
   // Sign in and verify user is a business owner
@@ -192,6 +219,7 @@ static async signInAsBusinessOwner({ email, password }): Promise<{ user, error }
 ### 3. **Context Changes**
 
 #### Extend AuthContext
+
 ```typescript
 // src/app/contexts/AuthContext.tsx
 interface AuthContextType {
@@ -207,10 +235,11 @@ interface AuthContextType {
 ### 4. **Middleware Changes**
 
 #### Add Business Owner Route Protection
+
 ```typescript
 // src/middleware.ts
-const businessOwnerRoutes = ['/manage-business', '/business/[id]/edit', '/claim-business'];
-const isBusinessOwnerRoute = businessOwnerRoutes.some(route => 
+const businessOwnerRoutes = ["/manage-business", "/business/[id]/edit", "/claim-business"];
+const isBusinessOwnerRoute = businessOwnerRoutes.some((route) =>
   request.nextUrl.pathname.startsWith(route)
 );
 
@@ -223,15 +252,16 @@ if (isBusinessOwnerRoute && user) {
 ### 5. **Permission Utilities**
 
 #### Create Permission System
+
 ```typescript
 // src/app/lib/permissions.ts
 export const Permissions = {
-  BUSINESS_READ: 'business:read',
-  BUSINESS_WRITE: 'business:write',
-  BUSINESS_DELETE: 'business:delete',
-  BUSINESS_MANAGE: 'business:manage',
-  REVIEW_MODERATE: 'review:moderate',
-  ADMIN_ALL: 'admin:all',
+  BUSINESS_READ: "business:read",
+  BUSINESS_WRITE: "business:write",
+  BUSINESS_DELETE: "business:delete",
+  BUSINESS_MANAGE: "business:manage",
+  REVIEW_MODERATE: "review:moderate",
+  ADMIN_ALL: "admin:all",
 };
 
 export function hasPermission(userRole: string, permission: string): boolean {
@@ -246,6 +276,7 @@ export function canEditBusiness(userId: string, businessId: string): Promise<boo
 ### 6. **Component Changes**
 
 #### Update Business Login Page
+
 ```typescript
 // src/app/business/login/page.tsx
 // Change to use business-specific authentication
@@ -254,6 +285,7 @@ export function canEditBusiness(userId: string, businessId: string): Promise<boo
 ```
 
 #### Add Business Ownership Checks
+
 ```typescript
 // src/app/business/[id]/edit/page.tsx
 // Check if user owns business before allowing edit
@@ -265,24 +297,28 @@ export function canEditBusiness(userId: string, businessId: string): Promise<boo
 ## 📋 Implementation Priority
 
 ### Phase 1: Core Role System (High Priority)
+
 1. Add `role` field to profiles table
 2. Create role management functions
 3. Update AuthContext to include role
 4. Add role checks to middleware
 
 ### Phase 2: Business Owner Authentication (High Priority)
+
 1. Implement business owner login flow
 2. Add business ownership verification
 3. Create business claiming workflow
 4. Protect business owner routes
 
 ### Phase 3: Permission System (Medium Priority)
+
 1. Define permission structure
 2. Create permission checking utilities
 3. Add permission checks to business operations
 4. Update RLS policies with permissions
 
 ### Phase 4: Admin System (Low Priority)
+
 1. Create admin role
 2. Build admin dashboard
 3. Add admin privileges
@@ -310,4 +346,3 @@ export function canEditBusiness(userId: string, businessId: string): Promise<boo
 5. Test authentication flows
 6. Implement Phase 2 (Business Owner Auth)
 7. Add comprehensive tests
-

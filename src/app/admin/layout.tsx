@@ -39,10 +39,16 @@ function Sidebar({
       <div className="flex items-center justify-between px-5 py-5">
         <Link href="/admin" className="flex items-center gap-1.5" onClick={onClose}>
           <Wordmark size="text-base" className="tracking-tight" />
-          <span className="font-urbanist font-semibold text-sm text-white/85 tracking-tight">admin</span>
+          <span className="font-urbanist font-semibold text-sm text-white/85 tracking-tight">
+            admin
+          </span>
         </Link>
         {onClose && (
-          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white"
+          >
             <X className="w-4 h-4" />
           </button>
         )}
@@ -58,12 +64,15 @@ function Sidebar({
               href={href}
               onClick={onClose}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group
-                ${active
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-white/65 hover:bg-white/8 hover:text-white"
+                ${
+                  active
+                    ? "bg-white/15 text-white shadow-sm"
+                    : "text-white/65 hover:bg-white/8 hover:text-white"
                 }`}
             >
-              <Icon className={`w-4 h-4 flex-shrink-0 ${active ? "text-white" : "text-white/50 group-hover:text-white/80"}`} />
+              <Icon
+                className={`w-4 h-4 flex-shrink-0 ${active ? "text-white" : "text-white/50 group-hover:text-white/80"}`}
+              />
               <span className="flex-1 font-urbanist">{label}</span>
               {active && <ChevronRight className="w-3.5 h-3.5 text-white/50" />}
             </Link>
@@ -102,7 +111,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const isAdmin = role === "admin";
 
   // Close mobile nav on route change
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const canRenderAdminContent = Boolean(!isLoading && user && user.email_verified && isAdmin);
   const handleBackToSayso = async () => {
@@ -143,7 +154,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex items-center gap-1.5">
             <Wordmark size="text-base" className="tracking-tight" />
-            <span className="font-urbanist font-semibold text-sm text-white/85 tracking-tight">admin</span>
+            <span className="font-urbanist font-semibold text-sm text-white/85 tracking-tight">
+              admin
+            </span>
           </div>
         </header>
 

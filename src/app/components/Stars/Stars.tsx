@@ -17,7 +17,7 @@ export default function Stars({ value = 5, color = "amber", size = 15, spacing =
     <div
       className="flex items-center transition-transform duration-200"
       style={{ gap: `${spacing}px`, fontSize: size }}
-      aria-label={`Rating: ${value !== undefined ? value.toFixed(1) : 'No rating'} out of 5`}
+      aria-label={`Rating: ${value !== undefined ? value.toFixed(1) : "No rating"} out of 5`}
     >
       <svg width="0" height="0" style={{ position: "absolute" }}>
         <defs>
@@ -38,12 +38,12 @@ export default function Stars({ value = 5, color = "amber", size = 15, spacing =
           color === "gold"
             ? `url(#${gradientId})`
             : color === "charcoal"
-            ? "#2a2a2a"
-            : color === "navbar-bg"
-            ? "#722F37"
-            : color === "coral/90"
-            ? "#f87171"
-            : "#f59e0b";
+              ? "#2a2a2a"
+              : color === "navbar-bg"
+                ? "#722F37"
+                : color === "coral/90"
+                  ? "#f87171"
+                  : "#f59e0b";
         return (
           <span
             key={i}
@@ -70,7 +70,7 @@ export default function Stars({ value = 5, color = "amber", size = 15, spacing =
                   overflow: "hidden",
                   position: "absolute",
                   left: 0,
-                  top: 0
+                  top: 0,
                 }}
               >
                 <Star

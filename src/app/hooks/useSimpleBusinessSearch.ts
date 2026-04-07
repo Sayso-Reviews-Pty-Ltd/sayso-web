@@ -1,7 +1,7 @@
 /**
  * Simple business search hook
  * Implements the same search pattern as /claim-business page
- * 
+ *
  * Features:
  * - 300ms debounce for efficient API calls
  * - Minimum 2 characters to trigger search
@@ -10,7 +10,7 @@
  * - Includes claim status checks
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export interface SearchResult {
   id: string;
@@ -23,7 +23,7 @@ export interface SearchResult {
   website?: string;
   image_url?: string;
   verified: boolean;
-  claim_status: 'unclaimed' | 'claimed' | 'pending';
+  claim_status: "unclaimed" | "claimed" | "pending";
   pending_by_user?: boolean;
   claimed_by_user?: boolean;
   lat?: number;
@@ -37,7 +37,10 @@ export interface UseSimpleBusinessSearchResult {
   error: string | null;
 }
 
-export function useSimpleBusinessSearch(searchQuery: string, debounceMs = 300): UseSimpleBusinessSearchResult {
+export function useSimpleBusinessSearch(
+  searchQuery: string,
+  debounceMs = 300
+): UseSimpleBusinessSearchResult {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,14 +62,14 @@ export function useSimpleBusinessSearch(searchQuery: string, debounceMs = 300): 
         );
 
         if (!response.ok) {
-          throw new Error('Failed to search businesses');
+          throw new Error("Failed to search businesses");
         }
 
         const data = await response.json();
         setResults(data.businesses || []);
       } catch (err) {
-        console.error('Error searching businesses:', err);
-        setError(err instanceof Error ? err.message : 'Search failed');
+        console.error("Error searching businesses:", err);
+        setError(err instanceof Error ? err.message : "Search failed");
         setResults([]);
       } finally {
         setIsSearching(false);

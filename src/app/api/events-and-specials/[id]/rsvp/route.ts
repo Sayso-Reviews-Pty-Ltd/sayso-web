@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 async function makeClient() {
   const cookieStore = await cookies();
@@ -21,9 +21,9 @@ async function makeClient() {
 
 async function getRsvpCount(supabase: any, eventId: string): Promise<number> {
   const { count } = await supabase
-    .from('event_rsvps')
-    .select('id', { count: 'exact', head: true })
-    .eq('event_id', eventId);
+    .from("event_rsvps")
+    .select("id", { count: "exact", head: true })
+    .eq("event_id", eventId);
   return count ?? 0;
 }
 
@@ -38,10 +38,7 @@ async function getOptionalUserId(supabase: any): Promise<string | null> {
 }
 
 // GET /api/events-and-specials/[id]/rsvp
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await makeClient();
   const userId = await getOptionalUserId(supabase);
   const { id: eventId } = await params;
@@ -51,10 +48,10 @@ export async function GET(
   let userRsvpd = false;
   if (userId) {
     const { data } = await supabase
-      .from('event_rsvps')
-      .select('id')
-      .eq('event_id', eventId)
-      .eq('user_id', userId)
+      .from("event_rsvps")
+      .select("id")
+      .eq("event_id", eventId)
+      .eq("user_id", userId)
       .maybeSingle();
     userRsvpd = !!data;
   }
@@ -63,37 +60,28 @@ export async function GET(
 }
 
 // POST /api/events-and-specials/[id]/rsvp — toggle
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await makeClient();
   const userId = await getOptionalUserId(supabase);
 
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { id: eventId } = await params;
 
   // Check if already RSVP'd
   const { data: existing } = await supabase
-    .from('event_rsvps')
-    .select('id')
-    .eq('event_id', eventId)
-    .eq('user_id', userId)
+    .from("event_rsvps")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("user_id", userId)
     .maybeSingle();
 
   if (existing) {
-    await supabase
-      .from('event_rsvps')
-      .delete()
-      .eq('event_id', eventId)
-      .eq('user_id', userId);
+    await supabase.from("event_rsvps").delete().eq("event_id", eventId).eq("user_id", userId);
   } else {
-    await supabase
-      .from('event_rsvps')
-      .insert({ event_id: eventId, user_id: userId });
+    await supabase.from("event_rsvps").insert({ event_id: eventId, user_id: userId });
   }
 
   const count = await getRsvpCount(supabase, eventId);

@@ -3,27 +3,30 @@
  * Uses SWR for caching. Invalidated when SavedItemsContext changes.
  */
 
-'use client';
+"use client";
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { swrConfig } from '../lib/swrConfig';
-import type { Business } from '../components/BusinessCard/BusinessCard';
+import useSWR, { mutate as globalMutate } from "swr";
+import { useAuth } from "../contexts/AuthContext";
+import { swrConfig } from "../lib/swrConfig";
+import type { Business } from "../components/BusinessCard/BusinessCard";
 
 interface SavedBusinessesData {
   businesses: Business[];
   error: string | null;
 }
 
-async function fetchSavedBusinessesFull([, userId]: [string, string]): Promise<SavedBusinessesData> {
-  const response = await fetch('/api/user/saved', { credentials: 'include' });
+async function fetchSavedBusinessesFull([, userId]: [
+  string,
+  string,
+]): Promise<SavedBusinessesData> {
+  const response = await fetch("/api/user/saved", { credentials: "include" });
 
   if (!response.ok) {
     if (response.status === 401) {
       return { businesses: [], error: null };
     }
 
-    let errorMessage = 'Failed to fetch saved businesses';
+    let errorMessage = "Failed to fetch saved businesses";
     let errorCode: string | undefined;
 
     try {
@@ -36,11 +39,11 @@ async function fetchSavedBusinessesFull([, userId]: [string, string]): Promise<S
 
     const isTableError =
       response.status === 500 &&
-      (errorCode === '42P01' ||
-        errorCode === '42501' ||
-        errorMessage.toLowerCase().includes('relation') ||
-        errorMessage.toLowerCase().includes('does not exist') ||
-        errorMessage.toLowerCase().includes('permission denied'));
+      (errorCode === "42P01" ||
+        errorCode === "42501" ||
+        errorMessage.toLowerCase().includes("relation") ||
+        errorMessage.toLowerCase().includes("does not exist") ||
+        errorMessage.toLowerCase().includes("permission denied"));
 
     if (isTableError) {
       return { businesses: [], error: null };
@@ -48,7 +51,7 @@ async function fetchSavedBusinessesFull([, userId]: [string, string]): Promise<S
 
     const userMessage =
       response.status >= 500
-        ? 'Unable to load saved items at the moment. Please try again later.'
+        ? "Unable to load saved items at the moment. Please try again later."
         : null;
 
     return { businesses: [], error: userMessage };
@@ -65,11 +68,15 @@ async function fetchSavedBusinessesFull([, userId]: [string, string]): Promise<S
 export function useSavedBusinesses() {
   const { user, isLoading: authLoading } = useAuth();
 
-  const swrKey = (!authLoading && user?.id)
-    ? (['/api/user/saved', user.id] as [string, string])
-    : null;
+  const swrKey =
+    !authLoading && user?.id ? (["/api/user/saved", user.id] as [string, string]) : null;
 
-  const { data, error: swrError, isLoading, mutate } = useSWR(swrKey, fetchSavedBusinessesFull, {
+  const {
+    data,
+    error: swrError,
+    isLoading,
+    mutate,
+  } = useSWR(swrKey, fetchSavedBusinessesFull, {
     ...swrConfig,
     dedupingInterval: 30_000,
   });
@@ -87,5 +94,5 @@ export function useSavedBusinesses() {
  * Globally invalidate the saved businesses list for a user.
  */
 export function invalidateSavedBusinessesFull(userId: string) {
-  globalMutate(['/api/user/saved', userId]);
+  globalMutate(["/api/user/saved", userId]);
 }

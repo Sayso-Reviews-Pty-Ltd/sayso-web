@@ -17,18 +17,16 @@ interface InterestGridProps {
   onToggle: (id: string) => void;
 }
 
-function InterestGrid({ 
-  interests, 
-  selectedInterests, 
-  maxSelections, 
+function InterestGrid({
+  interests,
+  selectedInterests,
+  maxSelections,
   animatingIds,
   shakingIds,
-  onToggle 
+  onToggle,
 }: InterestGridProps) {
   return (
-    <div
-      className="grid grid-cols-2 gap-3 md:gap-6 mb-4 overflow-visible animate-fade-in-up"
-    >
+    <div className="grid grid-cols-2 gap-3 md:gap-6 mb-4 overflow-visible animate-fade-in-up">
       {interests.map((interest, idx) => {
         const isSelected = selectedInterests.includes(interest.id);
         const isDisabled = !isSelected && selectedInterests.length >= maxSelections;

@@ -19,10 +19,7 @@ export default function ScrollHint() {
 
   useEffect(() => {
     const getScrollY = () =>
-      window.scrollY ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0;
+      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     const updateVisibility = () => {
       const currentY = getScrollY();

@@ -26,10 +26,7 @@ function notifySubscribers(businessId: string) {
   listeners.forEach((listener) => listener(value));
 }
 
-function subscribeToBusinessPreview(
-  businessId: string,
-  listener: (value: CachedPreview) => void
-) {
+function subscribeToBusinessPreview(businessId: string, listener: (value: CachedPreview) => void) {
   if (!subscribers.has(businessId)) {
     subscribers.set(businessId, new Set());
   }

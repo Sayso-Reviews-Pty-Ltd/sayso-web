@@ -38,7 +38,10 @@ export default function MobileHeroSkeleton() {
           </div>
         </div>
 
-        <span aria-hidden className="absolute inset-0 animate-shimmer opacity-60 mix-blend-screen" />
+        <span
+          aria-hidden
+          className="absolute inset-0 animate-shimmer opacity-60 mix-blend-screen"
+        />
       </section>
     </div>
   );

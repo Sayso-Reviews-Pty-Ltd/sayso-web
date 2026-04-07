@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { m } from 'framer-motion';
+import { m } from "framer-motion";
 
 export function FloatingParticles() {
   const particles = Array.from({ length: 20 }, (_, i) => ({
@@ -35,7 +35,7 @@ export function FloatingParticles() {
             duration: p.duration,
             delay: p.delay,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
           }}
         />
       ))}

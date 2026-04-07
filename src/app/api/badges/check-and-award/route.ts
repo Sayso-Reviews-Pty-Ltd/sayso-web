@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
-import { getServiceSupabase } from '@/app/lib/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
+import { getServiceSupabase } from "@/app/lib/admin";
 
 /**
  * POST /api/badges/check-and-award
@@ -16,14 +16,13 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
   try {
     // Call check_user_badges RPC which checks all badges and awards new ones
     // Returns a table of newly awarded badges (awarded_badge_id, badge_name)
-    const { data: awardedBadges, error: checkError } = await supabase.rpc(
-      'check_user_badges',
-      { p_user_id: user.id }
-    );
+    const { data: awardedBadges, error: checkError } = await supabase.rpc("check_user_badges", {
+      p_user_id: user.id,
+    });
 
     if (checkError) {
-      console.error('[Badge Check] Error checking badges:', checkError);
-      return NextResponse.json({ error: 'Failed to check badges' }, { status: 500 });
+      console.error("[Badge Check] Error checking badges:", checkError);
+      return NextResponse.json({ error: "Failed to check badges" }, { status: 500 });
     }
 
     // If no new badges were awarded
@@ -31,29 +30,29 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
       console.log(`[Badge Check] User ${user.id} earned 0 new badges: []`);
       return NextResponse.json({
         ok: true,
-        message: 'No new badges earned',
-        newBadges: []
+        message: "No new badges earned",
+        newBadges: [],
       });
     }
 
     // Fetch full badge details for the newly awarded badges
     const awardedBadgeIds = awardedBadges.map((b: any) => b.awarded_badge_id);
     const { data: badgeDetails, error: badgeError } = await supabase
-      .from('badges')
-      .select('*')
-      .in('id', awardedBadgeIds);
+      .from("badges")
+      .select("*")
+      .in("id", awardedBadgeIds);
 
     if (badgeError) {
-      console.error('[Badge Check] Error fetching badge details:', badgeError);
+      console.error("[Badge Check] Error fetching badge details:", badgeError);
       // Return what we have from the RPC call
       const simpleBadges = awardedBadges.map((b: any) => ({
         id: b.awarded_badge_id,
-        name: b.badge_name
+        name: b.badge_name,
       }));
       return NextResponse.json({
         ok: true,
         newBadges: simpleBadges,
-        message: `Congratulations! You earned ${simpleBadges.length} new badge(s)!`
+        message: `Congratulations! You earned ${simpleBadges.length} new badge(s)!`,
       });
     }
 
@@ -62,40 +61,45 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
       name: badge.name,
       description: badge.description,
       icon_path: badge.icon_path,
-      badge_group: badge.badge_group
+      badge_group: badge.badge_group,
     }));
 
-    console.log(`[Badge Check] User ${user.id} earned ${newlyEarnedBadges.length} new badges:`,
-      newlyEarnedBadges.map(b => b.name));
+    console.log(
+      `[Badge Check] User ${user.id} earned ${newlyEarnedBadges.length} new badges:`,
+      newlyEarnedBadges.map((b) => b.name)
+    );
 
     // Create notifications for each newly earned badge (service role to bypass RLS)
     const service = getServiceSupabase();
     for (const badge of newlyEarnedBadges) {
-      const { error: notifError } = await service.rpc('create_badge_notification', {
+      const { error: notifError } = await service.rpc("create_badge_notification", {
         p_user_id: user.id,
         p_badge_id: badge.id,
         p_badge_name: badge.name,
-        p_badge_icon: badge.icon_path || '/badges/012-expertise.png'
+        p_badge_icon: badge.icon_path || "/badges/012-expertise.png",
       });
       if (notifError) {
-        console.error(`[Badge Check] Failed to create notification for badge ${badge.id}:`, notifError);
+        console.error(
+          `[Badge Check] Failed to create notification for badge ${badge.id}:`,
+          notifError
+        );
       }
     }
 
     return NextResponse.json({
       ok: true,
       newBadges: newlyEarnedBadges,
-      message: newlyEarnedBadges.length > 0
-        ? `Congratulations! You earned ${newlyEarnedBadges.length} new badge(s)!`
-        : 'No new badges earned'
+      message:
+        newlyEarnedBadges.length > 0
+          ? `Congratulations! You earned ${newlyEarnedBadges.length} new badge(s)!`
+          : "No new badges earned",
     });
-
   } catch (error: any) {
-    console.error('[Badge Check] Unexpected error:', error);
+    console.error("[Badge Check] Unexpected error:", error);
     return NextResponse.json(
       {
-        error: 'Failed to check badges',
-        message: error.message
+        error: "Failed to check badges",
+        message: error.message,
       },
       { status: 500 }
     );

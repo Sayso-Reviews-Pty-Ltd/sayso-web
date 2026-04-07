@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { m, AnimatePresence } from 'framer-motion';
+import { useState } from "react";
+import Image from "next/image";
+import { m, AnimatePresence } from "framer-motion";
 import { Image as ImageIcon, ChevronUp, X } from "@/app/lib/icons";
 
 interface ReviewImage {
@@ -40,7 +40,7 @@ export function ReviewGallery({ images, isDesktop }: ReviewGalleryProps) {
               width={200}
               height={200}
               className={`w-full h-full object-cover ${
-                isDesktop ? '' : 'transition-transform duration-300 group-hover/image:scale-110'
+                isDesktop ? "" : "transition-transform duration-300 group-hover/image:scale-110"
               }`}
             />
           </m.div>
@@ -53,7 +53,7 @@ export function ReviewGallery({ images, isDesktop }: ReviewGalleryProps) {
           whileTap={isDesktop ? undefined : { scale: 0.95 }}
           onClick={() => setShowAllImages(true)}
           className={`text-sage font-urbanist text-sm font-500 flex items-center space-x-1 ${
-            isDesktop ? '' : 'hover:text-sage/80'
+            isDesktop ? "" : "hover:text-sage/80"
           }`}
         >
           <ImageIcon size={16} />
@@ -67,7 +67,7 @@ export function ReviewGallery({ images, isDesktop }: ReviewGalleryProps) {
           whileTap={isDesktop ? undefined : { scale: 0.95 }}
           onClick={() => setShowAllImages(false)}
           className={`text-charcoal/60 font-urbanist text-sm font-500 flex items-center space-x-1 ${
-            isDesktop ? '' : 'hover:text-charcoal'
+            isDesktop ? "" : "hover:text-charcoal"
           }`}
         >
           <ChevronUp size={16} />
@@ -82,13 +82,10 @@ export function ReviewGallery({ images, isDesktop }: ReviewGalleryProps) {
             className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
             onClick={() => setSelectedImageIndex(null)}
           >
-            <m.div
-              className="relative max-w-4xl max-h-full"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <m.div className="relative max-w-4xl max-h-full" onClick={(e) => e.stopPropagation()}>
               <Image
                 src={images[selectedImageIndex].image_url}
-                alt={images[selectedImageIndex].alt_text || 'Review image'}
+                alt={images[selectedImageIndex].alt_text || "Review image"}
                 width={800}
                 height={600}
                 className="max-w-full max-h-full object-contain rounded-lg"

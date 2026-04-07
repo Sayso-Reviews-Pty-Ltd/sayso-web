@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
-const MAX_ATTEMPTS = parseInt(process.env.NEXT_PUBLIC_MAX_LOGIN_ATTEMPTS || '5');
-const LOCKOUT_DURATION = parseInt(process.env.NEXT_PUBLIC_LOCKOUT_DURATION_MINUTES || '15');
+const MAX_ATTEMPTS = parseInt(process.env.NEXT_PUBLIC_MAX_LOGIN_ATTEMPTS || "5");
+const LOCKOUT_DURATION = parseInt(process.env.NEXT_PUBLIC_LOCKOUT_DURATION_MINUTES || "15");
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
     if (!identifier || !attemptType) {
       return NextResponse.json(
-        { error: 'Identifier and attempt type are required' },
+        { error: "Identifier and attempt type are required" },
         { status: 400 }
       );
     }
@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
 
     // Check current rate limit status
     const { data: existing } = await supabase
-      .from('auth_rate_limits')
-      .select('*')
-      .eq('identifier', identifier)
-      .eq('attempt_type', attemptType)
+      .from("auth_rate_limits")
+      .select("*")
+      .eq("identifier", identifier)
+      .eq("attempt_type", attemptType)
       .single();
 
     const now = new Date();
@@ -35,9 +35,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           locked: true,
-          message: `Too many attempts. Try again in ${minutesRemaining} minute${minutesRemaining !== 1 ? 's' : ''}.`,
+          message: `Too many attempts. Try again in ${minutesRemaining} minute${minutesRemaining !== 1 ? "s" : ""}.`,
           lockedUntil: existing.locked_until,
-          attemptsRemaining: 0
+          attemptsRemaining: 0,
         },
         { status: 429 }
       );
@@ -51,15 +51,15 @@ export async function POST(request: NextRequest) {
       const shouldLock = newAttempts >= MAX_ATTEMPTS;
 
       await supabase
-        .from('auth_rate_limits')
+        .from("auth_rate_limits")
         .update({
           attempts: newAttempts,
           last_attempt: now.toISOString(),
           locked_until: shouldLock
             ? new Date(now.getTime() + LOCKOUT_DURATION * 60000).toISOString()
-            : null
+            : null,
         })
-        .eq('id', existing.id);
+        .eq("id", existing.id);
 
       if (shouldLock) {
         return NextResponse.json(
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
             locked: true,
             message: `Too many failed attempts. Account locked for ${LOCKOUT_DURATION} minutes.`,
             lockedUntil: new Date(now.getTime() + LOCKOUT_DURATION * 60000).toISOString(),
-            attemptsRemaining: 0
+            attemptsRemaining: 0,
           },
           { status: 429 }
         );
@@ -76,31 +76,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         locked: false,
         attemptsRemaining: MAX_ATTEMPTS - newAttempts,
-        message: `${MAX_ATTEMPTS - newAttempts} attempt${MAX_ATTEMPTS - newAttempts !== 1 ? 's' : ''} remaining`
+        message: `${MAX_ATTEMPTS - newAttempts} attempt${MAX_ATTEMPTS - newAttempts !== 1 ? "s" : ""} remaining`,
       });
     } else {
       // Create new rate limit record
-      await supabase
-        .from('auth_rate_limits')
-        .insert({
-          identifier,
-          attempt_type: attemptType,
-          attempts: 1,
-          last_attempt: now.toISOString()
-        });
+      await supabase.from("auth_rate_limits").insert({
+        identifier,
+        attempt_type: attemptType,
+        attempts: 1,
+        last_attempt: now.toISOString(),
+      });
 
       return NextResponse.json({
         locked: false,
         attemptsRemaining: MAX_ATTEMPTS - 1,
-        message: `${MAX_ATTEMPTS - 1} attempts remaining`
+        message: `${MAX_ATTEMPTS - 1} attempts remaining`,
       });
     }
   } catch (error) {
-    console.error('Rate limit check error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Rate limit check error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -111,7 +106,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!identifier || !attemptType) {
       return NextResponse.json(
-        { error: 'Identifier and attempt type are required' },
+        { error: "Identifier and attempt type are required" },
         { status: 400 }
       );
     }
@@ -119,18 +114,15 @@ export async function DELETE(request: NextRequest) {
     const supabase = await getServerSupabase();
 
     await supabase
-      .from('auth_rate_limits')
+      .from("auth_rate_limits")
       .delete()
-      .eq('identifier', identifier)
-      .eq('attempt_type', attemptType);
+      .eq("identifier", identifier)
+      .eq("attempt_type", attemptType);
 
-    return NextResponse.json({ success: true, message: 'Rate limit cleared' });
+    return NextResponse.json({ success: true, message: "Rate limit cleared" });
   } catch (error) {
-    console.error('Rate limit reset error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Rate limit reset error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -138,12 +130,12 @@ export async function DELETE(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const identifier = url.searchParams.get('identifier');
-    const attemptType = url.searchParams.get('attemptType');
+    const identifier = url.searchParams.get("identifier");
+    const attemptType = url.searchParams.get("attemptType");
 
     if (!identifier || !attemptType) {
       return NextResponse.json(
-        { error: 'Identifier and attempt type are required' },
+        { error: "Identifier and attempt type are required" },
         { status: 400 }
       );
     }
@@ -151,10 +143,10 @@ export async function GET(request: NextRequest) {
     const supabase = await getServerSupabase();
 
     const { data: existing } = await supabase
-      .from('auth_rate_limits')
-      .select('*')
-      .eq('identifier', identifier)
-      .eq('attempt_type', attemptType)
+      .from("auth_rate_limits")
+      .select("*")
+      .eq("identifier", identifier)
+      .eq("attempt_type", attemptType)
       .single();
 
     const now = new Date();
@@ -163,7 +155,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         locked: false,
         attemptsRemaining: MAX_ATTEMPTS,
-        message: 'No attempts recorded'
+        message: "No attempts recorded",
       });
     }
 
@@ -174,9 +166,9 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         locked: true,
-        message: `Locked for ${minutesRemaining} more minute${minutesRemaining !== 1 ? 's' : ''}.`,
+        message: `Locked for ${minutesRemaining} more minute${minutesRemaining !== 1 ? "s" : ""}.`,
         lockedUntil: existing.locked_until,
-        attemptsRemaining: 0
+        attemptsRemaining: 0,
       });
     }
 
@@ -184,13 +176,10 @@ export async function GET(request: NextRequest) {
       locked: false,
       attemptsRemaining: MAX_ATTEMPTS - existing.attempts,
       attempts: existing.attempts,
-      message: `${MAX_ATTEMPTS - existing.attempts} attempts remaining`
+      message: `${MAX_ATTEMPTS - existing.attempts} attempts remaining`,
     });
   } catch (error) {
-    console.error('Rate limit status check error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Rate limit status check error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 type ProfileRoleRow = {
   role?: string | null;
@@ -9,8 +9,10 @@ type ProfileRoleRow = {
 };
 
 function isBusinessOwnerRole(profile: ProfileRoleRow | null): boolean {
-  const role = String(profile?.account_role ?? profile?.role ?? '').toLowerCase().trim();
-  return role === 'business_owner';
+  const role = String(profile?.account_role ?? profile?.role ?? "")
+    .toLowerCase()
+    .trim();
+  return role === "business_owner";
 }
 
 /**
@@ -18,64 +20,77 @@ function isBusinessOwnerRole(profile: ProfileRoleRow | null): boolean {
  * Fetch notifications for the authenticated user
  */
 export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
-  const endpoint = '/api/notifications';
+  const endpoint = "/api/notifications";
   try {
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role, account_role')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("role, account_role")
+      .eq("user_id", user.id)
       .maybeSingle<ProfileRoleRow>();
 
     if (profileError) {
-      console.error('[NotificationsAPI] Profile lookup failed', {
+      console.error("[NotificationsAPI] Profile lookup failed", {
         endpoint,
         status: 500,
         errorCode: profileError.code ?? null,
         errorMessage: profileError.message,
         hasSession: true,
       });
-      return NextResponse.json(
-        { error: 'Failed to validate notification scope' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to validate notification scope" }, { status: 500 });
     }
 
     if (isBusinessOwnerRole(profile)) {
       return NextResponse.json(
-        { error: 'Business account should use /api/notifications/business' },
+        { error: "Business account should use /api/notifications/business" },
         { status: 403 }
       );
     }
 
     // Parse query parameters
     const { searchParams } = new URL(req.url);
-    const unreadParam = searchParams.get('unread');
-    const typeParam = searchParams.get('type');
-    const limitParam = searchParams.get('limit');
-    const offsetParam = searchParams.get('offset');
+    const unreadParam = searchParams.get("unread");
+    const typeParam = searchParams.get("type");
+    const limitParam = searchParams.get("limit");
+    const offsetParam = searchParams.get("offset");
 
     // Build query
-    let query = supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id);
+    let query = supabase.from("notifications").select("*").eq("user_id", user.id);
 
     // Filter by read status
     if (unreadParam !== null) {
-      const unread = unreadParam === 'true';
-      query = query.eq('read', !unread);
+      const unread = unreadParam === "true";
+      query = query.eq("read", !unread);
     }
 
     // Filter by type
     if (typeParam) {
-      const validTypes = ['review', 'business', 'user', 'highlyRated', 'gamification', 'message', 'otp_sent', 'otp_verified', 'claim_status_changed', 'docs_requested', 'docs_received', 'badge_earned', 'review_helpful', 'business_approved', 'claim_approved', 'comment_reply', 'photo_approved', 'milestone_achievement'];
+      const validTypes = [
+        "review",
+        "business",
+        "user",
+        "highlyRated",
+        "gamification",
+        "message",
+        "otp_sent",
+        "otp_verified",
+        "claim_status_changed",
+        "docs_requested",
+        "docs_received",
+        "badge_earned",
+        "review_helpful",
+        "business_approved",
+        "claim_approved",
+        "comment_reply",
+        "photo_approved",
+        "milestone_achievement",
+      ];
       if (validTypes.includes(typeParam)) {
-        query = query.eq('type', typeParam);
+        query = query.eq("type", typeParam);
       }
     }
 
     // Order by created_at descending
-    query = query.order('created_at', { ascending: false });
+    query = query.order("created_at", { ascending: false });
 
     // Apply pagination (limit and offset)
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -92,28 +107,28 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     const { data: notifications, error } = await query;
 
     if (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
       return NextResponse.json(
-        { error: 'Failed to fetch notifications', details: error.message },
+        { error: "Failed to fetch notifications", details: error.message },
         { status: 500 }
       );
     }
 
     // Count unread notifications
     const { count: unreadCount } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('read', false);
+      .from("notifications")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("read", false);
 
     return NextResponse.json({
       notifications: notifications || [],
       count: notifications?.length || 0,
-      unreadCount: unreadCount || 0
+      unreadCount: unreadCount || 0,
     });
   } catch (error) {
-    console.error('Error in GET /api/notifications:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/notifications:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });
 
@@ -124,29 +139,40 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
 export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
   try {
     const body = await req.json();
-    const {
-      user_id: targetUserId,
-      type,
-      message,
-      title,
-      image,
-      image_alt,
-      link
-    } = body;
+    const { user_id: targetUserId, type, message, title, image, image_alt, link } = body;
 
     // Validate required fields
     if (!type || !message || !title) {
       return NextResponse.json(
-        { error: 'Missing required fields: type, message, and title are required' },
+        { error: "Missing required fields: type, message, and title are required" },
         { status: 400 }
       );
     }
 
     // Validate type
-    const validTypes = ['review', 'business', 'user', 'highlyRated', 'gamification', 'message', 'otp_sent', 'otp_verified', 'claim_status_changed', 'docs_requested', 'docs_received', 'badge_earned', 'review_helpful', 'business_approved', 'claim_approved', 'comment_reply', 'photo_approved', 'milestone_achievement'];
+    const validTypes = [
+      "review",
+      "business",
+      "user",
+      "highlyRated",
+      "gamification",
+      "message",
+      "otp_sent",
+      "otp_verified",
+      "claim_status_changed",
+      "docs_requested",
+      "docs_received",
+      "badge_earned",
+      "review_helpful",
+      "business_approved",
+      "claim_approved",
+      "comment_reply",
+      "photo_approved",
+      "milestone_achievement",
+    ];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
-        { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },
+        { error: `Invalid type. Must be one of: ${validTypes.join(", ")}` },
         { status: 400 }
       );
     }
@@ -162,7 +188,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
     }
 
     const { data: notification, error } = await supabase
-      .from('notifications')
+      .from("notifications")
       .insert({
         user_id: notificationUserId,
         type,
@@ -171,27 +197,28 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
         image: image || null,
         image_alt: image_alt || null,
         link: link || null,
-        read: false
+        read: false,
       })
       .select()
       .single();
 
     if (error) {
-      console.error('Error creating notification:', error);
+      console.error("Error creating notification:", error);
       return NextResponse.json(
-        { error: 'Failed to create notification', details: error.message },
+        { error: "Failed to create notification", details: error.message },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      notification
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        notification,
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('Error in POST /api/notifications:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in POST /api/notifications:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });
-
-

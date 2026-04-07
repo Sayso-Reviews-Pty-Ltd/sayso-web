@@ -3,14 +3,14 @@
  * Uses SWR with optimistic update support.
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import type { EventReviewWithUser } from '../lib/types/database';
-import { getBrowserSupabase } from '../lib/supabase/client';
-import { invalidateEventRatings } from './useEventRatings';
+import { useEffect } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import type { EventReviewWithUser } from "../lib/types/database";
+import { getBrowserSupabase } from "../lib/supabase/client";
+import { invalidateEventRatings } from "./useEventRatings";
 
 async function fetchEventReviews([, eventId]: [string, string]): Promise<EventReviewWithUser[]> {
   const response = await fetch(`/api/events/${eventId}/reviews`);
@@ -22,23 +22,22 @@ async function fetchEventReviews([, eventId]: [string, string]): Promise<EventRe
   const data = await response.json();
   const reviews = Array.isArray(data?.reviews) ? data.reviews : [];
   // Ensure every review has a user object and a name for rendering safety
-  return reviews
-    .filter(Boolean)
-    .map((r: any) => ({
-      ...r,
-      user: {
-        id: r?.user?.id ?? r?.user_id ?? null,
-        name: r?.user?.name ?? r?.user?.display_name ?? r?.user?.username ?? r?.guest_name ?? 'Anonymous',
-        username: r?.user?.username ?? null,
-        display_name: r?.user?.display_name ?? null,
-        email: r?.user?.email ?? null,
-        avatar_url: r?.user?.avatar_url ?? null,
-      },
-    }));
+  return reviews.filter(Boolean).map((r: any) => ({
+    ...r,
+    user: {
+      id: r?.user?.id ?? r?.user_id ?? null,
+      name:
+        r?.user?.name ?? r?.user?.display_name ?? r?.user?.username ?? r?.guest_name ?? "Anonymous",
+      username: r?.user?.username ?? null,
+      display_name: r?.user?.display_name ?? null,
+      email: r?.user?.email ?? null,
+      avatar_url: r?.user?.avatar_url ?? null,
+    },
+  }));
 }
 
 export function useEventReviews(eventId: string | null | undefined) {
-  const swrKey = eventId ? (['/api/events/reviews', eventId] as [string, string]) : null;
+  const swrKey = eventId ? (["/api/events/reviews", eventId] as [string, string]) : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchEventReviews, {
     ...swrConfig,
@@ -48,10 +47,10 @@ export function useEventReviews(eventId: string | null | undefined) {
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   // Realtime subscription for live review updates on this event
@@ -60,16 +59,20 @@ export function useEventReviews(eventId: string | null | undefined) {
     const supabase = getBrowserSupabase();
     const channel = supabase
       .channel(`event-reviews-${eventId}-${Date.now()}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'event_reviews',
-        filter: `event_id=eq.${eventId}`,
-      }, () => {
-        // Refetch reviews and ratings to include latest insert/update/delete
-        mutate();
-        invalidateEventRatings(eventId);
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "event_reviews",
+          filter: `event_id=eq.${eventId}`,
+        },
+        () => {
+          // Refetch reviews and ratings to include latest insert/update/delete
+          mutate();
+          invalidateEventRatings(eventId);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -87,5 +90,5 @@ export function useEventReviews(eventId: string | null | undefined) {
 }
 
 export function invalidateEventReviews(eventId: string) {
-  globalMutate(['/api/events/reviews', eventId]);
+  globalMutate(["/api/events/reviews", eventId]);
 }

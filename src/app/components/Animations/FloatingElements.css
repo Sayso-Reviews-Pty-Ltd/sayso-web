@@ -1,7 +1,8 @@
 /* Pure CSS animations for floating elements - more performant than JS animations */
 
 @keyframes float-1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(-100px, 100px);
   }
   50% {
@@ -10,7 +11,8 @@
 }
 
 @keyframes float-2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(100px, -50px);
   }
   50% {
@@ -19,7 +21,8 @@
 }
 
 @keyframes float-3 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px);
   }
   33% {
@@ -31,7 +34,8 @@
 }
 
 @keyframes sparkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
     transform: scale(0);
   }

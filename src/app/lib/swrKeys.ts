@@ -24,13 +24,9 @@ export interface ForYouRequestContract {
 
 function normalizeIds(values?: string[] | null): string[] {
   if (!values || values.length === 0) return [];
-  return Array.from(
-    new Set(
-      values
-        .map((value) => value.trim())
-        .filter(Boolean),
-    ),
-  ).sort((a, b) => a.localeCompare(b));
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean))).sort((a, b) =>
+    a.localeCompare(b)
+  );
 }
 
 function stableStringify(value: unknown): string {
@@ -64,8 +60,10 @@ export function buildForYouQueryParams(contract: ForYouRequestContract): URLSear
   params.set("limit", String(contract.limit));
   params.set("feed_strategy", "mixed");
   if (contract.interestIds.length > 0) params.set("interest_ids", contract.interestIds.join(","));
-  if (contract.subInterestIds.length > 0) params.set("sub_interest_ids", contract.subInterestIds.join(","));
-  if (contract.dealbreakerIds.length > 0) params.set("dealbreakers", contract.dealbreakerIds.join(","));
+  if (contract.subInterestIds.length > 0)
+    params.set("sub_interest_ids", contract.subInterestIds.join(","));
+  if (contract.dealbreakerIds.length > 0)
+    params.set("dealbreakers", contract.dealbreakerIds.join(","));
   if (contract.preferredPriceRanges.length > 0) {
     params.set("preferred_price_ranges", contract.preferredPriceRanges.join(","));
   }

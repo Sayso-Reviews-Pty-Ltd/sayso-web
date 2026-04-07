@@ -31,10 +31,7 @@ function starString(rating: number): string {
   return "★".repeat(full) + "☆".repeat(5 - full);
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // Use anon key — public business data only, no auth needed.
@@ -91,244 +88,242 @@ export async function GET(
 
   const name = business?.name ?? "Sayso Business";
   const category =
-    business?.primary_subcategory_label ?? business?.category_raw ?? business?.primary_category_slug ?? null;
+    business?.primary_subcategory_label ??
+    business?.category_raw ??
+    business?.primary_category_slug ??
+    null;
   const photoUrl = business ? pickImage(business) : null;
   const stats = business?.business_stats?.[0] ?? null;
   const rating = stats?.average_rating ?? null;
   const reviewCount = stats?.total_reviews ?? 0;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: CARD_W,
-          height: CARD_H,
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          backgroundColor: NAVBAR_BG,
-          overflow: "hidden",
-        }}
-      >
-        {/* Background photo */}
-        {photoUrl && (
-          <img
-            src={photoUrl}
-            alt=""
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              filter: "brightness(0.55) saturate(0.9)",
-            }}
-          />
-        )}
-
-        {/* Full-card dark gradient for readability */}
-        <div
+    <div
+      style={{
+        width: CARD_W,
+        height: CARD_H,
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+        backgroundColor: NAVBAR_BG,
+        overflow: "hidden",
+      }}
+    >
+      {/* Background photo */}
+      {photoUrl && (
+        <img
+          src={photoUrl}
+          alt=""
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.72) 100%)",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+            filter: "brightness(0.55) saturate(0.9)",
           }}
         />
+      )}
 
-        {/* Top bar — Sayso wordmark */}
+      {/* Full-card dark gradient for readability */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.72) 100%)",
+        }}
+      />
+
+      {/* Top bar — Sayso wordmark */}
+      <div
+        style={{
+          position: "absolute",
+          top: 40,
+          left: 52,
+          right: 52,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        {/* Sayso pill */}
         <div
           style={{
-            position: "absolute",
-            top: 40,
-            left: 52,
-            right: 52,
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
+            backgroundColor: NAVBAR_BG,
+            borderRadius: 999,
+            paddingTop: 10,
+            paddingBottom: 10,
+            paddingLeft: 24,
+            paddingRight: 24,
           }}
         >
-          {/* Sayso pill */}
+          <span
+            style={{
+              color: OFF_WHITE,
+              fontSize: 28,
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Sayso
+          </span>
+        </div>
+
+        {/* Cape Town badge */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "rgba(245,240,235,0.15)",
+            borderRadius: 999,
+            paddingTop: 8,
+            paddingBottom: 8,
+            paddingLeft: 20,
+            paddingRight: 20,
+            border: `1.5px solid rgba(245,240,235,0.3)`,
+          }}
+        >
+          <span style={{ color: OFF_WHITE, fontSize: 22, opacity: 0.9 }}>Cape Town</span>
+        </div>
+      </div>
+
+      {/* Bottom content panel */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: "44px 52px 44px 52px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
+        {/* Category chip */}
+        {category && (
+          <div
+            style={{
+              display: "flex",
+              alignSelf: "flex-start",
+              alignItems: "center",
+              backgroundColor: SAGE,
+              borderRadius: 999,
+              paddingTop: 6,
+              paddingBottom: 6,
+              paddingLeft: 18,
+              paddingRight: 18,
+            }}
+          >
+            <span
+              style={{
+                color: "#fff",
+                fontSize: 22,
+                fontWeight: 500,
+                letterSpacing: "0.2px",
+              }}
+            >
+              {category}
+            </span>
+          </div>
+        )}
+
+        {/* Business name */}
+        <div
+          style={{
+            color: OFF_WHITE,
+            fontSize: 68,
+            fontWeight: 800,
+            lineHeight: 1.1,
+            letterSpacing: "-1.5px",
+            maxWidth: 900,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {name}
+        </div>
+
+        {/* Rating row */}
+        {rating !== null && (
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: NAVBAR_BG,
-              borderRadius: 999,
-              paddingTop: 10,
-              paddingBottom: 10,
-              paddingLeft: 24,
-              paddingRight: 24,
+              gap: 16,
+              marginTop: 4,
             }}
           >
+            <span style={{ color: "#F4C542", fontSize: 30, letterSpacing: 2 }}>
+              {starString(rating)}
+            </span>
             <span
               style={{
                 color: OFF_WHITE,
                 fontSize: 28,
-                fontWeight: 700,
-                letterSpacing: "-0.5px",
+                fontWeight: 600,
+                opacity: 0.95,
               }}
             >
-              Sayso
+              {rating.toFixed(1)}
             </span>
-          </div>
-
-          {/* Cape Town badge */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "rgba(245,240,235,0.15)",
-              borderRadius: 999,
-              paddingTop: 8,
-              paddingBottom: 8,
-              paddingLeft: 20,
-              paddingRight: 20,
-              border: `1.5px solid rgba(245,240,235,0.3)`,
-            }}
-          >
-            <span style={{ color: OFF_WHITE, fontSize: 22, opacity: 0.9 }}>
-              Cape Town
-            </span>
-          </div>
-        </div>
-
-        {/* Bottom content panel */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: "44px 52px 44px 52px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
-          {/* Category chip */}
-          {category && (
-            <div
-              style={{
-                display: "flex",
-                alignSelf: "flex-start",
-                alignItems: "center",
-                backgroundColor: SAGE,
-                borderRadius: 999,
-                paddingTop: 6,
-                paddingBottom: 6,
-                paddingLeft: 18,
-                paddingRight: 18,
-              }}
-            >
-              <span
-                style={{
-                  color: "#fff",
-                  fontSize: 22,
-                  fontWeight: 500,
-                  letterSpacing: "0.2px",
-                }}
-              >
-                {category}
-              </span>
-            </div>
-          )}
-
-          {/* Business name */}
-          <div
-            style={{
-              color: OFF_WHITE,
-              fontSize: 68,
-              fontWeight: 800,
-              lineHeight: 1.1,
-              letterSpacing: "-1.5px",
-              maxWidth: 900,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
-            {name}
-          </div>
-
-          {/* Rating row */}
-          {rating !== null && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                marginTop: 4,
-              }}
-            >
-              <span style={{ color: "#F4C542", fontSize: 30, letterSpacing: 2 }}>
-                {starString(rating)}
-              </span>
+            {reviewCount > 0 && (
               <span
                 style={{
                   color: OFF_WHITE,
-                  fontSize: 28,
-                  fontWeight: 600,
-                  opacity: 0.95,
+                  fontSize: 24,
+                  opacity: 0.65,
                 }}
               >
-                {rating.toFixed(1)}
+                · {reviewCount.toLocaleString()} review{reviewCount !== 1 ? "s" : ""}
               </span>
-              {reviewCount > 0 && (
-                <span
-                  style={{
-                    color: OFF_WHITE,
-                    fontSize: 24,
-                    opacity: 0.65,
-                  }}
-                >
-                  · {reviewCount.toLocaleString()} review{reviewCount !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
-          {/* Domain footer */}
-          <div
+        {/* Domain footer */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: 8,
+          }}
+        >
+          <span
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: 8,
+              color: OFF_WHITE,
+              fontSize: 22,
+              opacity: 0.5,
+              letterSpacing: "0.5px",
             }}
           >
-            <span
-              style={{
-                color: OFF_WHITE,
-                fontSize: 22,
-                opacity: 0.5,
-                letterSpacing: "0.5px",
-              }}
-            >
-              sayso.co.za
-            </span>
-            <span
-              style={{
-                color: OFF_WHITE,
-                fontSize: 20,
-                opacity: 0.4,
-              }}
-            >
-              Hyper-local reviews &amp; discovery
-            </span>
-          </div>
+            sayso.co.za
+          </span>
+          <span
+            style={{
+              color: OFF_WHITE,
+              fontSize: 20,
+              opacity: 0.4,
+            }}
+          >
+            Hyper-local reviews &amp; discovery
+          </span>
         </div>
       </div>
-    ),
+    </div>,
     {
       width: CARD_W,
       height: CARD_H,
       headers: {
-        "Cache-Control":
-          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+        "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
       },
     }
   );

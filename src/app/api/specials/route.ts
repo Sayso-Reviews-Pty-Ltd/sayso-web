@@ -1,17 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // In-memory cache with TTL (30 seconds)
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 30000;
 
 function getCacheKey(searchParams: URLSearchParams): string {
-  return 'specials:' + Array.from(searchParams.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}=${value}`)
-    .join('&');
+  return (
+    "specials:" +
+    Array.from(searchParams.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&")
+  );
 }
 
 function getCachedData(key: string) {
@@ -26,8 +29,9 @@ function getCachedData(key: string) {
 function setCachedData(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
   if (cache.size > 50) {
-    const oldestKey = Array.from(cache.entries())
-      .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
+    const oldestKey = Array.from(cache.entries()).sort(
+      ([, a], [, b]) => a.timestamp - b.timestamp
+    )[0][0];
     cache.delete(oldestKey);
   }
 }
@@ -52,17 +56,17 @@ export async function GET(req: NextRequest) {
     if (cached) {
       return NextResponse.json(cached, {
         headers: {
-          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
         },
       });
     }
 
     const supabase = await getServerSupabase(req);
 
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
-    const offset = parseInt(searchParams.get('offset') || '0', 10);
-    const search = searchParams.get('search')?.trim();
-    const businessId = searchParams.get('businessId');
+    const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 100);
+    const offset = parseInt(searchParams.get("offset") || "0", 10);
+    const search = searchParams.get("search")?.trim();
+    const businessId = searchParams.get("businessId");
 
     const baseSelect = `
       id,
@@ -94,14 +98,16 @@ export async function GET(req: NextRequest) {
 
     const buildQuery = (select: string) => {
       let query = supabase
-        .from('events_and_specials')
-        .select(select, { count: 'exact' })
-        .eq('type', 'special')
-        .order('start_date', { ascending: true });
+        .from("events_and_specials")
+        .select(select, { count: "exact" })
+        .eq("type", "special")
+        .order("start_date", { ascending: true });
 
       // Filter out expired specials (end_date < now or start_date < now if no end_date)
       const now = new Date();
-      query = query.or(`end_date.gte.${now.toISOString()},and(end_date.is.null,start_date.gte.${now.toISOString()})`);
+      query = query.or(
+        `end_date.gte.${now.toISOString()},and(end_date.is.null,start_date.gte.${now.toISOString()})`
+      );
 
       // Constrain to current year
       const currentYearStart = new Date(now.getFullYear(), 0, 1).toISOString();
@@ -109,7 +115,7 @@ export async function GET(req: NextRequest) {
 
       // Filter by business ID if provided
       if (businessId) {
-        query = query.eq('business_id', businessId);
+        query = query.eq("business_id", businessId);
       }
 
       // Search across title and description
@@ -129,21 +135,21 @@ export async function GET(req: NextRequest) {
     // Prefer booking fields when present; fall back gracefully if prod schema is missing them.
     ({ data: specials, error, count } = await buildQuery(selectWithBooking));
 
-    const errorMessage = String(error?.message ?? '');
+    const errorMessage = String(error?.message ?? "");
     const isMissingBookingColumn =
       error &&
       /does not exist/i.test(errorMessage) &&
       /events_and_specials\.booking_url|booking_url/i.test(errorMessage);
 
     if (isMissingBookingColumn) {
-      console.warn('[Specials API] booking_url missing; retrying without booking fields.');
+      console.warn("[Specials API] booking_url missing; retrying without booking fields.");
       ({ data: specials, error, count } = await buildQuery(baseSelect));
     }
 
     if (error) {
-      console.error('[Specials API] Error fetching specials:', error);
+      console.error("[Specials API] Error fetching specials:", error);
       return NextResponse.json(
-        { error: 'Failed to fetch specials', details: error.message },
+        { error: "Failed to fetch specials", details: error.message },
         { status: 500 }
       );
     }
@@ -152,22 +158,26 @@ export async function GET(req: NextRequest) {
     const transformedSpecials = (specials || []).map((special: any) => ({
       id: special.id,
       title: special.title,
-      type: 'special' as const,
+      type: "special" as const,
       image: special.image || null,
       alt: `${special.title} special`,
       icon: special.icon,
-      location: special.location || 'Location TBA',
+      location: special.location || "Location TBA",
       rating: special.rating || 0,
-      startDate: special.start_date ? new Date(special.start_date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }) : 'TBA',
-      endDate: special.end_date ? new Date(special.end_date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }) : undefined,
+      startDate: special.start_date
+        ? new Date(special.start_date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })
+        : "TBA",
+      endDate: special.end_date
+        ? new Date(special.end_date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })
+        : undefined,
       startDateISO: special.start_date,
       endDateISO: special.end_date,
       price: special.price ? `R${special.price}` : null,
@@ -175,13 +185,13 @@ export async function GET(req: NextRequest) {
       bookingUrl: special.booking_url,
       bookingContact: special.booking_contact,
       businessId: special.business_id,
-      businessName: special.businesses?.name || 'Unknown Business',
+      businessName: special.businesses?.name || "Unknown Business",
       businessSlug: special.businesses?.slug,
       businessLogo: special.businesses?.image_url ?? null,
       createdBy: special.created_by,
       createdAt: special.created_at,
       isBusinessOwned: true,
-      source: 'business',
+      source: "business",
       href: `/special/${special.id}`,
     }));
 
@@ -197,13 +207,13 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
       },
     });
   } catch (error: any) {
-    console.error('[Specials API] Unexpected error:', error);
+    console.error("[Specials API] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error?.message },
+      { error: "Internal server error", message: error?.message },
       { status: 500 }
     );
   }

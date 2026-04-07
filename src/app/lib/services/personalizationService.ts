@@ -82,24 +82,23 @@ const DEALBREAKER_RULES: Record<string, (business: BusinessForScoring) => boolea
     if (score == null) return true;
     return score >= 65;
   },
-  'value-for-money': (business) => {
+  "value-for-money": (business) => {
     if (business.price_range) {
-      return business.price_range === '$' || business.price_range === '$$';
+      return business.price_range === "$" || business.price_range === "$$";
     }
-    const score = business.percentiles?.['cost-effectiveness'];
+    const score = business.percentiles?.["cost-effectiveness"];
     if (score == null) return true;
     return score >= 75;
   },
-  expensive: (business) =>
-    business.price_range !== '$$$$' && business.price_range !== '$$$',
-  'slow-service': (business) => {
+  expensive: (business) => business.price_range !== "$$$$" && business.price_range !== "$$$",
+  "slow-service": (business) => {
     const score = business.percentiles?.punctuality;
     if (score == null) return true;
     return score >= 60;
   },
-  'no-parking': () => true,
-  'cash-only': () => true,
-  'bad-hygiene': () => true,
+  "no-parking": () => true,
+  "cash-only": () => true,
+  "bad-hygiene": () => true,
 };
 
 function resolveCategoryId(b: BusinessForScoring): string | null | undefined {
@@ -111,14 +110,14 @@ function resolveSubcategoryId(b: BusinessForScoring): string | null | undefined 
 }
 
 function hasRealImage(b: BusinessForScoring): boolean {
-  if (b.image_url && b.image_url.trim() !== '') return true;
+  if (b.image_url && b.image_url.trim() !== "") return true;
   const imgs = b.uploaded_images;
   return Array.isArray(imgs) && imgs.length > 0;
 }
 
 function hasDescription(b: BusinessForScoring): boolean {
   const d = b.description;
-  return typeof d === 'string' && d.trim().length > 0;
+  return typeof d === "string" && d.trim().length > 0;
 }
 
 function calculateSubcategoryMatch(
@@ -131,10 +130,7 @@ function calculateSubcategoryMatch(
   return userSubcategoryIds.includes(id) ? WEIGHT_SUBCATEGORY : 0;
 }
 
-function calculateCategoryMatch(
-  business: BusinessForScoring,
-  userInterestIds: string[]
-): number {
+function calculateCategoryMatch(business: BusinessForScoring, userInterestIds: string[]): number {
   if (userInterestIds.length === 0) return 0;
   const id = resolveCategoryId(business);
   if (!id) return 0;
@@ -167,7 +163,7 @@ function generateInsights(
   const insights: string[] = [];
   const categoryId = resolveCategoryId(business);
   const subcategoryId = resolveSubcategoryId(business);
-  const categoryLabel = business.category ?? business.primary_subcategory_slug ?? 'this category';
+  const categoryLabel = business.category ?? business.primary_subcategory_slug ?? "this category";
 
   if (categoryId && userPreferences.interestIds.includes(categoryId)) {
     insights.push(`Matches your interest in ${categoryLabel}`);
@@ -175,7 +171,7 @@ function generateInsights(
   if (subcategoryId && userPreferences.subcategoryIds.includes(subcategoryId)) {
     insights.push(`Perfect match for your preferred ${categoryLabel}`);
   }
-  if (business.price_range === '$' || business.price_range === '$$') {
+  if (business.price_range === "$" || business.price_range === "$$") {
     insights.push(`Great value for money`);
   }
   if (business.verified) {
@@ -194,7 +190,7 @@ function generateInsights(
     }
   }
   if (violations.length > 0) {
-    insights.push(`May not match your preferences: ${violations.join(', ')}`);
+    insights.push(`May not match your preferences: ${violations.join(", ")}`);
   }
 
   return insights;
@@ -214,7 +210,7 @@ export function calculatePersonalizationScore(
   const dealbreakerPenalty = calculateDealbreakerPenalty(business, userPreferences.dealbreakerIds);
   const verifiedScore = business.verified ? WEIGHT_VERIFIED : 0;
   const badgeScore =
-    business.badge != null && String(business.badge).trim() !== '' ? WEIGHT_BADGE : 0;
+    business.badge != null && String(business.badge).trim() !== "" ? WEIGHT_BADGE : 0;
   const hasImageScore = hasRealImage(business) ? WEIGHT_HAS_IMAGE : 0;
   const hasDescriptionScore = hasDescription(business) ? WEIGHT_HAS_DESCRIPTION : 0;
 

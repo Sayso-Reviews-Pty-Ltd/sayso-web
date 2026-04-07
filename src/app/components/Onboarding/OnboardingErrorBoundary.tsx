@@ -1,7 +1,7 @@
 "use client";
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { m } from 'framer-motion';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { m } from "framer-motion";
 
 interface Props {
   children: ReactNode;
@@ -35,7 +35,7 @@ class OnboardingErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[OnboardingErrorBoundary] Caught error:', error, errorInfo);
+    console.error("[OnboardingErrorBoundary] Caught error:", error, errorInfo);
   }
 
   handleReset = () => {
@@ -59,7 +59,7 @@ class OnboardingErrorBoundary extends Component<Props, State> {
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-card-bg/3 rounded-full blur-3xl" />
           </div>
 
-          <m.div 
+          <m.div
             className="max-w-md w-full relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,14 +71,13 @@ class OnboardingErrorBoundary extends Component<Props, State> {
                 <div className="w-10 h-10 rounded-full bg-card-bg/10 flex items-center justify-center border border-sage/20 flex-shrink-0">
                   <div className="w-5 h-5 rounded-full border-2 border-sage border-t-transparent animate-spin" />
                 </div>
-                <h2 className="text-lg font-700 text-charcoal">
-                  Something went wrong
-                </h2>
+                <h2 className="text-lg font-700 text-charcoal">Something went wrong</h2>
               </div>
 
               {/* Error Description */}
               <p className="text-charcoal/70 mb-8 text-sm md:text-base leading-relaxed">
-                We encountered an error while loading the onboarding flow. Please try refreshing the page.
+                We encountered an error while loading the onboarding flow. Please try refreshing the
+                page.
               </p>
 
               {/* Action Buttons */}
@@ -98,14 +97,14 @@ class OnboardingErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Development Error Details */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="mt-6 pt-6 border-t border-sage/10">
                   <summary className="text-sm font-600 text-sage cursor-pointer hover:text-sage/80 transition-colors">
                     Error Details (Development Only)
                   </summary>
                   <pre className="mt-3 text-xs bg-card-bg/5 p-3 rounded font-mono text-charcoal/60 overflow-auto max-h-40 whitespace-pre-wrap break-words">
                     {this.state.error.toString()}
-                    {'\n\n'}
+                    {"\n\n"}
                     {this.state.error.stack}
                   </pre>
                 </details>
@@ -134,4 +133,3 @@ class OnboardingErrorBoundary extends Component<Props, State> {
 }
 
 export { OnboardingErrorBoundary };
-

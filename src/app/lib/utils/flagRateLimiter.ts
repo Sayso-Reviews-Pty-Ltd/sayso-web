@@ -3,7 +3,7 @@
  * Limits users to 10 flags per hour
  */
 
-import { getServerSupabase } from '../supabase/server';
+import { getServerSupabase } from "../supabase/server";
 
 export interface FlagRateLimitResult {
   allowed: boolean;
@@ -27,13 +27,13 @@ export class FlagRateLimiter {
 
       // Count flags in the last hour
       const { count, error } = await supabase
-        .from('review_flags')
-        .select('*', { count: 'exact', head: true })
-        .eq('flagged_by', userId)
-        .gte('created_at', oneHourAgo.toISOString());
+        .from("review_flags")
+        .select("*", { count: "exact", head: true })
+        .eq("flagged_by", userId)
+        .gte("created_at", oneHourAgo.toISOString());
 
       if (error) {
-        console.error('Error checking flag rate limit:', error);
+        console.error("Error checking flag rate limit:", error);
         // Allow on error to avoid blocking legitimate users
         return {
           allowed: true,
@@ -55,7 +55,7 @@ export class FlagRateLimiter {
           : `Rate limit exceeded. You can flag up to ${this.MAX_FLAGS_PER_HOUR} reviews per hour.`,
       };
     } catch (error) {
-      console.error('Error in flag rate limiter:', error);
+      console.error("Error in flag rate limiter:", error);
       // Allow on error to avoid blocking legitimate users
       return {
         allowed: true,
@@ -65,4 +65,3 @@ export class FlagRateLimiter {
     }
   }
 }
-

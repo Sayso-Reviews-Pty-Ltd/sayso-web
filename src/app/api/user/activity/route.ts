@@ -1,17 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
-import {
-  getUserActivity,
-  updateLastActive,
-} from '@/app/lib/services/userService';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
+import { getUserActivity, updateLastActive } from "@/app/lib/services/userService";
 import type {
   ApiResponse,
   UserActivityItem,
   PaginatedResponse,
   PaginationParams,
-} from '@/app/lib/types/user';
+} from "@/app/lib/types/user";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/user/activity
@@ -25,8 +22,8 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
 
     // Parse query parameters
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
 
     const params: PaginationParams = {
       page: Math.max(1, page),
@@ -53,19 +50,16 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       error: null,
     });
   } catch (error: any) {
-    console.error('[Activity API] Error:', error);
-    return NextResponse.json<
-      ApiResponse<PaginatedResponse<UserActivityItem>>
-    >(
+    console.error("[Activity API] Error:", error);
+    return NextResponse.json<ApiResponse<PaginatedResponse<UserActivityItem>>>(
       {
         data: null,
         error: {
-          message: error.message || 'Internal server error',
-          code: 'INTERNAL_ERROR',
+          message: error.message || "Internal server error",
+          code: "INTERNAL_ERROR",
         },
       },
       { status: 500 }
     );
   }
 });
-

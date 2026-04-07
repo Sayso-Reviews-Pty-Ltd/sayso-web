@@ -13,16 +13,16 @@ interface Interest {
 }
 
 const INTEREST_TITLES: { [key: string]: string } = {
-  'food-drink': 'Food & Drink',
-  'beauty-wellness': 'Beauty & Wellness',
-  'professional-services': 'Professional Services',
-  travel: 'Travel',
-  'outdoors-adventure': 'Outdoors & Adventure',
-  'experiences-entertainment': 'Entertainment & Experiences',
-  'arts-culture': 'Arts & Culture',
-  'family-pets': 'Family & Pets',
-  'shopping-lifestyle': 'Shopping & Lifestyle',
-  'miscellaneous': 'Miscellaneous',
+  "food-drink": "Food & Drink",
+  "beauty-wellness": "Beauty & Wellness",
+  "professional-services": "Professional Services",
+  travel: "Travel",
+  "outdoors-adventure": "Outdoors & Adventure",
+  "experiences-entertainment": "Entertainment & Experiences",
+  "arts-culture": "Arts & Culture",
+  "family-pets": "Family & Pets",
+  "shopping-lifestyle": "Shopping & Lifestyle",
+  miscellaneous: "Miscellaneous",
 };
 
 interface BusinessOfMonthLeaderboardProps {
@@ -37,43 +37,42 @@ function BusinessOfMonthLeaderboard({
   onToggleFullLeaderboard,
 }: BusinessOfMonthLeaderboardProps) {
   const [selectedInterest, setSelectedInterest] = useState<string>("all");
-  
+
   // Use static interests to improve performance - no API call needed
   const [interests] = useState<Interest[]>([
-    { id: 'food-drink', name: 'Food & Drink' },
-    { id: 'beauty-wellness', name: 'Beauty & Wellness' },
-    { id: 'professional-services', name: 'Professional Services' },
-    { id: 'travel', name: 'Travel' },
-    { id: 'outdoors-adventure', name: 'Outdoors & Adventure' },
-    { id: 'experiences-entertainment', name: 'Entertainment & Experiences' },
-    { id: 'arts-culture', name: 'Arts & Culture' },
-    { id: 'family-pets', name: 'Family & Pets' },
-    { id: 'shopping-lifestyle', name: 'Shopping & Lifestyle' },
-    { id: 'miscellaneous', name: 'Miscellaneous' },
+    { id: "food-drink", name: "Food & Drink" },
+    { id: "beauty-wellness", name: "Beauty & Wellness" },
+    { id: "professional-services", name: "Professional Services" },
+    { id: "travel", name: "Travel" },
+    { id: "outdoors-adventure", name: "Outdoors & Adventure" },
+    { id: "experiences-entertainment", name: "Entertainment & Experiences" },
+    { id: "arts-culture", name: "Arts & Culture" },
+    { id: "family-pets", name: "Family & Pets" },
+    { id: "shopping-lifestyle", name: "Shopping & Lifestyle" },
+    { id: "miscellaneous", name: "Miscellaneous" },
   ]);
 
   const normalizeInterestId = (interestId?: string | null) => {
-    if (!interestId || interestId === 'uncategorized') return 'miscellaneous';
+    if (!interestId || interestId === "uncategorized") return "miscellaneous";
     return interestId;
   };
 
   // Extract unique interests from businesses
   const availableInterests = useMemo(() => {
-    const uniqueInterestIds = Array.from(new Set(
-      businesses
-        .map(b => normalizeInterestId((b as any).interestId))
-        .filter(Boolean)
-    ));
-    
+    const uniqueInterestIds = Array.from(
+      new Set(businesses.map((b) => normalizeInterestId((b as any).interestId)).filter(Boolean))
+    );
+
     // Map to interest objects with names
-    return interests.filter(interest => uniqueInterestIds.includes(interest.id));
+    return interests.filter((interest) => uniqueInterestIds.includes(interest.id));
   }, [businesses, interests]);
 
   // Filter and sort businesses by interest and rating
   const sortedBusinesses = useMemo(() => {
-    const filtered = selectedInterest === "all"
-      ? businesses
-      : businesses.filter(b => normalizeInterestId((b as any).interestId) === selectedInterest);
+    const filtered =
+      selectedInterest === "all"
+        ? businesses
+        : businesses.filter((b) => normalizeInterestId((b as any).interestId) === selectedInterest);
     const getScore = (b: BusinessOfTheMonth) => {
       if (typeof b.totalRating === "number") return b.totalRating;
       if (typeof b.rating === "number") return b.rating;
@@ -94,7 +93,9 @@ function BusinessOfMonthLeaderboard({
     <>
       {/* Interest Filter */}
       <div className="mb-6 sm:mb-8 px-2">
-        <h3 className="font-urbanist text-caption sm:text-body-sm font-600 text-charcoal/70 mb-3 text-center">Filter by Interest</h3>
+        <h3 className="font-urbanist text-caption sm:text-body-sm font-600 text-charcoal/70 mb-3 text-center">
+          Filter by Interest
+        </h3>
         <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 max-w-full">
           <button
             onClick={() => setSelectedInterest("all")}
@@ -105,8 +106,8 @@ function BusinessOfMonthLeaderboard({
               whitespace-nowrap flex-shrink-0
               ${
                 selectedInterest === "all"
-                  ? 'bg-gradient-to-br from-sage to-sage/90 text-white shadow-md'
-                  : 'bg-white/80 text-charcoal/70 hover:text-charcoal hover:bg-white border border-charcoal/20'
+                  ? "bg-gradient-to-br from-sage to-sage/90 text-white shadow-md"
+                  : "bg-white/80 text-charcoal/70 hover:text-charcoal hover:bg-white border border-charcoal/20"
               }
             `}
           >
@@ -127,8 +128,8 @@ function BusinessOfMonthLeaderboard({
                   whitespace-nowrap flex-shrink-0
                   ${
                     isActive
-                      ? 'bg-gradient-to-br from-sage to-sage/90 text-white shadow-md'
-                      : 'bg-white/80 text-charcoal/70 hover:text-charcoal hover:bg-white border border-charcoal/20'
+                      ? "bg-gradient-to-br from-sage to-sage/90 text-white shadow-md"
+                      : "bg-white/80 text-charcoal/70 hover:text-charcoal hover:bg-white border border-charcoal/20"
                   }
                 `}
               >
@@ -161,11 +162,7 @@ function BusinessOfMonthLeaderboard({
                 exit={{ opacity: 0, height: 0, y: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
-                <BusinessLeaderboardItem
-                  business={business}
-                  index={index + 5}
-                  rank={index + 6}
-                />
+                <BusinessLeaderboardItem business={business} index={index + 5} rank={index + 6} />
               </m.div>
             ))}
         </AnimatePresence>

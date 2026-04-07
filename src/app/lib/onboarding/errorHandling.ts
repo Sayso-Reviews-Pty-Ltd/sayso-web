@@ -11,11 +11,11 @@ export interface OnboardingError {
 }
 
 export type OnboardingErrorCode =
-  | 'NETWORK_ERROR'
-  | 'VALIDATION_ERROR'
-  | 'AUTH_ERROR'
-  | 'API_ERROR'
-  | 'UNKNOWN_ERROR';
+  | "NETWORK_ERROR"
+  | "VALIDATION_ERROR"
+  | "AUTH_ERROR"
+  | "API_ERROR"
+  | "UNKNOWN_ERROR";
 
 /**
  * Create a standardized error object
@@ -37,16 +37,14 @@ export function createOnboardingError(
 /**
  * Parse API error response
  */
-export async function parseApiError(
-  response: Response
-): Promise<OnboardingError> {
-  let errorMessage = 'An unexpected error occurred';
+export async function parseApiError(response: Response): Promise<OnboardingError> {
+  let errorMessage = "An unexpected error occurred";
   let errorDetails: unknown = null;
 
   try {
-    const contentType = response.headers.get('content-type');
-    
-    if (contentType && contentType.includes('application/json')) {
+    const contentType = response.headers.get("content-type");
+
+    if (contentType && contentType.includes("application/json")) {
       const errorData = await response.json();
       errorMessage = errorData.error || errorData.message || errorMessage;
       errorDetails = errorData;
@@ -56,23 +54,23 @@ export async function parseApiError(
       errorDetails = errorText;
     }
   } catch (parseError) {
-    console.error('[Error Handling] Failed to parse error response:', parseError);
+    console.error("[Error Handling] Failed to parse error response:", parseError);
     errorMessage = `HTTP ${response.status}: ${response.statusText}`;
   }
 
   // Determine error code based on status
-  let errorCode: OnboardingErrorCode = 'API_ERROR';
+  let errorCode: OnboardingErrorCode = "API_ERROR";
   let retryable = false;
 
   if (response.status === 401 || response.status === 403) {
-    errorCode = 'AUTH_ERROR';
+    errorCode = "AUTH_ERROR";
   } else if (response.status >= 400 && response.status < 500) {
-    errorCode = 'VALIDATION_ERROR';
+    errorCode = "VALIDATION_ERROR";
   } else if (response.status >= 500) {
-    errorCode = 'API_ERROR';
+    errorCode = "API_ERROR";
     retryable = true;
   } else if (response.status === 0 || !response.ok) {
-    errorCode = 'NETWORK_ERROR';
+    errorCode = "NETWORK_ERROR";
     retryable = true;
   }
 
@@ -83,10 +81,10 @@ export async function parseApiError(
  * Handle fetch errors
  */
 export function handleFetchError(error: unknown): OnboardingError {
-  if (error instanceof TypeError && error.message.includes('fetch')) {
+  if (error instanceof TypeError && error.message.includes("fetch")) {
     return createOnboardingError(
-      'NETWORK_ERROR',
-      'Network error. Please check your connection and try again.',
+      "NETWORK_ERROR",
+      "Network error. Please check your connection and try again.",
       error,
       true
     );
@@ -94,17 +92,13 @@ export function handleFetchError(error: unknown): OnboardingError {
 
   if (error instanceof Error) {
     return createOnboardingError(
-      'UNKNOWN_ERROR',
-      error.message || 'An unexpected error occurred',
+      "UNKNOWN_ERROR",
+      error.message || "An unexpected error occurred",
       error
     );
   }
 
-  return createOnboardingError(
-    'UNKNOWN_ERROR',
-    'An unexpected error occurred',
-    error
-  );
+  return createOnboardingError("UNKNOWN_ERROR", "An unexpected error occurred", error);
 }
 
 /**
@@ -112,16 +106,16 @@ export function handleFetchError(error: unknown): OnboardingError {
  */
 export function getUserFriendlyMessage(error: OnboardingError): string {
   switch (error.code) {
-    case 'NETWORK_ERROR':
-      return 'Connection error. Please check your internet connection and try again.';
-    case 'AUTH_ERROR':
-      return 'Authentication error. Please log in again.';
-    case 'VALIDATION_ERROR':
-      return error.message || 'Please check your selections and try again.';
-    case 'API_ERROR':
-      return 'Server error. Please try again in a moment.';
+    case "NETWORK_ERROR":
+      return "Connection error. Please check your internet connection and try again.";
+    case "AUTH_ERROR":
+      return "Authentication error. Please log in again.";
+    case "VALIDATION_ERROR":
+      return error.message || "Please check your selections and try again.";
+    case "API_ERROR":
+      return "Server error. Please try again in a moment.";
     default:
-      return error.message || 'An unexpected error occurred.';
+      return error.message || "An unexpected error occurred.";
   }
 }
 
@@ -158,4 +152,3 @@ export async function retryWithBackoff<T>(
 
   throw lastError;
 }
-

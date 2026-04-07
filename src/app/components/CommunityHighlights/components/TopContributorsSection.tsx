@@ -7,7 +7,7 @@ import ScrollableSection from "../../ScrollableSection/ScrollableSection";
 import ReviewerCard from "../../ReviewerCard/ReviewerCard";
 import ReviewerCardSkeleton from "../../ReviewerCard/ReviewerCardSkeleton";
 import type { Review, Reviewer } from "../../../types/community";
-import { badgePreviews, sampleReviewTexts } from "../communityHighlights.constants";
+import { badgePreviews } from "../communityHighlights.constants";
 import { HOME_SECTION_RAIL_CLASS } from "../../HomeSectionRow/homeSectionLayout";
 import CardRail from "../../CardRail/CardRail";
 
@@ -77,25 +77,12 @@ export default function TopContributorsSection({
               getKey={(r) => r.id}
               renderCard={(reviewer, index) => {
                 const actualReview = reviews.find((r) => r.reviewer.id === reviewer.id);
-                const reviewIndex = parseInt(reviewer.id) % sampleReviewTexts.length;
-                const sampleText = sampleReviewTexts[reviewIndex];
                 return (
                   <ReviewerCard
                     reviewer={reviewer}
                     variant="reviewer"
                     index={index}
-                    latestReview={
-                      actualReview || {
-                        id: `${reviewer.id}-latest`,
-                        reviewer,
-                        businessName: `${reviewer.location} Favorite`,
-                        businessType: "Local Business",
-                        rating: reviewer.rating,
-                        reviewText: sampleText,
-                        date: index < 3 ? `${index + 1} days ago` : `${index + 1} weeks ago`,
-                        likes: Math.floor(reviewer.reviewCount * 0.3 + 5),
-                      }
-                    }
+                    latestReview={actualReview}
                   />
                 );
               }}

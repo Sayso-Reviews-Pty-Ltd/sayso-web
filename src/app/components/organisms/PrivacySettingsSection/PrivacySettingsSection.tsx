@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { Shield } from "@/app/lib/icons";
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { NotificationToggleItem } from '@/components/molecules/NotificationToggleItem';
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { NotificationToggleItem } from "@/components/molecules/NotificationToggleItem";
 
 export interface PrivacySettingsProps {
   settings: {
@@ -15,10 +15,7 @@ export interface PrivacySettingsProps {
   onToggle: (key: string) => void;
 }
 
-export const PrivacySettingsSection: React.FC<PrivacySettingsProps> = ({
-  settings,
-  onToggle,
-}) => {
+export const PrivacySettingsSection: React.FC<PrivacySettingsProps> = ({ settings, onToggle }) => {
   return (
     <SettingsCard
       icon={Shield}
@@ -41,4 +38,3 @@ export const PrivacySettingsSection: React.FC<PrivacySettingsProps> = ({
     </SettingsCard>
   );
 };
-

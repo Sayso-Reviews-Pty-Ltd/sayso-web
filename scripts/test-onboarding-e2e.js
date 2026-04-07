@@ -5,12 +5,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 const { chromium } = require("playwright");
 const path = require("path");
-const fs   = require("fs");
+const fs = require("fs");
 
-const BASE   = "http://localhost:3000";
-const EMAIL  = "hjnengare@gmail.com";
-const PASS   = "enviolata79";
-const DIR    = path.join(__dirname, "../.playwright-mcp");
+const BASE = "http://localhost:3000";
+const EMAIL = "hjnengare@gmail.com";
+const PASS = "enviolata79";
+const DIR = path.join(__dirname, "../.playwright-mcp");
 const REPORT = [];
 
 if (!fs.existsSync(DIR)) fs.mkdirSync(DIR, { recursive: true });
@@ -46,8 +46,8 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
 // ─────────────────────────────────────────────────────────────────────────────
 (async () => {
   const browser = await chromium.launch({ headless: true });
-  const ctx     = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const page    = await ctx.newPage();
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
 
   try {
     // ── SETUP: Login ──────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     await page.locator('input[type="password"]').first().fill(PASS);
     await page.locator('button[type="submit"]').first().click();
 
-    const postLogin = await waitForRoute(page, u => !u.includes("/login"), "post-login", 20000);
+    const postLogin = await waitForRoute(page, (u) => !u.includes("/login"), "post-login", 20000);
     if (postLogin.includes("/login")) {
       fail("Login", "Could not log in — aborting");
       throw new Error("Login failed");
@@ -83,17 +83,17 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
 
     // Wait for buttons to animate in
     try {
-      await page.waitForSelector('button[data-interest-id]', { timeout: 12000 });
+      await page.waitForSelector("button[data-interest-id]", { timeout: 12000 });
     } catch {
       await shot(page, "01-interests-timeout");
       fail("Interests page loads", "No interest buttons appeared within 12s");
       throw new Error("No interest buttons");
     }
 
-    const allInterestBtns = page.locator('button[data-interest-id]');
-    const enabledBtns     = page.locator('button[data-interest-id]:not([disabled])');
-    const totalCount      = await allInterestBtns.count();
-    const enabledCount    = await enabledBtns.count();
+    const allInterestBtns = page.locator("button[data-interest-id]");
+    const enabledBtns = page.locator("button[data-interest-id]:not([disabled])");
+    const totalCount = await allInterestBtns.count();
+    const enabledCount = await enabledBtns.count();
     console.log(`    ${totalCount} interest buttons (${enabledCount} enabled)`);
 
     if (totalCount >= 3) pass(`Interests page loads ${totalCount} categories`);
@@ -106,7 +106,9 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     }
     await shot(page, "01-interests-3-selected");
 
-    const selectedInterests = await page.locator('button[data-interest-id][aria-pressed="true"]').count();
+    const selectedInterests = await page
+      .locator('button[data-interest-id][aria-pressed="true"]')
+      .count();
     if (selectedInterests >= 3) pass(`${selectedInterests} interests selected`);
     else fail("Select 3 interests", `Only ${selectedInterests} show as selected`);
 
@@ -118,7 +120,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     else fail("Interests continue enabled", "Button is still disabled");
 
     await continueBtn1.click();
-    const afterInterests = await waitForRoute(page, u => u.includes("/subcategories"), "/subcategories", 15000);
+    const afterInterests = await waitForRoute(
+      page,
+      (u) => u.includes("/subcategories"),
+      "/subcategories",
+      15000
+    );
     await shot(page, "01-interests-navigated");
 
     if (afterInterests.includes("/subcategories")) pass("Navigated to /subcategories");
@@ -131,8 +138,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
 
     // Pills are <m.button> elements — filter out the Continue/navigation buttons
     // Pills have border-2 and rounded-full classes, and contain short label text
-    await page.waitForSelector('button[class*="rounded-full"][class*="border-2"]', { timeout: 10000 });
-    const pillBtns = page.locator('button[class*="rounded-full"][class*="border-2"]:not([disabled])');
+    await page.waitForSelector('button[class*="rounded-full"][class*="border-2"]', {
+      timeout: 10000,
+    });
+    const pillBtns = page.locator(
+      'button[class*="rounded-full"][class*="border-2"]:not([disabled])'
+    );
     const pillCount = await pillBtns.count();
     console.log(`    ${pillCount} subcategory pills`);
 
@@ -155,7 +166,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     else fail("Subcategories continue enabled", "Button still disabled");
 
     await continueBtn2.click();
-    const afterSubcats = await waitForRoute(page, u => u.includes("/deal-breakers"), "/deal-breakers", 15000);
+    const afterSubcats = await waitForRoute(
+      page,
+      (u) => u.includes("/deal-breakers"),
+      "/deal-breakers",
+      15000
+    );
     await shot(page, "02-subcategories-navigated");
 
     if (afterSubcats.includes("/deal-breakers")) pass("Navigated to /deal-breakers");
@@ -167,7 +183,9 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     await shot(page, "03-dealbreakers-loaded");
 
     // DealBreakerCard inner click div has class h-32 (unique to these cards)
-    await page.waitForSelector('div[class*="h-32"]:not([class*="cursor-not-allowed"])', { timeout: 10000 });
+    await page.waitForSelector('div[class*="h-32"]:not([class*="cursor-not-allowed"])', {
+      timeout: 10000,
+    });
     const dbCards = page.locator('div[class*="h-32"]:not([class*="cursor-not-allowed"])');
     const dbCount = await dbCards.count();
     console.log(`    ${dbCount} deal-breaker cards`);
@@ -188,7 +206,7 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
 
     // Debug: dump all button texts so we can see what's rendered
     const allBtnTexts = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('button')).map(b => b.textContent?.trim())
+      Array.from(document.querySelectorAll("button")).map((b) => b.textContent?.trim())
     );
     console.log("    All buttons on page:", JSON.stringify(allBtnTexts));
     console.log("    Current URL:", page.url());
@@ -204,7 +222,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     await completeBtn.scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await completeBtn.click({ force: true });
-    const afterDealbreakers = await waitForRoute(page, u => u.includes("/complete"), "/complete", 15000);
+    const afterDealbreakers = await waitForRoute(
+      page,
+      (u) => u.includes("/complete"),
+      "/complete",
+      15000
+    );
     await shot(page, "03-dealbreakers-navigated");
 
     if (afterDealbreakers.includes("/complete")) pass("Navigated to /complete");
@@ -216,15 +239,15 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     await shot(page, "04-complete-loaded");
 
     const allSetCount = await page.locator("text=You're all set!").count();
-    if (allSetCount > 0) pass("\"You're all set!\" heading visible");
-    else fail("Complete page heading", "\"You're all set!\" not found");
+    if (allSetCount > 0) pass('"You\'re all set!" heading visible');
+    else fail("Complete page heading", '"You\'re all set!" not found');
 
     const badgeCount = await page.locator("text=Setup Complete").count();
     if (badgeCount > 0) pass("Setup Complete badge visible");
     else fail("Setup Complete badge", "Not found");
 
     // Wait for auto-redirect to /home (fires after 2s on the page)
-    const afterComplete = await waitForRoute(page, u => u.includes("/home"), "/home", 12000);
+    const afterComplete = await waitForRoute(page, (u) => u.includes("/home"), "/home", 12000);
     await shot(page, "04-complete-redirected");
 
     if (afterComplete.includes("/home")) {
@@ -234,7 +257,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
       const cta = page.locator('[data-testid="onboarding-complete-cta"]').first();
       if (await cta.count()) {
         await cta.click();
-        const afterCta = await waitForRoute(page, u => u.includes("/home"), "/home after CTA", 10000);
+        const afterCta = await waitForRoute(
+          page,
+          (u) => u.includes("/home"),
+          "/home after CTA",
+          10000
+        );
         if (afterCta.includes("/home")) pass("Continue to Home CTA → /home");
         else fail("Complete → /home", `CTA landed on ${afterCta}`);
       } else {
@@ -243,11 +271,10 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
     }
 
     console.log(`\n  Final URL: ${page.url()}`);
-
   } catch (err) {
     console.error("\n  FATAL:", err.message);
     await shot(page, "fatal-error").catch(() => {});
-    if (!REPORT.some(r => r.label === "Login" && r.result === "FAIL")) {
+    if (!REPORT.some((r) => r.label === "Login" && r.result === "FAIL")) {
       fail("Unexpected error", err.message);
     }
   } finally {
@@ -255,12 +282,12 @@ async function waitForRoute(page, matcher, label, maxMs = 20000) {
   }
 
   // ── Report ────────────────────────────────────────────────────────────────
-  const passed = REPORT.filter(r => r.result === "PASS").length;
-  const failed = REPORT.filter(r => r.result === "FAIL").length;
+  const passed = REPORT.filter((r) => r.result === "PASS").length;
+  const failed = REPORT.filter((r) => r.result === "FAIL").length;
   console.log("\n═══════════════════════════════════════════════════════════");
   console.log("  ONBOARDING E2E TEST REPORT");
   console.log("═══════════════════════════════════════════════════════════");
-  REPORT.forEach(r => {
+  REPORT.forEach((r) => {
     const icon = r.result === "PASS" ? "✅" : "❌";
     console.log(`  ${icon}  ${r.result.padEnd(4)}  ${r.label}`);
     if (r.reason) console.log(`         → ${r.reason}`);

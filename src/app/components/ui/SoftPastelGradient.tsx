@@ -46,17 +46,17 @@ export default function SoftPastelGradient({
   // Intensity-based opacity levels (low contrast, pastel)
   const opacityMap = {
     subtle: {
-      primary: 0.08,   // Very subtle
+      primary: 0.08, // Very subtle
       secondary: 0.12,
       accent: 0.06,
     },
     medium: {
-      primary: 0.15,   // Medium subtle
-      secondary: 0.20,
-      accent: 0.10,
+      primary: 0.15, // Medium subtle
+      secondary: 0.2,
+      accent: 0.1,
     },
     soft: {
-      primary: 0.12,   // Soft and gentle
+      primary: 0.12, // Soft and gentle
       secondary: 0.18,
       accent: 0.08,
     },
@@ -238,4 +238,3 @@ export const softPastelGradientStyles = `
     }
   }
 `;
-

@@ -3,11 +3,11 @@
  * Encapsulates all logic for the subcategories page without DB calls
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useOnboarding } from '../contexts/OnboardingContext';
-import { useToast } from '../contexts/ToastContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useOnboarding } from "../contexts/OnboardingContext";
+import { useToast } from "../contexts/ToastContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface SubcategoryItem {
   id: string;
@@ -16,67 +16,71 @@ interface SubcategoryItem {
 }
 
 const INTEREST_TITLES: { [key: string]: string } = {
-  'food-drink': 'Food & Drink',
-  'beauty-wellness': 'Beauty & Wellness',
-  'professional-services': 'Professional Services',
-  travel: 'Travel',
-  'outdoors-adventure': 'Outdoors & Adventure',
-  'experiences-entertainment': 'Entertainment & Experiences',
-  'arts-culture': 'Arts & Culture',
-  'family-pets': 'Family & Pets',
-  'shopping-lifestyle': 'Shopping & Lifestyle',
+  "food-drink": "Food & Drink",
+  "beauty-wellness": "Beauty & Wellness",
+  "professional-services": "Professional Services",
+  travel: "Travel",
+  "outdoors-adventure": "Outdoors & Adventure",
+  "experiences-entertainment": "Entertainment & Experiences",
+  "arts-culture": "Arts & Culture",
+  "family-pets": "Family & Pets",
+  "shopping-lifestyle": "Shopping & Lifestyle",
 };
 
 const ALL_SUBCATEGORIES: SubcategoryItem[] = [
   // Food & Drink
-  { id: 'restaurants', label: 'Restaurants', interest_id: 'food-drink' },
-  { id: 'cafes', label: 'Cafés & Coffee', interest_id: 'food-drink' },
-  { id: 'bars', label: 'Bars & Pubs', interest_id: 'food-drink' },
-  { id: 'fast-food', label: 'Fast Food', interest_id: 'food-drink' },
-  { id: 'fine-dining', label: 'Fine Dining', interest_id: 'food-drink' },
+  { id: "restaurants", label: "Restaurants", interest_id: "food-drink" },
+  { id: "cafes", label: "Cafés & Coffee", interest_id: "food-drink" },
+  { id: "bars", label: "Bars & Pubs", interest_id: "food-drink" },
+  { id: "fast-food", label: "Fast Food", interest_id: "food-drink" },
+  { id: "fine-dining", label: "Fine Dining", interest_id: "food-drink" },
   // Beauty & Wellness
-  { id: 'gyms', label: 'Gyms & Fitness', interest_id: 'beauty-wellness' },
-  { id: 'spas', label: 'Spas', interest_id: 'beauty-wellness' },
-  { id: 'salons', label: 'Hair Salons', interest_id: 'beauty-wellness' },
-  { id: 'wellness', label: 'Wellness Centers', interest_id: 'beauty-wellness' },
-  { id: 'nail-salons', label: 'Nail Salons', interest_id: 'beauty-wellness' },
+  { id: "gyms", label: "Gyms & Fitness", interest_id: "beauty-wellness" },
+  { id: "spas", label: "Spas", interest_id: "beauty-wellness" },
+  { id: "salons", label: "Hair Salons", interest_id: "beauty-wellness" },
+  { id: "wellness", label: "Wellness Centers", interest_id: "beauty-wellness" },
+  { id: "nail-salons", label: "Nail Salons", interest_id: "beauty-wellness" },
   // Professional Services
-  { id: 'education-learning', label: 'Education & Learning', interest_id: 'professional-services' },
-  { id: 'transport-travel', label: 'Transport & Travel', interest_id: 'professional-services' },
-  { id: 'finance-insurance', label: 'Finance & Insurance', interest_id: 'professional-services' },
-  { id: 'plumbers', label: 'Plumbers', interest_id: 'professional-services' },
-  { id: 'electricians', label: 'Electricians', interest_id: 'professional-services' },
-  { id: 'legal-services', label: 'Legal Services', interest_id: 'professional-services' },
+  { id: "education-learning", label: "Education & Learning", interest_id: "professional-services" },
+  { id: "transport-travel", label: "Transport & Travel", interest_id: "professional-services" },
+  { id: "finance-insurance", label: "Finance & Insurance", interest_id: "professional-services" },
+  { id: "plumbers", label: "Plumbers", interest_id: "professional-services" },
+  { id: "electricians", label: "Electricians", interest_id: "professional-services" },
+  { id: "legal-services", label: "Legal Services", interest_id: "professional-services" },
   // Travel
-  { id: 'accommodation', label: 'Accommodation', interest_id: 'travel' },
-  { id: 'transport', label: 'Transport', interest_id: 'travel' },
-  { id: 'travel-services', label: 'Travel Services', interest_id: 'travel' },
+  { id: "accommodation", label: "Accommodation", interest_id: "travel" },
+  { id: "transport", label: "Transport", interest_id: "travel" },
+  { id: "travel-services", label: "Travel Services", interest_id: "travel" },
   // Outdoors & Adventure
-  { id: 'hiking', label: 'Hiking', interest_id: 'outdoors-adventure' },
-  { id: 'cycling', label: 'Cycling', interest_id: 'outdoors-adventure' },
-  { id: 'water-sports', label: 'Water Sports', interest_id: 'outdoors-adventure' },
-  { id: 'camping', label: 'Camping', interest_id: 'outdoors-adventure' },
+  { id: "hiking", label: "Hiking", interest_id: "outdoors-adventure" },
+  { id: "cycling", label: "Cycling", interest_id: "outdoors-adventure" },
+  { id: "water-sports", label: "Water Sports", interest_id: "outdoors-adventure" },
+  { id: "camping", label: "Camping", interest_id: "outdoors-adventure" },
   // Entertainment & Experiences
-  { id: 'events-festivals', label: 'Events & Festivals', interest_id: 'experiences-entertainment' },
-  { id: 'sports-recreation', label: 'Sports & Recreation', interest_id: 'experiences-entertainment' },
-  { id: 'nightlife', label: 'Nightlife', interest_id: 'experiences-entertainment' },
-  { id: 'comedy-clubs', label: 'Comedy Clubs', interest_id: 'experiences-entertainment' },
-  { id: 'cinemas', label: 'Cinemas', interest_id: 'experiences-entertainment' },
+  { id: "events-festivals", label: "Events & Festivals", interest_id: "experiences-entertainment" },
+  {
+    id: "sports-recreation",
+    label: "Sports & Recreation",
+    interest_id: "experiences-entertainment",
+  },
+  { id: "nightlife", label: "Nightlife", interest_id: "experiences-entertainment" },
+  { id: "comedy-clubs", label: "Comedy Clubs", interest_id: "experiences-entertainment" },
+  { id: "cinemas", label: "Cinemas", interest_id: "experiences-entertainment" },
   // Arts & Culture
-  { id: 'museums', label: 'Museums', interest_id: 'arts-culture' },
-  { id: 'galleries', label: 'Art Galleries', interest_id: 'arts-culture' },
-  { id: 'theaters', label: 'Theaters', interest_id: 'arts-culture' },
-  { id: 'concerts', label: 'Concerts', interest_id: 'arts-culture' },
+  { id: "museums", label: "Museums", interest_id: "arts-culture" },
+  { id: "galleries", label: "Art Galleries", interest_id: "arts-culture" },
+  { id: "theaters", label: "Theaters", interest_id: "arts-culture" },
+  { id: "concerts", label: "Concerts", interest_id: "arts-culture" },
   // Family & Pets
-  { id: 'family-activities', label: 'Family Activities', interest_id: 'family-pets' },
-  { id: 'pet-services', label: 'Pet Services', interest_id: 'family-pets' },
-  { id: 'childcare', label: 'Childcare', interest_id: 'family-pets' },
-  { id: 'veterinarians', label: 'Veterinarians', interest_id: 'family-pets' },
+  { id: "family-activities", label: "Family Activities", interest_id: "family-pets" },
+  { id: "pet-services", label: "Pet Services", interest_id: "family-pets" },
+  { id: "childcare", label: "Childcare", interest_id: "family-pets" },
+  { id: "veterinarians", label: "Veterinarians", interest_id: "family-pets" },
   // Shopping & Lifestyle
-  { id: 'fashion', label: 'Fashion & Clothing', interest_id: 'shopping-lifestyle' },
-  { id: 'electronics', label: 'Electronics', interest_id: 'shopping-lifestyle' },
-  { id: 'home-decor', label: 'Home Decor', interest_id: 'shopping-lifestyle' },
-  { id: 'books', label: 'Books & Media', interest_id: 'shopping-lifestyle' },
+  { id: "fashion", label: "Fashion & Clothing", interest_id: "shopping-lifestyle" },
+  { id: "electronics", label: "Electronics", interest_id: "shopping-lifestyle" },
+  { id: "home-decor", label: "Home Decor", interest_id: "shopping-lifestyle" },
+  { id: "books", label: "Books & Media", interest_id: "shopping-lifestyle" },
 ];
 
 const MAX_SELECTIONS = 10;
@@ -102,7 +106,7 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
     selectedInterests,
     selectedSubInterests,
     setSelectedSubInterests,
-    error: contextError
+    error: contextError,
   } = useOnboarding();
 
   const [isNavigating, setIsNavigating] = useState(false);
@@ -112,8 +116,8 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
 
   // Early prefetching
   useEffect(() => {
-    router.prefetch('/deal-breakers');
-    router.prefetch('/complete');
+    router.prefetch("/deal-breakers");
+    router.prefetch("/complete");
   }, [router]);
 
   // Filter subcategories by selected interests
@@ -121,9 +125,7 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
     if (selectedInterests.length === 0) {
       return [];
     }
-    return ALL_SUBCATEGORIES.filter((sub) =>
-      selectedInterests.includes(sub.interest_id)
-    );
+    return ALL_SUBCATEGORIES.filter((sub) => selectedInterests.includes(sub.interest_id));
   }, [selectedInterests]);
 
   // Group subcategories by interest
@@ -168,7 +170,7 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
         setSelectedSubInterests(selectedSubInterests.filter((id) => id !== subcategoryId));
       } else {
         if (selectedSubInterests.length >= MAX_SELECTIONS) {
-          showToast(`Max ${MAX_SELECTIONS} selected`, 'sage', 2000);
+          showToast(`Max ${MAX_SELECTIONS} selected`, "sage", 2000);
           triggerShake(subcategoryId);
           return;
         }
@@ -181,7 +183,7 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
   // Handle next navigation - save to DB and navigate
   const handleNext = useCallback(async () => {
     if (selectedSubInterests.length === 0) {
-      showToast('Select at least one', 'sage', 2000);
+      showToast("Select at least one", "sage", 2000);
       return;
     }
 
@@ -189,26 +191,26 @@ export function useSubcategoriesPage(): UseSubcategoriesPageReturn {
 
     try {
       // Save subcategories to database
-      const response = await fetch('/api/onboarding/subcategories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("/api/onboarding/subcategories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ subcategories: selectedSubInterests }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to save subcategories');
+        throw new Error(error.message || "Failed to save subcategories");
       }
 
       // Refresh profile so AuthContext has latest onboarding_step and subcategories_count
       await refreshUser();
 
-      router.replace('/deal-breakers');
+      router.replace("/deal-breakers");
     } catch (error) {
-      console.error('[Subcategories] Error saving:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save subcategories';
-      showToast(errorMessage, 'sage', 4000);
+      console.error("[Subcategories] Error saving:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to save subcategories";
+      showToast(errorMessage, "sage", 4000);
       setIsNavigating(false);
     }
   }, [selectedSubInterests, showToast, router, refreshUser]);

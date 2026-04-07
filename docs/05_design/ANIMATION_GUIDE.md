@@ -3,6 +3,7 @@
 This guide explains how to use the CSS-based smooth scrolling and page load animations throughout the KLIO application.
 
 ## Table of Contents
+
 1. [Smooth Scrolling](#smooth-scrolling)
 2. [Page Load Animations](#page-load-animations)
 3. [Scroll Reveal Animations](#scroll-reveal-animations)
@@ -13,14 +14,17 @@ This guide explains how to use the CSS-based smooth scrolling and page load anim
 ## Smooth Scrolling
 
 ### Global Smooth Scroll
+
 Smooth scrolling is **automatically enabled** on all pages via `html { scroll-behavior: smooth; }` in [globals.css](src/app/globals.css#L108).
 
 This means:
+
 - All anchor links (`<a href="#section">`) scroll smoothly
 - `window.scrollTo()` animations are smooth
 - Browser back/forward navigation is smooth
 
 ### Example Usage
+
 ```tsx
 // Anchor link - automatically smooth
 <a href="#reviews">Jump to Reviews</a>
@@ -40,6 +44,7 @@ This means:
 The `PageLoad` component provides smooth entrance animations when a page loads.
 
 **Import:**
+
 ```tsx
 import PageLoad from "@/app/components/Animations/PageLoad";
 ```
@@ -52,6 +57,7 @@ import PageLoad from "@/app/components/Animations/PageLoad";
 | `className` | `string` | `""` | Additional CSS classes |
 
 **Available Variants:**
+
 - `default`: Fade in + slide up (20px)
 - `fade`: Simple fade in
 - `slide`: Fade in + slide up (30px)
@@ -59,6 +65,7 @@ import PageLoad from "@/app/components/Animations/PageLoad";
 ### Examples
 
 **Basic Usage:**
+
 ```tsx
 export default function MyPage() {
   return (
@@ -71,6 +78,7 @@ export default function MyPage() {
 ```
 
 **Staggered Animations:**
+
 ```tsx
 export default function MyPage() {
   return (
@@ -92,6 +100,7 @@ export default function MyPage() {
 ```
 
 **With Custom Classes:**
+
 ```tsx
 <PageLoad variant="default" className="max-w-4xl mx-auto">
   <Article />
@@ -117,6 +126,7 @@ If you prefer not to use the component, apply the CSS classes directly:
 ```
 
 **Available CSS Classes:**
+
 - `.page-load` - Default animation (fade + 20px slide)
 - `.page-load-fade` - Fade animation only
 - `.page-load-slide` - Fade + 30px slide animation
@@ -131,46 +141,42 @@ Scroll reveal animations trigger when content comes into view while scrolling.
 ### Using the useScrollReveal Hook
 
 **Import:**
+
 ```tsx
 import useScrollReveal from "@/app/components/Animations/useScrollReveal";
 ```
 
 **Basic Usage:**
+
 ```tsx
 export default function MyComponent() {
   useScrollReveal(); // Activates all scroll-reveal elements
 
   return (
     <div>
-      <div className="scroll-reveal">
-        Fades in from bottom when scrolled into view
-      </div>
+      <div className="scroll-reveal">Fades in from bottom when scrolled into view</div>
 
-      <div className="scroll-reveal-left">
-        Fades in from left when scrolled into view
-      </div>
+      <div className="scroll-reveal-left">Fades in from left when scrolled into view</div>
 
-      <div className="scroll-reveal-right">
-        Fades in from right when scrolled into view
-      </div>
+      <div className="scroll-reveal-right">Fades in from right when scrolled into view</div>
 
-      <div className="scroll-reveal-scale">
-        Fades in with scale when scrolled into view
-      </div>
+      <div className="scroll-reveal-scale">Fades in with scale when scrolled into view</div>
     </div>
   );
 }
 ```
 
 **With Options:**
+
 ```tsx
 useScrollReveal({
-  threshold: 0.2,           // Trigger when 20% visible
-  rootMargin: "0px 0px -50px 0px" // Trigger 50px before entering viewport
+  threshold: 0.2, // Trigger when 20% visible
+  rootMargin: "0px 0px -50px 0px", // Trigger 50px before entering viewport
 });
 ```
 
 **With Stagger Delays:**
+
 ```tsx
 <div className="scroll-reveal stagger-1">Item 1 (0.1s delay)</div>
 <div className="scroll-reveal stagger-2">Item 2 (0.2s delay)</div>
@@ -199,13 +205,13 @@ export default function MyComponent() {
 
 ### Available CSS Classes
 
-| Class | Animation |
-|-------|-----------|
-| `.scroll-reveal` | Fade in from bottom (30px) |
-| `.scroll-reveal-left` | Fade in from left (30px) |
-| `.scroll-reveal-right` | Fade in from right (30px) |
-| `.scroll-reveal-scale` | Fade in with scale (0.9 → 1) |
-| `.stagger-1` to `.stagger-6` | Add delays (0.1s to 0.6s) |
+| Class                        | Animation                    |
+| ---------------------------- | ---------------------------- |
+| `.scroll-reveal`             | Fade in from bottom (30px)   |
+| `.scroll-reveal-left`        | Fade in from left (30px)     |
+| `.scroll-reveal-right`       | Fade in from right (30px)    |
+| `.scroll-reveal-scale`       | Fade in with scale (0.9 → 1) |
+| `.stagger-1` to `.stagger-6` | Add delays (0.1s to 0.6s)    |
 
 ---
 
@@ -216,6 +222,7 @@ export default function MyComponent() {
 All animations **automatically respect** the `prefers-reduced-motion` setting.
 
 When a user has "Reduce motion" enabled in their OS:
+
 - All animations are disabled or reduced to instant transitions
 - Page load animations show instantly
 - Scroll reveals show instantly
@@ -267,6 +274,7 @@ This is handled automatically in [globals.css](src/app/globals.css#L1173):
 ### Animation Performance
 
 All animations use:
+
 - `cubic-bezier(0.25, 0.8, 0.25, 1)` - Smooth easing
 - `transform` and `opacity` - GPU accelerated properties
 - `forwards` fill-mode - No layout thrashing
@@ -276,6 +284,7 @@ All animations use:
 ## Examples from the Codebase
 
 ### Business Review Page
+
 See: [src/app/business/review/page.tsx](src/app/business/review/page.tsx)
 
 ```tsx
@@ -325,13 +334,16 @@ export default function HomePage() {
 ## File Locations
 
 **Components:**
+
 - [PageLoad.tsx](src/app/components/Animations/PageLoad.tsx)
 - [useScrollReveal.tsx](src/app/components/Animations/useScrollReveal.tsx)
 
 **CSS:**
+
 - [globals.css](src/app/globals.css) - Lines 108 (smooth scroll), 676-750 (page load), 807-849 (scroll reveal)
 
 **Configuration:**
+
 - [tailwind.config.js](tailwind.config.js)
 - [next.config.ts](next.config.ts) - Scroll restoration enabled
 
@@ -340,6 +352,7 @@ export default function HomePage() {
 ## Browser Support
 
 ✅ **Fully Supported:**
+
 - Chrome/Edge 88+
 - Firefox 85+
 - Safari 14+
@@ -347,6 +360,7 @@ export default function HomePage() {
 - Chrome Android
 
 ✅ **Graceful Degradation:**
+
 - Older browsers show content immediately (no animation)
 - No JavaScript errors
 - All content accessible
@@ -356,6 +370,7 @@ export default function HomePage() {
 ## Questions?
 
 For issues or feature requests, refer to:
+
 - [Animation components](src/app/components/Animations/)
 - [Global CSS](src/app/globals.css)
 - Next.js documentation: https://nextjs.org/docs

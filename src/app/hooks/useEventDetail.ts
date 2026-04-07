@@ -3,18 +3,24 @@
  * Covers both /event/[id] and /special/[id] since both use the same endpoint.
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import type { Event } from '../lib/types/Event';
-import { authenticatedFetch } from '../lib/api/authenticatedFetch';
-import { swrKeys } from '../lib/swrKeys';
+import { useEffect } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import type { Event } from "../lib/types/Event";
+import { authenticatedFetch } from "../lib/api/authenticatedFetch";
+import { swrKeys } from "../lib/swrKeys";
 
 interface EventDetailData {
   event: Event | null;
-  occurrencesList: Array<{ id: string; start_date: string; end_date: string | null; booking_url?: string | null; location?: string | null }>;
+  occurrencesList: Array<{
+    id: string;
+    start_date: string;
+    end_date: string | null;
+    booking_url?: string | null;
+    location?: string | null;
+  }>;
   occurrencesCount: number;
   isExpired?: boolean;
 }
@@ -49,7 +55,7 @@ interface UseEventDetailOptions {
 
 export function useEventDetail(
   eventId: string | null | undefined,
-  options: UseEventDetailOptions = {},
+  options: UseEventDetailOptions = {}
 ) {
   const swrKey = swrKeys.eventDetail(eventId);
 
@@ -62,10 +68,10 @@ export function useEventDetail(
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   const err = error as (Error & { status?: number }) | undefined;

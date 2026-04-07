@@ -81,7 +81,9 @@ export function useAddEventSpecialForm({
       }
     };
     void loadBusinesses();
-    return () => { isActive = false; };
+    return () => {
+      isActive = false;
+    };
   }, [userId, showToast]);
 
   // Check for saved draft on mount
@@ -92,8 +94,9 @@ export function useAddEventSpecialForm({
         const parsed = JSON.parse(saved) as FormState;
         if (parsed?.title?.trim()) setHasDraft(true);
       }
-    } catch { /* ignore */ }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   // Auto-save draft with debounce
@@ -101,10 +104,15 @@ export function useAddEventSpecialForm({
     if (!formData.title.trim()) return;
     if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
     draftTimerRef.current = setTimeout(() => {
-      try { localStorage.setItem(draftKey, JSON.stringify(formData)); } catch { /* ignore */ }
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(formData));
+      } catch {
+        /* ignore */
+      }
     }, 500);
-    return () => { if (draftTimerRef.current) clearTimeout(draftTimerRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
   }, [formData]);
 
   const restoreDraft = () => {
@@ -115,11 +123,17 @@ export function useAddEventSpecialForm({
         setHasDraft(false);
         showToast("Draft restored.", "success", 2000);
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   const discardDraft = () => {
-    try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(draftKey);
+    } catch {
+      /* ignore */
+    }
     setHasDraft(false);
   };
 
@@ -127,7 +141,9 @@ export function useAddEventSpecialForm({
     try {
       localStorage.setItem(draftKey, JSON.stringify(formData));
       showToast("Draft saved.", "success", 2000);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   const setFieldValue = (field: keyof FormState, value: string) => {
@@ -148,7 +164,11 @@ export function useAddEventSpecialForm({
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
     if (errors[field]) {
-      setErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
     }
   };
 
@@ -159,7 +179,8 @@ export function useAddEventSpecialForm({
     if (field === "startDate") {
       const currentYear = new Date().getFullYear();
       if (!value) message = "Please choose a start date and time.";
-      else if (new Date(value).getFullYear() !== currentYear) message = `Start date must be within ${currentYear}.`;
+      else if (new Date(value).getFullYear() !== currentYear)
+        message = `Start date must be within ${currentYear}.`;
     }
     if (field === "location" && !value.trim()) message = "Please add a location.";
     if (field === "endDate" && value) {
@@ -169,22 +190,30 @@ export function useAddEventSpecialForm({
       } else if (formData.startDate) {
         const start = new Date(formData.startDate).getTime();
         const end = new Date(value).getTime();
-        if (!Number.isNaN(start) && !Number.isNaN(end) && end < start) message = "End date cannot be before the start date.";
+        if (!Number.isNaN(start) && !Number.isNaN(end) && end < start)
+          message = "End date cannot be before the start date.";
       }
     }
-    if (field === "image" && value.trim() && !isValidHttpUrl(value.trim())) message = "Use a valid image URL starting with http:// or https://";
+    if (field === "image" && value.trim() && !isValidHttpUrl(value.trim()))
+      message = "Use a valid image URL starting with http:// or https://";
     if (field === "price" && value.trim()) {
       const numericPrice = Number(value);
-      if (Number.isNaN(numericPrice) || numericPrice < 0) message = "Price must be a valid non-negative number.";
+      if (Number.isNaN(numericPrice) || numericPrice < 0)
+        message = "Price must be a valid non-negative number.";
     }
-    if (field === "ctaLabel" && value.trim() && value.trim().length > 140) message = "CTA label must be 140 characters or less.";
-    if (field === "ctaUrl" && value.trim() && !isValidHttpUrl(value.trim())) message = "Use a valid CTA URL starting with http:// or https://";
+    if (field === "ctaLabel" && value.trim() && value.trim().length > 140)
+      message = "CTA label must be 140 characters or less.";
+    if (field === "ctaUrl" && value.trim() && !isValidHttpUrl(value.trim()))
+      message = "Use a valid CTA URL starting with http:// or https://";
     if (field === "whatsappNumber") {
       const normalized = value.replace(/[^\d]/g, "");
-      if (formData.ctaSource === "whatsapp" && normalized.length === 0) message = "WhatsApp number is required for WhatsApp booking.";
-      else if (normalized.length > 0 && (normalized.length < 7 || normalized.length > 15)) message = "Use a valid WhatsApp number with 7 to 15 digits.";
+      if (formData.ctaSource === "whatsapp" && normalized.length === 0)
+        message = "WhatsApp number is required for WhatsApp booking.";
+      else if (normalized.length > 0 && (normalized.length < 7 || normalized.length > 15))
+        message = "Use a valid WhatsApp number with 7 to 15 digits.";
     }
-    if (field === "whatsappPrefillTemplate" && value.trim().length > 2000) message = "Prefilled message must be 2000 characters or less.";
+    if (field === "whatsappPrefillTemplate" && value.trim().length > 2000)
+      message = "Prefilled message must be 2000 characters or less.";
     setErrors((prev) => {
       const next = { ...prev };
       if (message) next[field] = message;
@@ -244,18 +273,38 @@ export function useAddEventSpecialForm({
       ? ["businessId", "title", "startDate", "location"]
       : ["title", "startDate", "location"];
     const optionalFields: Array<keyof FormState> = [
-      "endDate", "image", "price", "ctaSource", "ctaLabel", "ctaUrl", "whatsappNumber", "whatsappPrefillTemplate",
+      "endDate",
+      "image",
+      "price",
+      "ctaSource",
+      "ctaLabel",
+      "ctaUrl",
+      "whatsappNumber",
+      "whatsappPrefillTemplate",
     ];
-    return [...requiredFields, ...optionalFields].every((field) => validateField(field, formData[field]));
+    return [...requiredFields, ...optionalFields].every((field) =>
+      validateField(field, formData[field])
+    );
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!userId) return;
     setTouched({
-      businessId: true, title: true, description: true, startDate: true, endDate: true,
-      location: true, icon: true, image: true, price: true, ctaSource: true,
-      ctaLabel: true, ctaUrl: true, whatsappNumber: true, whatsappPrefillTemplate: true,
+      businessId: true,
+      title: true,
+      description: true,
+      startDate: true,
+      endDate: true,
+      location: true,
+      icon: true,
+      image: true,
+      price: true,
+      ctaSource: true,
+      ctaLabel: true,
+      ctaUrl: true,
+      whatsappNumber: true,
+      whatsappPrefillTemplate: true,
     });
     if (!validateForm()) {
       showToast("Please fix the highlighted fields before publishing.", "error", 3500);
@@ -286,9 +335,15 @@ export function useAddEventSpecialForm({
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(typeof result?.error === "string" ? result.error : "We could not publish this listing.");
+        throw new Error(
+          typeof result?.error === "string" ? result.error : "We could not publish this listing."
+        );
       }
-      try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
+      try {
+        localStorage.removeItem(draftKey);
+      } catch {
+        /* ignore */
+      }
       showToast(successLabel, "success", 3000);
       setTimeout(() => {
         router.push(formData.businessId ? "/my-businesses" : "/events-specials");
@@ -296,18 +351,39 @@ export function useAddEventSpecialForm({
       }, 650);
     } catch (error) {
       console.error("[AddEventSpecialFormPage] Submit failed:", error);
-      showToast(error instanceof Error ? error.message : "Failed to publish. Please try again.", "error", 4200);
+      showToast(
+        error instanceof Error ? error.message : "Failed to publish. Please try again.",
+        "error",
+        4200
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return {
-    businesses, isLoadingBusinesses, isSubmitting, errors, touched,
-    isUploadingImage, isDraggingImage, setIsDraggingImage,
-    showOptionalDetails, setShowOptionalDetails, hasDraft, formData,
-    isEventForm, isSpecialForm, setErrors,
-    setFieldValue, handleBlur, handleImageInputChange, handleImageDrop,
-    handleSubmit, restoreDraft, discardDraft, saveDraft,
+    businesses,
+    isLoadingBusinesses,
+    isSubmitting,
+    errors,
+    touched,
+    isUploadingImage,
+    isDraggingImage,
+    setIsDraggingImage,
+    showOptionalDetails,
+    setShowOptionalDetails,
+    hasDraft,
+    formData,
+    isEventForm,
+    isSpecialForm,
+    setErrors,
+    setFieldValue,
+    handleBlur,
+    handleImageInputChange,
+    handleImageDrop,
+    handleSubmit,
+    restoreDraft,
+    discardDraft,
+    saveDraft,
   };
 }

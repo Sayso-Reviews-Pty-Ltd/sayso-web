@@ -25,8 +25,22 @@ export async function fireBadgeCelebration(key: string): Promise<void> {
     // Brand palette: sage, coral/navbar-bg, white, gold accent
     const colors = ["#7D9B76", "#722F37", "#FFFFFF", "#FFD700"];
     confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 }, colors, zIndex: 9999 });
-    confetti({ particleCount: 30, angle: 60, spread: 55, origin: { x: 0.2, y: 0.8 }, colors, zIndex: 9999 });
-    confetti({ particleCount: 30, angle: 120, spread: 55, origin: { x: 0.8, y: 0.8 }, colors, zIndex: 9999 });
+    confetti({
+      particleCount: 30,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0.2, y: 0.8 },
+      colors,
+      zIndex: 9999,
+    });
+    confetti({
+      particleCount: 30,
+      angle: 120,
+      spread: 55,
+      origin: { x: 0.8, y: 0.8 },
+      colors,
+      zIndex: 9999,
+    });
   } catch {
     // canvas-confetti unavailable — silently skip
   }

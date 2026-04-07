@@ -243,6 +243,7 @@ scripts/
 See [Database Architecture](docs/02_architecture/DATABASE_ARCHITECTURE.md) for complete schema.
 
 **Key Tables:**
+
 - `profiles` - User profiles
 - `businesses` - Business listings
 - `business_stats` - Aggregated statistics
@@ -254,6 +255,7 @@ See [Database Architecture](docs/02_architecture/DATABASE_ARCHITECTURE.md) for c
 ## 🔑 Configuration Files
 
 ### Environment Variables (`.env.local`)
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
@@ -262,16 +264,19 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ```
 
 ### TypeScript (`tsconfig.json`)
+
 - Strict mode enabled
 - Path aliases configured
 - Module resolution optimized
 
 ### Next.js (`next.config.ts`)
+
 - Image optimization
 - Environment variables
 - Build optimizations
 
 ### Tailwind (`tailwind.config.js`)
+
 - Custom color palette
 - Design tokens
 - Plugin configuration
@@ -279,20 +284,24 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 📦 Key Dependencies
 
 **Framework & Core:**
+
 - Next.js 15.0 (App Router)
 - React 19.0
 - TypeScript 5.x
 
 **Backend:**
+
 - Supabase (PostgreSQL + Auth + Storage)
 - @supabase/ssr
 
 **UI & Styling:**
+
 - Tailwind CSS
 - Lucide Icons
 - Framer Motion (animations)
 
 **Development:**
+
 - ESLint
 - Playwright (E2E testing)
 - PostCSS
@@ -300,21 +309,25 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 🚀 Quick Navigation
 
 ### For Developers
+
 1. Start with [Getting Started](docs/01_setup/GETTING_STARTED.md)
 2. Review [Database Architecture](docs/02_architecture/DATABASE_ARCHITECTURE.md)
 3. Check [Component Library](docs/05_design/COMPONENT_LIBRARY.md)
 4. Follow [Optimization Checklist](docs/04_optimization/OPTIMIZATION_CHECKLIST.md)
 
 ### For Designers
+
 1. Review [Design System](docs/05_design/COMPONENT_LIBRARY.md)
 2. Check [Wireframes](docs/05_design/wireframes/)
 3. Read [Animation Guide](docs/05_design/ANIMATION_GUIDE.md)
 
 ### For Product Managers
+
 1. See [Feature Index](docs/03_features/FEATURE_INDEX.md)
 2. Review [Business Ownership Workflow](docs/03_features/BUSINESS_OWNERSHIP_WORKFLOW.md)
 
 ### For DevOps
+
 1. Check [Setup Guide](docs/01_setup/SETUP.md)
 2. Review [Database Migrations](src/app/lib/migrations/README.md)
 3. See [Performance Optimization](docs/04_optimization/)
@@ -322,35 +335,42 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 📝 File Naming Conventions
 
 ### Components
+
 - PascalCase for files: `BusinessCard.tsx`
 - PascalCase for exports: `export const BusinessCard`
 - Index files for barrel exports: `index.ts`
 
 ### Pages (Next.js App Router)
+
 - lowercase with hyphens: `claim-business/page.tsx`
 - Dynamic routes: `[id]/page.tsx`
 - Route groups: `(auth)/login/page.tsx`
 
 ### API Routes
+
 - lowercase with hyphens: `api/businesses/route.ts`
 - HTTP method exports: `export async function GET()`
 
 ### Utilities
+
 - camelCase: `osmToBusinessMapper.ts`
 - Descriptive names: `businessOwnershipService.ts`
 
 ### Types
+
 - PascalCase for interfaces: `interface Business {}`
 - camelCase for files: `database.ts`
 
 ## 🔒 Security Notes
 
 ### Protected Routes
+
 - User authentication: `/profile`, `/manage-business`
 - Business owner only: `/business/[id]/edit`, `/manage-business`
 - Admin only: `/admin/*`
 
 ### Row Level Security (RLS)
+
 - Enabled on all database tables
 - User data isolated by `user_id`
 - Business data protected by ownership
@@ -359,17 +379,20 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 📊 Performance Considerations
 
 ### Code Splitting
+
 - Automatic page-based splitting
 - Dynamic imports for heavy components
 - Lazy loading for below-fold content
 
 ### Image Optimization
+
 - Next.js Image component used throughout
 - WebP format with fallbacks
 - Lazy loading enabled
 - Responsive images with srcset
 
 ### Database
+
 - Indexed queries for common patterns
 - Denormalized statistics for performance
 - Pagination on all list endpoints
@@ -378,12 +401,14 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 🔄 Git Workflow
 
 ### Branch Strategy
+
 - `main` - Production branch
 - `develop` - Development branch
 - `feature/*` - Feature branches
 - `fix/*` - Bug fix branches
 
 ### Ignored Files (`.gitignore`)
+
 - `node_modules/`
 - `.env.local`
 - `.next/`
@@ -395,12 +420,14 @@ NEXT_PUBLIC_OVERPASS_API_URL=
 ## 📱 Deployment
 
 ### Production Build
+
 ```bash
 npm run build
 npm run start
 ```
 
 ### Environment
+
 - Deployed on Vercel
 - Database on Supabase
 - CDN for static assets
@@ -414,4 +441,3 @@ npm run start
 5. Start building!
 
 For detailed setup instructions, see [Getting Started](docs/01_setup/GETTING_STARTED.md).
-

@@ -7,6 +7,7 @@ This document provides a complete overview of the Sayso test suite, including al
 ## Test Coverage
 
 ### ✅ API Layer Tests
+
 - **Location**: `__tests__/api/`
 - **Files**:
   - `businesses.test.ts` - Business CRUD operations, filtering, personalization
@@ -14,6 +15,7 @@ This document provides a complete overview of the Sayso test suite, including al
 - **Coverage**: Business fetching, editing, review operations, user profile onboarding, personalized recommendations
 
 ### ✅ Component Tests
+
 - **Location**: `__tests__/components/`
 - **Files**:
   - `SimilarBusinesses.test.tsx` - Similar businesses component with fallback logic
@@ -24,6 +26,7 @@ This document provides a complete overview of the Sayso test suite, including al
   - `Header`, `Footer`, `Search` - Navigation components
 
 ### ✅ Hook Tests
+
 - **Location**: `__tests__/hooks/`
 - **Files**:
   - `useBusinesses.test.ts` - Pagination, sorting, fallback logic
@@ -33,6 +36,7 @@ This document provides a complete overview of the Sayso test suite, including al
   - `useUserPreferences` - User preference management
 
 ### ✅ Service Tests
+
 - **Location**: `__tests__/services/`
 - **Files**:
   - `personalizationService.test.ts` - Complete personalization algorithm testing
@@ -44,6 +48,7 @@ This document provides a complete overview of the Sayso test suite, including al
     - Freshness scoring
 
 ### ✅ Integration Tests
+
 - **Location**: `__tests__/integration/`
 - **Files**:
   - `review-flow.test.ts` - Complete review creation and editing flow
@@ -55,6 +60,7 @@ This document provides a complete overview of the Sayso test suite, including al
   - Similar businesses → Excludes current, dedupes, fallback
 
 ### ✅ E2E Tests
+
 - **Location**: `e2e/`
 - **Files**:
   - `review-flow.spec.ts` - Review creation, editing, image upload
@@ -71,6 +77,7 @@ This document provides a complete overview of the Sayso test suite, including al
 ## Test Utilities
 
 ### Factories
+
 - **Location**: `__test-utils__/factories/`
 - **Files**:
   - `businessFactory.ts` - Create test businesses with various configurations
@@ -78,12 +85,14 @@ This document provides a complete overview of the Sayso test suite, including al
   - `reviewFactory.ts` - Create test reviews (with/without images, tags, etc.)
 
 ### Mocks
+
 - **Location**: `__test-utils__/mocks/`
 - **Files**:
   - `supabase.ts` - Mock Supabase client with full CRUD operations
   - `next-router.ts` - Mock Next.js router hooks
 
 ### Helpers
+
 - **Location**: `__test-utils__/helpers/`
 - **Files**:
   - `render.tsx` - Custom render with providers (Auth, Toast)
@@ -92,15 +101,18 @@ This document provides a complete overview of the Sayso test suite, including al
 ## Configuration Files
 
 ### Test Runners
+
 - `jest.config.js` - Jest configuration for unit/integration tests
 - `vitest.config.ts` - Vitest configuration (alternative test runner)
 - `playwright.config.ts` - Playwright configuration for E2E tests
 
 ### Setup Files
+
 - `jest.setup.js` - Jest setup (mocks, global config)
 - `vitest.setup.ts` - Vitest setup (mocks, global config)
 
 ### CI/CD
+
 - `.github/workflows/test.yml` - GitHub Actions workflow for automated testing
 
 ## Running Tests
@@ -131,32 +143,38 @@ npm run test:vitest
 ## Test Strategy
 
 ### Test Pyramid
+
 - **60% Unit Tests** - Fast, isolated, high coverage
 - **30% Integration Tests** - API routes, hooks, component interactions
 - **10% E2E Tests** - Critical user flows
 
 ### Coverage Goals
+
 - **Minimum**: 70% across all metrics
 - **Critical Paths**: 100% (auth, payments, validation)
 
 ## Mocking Strategy
 
 ### Supabase
+
 - Mock client with `createMockSupabaseClient()`
 - Set mock data with `setMockData(table, data)`
 - Mock auth with `setMockUser(user)`
 
 ### Next.js
+
 - Router hooks mocked in setup files
 - Image and Link components mocked
 - API routes tested with mocked Supabase
 
 ### Fetch
+
 - Mock global `fetch` with `mockFetchResponse()` or `mockFetchError()`
 
 ## Example Test Patterns
 
 ### Unit Test (Service)
+
 ```typescript
 describe('PersonalizationService', () => {
   it('should calculate interest match score', () => {
@@ -169,6 +187,7 @@ describe('PersonalizationService', () => {
 ```
 
 ### Component Test
+
 ```typescript
 describe('SimilarBusinesses', () => {
   it('should exclude current business', () => {
@@ -179,32 +198,36 @@ describe('SimilarBusinesses', () => {
 ```
 
 ### Integration Test
+
 ```typescript
-describe('Review Flow', () => {
-  it('should pre-fill form when editing', async () => {
+describe("Review Flow", () => {
+  it("should pre-fill form when editing", async () => {
     // Test complete flow from API to UI
   });
 });
 ```
 
 ### E2E Test
+
 ```typescript
-test('should create a new review', async ({ page }) => {
-  await page.goto('/business/test-business-123');
-  await page.click('text=Write a Review');
+test("should create a new review", async ({ page }) => {
+  await page.goto("/business/test-business-123");
+  await page.click("text=Write a Review");
   // ... fill form and submit
-  await expect(page.locator('text=Great experience!')).toBeVisible();
+  await expect(page.locator("text=Great experience!")).toBeVisible();
 });
 ```
 
 ## Next Steps
 
 1. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Run Tests**:
+
    ```bash
    npm run test:unit
    ```
@@ -233,7 +256,7 @@ test('should create a new review', async ({ page }) => {
 ## Support
 
 For questions or issues with the test suite:
+
 1. Check the documentation in `docs/08_testing/`
 2. Review example tests in `__tests__/`
 3. Check test utilities in `__test-utils__/`
-

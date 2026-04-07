@@ -1,8 +1,5 @@
 import type { PhoneOtpSessionState } from "../../../components/BusinessClaim/PhoneOtpModal";
-import {
-  ERROR_CODE_MESSAGES,
-  OTP_SEND_ERROR_MESSAGES,
-} from "./claimBusiness.constants";
+import { ERROR_CODE_MESSAGES, OTP_SEND_ERROR_MESSAGES } from "./claimBusiness.constants";
 
 export function getClaimErrorMessage(result: {
   message?: string;

@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * SIMPLIFIED ONBOARDING GUARD
@@ -17,9 +17,10 @@ import { NextResponse, type NextRequest } from 'next/server';
  * iOS CRASH FIX: Redirect loop guard + never apply onboarding logic when !user.
  */
 
-const DEBUG_MIDDLEWARE = process.env.NODE_ENV === 'development' || process.env.DEBUG_MIDDLEWARE === 'true';
+const DEBUG_MIDDLEWARE =
+  process.env.NODE_ENV === "development" || process.env.DEBUG_MIDDLEWARE === "true";
 const REDIRECT_GUARD_MAX_AGE_SEC = 5;
-const REDIRECT_GUARD_COOKIE = '_sg';
+const REDIRECT_GUARD_COOKIE = "_sg";
 
 interface RedirectGuardState {
   t: number;
@@ -35,12 +36,25 @@ function debugLog(context: string, data: Record<string, unknown>) {
 }
 
 /** Minimal always-on log for Vercel edge (one line). */
-function edgeLog(decision: string, pathname: string, meta: { hasUser?: boolean; emailConfirmed?: boolean; isBusiness?: boolean; onboardingComplete?: boolean | null; to?: string; reason?: string }) {
+function edgeLog(
+  decision: string,
+  pathname: string,
+  meta: {
+    hasUser?: boolean;
+    emailConfirmed?: boolean;
+    isBusiness?: boolean;
+    onboardingComplete?: boolean | null;
+    to?: string;
+    reason?: string;
+  }
+) {
   const onboardingState =
     meta.onboardingComplete === null || meta.onboardingComplete === undefined
-      ? 'unknown'
+      ? "unknown"
       : String(meta.onboardingComplete);
-  console.log(`[Edge] ${decision} pathname=${pathname} hasUser=${!!meta.hasUser} emailOk=${!!meta.emailConfirmed} business=${!!meta.isBusiness} onboardingOk=${onboardingState}${meta.to ? ` to=${meta.to}` : ''}${meta.reason ? ` reason=${meta.reason}` : ''}`);
+  console.log(
+    `[Edge] ${decision} pathname=${pathname} hasUser=${!!meta.hasUser} emailOk=${!!meta.emailConfirmed} business=${!!meta.isBusiness} onboardingOk=${onboardingState}${meta.to ? ` to=${meta.to}` : ""}${meta.reason ? ` reason=${meta.reason}` : ""}`
+  );
 }
 
 function parseRedirectGuard(request: NextRequest): RedirectGuardState | null {
@@ -55,15 +69,17 @@ function parseRedirectGuard(request: NextRequest): RedirectGuardState | null {
 
 function isPrefetchRequest(request: NextRequest): boolean {
   return (
-    request.headers.get('next-router-prefetch') === '1' ||
-    request.headers.get('x-middleware-prefetch') === '1' ||
-    request.headers.get('purpose') === 'prefetch'
+    request.headers.get("next-router-prefetch") === "1" ||
+    request.headers.get("x-middleware-prefetch") === "1" ||
+    request.headers.get("purpose") === "prefetch"
   );
 }
 
 function isCrawlerRequest(request: NextRequest): boolean {
-  const userAgent = request.headers.get('user-agent') || '';
-  return /(bot|crawl|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|duckduckbot|yandex)/i.test(userAgent);
+  const userAgent = request.headers.get("user-agent") || "";
+  return /(bot|crawl|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|duckduckbot|yandex)/i.test(
+    userAgent
+  );
 }
 
 /** Redirect loop guard: if we already redirected 2+ times within REDIRECT_GUARD_MAX_AGE_SEC, allow next() to break loop. */
@@ -81,38 +97,44 @@ function setRedirectGuard(req: NextRequest, response: NextResponse, target: URL)
     const ageSec = (Date.now() - current.t) / 1000;
     if (ageSec <= REDIRECT_GUARD_MAX_AGE_SEC) n = current.n + 1;
   }
-  response.cookies.set(REDIRECT_GUARD_COOKIE, encodeURIComponent(JSON.stringify({
-    t: Date.now(),
-    n,
-    from: req.nextUrl.pathname,
-    to: target.pathname,
-  } satisfies RedirectGuardState)), {
-    path: '/',
-    maxAge: REDIRECT_GUARD_MAX_AGE_SEC,
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-  });
+  response.cookies.set(
+    REDIRECT_GUARD_COOKIE,
+    encodeURIComponent(
+      JSON.stringify({
+        t: Date.now(),
+        n,
+        from: req.nextUrl.pathname,
+        to: target.pathname,
+      } satisfies RedirectGuardState)
+    ),
+    {
+      path: "/",
+      maxAge: REDIRECT_GUARD_MAX_AGE_SEC,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    }
+  );
   return response;
 }
 
 function clearRedirectGuard(response: NextResponse): NextResponse {
-  response.cookies.set(REDIRECT_GUARD_COOKIE, '', { path: '/', maxAge: 0 });
+  response.cookies.set(REDIRECT_GUARD_COOKIE, "", { path: "/", maxAge: 0 });
   return response;
 }
 
 function canBypassLoopRedirect(pathname: string): boolean {
-  const normalized = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/';
+  const normalized = pathname !== "/" ? pathname.replace(/\/+$/, "") : "/";
   // Restrict loop bypass to known public landing routes only.
   // Never bypass redirects on protected/auth-sensitive routes.
-  return normalized === '/' || normalized === '/home';
+  return normalized === "/" || normalized === "/home";
 }
 
 function getLoginRedirectUrl(request: NextRequest): URL {
-  const loginUrl = new URL('/login', request.url);
+  const loginUrl = new URL("/login", request.url);
   const redirectTarget = `${request.nextUrl.pathname}${request.nextUrl.search}`;
-  if (redirectTarget && redirectTarget !== '/login') {
-    loginUrl.searchParams.set('redirect', redirectTarget);
+  if (redirectTarget && redirectTarget !== "/login") {
+    loginUrl.searchParams.set("redirect", redirectTarget);
   }
   return loginUrl;
 }
@@ -125,17 +147,20 @@ function redirectWithGuard(req: NextRequest, url: URL): NextResponse {
 
   if (shouldBypassRedirectForLoop(req)) {
     if (canBypassLoopRedirect(req.nextUrl.pathname)) {
-      console.warn('[Middleware] Redirect loop guard triggered, allowing request through', {
+      console.warn("[Middleware] Redirect loop guard triggered, allowing request through", {
         pathname: req.nextUrl.pathname,
         to: url.pathname,
       });
       const allowResponse = NextResponse.next({ request: { headers: req.headers } });
       return clearRedirectGuard(allowResponse);
     }
-    console.warn('[Middleware] Redirect loop guard detected on protected/non-home route; keeping redirect', {
-      pathname: req.nextUrl.pathname,
-      to: url.pathname,
-    });
+    console.warn(
+      "[Middleware] Redirect loop guard detected on protected/non-home route; keeping redirect",
+      {
+        pathname: req.nextUrl.pathname,
+        to: url.pathname,
+      }
+    );
   }
 
   const res = NextResponse.redirect(url);
@@ -143,18 +168,20 @@ function redirectWithGuard(req: NextRequest, url: URL): NextResponse {
 }
 
 function isSchemaCacheError(error: { message?: string } | null | undefined): boolean {
-  const message = error?.message?.toLowerCase() || '';
-  return message.includes('schema cache') && message.includes('onboarding_completed_at');
+  const message = error?.message?.toLowerCase() || "";
+  return message.includes("schema cache") && message.includes("onboarding_completed_at");
 }
 
-type NormalizedRole = 'admin' | 'business_owner' | 'user';
+type NormalizedRole = "admin" | "business_owner" | "user";
 
 function normalizeRole(value: string | null | undefined): NormalizedRole | null {
-  const role = String(value || '').toLowerCase().trim();
+  const role = String(value || "")
+    .toLowerCase()
+    .trim();
   if (!role) return null;
-  if (role === 'admin' || role === 'super_admin' || role === 'superadmin') return 'admin';
-  if (role === 'business_owner' || role === 'business' || role === 'owner') return 'business_owner';
-  if (role === 'user' || role === 'personal') return 'user';
+  if (role === "admin" || role === "super_admin" || role === "superadmin") return "admin";
+  if (role === "business_owner" || role === "business" || role === "owner") return "business_owner";
+  if (role === "user" || role === "personal") return "user";
   return null;
 }
 
@@ -163,27 +190,25 @@ export async function handleRequest(request: NextRequest) {
   const requestId = Math.random().toString(36).substring(7); // For tracing requests
 
   const PUBLIC_AUTH_ROUTES = [
-    '/login',
-    '/register',
-    '/verify-email',
-    '/business/login',
-    '/business/register',
-    '/auth/callback',
+    "/login",
+    "/register",
+    "/verify-email",
+    "/business/login",
+    "/business/register",
+    "/auth/callback",
   ];
 
-  const isPublicAuthRoute = PUBLIC_AUTH_ROUTES.some(route =>
-    pathname.startsWith(route)
-  );
+  const isPublicAuthRoute = PUBLIC_AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
   if (isPublicAuthRoute) {
     return NextResponse.next();
   }
 
-  debugLog('START', {
+  debugLog("START", {
     requestId,
     pathname,
     method: request.method,
-    userAgent: request.headers.get('user-agent')?.substring(0, 50),
+    userAgent: request.headers.get("user-agent")?.substring(0, 50),
   });
 
   let response = NextResponse.next({
@@ -196,107 +221,107 @@ export async function handleRequest(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      'Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set.'
+      "Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set."
     );
   }
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: Record<string, unknown>) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: Record<string, unknown>) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-        },
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get(name: string) {
+        return request.cookies.get(name)?.value;
       },
-    }
-  );
+      set(name: string, value: string, options: Record<string, unknown>) {
+        request.cookies.set({
+          name,
+          value,
+          ...options,
+        });
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        response.cookies.set({
+          name,
+          value,
+          ...options,
+        });
+      },
+      remove(name: string, options: Record<string, unknown>) {
+        request.cookies.set({
+          name,
+          value: "",
+          ...options,
+        });
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        response.cookies.set({
+          name,
+          value: "",
+          ...options,
+        });
+      },
+    },
+  });
 
   // Define public routes that should always be accessible (no auth required)
   // Include both /path and /path/ so "/business" and "/business/slug" both match
   const publicRoutes = [
-    '/home',
-    '/search',
-    '/events',
-    '/events/',
-    '/business',
-    '/business/',
-    '/event',
-    '/event/',
-    '/special',
-    '/special/',
-    '/category',
-    '/category/',
-    '/categories',
-    '/categories/',
-    '/explore',
-    '/explore/',
-    '/trending',
-    '/leaderboard',
-    '/reviewer',
-    '/reviewer/',
-    '/for-you',
-    '/notifications',
-    '/write-review',
-    '/write-review/',
-    '/events-specials',
-    '/sitemap.xml',
-    '/robots.txt',
+    "/home",
+    "/search",
+    "/events",
+    "/events/",
+    "/business",
+    "/business/",
+    "/event",
+    "/event/",
+    "/special",
+    "/special/",
+    "/category",
+    "/category/",
+    "/categories",
+    "/categories/",
+    "/explore",
+    "/explore/",
+    "/trending",
+    "/leaderboard",
+    "/reviewer",
+    "/reviewer/",
+    "/for-you",
+    "/notifications",
+    "/write-review",
+    "/write-review/",
+    "/events-specials",
+    "/sitemap.xml",
+    "/robots.txt",
   ];
-  const isPublicProfileRoute = pathname.startsWith('/profile/') && pathname !== '/profile/';
-  const isPublicRoute = isPublicProfileRoute || publicRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route) ||
-    request.nextUrl.pathname === route
-  );
+  const isPublicProfileRoute = pathname.startsWith("/profile/") && pathname !== "/profile/";
+  const isPublicRoute =
+    isPublicProfileRoute ||
+    publicRoutes.some(
+      (route) => request.nextUrl.pathname.startsWith(route) || request.nextUrl.pathname === route
+    );
 
   // Apply private no-store only to auth-sensitive routes; public routes (e.g. /business/[id])
   // should remain cacheable so their ISR revalidate configs take effect.
   if (!isPublicRoute) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
   }
 
   let user = null;
   let authError = null;
   const recoverUserFromSession = async (reason: string): Promise<any | null> => {
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
       if (sessionError) {
-        debugLog('AUTH_RECOVERY_ERROR', {
+        debugLog("AUTH_RECOVERY_ERROR", {
           requestId,
           reason,
           error: sessionError.message,
@@ -305,7 +330,7 @@ export async function handleRequest(request: NextRequest) {
       }
 
       if (session?.user) {
-        debugLog('AUTH_RECOVERED', {
+        debugLog("AUTH_RECOVERED", {
           requestId,
           reason,
           userId: session.user.id,
@@ -315,7 +340,7 @@ export async function handleRequest(request: NextRequest) {
 
       return null;
     } catch (sessionRecoveryError) {
-      console.warn('Middleware: Session recovery failed:', sessionRecoveryError);
+      console.warn("Middleware: Session recovery failed:", sessionRecoveryError);
       return null;
     }
   };
@@ -324,15 +349,18 @@ export async function handleRequest(request: NextRequest) {
     // Attempt to get user with timeout protection
     const getUserPromise = supabase.auth.getUser();
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+      setTimeout(() => reject(new Error("Auth check timeout")), 5000)
     );
 
-    const { data: { user: authUser }, error } = await Promise.race([
-      getUserPromise,
-      timeoutPromise
-    ]) as { data: { user: any }, error: any };
+    const {
+      data: { user: authUser },
+      error,
+    } = (await Promise.race([getUserPromise, timeoutPromise])) as {
+      data: { user: any };
+      error: any;
+    };
 
-    debugLog('AUTH', {
+    debugLog("AUTH", {
       requestId,
       hasUser: !!authUser,
       userId: authUser?.id,
@@ -344,63 +372,69 @@ export async function handleRequest(request: NextRequest) {
     if (error) {
       // Recover from the request cookie session before redirecting.
       // This prevents false /login redirects when getUser fails transiently but session cookies are valid.
-      const recoveredUser = await recoverUserFromSession('get_user_error');
+      const recoveredUser = await recoverUserFromSession("get_user_error");
       if (recoveredUser) {
         user = recoveredUser;
       } else {
         authError = error;
-        const errorMessage = error.message?.toLowerCase() || '';
-        const errorCode = error.code?.toLowerCase() || '';
+        const errorMessage = error.message?.toLowerCase() || "";
+        const errorCode = error.code?.toLowerCase() || "";
 
         // Categorize errors
-        const isFatalError = (
-          errorMessage.includes('user from sub claim') ||
-          errorMessage.includes('jwt does not exist') ||
-          errorMessage.includes('user does not exist') ||
-          errorCode === 'user_not_found'
-        );
+        const isFatalError =
+          errorMessage.includes("user from sub claim") ||
+          errorMessage.includes("jwt does not exist") ||
+          errorMessage.includes("user does not exist") ||
+          errorCode === "user_not_found";
 
-        const isRefreshError = (
-          errorMessage.includes('refresh token') ||
-          errorMessage.includes('invalid refresh token') ||
-          errorCode === 'refresh_token_not_found'
-        );
+        const isRefreshError =
+          errorMessage.includes("refresh token") ||
+          errorMessage.includes("invalid refresh token") ||
+          errorCode === "refresh_token_not_found";
 
-        const isNetworkError = (
-          errorMessage.includes('fetch') ||
-          errorMessage.includes('network') ||
-          errorMessage.includes('connection') ||
-          errorMessage.includes('timeout') ||
-          errorCode === 'network_error'
-        );
+        const isNetworkError =
+          errorMessage.includes("fetch") ||
+          errorMessage.includes("network") ||
+          errorMessage.includes("connection") ||
+          errorMessage.includes("timeout") ||
+          errorCode === "network_error";
 
         // For refresh token errors, try to refresh session once
         if (isRefreshError && !isPublicRoute) {
           try {
             const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
             if (!refreshError && refreshData?.session?.user) {
-              console.log('Middleware: Successfully refreshed session');
+              console.log("Middleware: Successfully refreshed session");
               user = refreshData.session.user;
             }
           } catch (refreshErr) {
-            console.warn('Middleware: Failed to refresh session:', refreshErr);
+            console.warn("Middleware: Failed to refresh session:", refreshErr);
           }
         }
 
         if (!user && isFatalError) {
-          console.warn('Middleware: Fatal auth error, clearing session:', error.message);
+          console.warn("Middleware: Fatal auth error, clearing session:", error.message);
           try {
-            response.cookies.delete('sb-access-token');
-            response.cookies.delete('sb-refresh-token');
+            response.cookies.delete("sb-access-token");
+            response.cookies.delete("sb-refresh-token");
           } catch (clearError) {
-            console.warn('Middleware: Error clearing cookies:', clearError);
+            console.warn("Middleware: Error clearing cookies:", clearError);
           }
 
           // Only redirect protected routes, allow public routes (/home is public)
-          const protectedRoutesFatal = ['/interests', '/subcategories', '/deal-breakers', '/complete', '/reviews', '/write-review', '/saved'];
-          const isProtectedRoute = protectedRoutesFatal.some(route =>
-            request.nextUrl.pathname.startsWith(route)
-          ) || request.nextUrl.pathname === '/profile' || request.nextUrl.pathname === '/profile/';
+          const protectedRoutesFatal = [
+            "/interests",
+            "/subcategories",
+            "/deal-breakers",
+            "/complete",
+            "/reviews",
+            "/write-review",
+            "/saved",
+          ];
+          const isProtectedRoute =
+            protectedRoutesFatal.some((route) => request.nextUrl.pathname.startsWith(route)) ||
+            request.nextUrl.pathname === "/profile" ||
+            request.nextUrl.pathname === "/profile/";
 
           if (isProtectedRoute) {
             return redirectWithGuard(request, getLoginRedirectUrl(request));
@@ -411,20 +445,22 @@ export async function handleRequest(request: NextRequest) {
 
         // For network errors on public routes, allow access
         if (!user && isNetworkError && isPublicRoute) {
-          console.warn('Middleware: Network error on public route, allowing access:', error.message);
+          console.warn(
+            "Middleware: Network error on public route, allowing access:",
+            error.message
+          );
           return response;
         }
 
         // For other non-fatal errors, only log if it's unexpected
         if (!user) {
-          const isExpectedError = (
-            errorMessage.includes('session missing') ||
-            errorMessage.includes('auth session missing') ||
-            errorCode === 'session_not_found'
-          );
+          const isExpectedError =
+            errorMessage.includes("session missing") ||
+            errorMessage.includes("auth session missing") ||
+            errorCode === "session_not_found";
 
           if (!isExpectedError) {
-            console.warn('Middleware: Non-fatal auth error:', error.message);
+            console.warn("Middleware: Non-fatal auth error:", error.message);
           }
         }
       }
@@ -432,7 +468,7 @@ export async function handleRequest(request: NextRequest) {
       user = authUser;
 
       if (!user && !isPublicRoute) {
-        const recoveredUser = await recoverUserFromSession('get_user_empty');
+        const recoveredUser = await recoverUserFromSession("get_user_empty");
         if (recoveredUser) {
           user = recoveredUser;
         }
@@ -441,15 +477,15 @@ export async function handleRequest(request: NextRequest) {
   } catch (error) {
     // Handle timeout and unexpected errors
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('Middleware: Unexpected error getting user:', errorMessage);
+    console.error("Middleware: Unexpected error getting user:", errorMessage);
 
     // For public routes, allow access even on errors
     if (isPublicRoute) {
-      console.log('Middleware: Error on public route, allowing access');
+      console.log("Middleware: Error on public route, allowing access");
       return response;
     }
 
-    const recoveredUser = await recoverUserFromSession('get_user_exception');
+    const recoveredUser = await recoverUserFromSession("get_user_exception");
     if (recoveredUser) {
       user = recoveredUser;
     } else {
@@ -462,15 +498,29 @@ export async function handleRequest(request: NextRequest) {
   // /home is public (guest landing); protect actions inside the page instead
   const protectedRoutes = [
     // Onboarding routes
-    '/interests', '/subcategories', '/deal-breakers', '/complete',
+    "/interests",
+    "/subcategories",
+    "/deal-breakers",
+    "/complete",
     // Main app routes (no /home — public)
-    '/dashboard', '/saved',
+    "/dashboard",
+    "/saved",
     // Content discovery routes
-    '/explore', '/for-you', '/trending', '/events-specials',
+    "/explore",
+    "/for-you",
+    "/trending",
+    "/events-specials",
     // Review routes
-    '/write-review', '/reviews',
+    "/write-review",
+    "/reviews",
     // User action routes
-    '/notifications', '/add-business', '/add-event', '/add-special', '/claim-business', '/settings', '/admin',
+    "/notifications",
+    "/add-business",
+    "/add-event",
+    "/add-special",
+    "/claim-business",
+    "/settings",
+    "/admin",
   ];
 
   // Business routes that require authentication
@@ -478,47 +528,50 @@ export async function handleRequest(request: NextRequest) {
   const isBusinessViewRoute = request.nextUrl.pathname.match(/^\/business\/[^\/]+$/);
 
   // Check if route is protected
-  const isPrivateProfileRoute = pathname === '/profile' || pathname === '/profile/';
-  const isProtectedRoute = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
-  ) || isBusinessReviewRoute || isPrivateProfileRoute;
+  const isPrivateProfileRoute = pathname === "/profile" || pathname === "/profile/";
+  const isProtectedRoute =
+    protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route)) ||
+    isBusinessReviewRoute ||
+    isPrivateProfileRoute;
 
   // Business Owner Routes
-  const ownersRoutes = ['/my-businesses', '/owners'];
-  const isOwnersRoute = ownersRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
-  );
+  const ownersRoutes = ["/my-businesses", "/owners"];
+  const isOwnersRoute = ownersRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
-  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
   const isBusinessEditRoute = request.nextUrl.pathname.match(/^\/business\/[^\/]+\/edit/);
 
-  const businessAuthRoutes = ['/claim-business', '/add-business', '/add-special'];
-  const isBusinessAuthRoute = businessAuthRoutes.some(route =>
+  const businessAuthRoutes = ["/claim-business", "/add-business", "/add-special"];
+  const isBusinessAuthRoute = businessAuthRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   // Onboarding routes
-  const onboardingRoutes = ['/interests', '/subcategories', '/deal-breakers', '/complete', '/onboarding'];
-  const isOnboardingRoute = onboardingRoutes.some(route =>
+  const onboardingRoutes = [
+    "/interests",
+    "/subcategories",
+    "/deal-breakers",
+    "/complete",
+    "/onboarding",
+  ];
+  const isOnboardingRoute = onboardingRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   // Auth routes
-  const authRoutes = ['/login', '/register', '/verify-email'];
-  const isAuthRoute = authRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
-  );
+  const authRoutes = ["/login", "/register", "/verify-email"];
+  const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
   // Password reset routes
-  const passwordResetRoutes = ['/forgot-password', '/reset-password'];
-  const isPasswordResetRoute = passwordResetRoutes.some(route =>
+  const passwordResetRoutes = ["/forgot-password", "/reset-password"];
+  const isPasswordResetRoute = passwordResetRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   // Allow password reset routes regardless of auth status
   if (isPasswordResetRoute) {
-    debugLog('ALLOW', { requestId, reason: 'password_reset_route', pathname });
+    debugLog("ALLOW", { requestId, reason: "password_reset_route", pathname });
     return response;
   }
 
@@ -527,57 +580,73 @@ export async function handleRequest(request: NextRequest) {
   if (!user) {
     if (isAdminRoute) {
       const loginUrl = getLoginRedirectUrl(request);
-      edgeLog('REDIRECT', pathname, { hasUser: false, to: `${loginUrl.pathname}${loginUrl.search}`, reason: 'guest_admin_route' });
+      edgeLog("REDIRECT", pathname, {
+        hasUser: false,
+        to: `${loginUrl.pathname}${loginUrl.search}`,
+        reason: "guest_admin_route",
+      });
       return redirectWithGuard(request, loginUrl);
     }
-    const guestModeRequested = request.nextUrl.searchParams.get('guest') === 'true';
+    const guestModeRequested = request.nextUrl.searchParams.get("guest") === "true";
     // Guests should never land on /for-you (empty state can trap navigation on some webviews).
     // Keep /home public; lock personalization to authenticated users only.
     // Exception: allow crawlers so /for-you can be indexed as a branded destination page.
-    if (pathname === '/for-you' || pathname.startsWith('/for-you/')) {
+    if (pathname === "/for-you" || pathname.startsWith("/for-you/")) {
       if (isCrawlerRequest(request)) {
-        edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_for_you_crawler' });
+        edgeLog("ALLOW", pathname, { hasUser: false, reason: "guest_for_you_crawler" });
         return response;
       }
-      const to = '/home?guest=true';
-      edgeLog('REDIRECT', pathname, { hasUser: false, to, reason: 'guest_for_you' });
+      const to = "/home?guest=true";
+      edgeLog("REDIRECT", pathname, { hasUser: false, to, reason: "guest_for_you" });
       return redirectWithGuard(request, new URL(to, request.url));
     }
-    const isGuestHomePath = pathname === '/home' || pathname === '/home/';
+    const isGuestHomePath = pathname === "/home" || pathname === "/home/";
     if (isGuestHomePath && guestModeRequested) {
-      edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_mode_explicit' });
+      edgeLog("ALLOW", pathname, { hasUser: false, reason: "guest_mode_explicit" });
       return response;
     }
-    if (pathname === '/') {
+    if (pathname === "/") {
       // Keep root crawlable for bots (Googlebot, Bing, etc.) so SEO is unaffected.
       if (isCrawlerRequest(request)) {
-        edgeLog('ALLOW', pathname, { hasUser: false, reason: 'guest_root_crawler' });
+        edgeLog("ALLOW", pathname, { hasUser: false, reason: "guest_root_crawler" });
         return response;
       }
       // Real unauthenticated visitors → onboarding as the landing page.
-      edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_root_onboarding' });
-      return redirectWithGuard(request, new URL('/onboarding', request.url));
+      edgeLog("REDIRECT", pathname, {
+        hasUser: false,
+        to: "/onboarding",
+        reason: "guest_root_onboarding",
+      });
+      return redirectWithGuard(request, new URL("/onboarding", request.url));
     }
     if (isGuestHomePath) {
-      edgeLog('REDIRECT', pathname, { hasUser: false, to: '/onboarding', reason: 'guest_entry_onboarding' });
-      return redirectWithGuard(request, new URL('/onboarding', request.url));
+      edgeLog("REDIRECT", pathname, {
+        hasUser: false,
+        to: "/onboarding",
+        reason: "guest_entry_onboarding",
+      });
+      return redirectWithGuard(request, new URL("/onboarding", request.url));
     }
     if (isPublicRoute) {
-      edgeLog('ALLOW', pathname, { hasUser: false });
+      edgeLog("ALLOW", pathname, { hasUser: false });
       return response;
     }
     if (isProtectedRoute) {
-      const referer = request.headers.get('referer') || '';
-      const cameFromVerifyEmail = referer.includes('/verify-email') || referer.includes('/auth/callback');
+      const referer = request.headers.get("referer") || "";
+      const cameFromVerifyEmail =
+        referer.includes("/verify-email") || referer.includes("/auth/callback");
       if (cameFromVerifyEmail) {
-        edgeLog('REDIRECT', pathname, { hasUser: false, to: '/verify-email' });
-        return redirectWithGuard(request, new URL('/verify-email', request.url));
+        edgeLog("REDIRECT", pathname, { hasUser: false, to: "/verify-email" });
+        return redirectWithGuard(request, new URL("/verify-email", request.url));
       }
       const loginUrl = getLoginRedirectUrl(request);
-      edgeLog('REDIRECT', pathname, { hasUser: false, to: `${loginUrl.pathname}${loginUrl.search}` });
+      edgeLog("REDIRECT", pathname, {
+        hasUser: false,
+        to: `${loginUrl.pathname}${loginUrl.search}`,
+      });
       return redirectWithGuard(request, loginUrl);
     }
-    edgeLog('ALLOW', pathname, { hasUser: false });
+    edgeLog("ALLOW", pathname, { hasUser: false });
     return response;
   }
 
@@ -602,45 +671,57 @@ export async function handleRequest(request: NextRequest) {
   // If email is not confirmed, skip profile fetch entirely - user needs to verify first.
   if (user && user.email_confirmed_at) {
     try {
-      const selectWithCompletedAt = 'role, account_role, onboarding_completed_at, onboarding_step, interests_count, subcategories_count';
-      const selectMinimal = 'role, account_role';
+      const selectWithCompletedAt =
+        "role, account_role, onboarding_completed_at, onboarding_step, interests_count, subcategories_count";
+      const selectMinimal = "role, account_role";
 
       let { data: profileData, error: profileError } = await supabase
-        .from('profiles')
+        .from("profiles")
         .select(selectWithCompletedAt)
-        .eq('user_id', user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (profileError && isSchemaCacheError(profileError)) {
         ({ data: profileData, error: profileError } = await supabase
-          .from('profiles')
+          .from("profiles")
           .select(selectMinimal)
-          .eq('user_id', user.id)
+          .eq("user_id", user.id)
           .maybeSingle());
       }
 
       if (profileError) {
-        console.error('[Middleware] Error fetching profile status:', profileError.message);
+        console.error("[Middleware] Error fetching profile status:", profileError.message);
         profileStatus = null;
       } else if (!profileData) {
-        console.warn('[Middleware] Profile missing for authenticated user (race condition likely); allowing request to proceed.');
+        console.warn(
+          "[Middleware] Profile missing for authenticated user (race condition likely); allowing request to proceed."
+        );
         profileStatus = null;
       } else {
         profileStatus = {
           found: true,
           onboarding_completed_at:
-            'onboarding_completed_at' in profileData
+            "onboarding_completed_at" in profileData
               ? (profileData.onboarding_completed_at as string | null)
               : null,
-          onboarding_step: 'onboarding_step' in profileData ? (profileData.onboarding_step as string | null) : null,
-          interests_count: typeof (profileData as any).interests_count === 'number' ? (profileData as any).interests_count : 0,
-          subcategories_count: typeof (profileData as any).subcategories_count === 'number' ? (profileData as any).subcategories_count : 0,
+          onboarding_step:
+            "onboarding_step" in profileData
+              ? (profileData.onboarding_step as string | null)
+              : null,
+          interests_count:
+            typeof (profileData as any).interests_count === "number"
+              ? (profileData as any).interests_count
+              : 0,
+          subcategories_count:
+            typeof (profileData as any).subcategories_count === "number"
+              ? (profileData as any).subcategories_count
+              : 0,
           account_role: profileData.account_role ?? null,
           role: profileData.role ?? null,
         };
       }
     } catch (error) {
-      console.error('[Middleware] Error fetching profile status:', error);
+      console.error("[Middleware] Error fetching profile status:", error);
       profileStatus = null;
     }
   }
@@ -655,24 +736,24 @@ export async function handleRequest(request: NextRequest) {
     normalizeRole(profileStatus?.account_role) ??
     normalizeRole(profileStatus?.role) ??
     normalizeRole(metadataRoleCandidate) ??
-    'user';
+    "user";
 
   // Helper: Check if user is an admin account
   // Use BOTH normalizeRole chain AND direct profile field check for resilience.
   // Some admin profiles may have role/account_role values that normalizeRole doesn't cover.
-  const rawRole = (profileStatus?.role || '').toLowerCase().trim();
-  const rawAccountRole = (profileStatus?.account_role || '').toLowerCase().trim();
-  const isAdminAccount = resolvedRole === 'admin' || rawRole === 'admin' || rawAccountRole === 'admin';
+  const rawRole = (profileStatus?.role || "").toLowerCase().trim();
+  const rawAccountRole = (profileStatus?.account_role || "").toLowerCase().trim();
+  const isAdminAccount =
+    resolvedRole === "admin" || rawRole === "admin" || rawAccountRole === "admin";
 
   // Helper: Check if user is a business account (admin takes priority)
-  const isBusinessAccount = !isAdminAccount && resolvedRole === 'business_owner';
+  const isBusinessAccount = !isAdminAccount && resolvedRole === "business_owner";
 
   // Helper: Check if onboarding is complete (null when unknown).
-  const isOnboardingComplete: boolean | null = profileStatus === null
-    ? null
-    : Boolean(profileStatus.onboarding_completed_at);
+  const isOnboardingComplete: boolean | null =
+    profileStatus === null ? null : Boolean(profileStatus.onboarding_completed_at);
 
-  debugLog('STATUS_COMPUTED', {
+  debugLog("STATUS_COMPUTED", {
     requestId,
     userId: user?.id,
     hasProfileStatus: !!profileStatus,
@@ -683,7 +764,7 @@ export async function handleRequest(request: NextRequest) {
     resolvedRole,
   });
 
-  edgeLog('DECISION', pathname, {
+  edgeLog("DECISION", pathname, {
     hasUser: !!user,
     emailConfirmed: !!user?.email_confirmed_at,
     isBusiness: isBusinessAccount,
@@ -694,41 +775,44 @@ export async function handleRequest(request: NextRequest) {
   // /admin requires: hasUser + emailOk + isAdmin. Does NOT require onboarding or business account type.
   if (isAdminRoute && user) {
     if (DEBUG_MIDDLEWARE) {
-      console.log(`[Middleware:ADMIN] pathname=${pathname} isAdmin=${isAdminAccount} role=${profileStatus?.role ?? 'null'} account_role=${profileStatus?.account_role ?? 'null'} account_type=${metadataRoleCandidate ?? 'null'} decision=${isAdminAccount ? 'ALLOW' : 'BLOCK'}`);
+      console.log(
+        `[Middleware:ADMIN] pathname=${pathname} isAdmin=${isAdminAccount} role=${profileStatus?.role ?? "null"} account_role=${profileStatus?.account_role ?? "null"} account_type=${metadataRoleCandidate ?? "null"} decision=${isAdminAccount ? "ALLOW" : "BLOCK"}`
+      );
     }
 
     if (!user.email_confirmed_at) {
-      return redirectWithGuard(request, new URL('/verify-email', request.url));
+      return redirectWithGuard(request, new URL("/verify-email", request.url));
     }
 
     if (isAdminAccount) {
       // Admin on admin route — allow immediately, skip all onboarding checks
-      debugLog('ALLOW', { requestId, reason: 'admin_on_admin_route_gate', pathname });
+      debugLog("ALLOW", { requestId, reason: "admin_on_admin_route_gate", pathname });
       return response;
     }
 
     // Non-admin user on admin route — redirect away
-    const fallbackTarget = profileStatus === null
-      ? '/home'
-      : isBusinessAccount
-        ? '/my-businesses'
-        : isOnboardingComplete
-          ? '/home'
-          : '/interests';
+    const fallbackTarget =
+      profileStatus === null
+        ? "/home"
+        : isBusinessAccount
+          ? "/my-businesses"
+          : isOnboardingComplete
+            ? "/home"
+            : "/interests";
 
-    debugLog('REDIRECT', {
+    debugLog("REDIRECT", {
       requestId,
-      reason: 'non_admin_on_admin_route',
+      reason: "non_admin_on_admin_route",
       to: fallbackTarget,
       profileStatusKnown: profileStatus !== null,
       role: profileStatus?.role,
       account_role: profileStatus?.account_role,
     });
-    edgeLog('REDIRECT', pathname, {
+    edgeLog("REDIRECT", pathname, {
       hasUser: true,
       emailConfirmed: true,
       to: fallbackTarget,
-      reason: 'non_admin_on_admin_route',
+      reason: "non_admin_on_admin_route",
     });
     return redirectWithGuard(request, new URL(fallbackTarget, request.url));
   }
@@ -738,11 +822,11 @@ export async function handleRequest(request: NextRequest) {
   // Prevents redirect loop (e.g. iPhone Gmail webview: / ↔ /home).
   // Only middleware decides where / goes. One redirect, then return.
   // ============================================
-  if (pathname === '/') {
+  if (pathname === "/") {
     // Unauthenticated users are already redirected to /onboarding above.
     // This branch only runs for authenticated users.
-    const to = isAdminAccount ? '/admin' : isBusinessAccount ? '/my-businesses' : '/home';
-    edgeLog('REDIRECT', pathname, { hasUser: true, isBusiness: isBusinessAccount, to });
+    const to = isAdminAccount ? "/admin" : isBusinessAccount ? "/my-businesses" : "/home";
+    edgeLog("REDIRECT", pathname, { hasUser: true, isBusiness: isBusinessAccount, to });
     return redirectWithGuard(request, new URL(to, request.url));
   }
 
@@ -753,47 +837,83 @@ export async function handleRequest(request: NextRequest) {
   // RULE 0: Admin accounts go to /admin only
   if (isAdminAccount && user && user.email_confirmed_at) {
     if (isAdminRoute) {
-      debugLog('ALLOW', { requestId, reason: 'admin_on_admin_route', pathname });
+      debugLog("ALLOW", { requestId, reason: "admin_on_admin_route", pathname });
       return response;
     }
     // Admin on any non-admin route → redirect to /admin
-    debugLog('REDIRECT', { requestId, reason: 'admin_on_non_admin_route', to: '/admin' });
-    edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, to: '/admin' });
-    return redirectWithGuard(request, new URL('/admin', request.url));
+    debugLog("REDIRECT", { requestId, reason: "admin_on_non_admin_route", to: "/admin" });
+    edgeLog("REDIRECT", pathname, { hasUser: true, emailConfirmed: true, to: "/admin" });
+    return redirectWithGuard(request, new URL("/admin", request.url));
   }
 
   // RULE 1: Business accounts NEVER see onboarding routes
   if (isBusinessAccount && user && user.email_confirmed_at) {
     // Block business accounts from all onboarding routes
     if (isOnboardingRoute) {
-      debugLog('REDIRECT', { requestId, reason: 'business_on_onboarding_route', to: '/my-businesses' });
-      edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, isBusiness: true, to: '/my-businesses' });
-      return redirectWithGuard(request, new URL('/my-businesses', request.url));
+      debugLog("REDIRECT", {
+        requestId,
+        reason: "business_on_onboarding_route",
+        to: "/my-businesses",
+      });
+      edgeLog("REDIRECT", pathname, {
+        hasUser: true,
+        emailConfirmed: true,
+        isBusiness: true,
+        to: "/my-businesses",
+      });
+      return redirectWithGuard(request, new URL("/my-businesses", request.url));
     }
 
     // Business routes: Always allow
-    const isBusinessRoute = ['/claim-business', '/my-businesses', '/add-business', '/add-event', '/add-special', '/settings'].some(route =>
-      pathname.startsWith(route)
-    );
+    const isBusinessRoute = [
+      "/claim-business",
+      "/my-businesses",
+      "/add-business",
+      "/add-event",
+      "/add-special",
+      "/settings",
+    ].some((route) => pathname.startsWith(route));
     if (isBusinessRoute) {
-      debugLog('ALLOW', { requestId, reason: 'business_on_business_route', pathname });
+      debugLog("ALLOW", { requestId, reason: "business_on_business_route", pathname });
       return response;
     }
 
     // Personal discovery routes: redirect business owners to /my-businesses (/home is public; page can show switch if desired)
-    const isPersonalRoute = ['/home', '/for-you', '/trending', '/explore', '/events-specials', '/saved', '/write-review'].some(route =>
-      pathname === route || pathname.startsWith(route + '/')
-    ) || pathname === '/profile' || pathname === '/profile/';
+    const isPersonalRoute =
+      [
+        "/home",
+        "/for-you",
+        "/trending",
+        "/explore",
+        "/events-specials",
+        "/saved",
+        "/write-review",
+      ].some((route) => pathname === route || pathname.startsWith(route + "/")) ||
+      pathname === "/profile" ||
+      pathname === "/profile/";
     if (isPersonalRoute) {
-      debugLog('REDIRECT', { requestId, reason: 'business_on_personal_route', to: '/my-businesses' });
-      edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, isBusiness: true, to: '/my-businesses' });
-      return redirectWithGuard(request, new URL('/my-businesses', request.url));
+      debugLog("REDIRECT", {
+        requestId,
+        reason: "business_on_personal_route",
+        to: "/my-businesses",
+      });
+      edgeLog("REDIRECT", pathname, {
+        hasUser: true,
+        emailConfirmed: true,
+        isBusiness: true,
+        to: "/my-businesses",
+      });
+      return redirectWithGuard(request, new URL("/my-businesses", request.url));
     }
 
     // Other protected routes: redirect to business home
     if (isProtectedRoute) {
-      debugLog('REDIRECT', { requestId, reason: 'business_on_protected_route', to: '/my-businesses' });
-      return redirectWithGuard(request, new URL('/my-businesses', request.url));
+      debugLog("REDIRECT", {
+        requestId,
+        reason: "business_on_protected_route",
+        to: "/my-businesses",
+      });
+      return redirectWithGuard(request, new URL("/my-businesses", request.url));
     }
   }
 
@@ -802,12 +922,12 @@ export async function handleRequest(request: NextRequest) {
     // CRITICAL SAFETY GUARD: If profileStatus is null (profile missing or couldn't be read),
     // DO NOT redirect to onboarding. Allow request to continue so profile sync/bootstrap can complete.
     if (profileStatus === null) {
-      debugLog('ALLOW', { requestId, reason: 'profile_status_unknown_race_guard', pathname });
-      edgeLog('ALLOW', pathname, {
+      debugLog("ALLOW", { requestId, reason: "profile_status_unknown_race_guard", pathname });
+      edgeLog("ALLOW", pathname, {
         hasUser: true,
         emailConfirmed: true,
         onboardingComplete: null,
-        reason: 'profile_status_unknown',
+        reason: "profile_status_unknown",
       });
       return response;
     }
@@ -816,10 +936,18 @@ export async function handleRequest(request: NextRequest) {
     // /complete is also allowed through here — the page handles its own access control and
     // auto-redirects to /home. Blocking it here caused a DB replication race condition where
     // the proxy saw stale incomplete state right after the deal-breakers API write.
-    const allowedIncompletePaths = ['/interests', '/subcategories', '/deal-breakers', '/onboarding', '/complete'];
-    const isOnAllowedIncompletePath = allowedIncompletePaths.some(p => pathname === p || pathname.startsWith(p + '/'));
+    const allowedIncompletePaths = [
+      "/interests",
+      "/subcategories",
+      "/deal-breakers",
+      "/onboarding",
+      "/complete",
+    ];
+    const isOnAllowedIncompletePath = allowedIncompletePaths.some(
+      (p) => pathname === p || pathname.startsWith(p + "/")
+    );
     if (isOnAllowedIncompletePath && !isOnboardingComplete) {
-      debugLog('ALLOW', { requestId, reason: 'on_allowed_incomplete_path', pathname });
+      debugLog("ALLOW", { requestId, reason: "on_allowed_incomplete_path", pathname });
       return response;
     }
 
@@ -827,16 +955,21 @@ export async function handleRequest(request: NextRequest) {
     if (isOnboardingRoute) {
       // User with complete onboarding should avoid onboarding routes (except /complete celebration page)
       if (isOnboardingComplete) {
-        if (pathname === '/complete') {
-          debugLog('ALLOW', { requestId, reason: 'completed_user_on_complete', pathname });
+        if (pathname === "/complete") {
+          debugLog("ALLOW", { requestId, reason: "completed_user_on_complete", pathname });
           return response;
         }
-        debugLog('REDIRECT', { requestId, reason: 'completed_user_on_onboarding', to: '/home' });
-        edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, onboardingComplete: true, to: '/home' });
-        return redirectWithGuard(request, new URL('/home', request.url));
+        debugLog("REDIRECT", { requestId, reason: "completed_user_on_onboarding", to: "/home" });
+        edgeLog("REDIRECT", pathname, {
+          hasUser: true,
+          emailConfirmed: true,
+          onboardingComplete: true,
+          to: "/home",
+        });
+        return redirectWithGuard(request, new URL("/home", request.url));
       }
       // User with incomplete onboarding CAN access onboarding routes
-      debugLog('ALLOW', { requestId, reason: 'incomplete_user_on_onboarding', pathname });
+      debugLog("ALLOW", { requestId, reason: "incomplete_user_on_onboarding", pathname });
       return response;
     }
 
@@ -844,33 +977,38 @@ export async function handleRequest(request: NextRequest) {
     if (isProtectedRoute) {
       // User with complete onboarding can access protected routes
       if (isOnboardingComplete) {
-        debugLog('ALLOW', { requestId, reason: 'completed_user_on_protected', pathname });
+        debugLog("ALLOW", { requestId, reason: "completed_user_on_protected", pathname });
         return response;
       }
 
       // User with incomplete onboarding must complete onboarding first
       // At this point profileStatus is NOT null (we checked above), so this is a confirmed incomplete state
-      debugLog('REDIRECT', {
+      debugLog("REDIRECT", {
         requestId,
-        reason: 'incomplete_user_on_protected',
-        to: '/interests',
+        reason: "incomplete_user_on_protected",
+        to: "/interests",
         onboardingCompletedAt: profileStatus.onboarding_completed_at,
       });
-      edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, onboardingComplete: false, to: '/interests' });
-      return redirectWithGuard(request, new URL('/interests', request.url));
+      edgeLog("REDIRECT", pathname, {
+        hasUser: true,
+        emailConfirmed: true,
+        onboardingComplete: false,
+        to: "/interests",
+      });
+      return redirectWithGuard(request, new URL("/interests", request.url));
     }
   }
 
   // (Unauthenticated users already returned above)
   if (isPublicRoute) {
-    edgeLog('ALLOW', pathname, { hasUser: !!user, emailConfirmed: !!user?.email_confirmed_at });
+    edgeLog("ALLOW", pathname, { hasUser: !!user, emailConfirmed: !!user?.email_confirmed_at });
     return response;
   }
 
   // Redirect authenticated users without email verification from protected routes
   if (isProtectedRoute && user && !user.email_confirmed_at) {
-    edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: false, to: '/verify-email' });
-    return redirectWithGuard(request, new URL('/verify-email', request.url));
+    edgeLog("REDIRECT", pathname, { hasUser: true, emailConfirmed: false, to: "/verify-email" });
+    return redirectWithGuard(request, new URL("/verify-email", request.url));
   }
 
   // Protect owners routes
@@ -879,91 +1017,124 @@ export async function handleRequest(request: NextRequest) {
   }
 
   if (isOwnersRoute && user && !user.email_confirmed_at) {
-    return redirectWithGuard(request, new URL('/verify-email', request.url));
+    return redirectWithGuard(request, new URL("/verify-email", request.url));
   }
 
   // Protect business edit routes
   if (isBusinessEditRoute && !user) {
-    const redirectUrl = new URL(`/login?redirect=${encodeURIComponent(request.nextUrl.pathname)}`, request.url);
+    const redirectUrl = new URL(
+      `/login?redirect=${encodeURIComponent(request.nextUrl.pathname)}`,
+      request.url
+    );
     return redirectWithGuard(request, redirectUrl);
   }
 
   if (isBusinessEditRoute && user && !user.email_confirmed_at) {
-    return redirectWithGuard(request, new URL('/verify-email', request.url));
+    return redirectWithGuard(request, new URL("/verify-email", request.url));
   }
 
   if (isBusinessReviewRoute && user && !user.email_confirmed_at) {
-    return redirectWithGuard(request, new URL('/verify-email', request.url));
+    return redirectWithGuard(request, new URL("/verify-email", request.url));
   }
 
   if (isBusinessAuthRoute && !user) {
-    return redirectWithGuard(request, new URL(`/login?redirect=${encodeURIComponent(request.nextUrl.pathname)}`, request.url));
+    return redirectWithGuard(
+      request,
+      new URL(`/login?redirect=${encodeURIComponent(request.nextUrl.pathname)}`, request.url)
+    );
   }
 
   if (isBusinessAuthRoute && user && !user.email_confirmed_at) {
-    return redirectWithGuard(request, new URL('/verify-email', request.url));
+    return redirectWithGuard(request, new URL("/verify-email", request.url));
   }
 
   // ROLE-BASED ACCESS CONTROL: Restrict business routes to business accounts only
   // Admin accounts are already redirected to /admin above (RULE 0), so they won't reach here
   if (user && user.email_confirmed_at && !isBusinessAccount && !isAdminAccount) {
     if (isBusinessAuthRoute || isOwnersRoute || isBusinessEditRoute) {
-      const redirectTarget = profileStatus === null
-        ? '/home'
-        : isOnboardingComplete
-          ? '/home'
-          : '/interests';
+      const redirectTarget =
+        profileStatus === null ? "/home" : isOnboardingComplete ? "/home" : "/interests";
       return redirectWithGuard(request, new URL(redirectTarget, request.url));
     }
   }
 
   // Auth routes: /verify-email and /login — redirect verified users to correct landing
   if (isAuthRoute && user) {
-    if (pathname.startsWith('/verify-email')) {
+    if (pathname.startsWith("/verify-email")) {
       if (!user.email_confirmed_at) {
-        edgeLog('ALLOW', pathname, { hasUser: true, emailConfirmed: false });
+        edgeLog("ALLOW", pathname, { hasUser: true, emailConfirmed: false });
         return response;
       }
       // Verified admin → /admin
       if (isAdminAccount) {
-        edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, to: '/admin', reason: 'verified_admin' });
-        return redirectWithGuard(request, new URL('/admin', request.url));
+        edgeLog("REDIRECT", pathname, {
+          hasUser: true,
+          emailConfirmed: true,
+          to: "/admin",
+          reason: "verified_admin",
+        });
+        return redirectWithGuard(request, new URL("/admin", request.url));
       }
       // Verified business → /my-businesses
       if (isBusinessAccount) {
-        edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, isBusiness: true, to: '/my-businesses', reason: 'verified_business' });
-        return redirectWithGuard(request, new URL('/my-businesses', request.url));
+        edgeLog("REDIRECT", pathname, {
+          hasUser: true,
+          emailConfirmed: true,
+          isBusiness: true,
+          to: "/my-businesses",
+          reason: "verified_business",
+        });
+        return redirectWithGuard(request, new URL("/my-businesses", request.url));
       }
       if (profileStatus === null) {
-        edgeLog('ALLOW', pathname, { hasUser: true, emailConfirmed: true, reason: 'status_unknown' });
+        edgeLog("ALLOW", pathname, {
+          hasUser: true,
+          emailConfirmed: true,
+          reason: "status_unknown",
+        });
         return response;
       }
-      const redirectTarget = isOnboardingComplete ? '/home' : '/interests';
-      edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, onboardingComplete: isOnboardingComplete, to: redirectTarget });
+      const redirectTarget = isOnboardingComplete ? "/home" : "/interests";
+      edgeLog("REDIRECT", pathname, {
+        hasUser: true,
+        emailConfirmed: true,
+        onboardingComplete: isOnboardingComplete,
+        to: redirectTarget,
+      });
       return redirectWithGuard(request, new URL(redirectTarget, request.url));
     }
 
     if (user.email_confirmed_at) {
       let redirectTarget: string;
       if (isAdminAccount) {
-        redirectTarget = '/admin';
+        redirectTarget = "/admin";
       } else if (isBusinessAccount) {
-        redirectTarget = '/my-businesses';
+        redirectTarget = "/my-businesses";
       } else if (isOnboardingComplete === true) {
-        redirectTarget = '/home';
+        redirectTarget = "/home";
       } else if (isOnboardingComplete === false) {
-        redirectTarget = '/interests';
+        redirectTarget = "/interests";
       } else {
-        edgeLog('ALLOW', pathname, { hasUser: true, emailConfirmed: true, reason: 'status_unknown' });
+        edgeLog("ALLOW", pathname, {
+          hasUser: true,
+          emailConfirmed: true,
+          reason: "status_unknown",
+        });
         return response;
       }
-      edgeLog('REDIRECT', pathname, { hasUser: true, emailConfirmed: true, isBusiness: isBusinessAccount, onboardingComplete: isOnboardingComplete, to: redirectTarget });
+      edgeLog("REDIRECT", pathname, {
+        hasUser: true,
+        emailConfirmed: true,
+        isBusiness: isBusinessAccount,
+        onboardingComplete: isOnboardingComplete,
+        to: redirectTarget,
+      });
       return redirectWithGuard(request, new URL(redirectTarget, request.url));
     } else {
-      return redirectWithGuard(request, new URL('/verify-email', request.url));
+      return redirectWithGuard(request, new URL("/verify-email", request.url));
     }
   }
 
-  edgeLog('ALLOW', pathname, { hasUser: !!user, emailConfirmed: !!user?.email_confirmed_at });
+  edgeLog("ALLOW", pathname, { hasUser: !!user, emailConfirmed: !!user?.email_confirmed_at });
   return response;
 }

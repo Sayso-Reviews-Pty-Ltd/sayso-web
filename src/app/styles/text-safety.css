@@ -31,13 +31,17 @@
 }
 
 /* Languages with no spaces (CJK) */
-:lang(zh), :lang(ja), :lang(ko), :lang(th) {
+:lang(zh),
+:lang(ja),
+:lang(ko),
+:lang(th) {
   word-break: break-all;
   line-break: anywhere;
 }
 
 /* Arabic and Hebrew specific adjustments */
-:lang(ar), :lang(he) {
+:lang(ar),
+:lang(he) {
   direction: rtl;
   text-align: right;
 }
@@ -132,7 +136,8 @@
 }
 
 /* Table cell text handling */
-td, th {
+td,
+th {
   min-width: 0;
   max-width: 200px;
   overflow: hidden;
@@ -140,7 +145,8 @@ td, th {
   white-space: nowrap;
 }
 
-td.text-wrap, th.text-wrap {
+td.text-wrap,
+th.text-wrap {
   white-space: normal;
   word-break: break-word;
 }
@@ -187,14 +193,16 @@ td.text-wrap, th.text-wrap {
 /* === BUTTON AND INTERACTIVE ELEMENT TEXT === */
 
 /* Ensure button text doesn't break layout */
-button, .btn {
+button,
+.btn {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
 }
 
-button.text-wrap, .btn.text-wrap {
+button.text-wrap,
+.btn.text-wrap {
   white-space: normal;
   word-break: break-word;
 }
@@ -202,11 +210,14 @@ button.text-wrap, .btn.text-wrap {
 /* === FORM ELEMENT TEXT === */
 
 /* Input placeholder and value handling */
-input, textarea, select {
+input,
+textarea,
+select {
   text-overflow: ellipsis;
 }
 
-input[type="email"], input[type="url"] {
+input[type="email"],
+input[type="url"] {
   direction: ltr; /* Always LTR for these inputs */
   font-family: monospace;
 }
@@ -241,7 +252,8 @@ input[type="email"], input[type="url"] {
     max-width: 150px;
   }
 
-  td, th {
+  td,
+  th {
     max-width: 120px;
   }
 

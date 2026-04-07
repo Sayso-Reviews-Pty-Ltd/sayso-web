@@ -9,5 +9,4 @@ export const pillSize = {
 export const pillInactive =
   "bg-white/60 border border-charcoal/12 text-charcoal/70 hover:bg-white/78 hover:text-charcoal/88";
 
-export const pillActive =
-  "bg-card-bg/92 border border-card-bg/50 text-white";
+export const pillActive = "bg-card-bg/92 border border-card-bg/50 text-white";

@@ -17,7 +17,10 @@ const DEFAULT_DELAY = 150;
  * Prefetch a list of routes once the browser is idle so future navigations
  * feel instant. Meant for high-traffic destinations (e.g. /for-you, /trending).
  */
-export function useRoutePrefetch(routes: string[], { delay = DEFAULT_DELAY }: UseRoutePrefetchOptions = {}) {
+export function useRoutePrefetch(
+  routes: string[],
+  { delay = DEFAULT_DELAY }: UseRoutePrefetchOptions = {}
+) {
   const router = useRouter();
 
   const signature = useMemo(
@@ -33,9 +36,7 @@ export function useRoutePrefetch(routes: string[], { delay = DEFAULT_DELAY }: Us
     () =>
       Array.from(
         new Set(
-          routes
-            .filter(Boolean)
-            .filter((route) => route.startsWith("/")) // only internal routes
+          routes.filter(Boolean).filter((route) => route.startsWith("/")) // only internal routes
         )
       ),
     [signature]
@@ -88,4 +89,3 @@ export function useRoutePrefetch(routes: string[], { delay = DEFAULT_DELAY }: Us
     };
   }, [router, stableRoutes, delay, signature]);
 }
-

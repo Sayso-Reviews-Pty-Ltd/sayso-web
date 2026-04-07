@@ -17,16 +17,10 @@ export default function InterestGridSkeleton() {
               height={24}
               className="mb-3 bg-charcoal/10"
             />
-            <Skeleton
-              variant="rectangular"
-              width="60%"
-              height={16}
-              className="bg-charcoal/5"
-            />
+            <Skeleton variant="rectangular" width="60%" height={16} className="bg-charcoal/5" />
           </div>
         </div>
       ))}
     </div>
   );
 }
-

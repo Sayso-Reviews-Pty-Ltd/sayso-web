@@ -74,7 +74,7 @@ export interface Business {
   website?: string;
   image_url?: string;
   verified: boolean;
-  price_range: '$' | '$$' | '$$$' | '$$$$';
+  price_range: "$" | "$$" | "$$$" | "$$$$";
   created_at: string;
   updated_at: string;
   owner_id?: string;
@@ -114,4 +114,3 @@ Based on the API route and components, these additional fields are also used:
 2. **Business Stats**: Stats are stored in a separate `business_stats` table and joined via `business_id`.
 3. **Full-text Search**: If using `search_vector`, ensure you have the appropriate PostgreSQL extensions enabled.
 4. **UUID vs String**: The code uses string IDs (including OSM-format IDs like `osm-node-123`), so ensure your ID column supports text/varchar or use UUID with proper conversion.
-

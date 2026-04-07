@@ -3,11 +3,13 @@
 ## ✅ What Was Fixed
 
 ### 1. Root Cause Analysis
+
 - **Bug 1:** Signup landing on `/subcategories` → Fixed by using `onboarding_step` instead of counts
 - **Bug 2:** `/deal-breakers` redirect loop → Fixed by using single source of truth (`onboarding_step`)
 - **Bug 3:** Inconsistent state → Fixed by removing count-based routing logic
 
 ### 2. Strict State Machine Implementation
+
 - Created `src/lib/onboarding/getOnboardingAccess.ts` - Single source of truth helper
 - Uses ONLY `profiles.onboarding_step` for routing decisions
 - Counts are for UI display only, NOT for routing
@@ -15,27 +17,32 @@
 ### 3. Updated Files
 
 #### `src/lib/onboarding/getOnboardingAccess.ts` (NEW)
+
 - State machine logic
 - Access control functions
 - Step comparison helpers
 
 #### `src/middleware.ts` (UPDATED)
+
 - Removed count-based routing logic
 - Uses `getOnboardingAccess` helper
 - Strict no-skip enforcement
 - Allows back navigation to earlier steps
 
 #### `src/app/auth/callback/route.ts` (UPDATED)
+
 - Removed count-based redirect logic
 - Uses `onboarding_step` to determine required route
 - Defaults to `/interests` if step is null
 
 #### API Routes (VERIFIED)
+
 - ✅ `src/app/api/onboarding/interests/route.ts` - Updates step to `'subcategories'`
 - ✅ `src/app/api/onboarding/subcategories/route.ts` - Updates step to `'deal-breakers'`
 - ✅ `src/app/api/user/onboarding/route.ts` - Updates step to `'complete'` and marks complete
 
 ### 4. Documentation Created
+
 - `ONBOARDING_REDESIGN.md` - Root cause analysis
 - `ONBOARDING_PERSISTENCE_EXAMPLES.md` - How to load/save selections
 - `ONBOARDING_TEST_PLAN.md` - Comprehensive test scenarios
@@ -46,18 +53,21 @@
 ## State Machine Rules
 
 ### States
+
 - `'interests'` → User must complete interests step
 - `'subcategories'` → User must complete subcategories step
 - `'deal-breakers'` → User must complete deal-breakers step
 - `'complete'` → User can access /complete page
 
 ### Transitions (Only in API routes after successful DB write)
+
 - Save interests → `onboarding_step = 'subcategories'`
 - Save subcategories → `onboarding_step = 'deal-breakers'`
 - Save deal-breakers → `onboarding_step = 'complete'`
 - Finish /complete page → `onboarding_complete = true`
 
 ### Access Rules
+
 1. **If `onboarding_complete = true`:**
    - Block ALL onboarding routes → redirect to `/home`
 
@@ -73,21 +83,23 @@
 ## Key Changes
 
 ### Before (Buggy)
+
 ```typescript
 // Used counts to determine next route
 if (interestsCount === 0) {
-  nextRoute = '/interests';
+  nextRoute = "/interests";
 } else if (subcategoriesCount === 0) {
-  nextRoute = '/subcategories';
+  nextRoute = "/subcategories";
 } else if (dealbreakersCount === 0) {
-  nextRoute = '/deal-breakers';
+  nextRoute = "/deal-breakers";
 }
 ```
 
 ### After (Fixed)
+
 ```typescript
 // Use onboarding_step as single source of truth
-const requiredStep = profile.onboarding_step || 'interests';
+const requiredStep = profile.onboarding_step || "interests";
 const requiredRoute = getRouteForStep(requiredStep);
 ```
 
@@ -158,4 +170,3 @@ Run through the test plan in `ONBOARDING_TEST_PLAN.md`:
 ✅ Completed users blocked from onboarding
 ✅ Single source of truth (`onboarding_step`)
 ✅ Deterministic, bug-free flow
-

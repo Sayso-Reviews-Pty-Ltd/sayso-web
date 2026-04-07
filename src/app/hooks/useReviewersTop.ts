@@ -3,15 +3,15 @@
  * Uses SWR for caching and deduplication.
  */
 
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import type { Reviewer } from '../types/community';
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import type { Reviewer } from "../types/community";
 
 interface ReviewersTopData {
   reviewers: Reviewer[];
-  mode: 'stage1' | 'normal';
+  mode: "stage1" | "normal";
 }
 
 async function fetchReviewersTop([, limit]: [string, number]): Promise<ReviewersTopData> {
@@ -24,12 +24,12 @@ async function fetchReviewersTop([, limit]: [string, number]): Promise<Reviewers
   const data = await response.json();
   return {
     reviewers: Array.isArray(data?.reviewers) ? data.reviewers : [],
-    mode: data?.mode === 'normal' ? 'normal' : 'stage1',
+    mode: data?.mode === "normal" ? "normal" : "stage1",
   };
 }
 
 export function useReviewersTop(limit = 12) {
-  const swrKey = ['/api/reviewers/top', limit] as [string, number];
+  const swrKey = ["/api/reviewers/top", limit] as [string, number];
 
   const { data, error, isLoading } = useSWR(swrKey, fetchReviewersTop, {
     ...swrConfig,
@@ -38,7 +38,7 @@ export function useReviewersTop(limit = 12) {
 
   return {
     reviewers: data?.reviewers ?? [],
-    mode: data?.mode ?? 'stage1',
+    mode: data?.mode ?? "stage1",
     loading: isLoading,
     error: error ? (error as Error).message : null,
   };

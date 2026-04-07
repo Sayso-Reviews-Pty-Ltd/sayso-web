@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   ChevronRight,
   ChevronLeft,
@@ -16,10 +16,10 @@ import {
   Briefcase,
   Edit,
   Trash2,
-} from '@/app/lib/icons';
+} from "@/app/lib/icons";
 
-export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-export type IconColor = 'current' | 'sage' | 'coral' | 'charcoal' | 'white' | 'gray';
+export type IconSize = "xs" | "sm" | "md" | "lg" | "xl";
+export type IconColor = "current" | "sage" | "coral" | "charcoal" | "white" | "gray";
 
 export interface IconProps {
   size?: IconSize;
@@ -36,66 +36,115 @@ const sizeMap: Record<IconSize, number> = {
 };
 
 const colorStyles: Record<IconColor, string> = {
-  current: 'text-current',
-  sage: 'text-sage',
-  coral: 'text-coral',
-  charcoal: 'text-charcoal',
-  white: 'text-white',
-  gray: 'text-charcoal/70',
+  current: "text-current",
+  sage: "text-sage",
+  coral: "text-coral",
+  charcoal: "text-charcoal",
+  white: "text-white",
+  gray: "text-charcoal/70",
 };
 
-export const IconChevronRight: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <ChevronRight size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
+export const IconChevronRight: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
+  <ChevronRight
+    size={sizeMap[size]}
+    className={`${colorStyles[color]} flex-shrink-0 ${className}`}
+  />
 );
 
-export const IconChevronLeft: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <ChevronLeft size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
+export const IconChevronLeft: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
+  <ChevronLeft
+    size={sizeMap[size]}
+    className={`${colorStyles[color]} flex-shrink-0 ${className}`}
+  />
 );
 
-export const IconChevronDown: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <ChevronDown size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
+export const IconChevronDown: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
+  <ChevronDown
+    size={sizeMap[size]}
+    className={`${colorStyles[color]} flex-shrink-0 ${className}`}
+  />
 );
 
-export const IconChevronUp: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
+export const IconChevronUp: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
   <ChevronUp size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
 );
 
-export const IconCheck: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <Check size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconCheck: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <Check size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconX: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
+export const IconX: React.FC<IconProps> = ({ size = "md", color = "current", className = "" }) => (
   <X size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
 );
 
-export const IconSearch: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
+export const IconSearch: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
   <Search size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
 );
 
-export const IconUser: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <User size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconUser: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <User size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconMail: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <Mail size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconMail: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <Mail size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconHeart: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <Heart size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconHeart: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <Heart size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconStar: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <Star size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconStar: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <Star size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconBriefcase: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
+export const IconBriefcase: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
   <Briefcase size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
 );
 
-export const IconEdit: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
-  <Edit size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
-);
+export const IconEdit: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => <Edit size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />;
 
-export const IconTrash: React.FC<IconProps> = ({ size = 'md', color = 'current', className = '' }) => (
+export const IconTrash: React.FC<IconProps> = ({
+  size = "md",
+  color = "current",
+  className = "",
+}) => (
   <Trash2 size={sizeMap[size]} className={`${colorStyles[color]} flex-shrink-0 ${className}`} />
 );

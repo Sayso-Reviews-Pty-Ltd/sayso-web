@@ -5,7 +5,6 @@ import { useEffect } from "react";
 // Critical resources to preload
 const CRITICAL_RESOURCES: string[] = [
   // Fonts are loaded via next/font/google in layout.tsx
-
   // Critical images (if any)
   // Add any critical image URLs here
 ];
@@ -31,7 +30,7 @@ const prefetchResource = (url: string) => {
 export default function ResourcePreloader() {
   useEffect(() => {
     // Preload critical resources immediately
-    CRITICAL_RESOURCES.forEach(resource => {
+    CRITICAL_RESOURCES.forEach((resource) => {
       preloadResource(resource);
     });
 

@@ -36,13 +36,12 @@ export default function GradientBackground({
   animate = false,
   className = "",
 }: GradientBackgroundProps) {
-
   // Color mappings for gradient start (top-left)
   const colorMap = {
     sage: {
-      subtle: "rgba(116, 145, 118, 0.15)",    // 15% opacity
-      medium: "rgba(116, 145, 118, 0.30)",    // 30% opacity
-      strong: "rgba(116, 145, 118, 0.50)",    // 50% opacity
+      subtle: "rgba(116, 145, 118, 0.15)", // 15% opacity
+      medium: "rgba(116, 145, 118, 0.30)", // 30% opacity
+      strong: "rgba(116, 145, 118, 0.50)", // 50% opacity
     },
     coral: {
       subtle: "rgba(214, 116, 105, 0.15)",
@@ -108,7 +107,10 @@ export default function GradientBackground({
   // Blobs variant - decorative gradient shapes
   if (variant === "blobs") {
     return (
-      <div className={`absolute inset-0 pointer-events-none overflow-hidden ${className}`} aria-hidden="true">
+      <div
+        className={`absolute inset-0 pointer-events-none overflow-hidden ${className}`}
+        aria-hidden="true"
+      >
         {/* Top-left blob - brand color to white */}
         <div
           className={`absolute -top-20 -left-20 md:-top-32 md:-left-32 w-64 h-64 md:w-96 md:h-96 rounded-full ${animate ? "animate-float" : ""}`}

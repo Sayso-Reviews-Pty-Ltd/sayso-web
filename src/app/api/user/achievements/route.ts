@@ -1,33 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withUser } from '@/app/api/_lib/withAuth';
-import { getBadgePngPath } from '@/app/lib/badgeMappings';
+import { withUser } from "@/app/api/_lib/withAuth";
+import { getBadgePngPath } from "@/app/lib/badgeMappings";
 
 export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
   try {
     const { data: userStats } = await supabase
-      .from('user_stats')
-      .select('*')
-      .eq('user_id', user.id)
+      .from("user_stats")
+      .select("*")
+      .eq("user_id", user.id)
       .single();
 
     const { count: reviewsCount } = await supabase
-      .from('reviews')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
 
     let helpfulVotesReceived = userStats?.helpful_votes_received || 0;
     if (helpfulVotesReceived === 0 && (!userStats || userStats.helpful_votes_received === 0)) {
       const { data: userReviews } = await supabase
-        .from('reviews')
-        .select('id')
-        .eq('user_id', user.id);
+        .from("reviews")
+        .select("id")
+        .eq("user_id", user.id);
 
-      const reviewIds = userReviews?.map(r => r.id) || [];
+      const reviewIds = userReviews?.map((r) => r.id) || [];
       if (reviewIds.length > 0) {
         const { count } = await supabase
-          .from('review_helpful_votes')
-          .select('*', { count: 'exact', head: true })
-          .in('review_id', reviewIds);
+          .from("review_helpful_votes")
+          .select("*", { count: "exact", head: true })
+          .in("review_id", reviewIds);
         helpfulVotesReceived = count || 0;
       }
     }
@@ -35,23 +35,23 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     let savedBusinesses = userStats?.total_businesses_saved || 0;
     if (!savedBusinesses) {
       const { count: savedCount } = await supabase
-        .from('saved_businesses')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
+        .from("saved_businesses")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
       savedBusinesses = savedCount || 0;
     }
 
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_top_reviewer, created_at')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("is_top_reviewer, created_at")
+      .eq("user_id", user.id)
       .single();
 
     const { data: firstReview } = await supabase
-      .from('reviews')
-      .select('created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: true })
+      .from("reviews")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
       .limit(1)
       .single();
 
@@ -133,9 +133,9 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
 
     return NextResponse.json({ data: achievements, success: true });
   } catch (error: any) {
-    console.error('Error fetching achievements:', error);
+    console.error("Error fetching achievements:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch achievements', details: error.message },
+      { error: "Failed to fetch achievements", details: error.message },
       { status: 500 }
     );
   }

@@ -2,11 +2,11 @@
  * Hook to fetch and manage user's interests, subcategories, and deal-breakers
  */
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { swrConfig } from '../lib/swrConfig';
-import { swrKeys } from '../lib/swrKeys';
-import { authenticatedFetch } from '../lib/api/authenticatedFetch';
+import useSWR, { mutate as globalMutate } from "swr";
+import { useAuth } from "../contexts/AuthContext";
+import { swrConfig } from "../lib/swrConfig";
+import { swrKeys } from "../lib/swrKeys";
+import { authenticatedFetch } from "../lib/api/authenticatedFetch";
 
 export interface UserPreference {
   id: string;
@@ -33,10 +33,10 @@ export interface UseUserPreferencesOptions {
 const EMPTY_PREFS: UserPreferences = { interests: [], subcategories: [], dealbreakers: [] };
 
 async function fetchPreferences([, _userId]: [string, string]): Promise<UserPreferences> {
-  const response = await authenticatedFetch('/api/user/preferences', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+  const response = await authenticatedFetch("/api/user/preferences", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
   });
   if (!response.ok) return EMPTY_PREFS;
   const data = await response.json();
@@ -58,11 +58,13 @@ export function invalidateUserPreferences(userId: string) {
 /**
  * Hook to fetch user's preferences (interests, subcategories, dealbreakers)
  */
-export function useUserPreferences(options: UseUserPreferencesOptions = {}): UseUserPreferencesResult {
+export function useUserPreferences(
+  options: UseUserPreferencesOptions = {}
+): UseUserPreferencesResult {
   const { user, isLoading: authLoading } = useAuth();
 
   // Don't fetch until auth has resolved
-  const swrKey = (!authLoading && user?.id) ? swrKeys.userPreferences(user.id) : null;
+  const swrKey = !authLoading && user?.id ? swrKeys.userPreferences(user.id) : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchPreferences, {
     ...swrConfig,
@@ -87,5 +89,5 @@ export function useUserPreferences(options: UseUserPreferencesOptions = {}): Use
  */
 export function useUserInterestIds(): string[] {
   const { interests, subcategories } = useUserPreferences();
-  return interests.map(i => i.id).concat(subcategories.map(s => s.id));
+  return interests.map((i) => i.id).concat(subcategories.map((s) => s.id));
 }

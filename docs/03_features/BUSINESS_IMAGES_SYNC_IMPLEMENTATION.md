@@ -52,7 +52,7 @@ BEGIN
     WHERE business_id = OLD.business_id AND id != OLD.id
     ORDER BY sort_order ASC, created_at DESC
     LIMIT 1;
-    
+
     IF next_primary_id IS NOT NULL THEN
       UPDATE public.business_images
       SET is_primary = true
@@ -93,32 +93,31 @@ $$ LANGUAGE plpgsql;
 ```typescript
 // 1. Upload to storage bucket
 const { error: uploadError } = await supabase.storage
-  .from('business-images')
+  .from("business-images")
   .upload(filePath, image, {
-    cacheControl: '3600',
-    upsert: false
+    cacheControl: "3600",
+    upsert: false,
   });
 
 // 2. Get public URL
-const { data: { publicUrl } } = supabase.storage
-  .from('business-images')
-  .getPublicUrl(filePath);
+const {
+  data: { publicUrl },
+} = supabase.storage.from("business-images").getPublicUrl(filePath);
 
 // 3. Insert into business_images table (REQUIRED)
 const imageRecords = uploadedUrls.map((url, index) => ({
   business_id: businessId,
   url: url,
-  type: index === 0 ? 'cover' : 'gallery',
+  type: index === 0 ? "cover" : "gallery",
   sort_order: index,
-  is_primary: index === 0,  // First image is primary
+  is_primary: index === 0, // First image is primary
 }));
 
-await supabase
-  .from('business_images')
-  .insert(imageRecords);
+await supabase.from("business_images").insert(imageRecords);
 ```
 
 **Key Points**:
+
 - ✅ Always inserts into `business_images` table after successful upload
 - ✅ First image is automatically set as primary
 - ✅ No fallback to legacy `uploaded_image` field (removed)
@@ -130,9 +129,9 @@ await supabase
 ```typescript
 // 1. Get image details (need URL for storage deletion)
 const { data: imageData } = await supabase
-  .from('business_images')
-  .select('id, url, is_primary')
-  .eq('id', imageId)
+  .from("business_images")
+  .select("id, url, is_primary")
+  .eq("id", imageId)
   .single();
 
 // 2. Extract storage path from URL
@@ -141,19 +140,15 @@ const storagePath = pathMatch?.[1];
 
 // 3. Delete from storage bucket
 if (storagePath) {
-  await supabase.storage
-    .from('business-images')
-    .remove([storagePath]);
+  await supabase.storage.from("business-images").remove([storagePath]);
 }
 
 // 4. Delete from database (trigger promotes next image if primary)
-await supabase
-  .from('business_images')
-  .delete()
-  .eq('id', imageId);
+await supabase.from("business_images").delete().eq("id", imageId);
 ```
 
 **Key Points**:
+
 - ✅ Deletes from both storage and database
 - ✅ Continues with DB deletion even if storage deletion fails
 - ✅ Database trigger automatically promotes next image if primary was deleted
@@ -182,6 +177,7 @@ const getDisplayImage = useMemo(() => {
 ```
 
 **Key Points**:
+
 - ✅ Checks `business_images` table first
 - ✅ Falls back to legacy fields for backward compatibility
 - ✅ Always has a fallback (category PNG) so cards never break
@@ -203,6 +199,7 @@ const BUSINESS_SELECT = `
 ```
 
 **Key Points**:
+
 - ✅ All business queries include `business_images` array
 - ✅ Images are ordered by `is_primary DESC, sort_order ASC`
 - ✅ UI components receive images automatically
@@ -217,7 +214,7 @@ const BUSINESS_SELECT = `
    - Gallery grid updates
    - Any listing previews update
 
-2. **Implementation**: 
+2. **Implementation**:
    - Optimistic updates (update UI immediately)
    - Re-fetch from API if needed
    - Use `router.refresh()` or refetch queries
@@ -236,26 +233,30 @@ const BUSINESS_SELECT = `
 
 ### Already Enforced
 
-1. **CASCADE Delete**: 
+1. **CASCADE Delete**:
+
    ```sql
    business_id UUID REFERENCES businesses(id) ON DELETE CASCADE
    ```
+
    - Deleting a business automatically deletes all its images
 
-2. **Single Primary**: 
+2. **Single Primary**:
    - Database trigger ensures only one `is_primary = true` per business
    - Function: `ensure_single_primary_image()`
 
-3. **Updated At**: 
+3. **Updated At**:
    - Trigger automatically updates `updated_at` on changes
    - Function: `update_business_images_updated_at()`
 
 ## API Endpoints
 
 ### GET `/api/businesses/[id]/images`
+
 Fetch all images for a business, ordered by primary first, then sort_order.
 
 **Response**:
+
 ```json
 {
   "images": [
@@ -272,9 +273,11 @@ Fetch all images for a business, ordered by primary first, then sort_order.
 ```
 
 ### POST `/api/businesses/[id]/images`
+
 Add images to a business (requires business owner authentication).
 
 **Request**:
+
 ```json
 {
   "images": [
@@ -289,9 +292,11 @@ Add images to a business (requires business owner authentication).
 ```
 
 ### DELETE `/api/businesses/[id]/images/[imageId]`
+
 Delete a business image (requires business owner authentication).
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -305,9 +310,11 @@ Delete a business image (requires business owner authentication).
 ### Running the Migration
 
 1. **Run SQL Migration**:
+
    ```bash
    # File: supabase/migrations/20250112_business_images_table.sql
    ```
+
    Or run directly in Supabase SQL Editor.
 
 2. **Migration Includes**:
@@ -325,12 +332,14 @@ Delete a business image (requires business owner authentication).
 ## Testing Checklist
 
 ### Upload Flow
+
 - [ ] Upload images when creating new business
 - [ ] Verify images appear in `business_images` table
 - [ ] Verify images appear in UI immediately
 - [ ] Verify first image is marked as primary
 
 ### Delete Flow
+
 - [ ] Delete non-primary image
 - [ ] Delete primary image (verify promotion)
 - [ ] Delete all images (verify placeholder)
@@ -338,6 +347,7 @@ Delete a business image (requires business owner authentication).
 - [ ] Verify database record is deleted
 
 ### UI Updates
+
 - [ ] Business card shows primary image
 - [ ] Business profile shows primary image
 - [ ] Gallery shows all images
@@ -345,6 +355,7 @@ Delete a business image (requires business owner authentication).
 - [ ] Fallback to placeholder when no images
 
 ### Edge Cases
+
 - [ ] Upload fails but DB insert succeeds (should handle gracefully)
 - [ ] Storage delete fails but DB delete succeeds (should continue)
 - [ ] Multiple images uploaded simultaneously
@@ -370,4 +381,3 @@ Delete a business image (requires business owner authentication).
 - [ ] Set primary image from UI
 - [ ] Image upload progress indicators
 - [ ] Image error handling and retry logic
-

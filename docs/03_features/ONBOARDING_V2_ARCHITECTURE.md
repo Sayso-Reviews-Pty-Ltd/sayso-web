@@ -5,22 +5,26 @@
 ## Core Principles
 
 ### 1. Backend is Single Source of Truth
+
 - **No client-side caching** of onboarding state
 - **No localStorage** for progress tracking
 - **No context propagation** of stale data
 - Every page fetches fresh state on mount from database
 
 ### 2. Atomic Transitions
+
 - Each step save is an atomic database transaction
 - State updates happen server-side only
 - Client only navigates after server confirms success
 
 ### 3. Pull-Based Navigation
+
 - Pages **fetch** current state, don't receive it via props/context
 - Middleware enforces access based on fresh database reads
 - Navigation happens only after verifying new state from server
 
 ### 4. Pessimistic Updates
+
 - Show loading state during save
 - Only navigate after:
   1. Save succeeds on server
@@ -28,6 +32,7 @@
   3. New step is confirmed in database
 
 ### 5. Server-Side Verification
+
 - Middleware reads database on every request
 - No client-side "guards" that can be bypassed
 - Access control happens at HTTP layer, not React layer
@@ -121,6 +126,7 @@ src/middleware-v2.ts      # New middleware implementation
 ## Key Functions
 
 ### `fetchCurrentState()` - Client
+
 ```typescript
 // Fetches fresh state from server
 // Called on every page mount
@@ -130,6 +136,7 @@ const state = await fetchCurrentState();
 ```
 
 ### `validateStepAccess()` - State Logic
+
 ```typescript
 // Validates if user can access a step
 const validation = validateStepAccess(state, requestedStep);
@@ -137,11 +144,12 @@ const validation = validateStepAccess(state, requestedStep);
 ```
 
 ### `useOnboardingPage()` - React Hook
+
 ```typescript
 // Hook for page components
 const { state, isLoading, canAccess, save } = useOnboardingPage({
-  step: 'interests',
-  onSave: saveInterests
+  step: "interests",
+  onSave: saveInterests,
 });
 
 // Flow:
@@ -192,6 +200,7 @@ USER ACTION: Clicks "Continue" on /interests
 ```
 
 **No refresh needed! State is fresh because:**
+
 - Every component fetches its own state
 - No reliance on stale context/props
 - Server is always up-to-date
@@ -236,6 +245,7 @@ USER ACTION: On /subcategories, clicks browser back
 ## Why This Avoids Refresh Bugs
 
 ### Problem in Old Implementation
+
 ```
 1. User saves interests
 2. API updates database ✓
@@ -248,6 +258,7 @@ USER ACTION: On /subcategories, clicks browser back
 ```
 
 ### Solution in V2
+
 ```
 1. User saves interests
 2. API updates database ✓
@@ -268,22 +279,26 @@ USER ACTION: On /subcategories, clicks browser back
 ## Migration Plan
 
 ### Phase 1: Testing (Current)
+
 - V2 files created in parallel
 - Old implementation still active
 - Can test V2 in isolation
 
 ### Phase 2: Page Updates
+
 - Update interests/page.tsx to use useOnboardingPage()
 - Update subcategories/page.tsx to use useOnboardingPage()
 - Update deal-breakers/page.tsx to use useOnboardingPage()
 - Update complete/page.tsx to use useOnboardingPage()
 
 ### Phase 3: Middleware Swap
+
 - Replace src/middleware.ts with src/middleware-v2.ts
 - Remove old routing logic
 - Keep only V2 implementation
 
 ### Phase 4: Cleanup
+
 - Delete old hooks (useInterestsPage, etc.)
 - Delete old context (OnboardingContext)
 - Delete old utilities
@@ -322,9 +337,11 @@ USER ACTION: On /subcategories, clicks browser back
 ## API Endpoints
 
 ### GET /api/onboarding/state
+
 Returns current onboarding state for authenticated user.
 
 **Response:**
+
 ```json
 {
   "state": {
@@ -339,9 +356,11 @@ Returns current onboarding state for authenticated user.
 ```
 
 ### POST /api/onboarding/interests
+
 Saves interests and advances to subcategories.
 
 **Request:**
+
 ```json
 {
   "interest_ids": ["food-drink", "beauty-wellness", "outdoors-adventure"]
@@ -349,6 +368,7 @@ Saves interests and advances to subcategories.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -358,9 +378,11 @@ Saves interests and advances to subcategories.
 ```
 
 ### POST /api/onboarding/subcategories
+
 Saves subcategories and advances to deal-breakers.
 
 **Request:**
+
 ```json
 {
   "subcategories": [
@@ -371,9 +393,11 @@ Saves subcategories and advances to deal-breakers.
 ```
 
 ### POST /api/onboarding/deal-breakers
+
 Saves deal-breakers and advances to complete.
 
 **Request:**
+
 ```json
 {
   "dealbreaker_ids": ["noise-level", "accessibility"]
@@ -381,9 +405,11 @@ Saves deal-breakers and advances to complete.
 ```
 
 ### POST /api/onboarding/complete
+
 Marks onboarding as complete.
 
 **Response:**
+
 ```json
 {
   "success": true,

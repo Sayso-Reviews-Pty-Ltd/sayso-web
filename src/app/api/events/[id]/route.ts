@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /**
  * GET /api/events/[id]
@@ -13,18 +12,12 @@ const UUID_RE =
  * - ticketmaster_id (string)
  * - id (uuid primary key)
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
-    if (!id || id.trim() === '') {
-      return NextResponse.json(
-        { error: 'Event ID is required' },
-        { status: 400 }
-      );
+    if (!id || id.trim() === "") {
+      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
     }
 
     const supabase = await getServerSupabase();
@@ -34,24 +27,19 @@ export async function GET(
     // fallbacks for bookmarked/shared URLs that contain old ticketmaster_id or
     // UUID values from the legacy table. Remove once old links have expired.
     const tryByTicketmasterId = async () =>
-      supabase.from('ticketmaster_events').select('*').eq('ticketmaster_id', id).single();
+      supabase.from("ticketmaster_events").select("*").eq("ticketmaster_id", id).single();
 
     const tryByUuidId = async () =>
-      supabase.from('ticketmaster_events').select('*').eq('id', id).single();
+      supabase.from("ticketmaster_events").select("*").eq("id", id).single();
 
     const tryBusinessEventByUuidId = async () =>
-      supabase
-        .from('events_and_specials')
-        .select('*')
-        .eq('id', id)
-        .eq('type', 'event')
-        .single();
+      supabase.from("events_and_specials").select("*").eq("id", id).eq("type", "event").single();
 
     const tryBusinessCardByRepresentativeId = async () =>
       supabase
-        .from('v_events_and_specials_cards')
-        .select('occurrences, start_dates, start_date, end_date')
-        .eq('representative_id', id)
+        .from("v_events_and_specials_cards")
+        .select("occurrences, start_dates, start_date, end_date")
+        .eq("representative_id", id)
         .single();
 
     let event: any = null;
@@ -60,13 +48,13 @@ export async function GET(
     // Most links in the app use `ticketmaster_id`, but sitemap + some routes may use UUID `id`.
     ({ data: event, error } = await tryByTicketmasterId());
 
-    const notFound = error?.code === 'PGRST116';
+    const notFound = error?.code === "PGRST116";
     if (notFound && UUID_RE.test(id)) {
       ({ data: event, error } = await tryByUuidId());
     }
 
     // Business-owned events live in events_and_specials (uuid IDs).
-    if ((error?.code === 'PGRST116' || !event) && UUID_RE.test(id)) {
+    if ((error?.code === "PGRST116" || !event) && UUID_RE.test(id)) {
       ({ data: event, error } = await tryBusinessEventByUuidId());
 
       if (!error && event) {
@@ -94,7 +82,7 @@ export async function GET(
           booking_url: event.booking_url || null,
           booking_contact: event.booking_contact || null,
           business_id: event.business_id,
-          source: 'business',
+          source: "business",
           occurrences,
           occurrences_count: card?.occurrences ?? undefined,
         };
@@ -102,36 +90,32 @@ export async function GET(
     }
 
     if (error) {
-      console.error('[Event API] Supabase error:', error);
-      if (error.code === 'PGRST116') {
+      console.error("[Event API] Supabase error:", error);
+      if (error.code === "PGRST116") {
         // Not found
-        return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+        return NextResponse.json({ error: "Event not found" }, { status: 404 });
       }
       return NextResponse.json(
-        { error: 'Failed to fetch event', details: error.message },
+        { error: "Failed to fetch event", details: error.message },
         { status: 500 }
       );
     }
 
     if (!event) {
-      return NextResponse.json(
-        { error: 'Event not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-       // Transform Ticketmaster event to include booking URL
-       const transformedEvent = {
-         ...event,
-         ticketmaster_url: event.url || event.ticketmaster_url,
-         bookingUrl: event.url || event.ticketmaster_url,
-       };
+    // Transform Ticketmaster event to include booking URL
+    const transformedEvent = {
+      ...event,
+      ticketmaster_url: event.url || event.ticketmaster_url,
+      bookingUrl: event.url || event.ticketmaster_url,
+    };
     return NextResponse.json({ event: transformedEvent });
   } catch (error: any) {
-    console.error('[Events API] Unexpected error:', error);
+    console.error("[Events API] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error?.message },
+      { error: "Internal server error", message: error?.message },
       { status: 500 }
     );
   }
 }
-

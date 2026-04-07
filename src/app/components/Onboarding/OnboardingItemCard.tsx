@@ -43,35 +43,38 @@ export default function OnboardingItemCard({
         className={`
           p-4 rounded-[16px] border-2 transition-all duration-200
           flex flex-col items-center justify-center gap-2
-          ${isSelected
-            ? "border-sage bg-card-bg/10"
-            : "border-slate-200 bg-white sm:hover:border-sage/50 sm:hover:bg-card-bg/5"
+          ${
+            isSelected
+              ? "border-sage bg-card-bg/10"
+              : "border-slate-200 bg-white sm:hover:border-sage/50 sm:hover:bg-card-bg/5"
           }
           ${disabled ? "opacity-50" : ""}
         `}
       >
         {icon && (
-          <div className={`
+          <div
+            className={`
             transition-all duration-300
             ${isSelected ? "scale-110 text-sage" : "text-slate-600 group-hover:text-sage/60"}
-          `}>
+          `}
+          >
             {icon}
           </div>
         )}
 
         {label && (
-          <p className={`
+          <p
+            className={`
             font-semibold text-center text-sm transition-colors duration-300
             ${isSelected ? "text-sage" : "text-slate-700"}
-          `}>
+          `}
+          >
             {label}
           </p>
         )}
 
         {description && (
-          <p className="text-xs text-slate-500 text-center line-clamp-2">
-            {description}
-          </p>
+          <p className="text-xs text-slate-500 text-center line-clamp-2">{description}</p>
         )}
 
         {!icon && !label && children}
@@ -80,7 +83,11 @@ export default function OnboardingItemCard({
         {isSelected && (
           <div className="absolute -top-2 -right-2 w-6 h-6 bg-card-bg rounded-full flex items-center justify-center shadow-md">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
         )}

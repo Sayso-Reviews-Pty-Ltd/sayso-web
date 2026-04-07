@@ -4,14 +4,14 @@
  * Uses SWR for caching and deduplication.
  */
 
-import { useEffect } from 'react';
-import useSWR from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { useSavedItems } from '../contexts/SavedItemsContext';
-import { swrConfig } from '../lib/swrConfig';
+import { useEffect } from "react";
+import useSWR from "swr";
+import { useAuth } from "../contexts/AuthContext";
+import { useSavedItems } from "../contexts/SavedItemsContext";
+import { swrConfig } from "../lib/swrConfig";
 
 async function fetchSavedBusinesses([url]: [string, string]): Promise<any[]> {
-  const response = await fetch(url, { credentials: 'include' });
+  const response = await fetch(url, { credentials: "include" });
 
   if (response.status === 401) {
     return [];
@@ -30,9 +30,10 @@ export function useSavedBusinessesPreview() {
   const { savedItems } = useSavedItems();
 
   // Shared key across pages for the same user; keeps cache unified.
-  const swrKey = (!authLoading && user?.id)
-    ? ([`/api/saved/businesses?limit=20&page=1`, user.id] as [string, string])
-    : null;
+  const swrKey =
+    !authLoading && user?.id
+      ? ([`/api/saved/businesses?limit=20&page=1`, user.id] as [string, string])
+      : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchSavedBusinesses, {
     ...swrConfig,
@@ -42,10 +43,10 @@ export function useSavedBusinessesPreview() {
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   const businesses = user?.id ? (data ?? []) : [];

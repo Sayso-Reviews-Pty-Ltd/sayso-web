@@ -19,6 +19,7 @@ npx playwright codegen --save-storage=playwright/.auth/owner.json http://localho
 ```
 
 **Steps:**
+
 1. A browser window will open to the login page
 2. Log in with **business owner credentials** (user who has claimed a business)
 3. Once logged in, close the browser window
@@ -37,11 +38,13 @@ That's it! The tests will use the saved authentication state and skip the login 
 ## How It Works
 
 The tests use Playwright's `storageState` feature to:
+
 - **Skip login** in every test (faster, more reliable)
 - **Reuse authentication** across all tests
 - **Avoid credential management** in test code
 
 This means:
+
 - ✅ Tests run faster (no login step)
 - ✅ Tests are more reliable (no credential issues)
 - ✅ Tests focus on business logic, not auth setup
@@ -86,21 +89,25 @@ This means:
 ## Troubleshooting
 
 ### Tests fail with "storageState file not found"
+
 - ✅ Run `npx playwright codegen --save-storage=playwright/.auth/owner.json http://localhost:3000/login`
 - ✅ Make sure you log in as a **business owner** (not regular user)
 - ✅ Verify the file exists at `playwright/.auth/owner.json`
 
 ### Tests timeout waiting for reviews
+
 - ✅ Verify business has reviews in database
 - ✅ Check that reviews API route works
 - ✅ Verify API mocking is working (tests mock the reviews API)
 
 ### "Write a Reply" button not visible
+
 - ✅ Verify user is actually a business owner (has claimed business)
 - ✅ Check that `isOwnerView` prop is set correctly
 - ✅ Verify business ownership in database
 
 ### API returns 401/403
+
 - ✅ User not authenticated properly - recreate auth state
 - ✅ User is not a business owner - use owner account
 - ✅ RLS policies blocking access
@@ -120,4 +127,3 @@ This means:
 - **Component UI Tests**: `__tests__/components/ReviewCard.test.tsx` - Isolated UI behavior tests
 - **API Tests**: `__tests__/api/reviews.test.ts` - Backend API contract tests
 - **Integration Tests**: `__tests__/integration/review-flow.test.tsx` - Integration tests
-

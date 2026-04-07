@@ -3,15 +3,18 @@
 ## Before Implementation
 
 ### Registration
+
 ```
 Sign Up → Email → Onboarding (all users)
 ```
+
 - All users went through same flow
 - No account type selection
 - Everyone did interests/subcategories/deal-breakers
 - Everyone ended up on `/home`
 
 ### Access Control
+
 ```
 No role differentiation
 ├─ All users could try to access any route
@@ -21,6 +24,7 @@ No role differentiation
 ```
 
 ### Navigation
+
 ```
 Header shows for ALL users:
 ├─ Home
@@ -35,6 +39,7 @@ Header shows for ALL users:
 ```
 
 ### Middleware
+
 ```
 Authentication checks:
 ├─ Email verification
@@ -45,6 +50,7 @@ NO role-based enforcement
 ```
 
 ### Dashboard
+
 ```
 All users → /home
 └─ Unified experience regardless of account purpose
@@ -55,6 +61,7 @@ All users → /home
 ## After Implementation
 
 ### Registration
+
 ```
 Sign Up
   ├─→ Personal User
@@ -70,6 +77,7 @@ Sign Up
 ```
 
 ### Access Control
+
 ```
 PERSONAL USER (role = 'user')
 ├─ Accessible: /home, /for-you, /trending, /profile, /saved, /dm
@@ -85,6 +93,7 @@ BUSINESS OWNER (role = 'business_owner')
 ### Navigation
 
 **Personal User Header:**
+
 ```
 Primary Links:
 ├─ Home
@@ -102,6 +111,7 @@ Menu:
 ```
 
 **Business Owner Header:**
+
 ```
 Primary Links:
 ├─ Home (hidden)
@@ -119,6 +129,7 @@ Menu:
 ```
 
 ### Middleware
+
 ```
 Authentication + Role-Based Enforcement:
 
@@ -134,6 +145,7 @@ Authentication + Role-Based Enforcement:
 ```
 
 ### Dashboard
+
 ```
 Personal User → /home
 ├─ Personal feed
@@ -150,23 +162,24 @@ Business Owner → /for-businesses
 
 ## Key Differences
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Account Types** | Single flow | Two flows: Personal & Business |
-| **Signup UX** | All users same | Role selection in signup |
-| **Onboarding** | All users complete | Business users skip |
-| **Dashboard** | All → /home | Personal → /home, Business → /for-businesses |
-| **Route Access** | Limited by ownership checks | Enforced by role in middleware |
-| **Navigation** | Same menu for all | Role-specific menus |
-| **Feature Visibility** | Everything shown to all | Role-appropriate features only |
-| **Cross-Role Access** | Possible but discouraged | Blocked with auto-redirect |
-| **User Experience** | Confusing for business users | Clear separation of concerns |
+| Aspect                 | Before                       | After                                        |
+| ---------------------- | ---------------------------- | -------------------------------------------- |
+| **Account Types**      | Single flow                  | Two flows: Personal & Business               |
+| **Signup UX**          | All users same               | Role selection in signup                     |
+| **Onboarding**         | All users complete           | Business users skip                          |
+| **Dashboard**          | All → /home                  | Personal → /home, Business → /for-businesses |
+| **Route Access**       | Limited by ownership checks  | Enforced by role in middleware               |
+| **Navigation**         | Same menu for all            | Role-specific menus                          |
+| **Feature Visibility** | Everything shown to all      | Role-appropriate features only               |
+| **Cross-Role Access**  | Possible but discouraged     | Blocked with auto-redirect                   |
+| **User Experience**    | Confusing for business users | Clear separation of concerns                 |
 
 ---
 
 ## User Experience Improvements
 
 ### For Personal Users
+
 ✅ Cleaner interface - only see personal features
 ✅ Faster onboarding - must complete to use app
 ✅ Focused feed - For You, Trending, Leaderboard
@@ -174,6 +187,7 @@ Business Owner → /for-businesses
 ✅ Easy access to saved items and messages
 
 ### For Business Owners
+
 ✅ Direct to business dashboard - skip personal onboarding
 ✅ Business-focused features - no distracting personal elements
 ✅ Claim and manage businesses immediately
@@ -185,18 +199,21 @@ Business Owner → /for-businesses
 ## Technical Improvements
 
 ### Security
+
 - ✅ Role-based access enforced at 3 levels
 - ✅ Middleware prevents direct URL bypass
 - ✅ No duplicate flows increases maintainability
 - ✅ Clear role separation enables future RLS policies
 
 ### Performance
+
 - ✅ Single DB query for role (cached in middleware)
 - ✅ Client-side navigation rendering
 - ✅ No extra API calls for role checks
 - ✅ Efficient redirect logic
 
 ### Maintainability
+
 - ✅ Single authentication service
 - ✅ Clear role definitions in types
 - ✅ Centralized middleware logic
@@ -204,6 +221,7 @@ Business Owner → /for-businesses
 - ✅ Well-documented flows and migrations
 
 ### Scalability
+
 - ✅ Foundation for team management (future)
 - ✅ Room for additional roles (manager, staff, admin)
 - ✅ Role-based RLS policies ready
@@ -214,12 +232,14 @@ Business Owner → /for-businesses
 ## Migration Path
 
 **Existing Users:**
+
 - Current users default to `role = 'user'` (personal)
 - No changes to their experience
 - Gradual migration as they use the system
 - Can't convert to business owner without new signup
 
 **New Users:**
+
 - Choose account type during signup
 - Appropriate dashboard and features immediately
 
@@ -227,14 +247,14 @@ Business Owner → /for-businesses
 
 ## Testing Coverage
 
-| Scenario | Before | After |
-|----------|--------|-------|
-| Personal signup → home | ✓ Works | ✓ Works (with full onboarding) |
-| Business signup → home | ✗ Wrong destination | ✓ Goes to /for-businesses |
-| Business user access /for-you | ✓ Allowed (wrong) | ✗ Blocked → redirects to /for-businesses |
-| Personal user access /for-businesses | ✓ Allowed (requires login) | ✗ Blocked → redirects to /home |
-| Navigation shows appropriate items | ✗ Shows all | ✓ Shows role-specific |
-| Business skip onboarding | ✗ Not possible | ✓ Skips directly to business dashboard |
+| Scenario                             | Before                     | After                                    |
+| ------------------------------------ | -------------------------- | ---------------------------------------- |
+| Personal signup → home               | ✓ Works                    | ✓ Works (with full onboarding)           |
+| Business signup → home               | ✗ Wrong destination        | ✓ Goes to /for-businesses                |
+| Business user access /for-you        | ✓ Allowed (wrong)          | ✗ Blocked → redirects to /for-businesses |
+| Personal user access /for-businesses | ✓ Allowed (requires login) | ✗ Blocked → redirects to /home           |
+| Navigation shows appropriate items   | ✗ Shows all                | ✓ Shows role-specific                    |
+| Business skip onboarding             | ✗ Not possible             | ✓ Skips directly to business dashboard   |
 
 ---
 

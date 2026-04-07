@@ -28,7 +28,12 @@ export function useForYouClientState({
   initialOnboardingEmpty,
   initialError,
 }: UseForYouClientStateParams) {
-  const { interests, subcategories, dealbreakers, loading: prefsLoading } = useUserPreferences({
+  const {
+    interests,
+    subcategories,
+    dealbreakers,
+    loading: prefsLoading,
+  } = useUserPreferences({
     initialData: initialPreferences,
     skipInitialFetch: initialPreferencesLoaded,
   });
@@ -64,12 +69,8 @@ export function useForYouClientState({
     setFilters,
   } = useForYouFilters();
 
-  const {
-    currentPage,
-    setCurrentPage,
-    isPaginationLoading,
-    handlePageChange,
-  } = useForYouPagination();
+  const { currentPage, setCurrentPage, isPaginationLoading, handlePageChange } =
+    useForYouPagination();
 
   const {
     debouncedSearchQuery,
@@ -104,7 +105,8 @@ export function useForYouClientState({
     return match ? parseInt(match[1], 10) : null;
   }, [filters.distance]);
 
-  const shouldSkipForYouFetch = initialOnboardingEmpty && !isSearchActive && !hasUserInitiatedFilters;
+  const shouldSkipForYouFetch =
+    initialOnboardingEmpty && !isSearchActive && !hasUserInitiatedFilters;
   const { businesses, loading, error, refetch } = useForYouBusinesses(
     120,
     debouncedSearchQuery.trim().length > 0 ? activeInterestIds : preferenceInterestIds,
@@ -152,7 +154,13 @@ export function useForYouClientState({
     if (hasClientLoadingCycleRef.current && !loading && !hasClientFetchSettled) {
       setHasClientFetchSettled(true);
     }
-  }, [businesses.length, hasClientFetchSettled, hasInitialBusinesses, loading, shouldSkipForYouFetch]);
+  }, [
+    businesses.length,
+    hasClientFetchSettled,
+    hasInitialBusinesses,
+    loading,
+    shouldSkipForYouFetch,
+  ]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -169,8 +177,10 @@ export function useForYouClientState({
 
   const combinedError = error ?? (hasClientFetchSettled ? null : initialError);
   const shouldShowSkeleton =
-    !hasInitialBusinesses && (!hasClientFetchSettled || loading || prefsLoading || simpleSearchLoading);
-  const canRenderResults = hasClientFetchSettled && !simpleSearchLoading && (!prefsLoading || hasInitialBusinesses);
+    !hasInitialBusinesses &&
+    (!hasClientFetchSettled || loading || prefsLoading || simpleSearchLoading);
+  const canRenderResults =
+    hasClientFetchSettled && !simpleSearchLoading && (!prefsLoading || hasInitialBusinesses);
   const canShowError = !!combinedError && !loading && canRenderResults;
 
   const { activeBusinesses, totalPages, currentBusinesses, totalCount } = useForYouBusinessData(
@@ -180,7 +190,8 @@ export function useForYouClientState({
     currentPage
   );
 
-  const showOnboardingEmptyState = initialOnboardingEmpty && !isSearchActive && !isFiltered && totalCount === 0;
+  const showOnboardingEmptyState =
+    initialOnboardingEmpty && !isSearchActive && !isFiltered && totalCount === 0;
 
   useForYouDebug(
     showDebugInfo,
@@ -200,26 +211,31 @@ export function useForYouClientState({
   const shouldFetchCoordinateFallback =
     isMapMode && !isSearchActive && !loading && !prefsLoading && activeBusinesses.length > 0;
 
-  const { businesses: coordinateFallbackBusinesses, loading: coordinateFallbackLoading } = useForYouBusinesses(
-    120,
-    debouncedSearchQuery.trim().length > 0 ? activeInterestIds : preferenceInterestIds,
-    {
-      sortBy: "created_at",
-      sortOrder: "desc",
-      feedStrategy: "mixed",
-      minRating: filters.minRating,
-      radiusKm,
-      latitude: userLocation?.lat ?? null,
-      longitude: userLocation?.lng ?? null,
-      requireCoordinates: true,
-      skip: !shouldFetchCoordinateFallback,
-      preferences,
-      preferencesLoading: prefsLoading,
-    }
-  );
+  const { businesses: coordinateFallbackBusinesses, loading: coordinateFallbackLoading } =
+    useForYouBusinesses(
+      120,
+      debouncedSearchQuery.trim().length > 0 ? activeInterestIds : preferenceInterestIds,
+      {
+        sortBy: "created_at",
+        sortOrder: "desc",
+        feedStrategy: "mixed",
+        minRating: filters.minRating,
+        radiusKm,
+        latitude: userLocation?.lat ?? null,
+        longitude: userLocation?.lng ?? null,
+        requireCoordinates: true,
+        skip: !shouldFetchCoordinateFallback,
+        preferences,
+        preferencesLoading: prefsLoading,
+      }
+    );
 
-  const { mapBusinesses, usingCoordinateFallback } = useForYouMapData(activeBusinesses, coordinateFallbackBusinesses);
-  const isMapFallbackLoading = shouldFetchCoordinateFallback && coordinateFallbackLoading && mapBusinesses.length === 0;
+  const { mapBusinesses, usingCoordinateFallback } = useForYouMapData(
+    activeBusinesses,
+    coordinateFallbackBusinesses
+  );
+  const isMapFallbackLoading =
+    shouldFetchCoordinateFallback && coordinateFallbackLoading && mapBusinesses.length === 0;
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -234,7 +250,8 @@ export function useForYouClientState({
   };
 
   useEffect(() => {
-    const updateIsDesktop = () => setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
+    const updateIsDesktop = () =>
+      setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
     updateIsDesktop();
     window.addEventListener("resize", updateIsDesktop);
     return () => window.removeEventListener("resize", updateIsDesktop);

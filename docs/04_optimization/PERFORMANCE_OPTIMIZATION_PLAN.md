@@ -1,7 +1,9 @@
 # Performance Optimization Plan
 
 ## Current Status
+
 Your app already has good performance infrastructure:
+
 - ✅ Dynamic imports for non-critical components
 - ✅ Image optimization with Next.js Image
 - ✅ Code splitting configured
@@ -12,6 +14,7 @@ Your app already has good performance infrastructure:
 ## High-Impact Optimizations (Implement First)
 
 ### 1. **Enable Partial Prerendering (PPR)** 🚀
+
 **Impact**: Major - Faster initial page loads
 **Effort**: Low
 
@@ -23,6 +26,7 @@ experimental: {
 ```
 
 ### 2. **Implement API Response Caching** 🔥
+
 **Impact**: Major - Reduce server load and response times
 **Effort**: Medium
 
@@ -35,10 +39,12 @@ npm install @tanstack/react-query
 ```
 
 ### 3. **Add Database Indexes** 📊
+
 **Impact**: Major - Faster queries
 **Effort**: Medium
 
 Add indexes to frequently queried fields:
+
 - `businesses.category`
 - `businesses.verified`
 - `businesses.rating`
@@ -46,10 +52,12 @@ Add indexes to frequently queried fields:
 - `reviews.business_id`
 
 ### 4. **Implement Incremental Static Regeneration (ISR)** 🎯
+
 **Impact**: Major - Serve static content, regenerate in background
 **Effort**: Medium
 
 For semi-static pages:
+
 - Business directory/explore pages
 - Leaderboard
 - Trending page
@@ -59,6 +67,7 @@ export const revalidate = 3600; // Revalidate every hour
 ```
 
 ### 5. **Optimize Images at Build Time** 📸
+
 **Impact**: High - Smaller image sizes
 **Effort**: Medium
 
@@ -68,32 +77,37 @@ export const revalidate = 3600; // Revalidate every hour
 - Consider using AVIF format (already configured)
 
 ### 6. **Reduce Bundle Size** 📦
+
 **Impact**: High - Faster downloads
 **Effort**: Medium
 
 Current heavy imports to optimize:
+
 - **Framer Motion**: Use `framer-motion/dist/framer-motion` or `motion/react`
 - **React Feather**: Import individual icons instead of the whole package
 - **Date-fns**: Use specific imports only
 
 ```typescript
 // Bad
-import { ArrowLeft } from 'react-feather';
+import { ArrowLeft } from "react-feather";
 
 // Good
-import ArrowLeft from 'react-feather/dist/icons/arrow-left';
+import ArrowLeft from "react-feather/dist/icons/arrow-left";
 ```
 
 ### 7. **Implement Virtual Scrolling** 🔄
+
 **Impact**: High - Better performance with large lists
 **Effort**: Medium
 
 For pages with many cards (explore, for-you, trending):
+
 ```bash
 npm install @tanstack/react-virtual
 ```
 
 ### 8. **Add Request Deduplication** 🎭
+
 **Impact**: Medium - Prevent duplicate API calls
 **Effort**: Low
 
@@ -102,6 +116,7 @@ Multiple components fetching the same data simultaneously.
 ## Medium-Impact Optimizations
 
 ### 9. **Optimize Font Loading** 📝
+
 **Impact**: Medium
 **Effort**: Low
 
@@ -117,6 +132,7 @@ const urbanist = Urbanist({
 ```
 
 ### 10. **Add Service Worker for Offline Support** 💾
+
 **Impact**: Medium
 **Effort**: High
 
@@ -125,18 +141,21 @@ npm install next-pwa
 ```
 
 ### 11. **Optimize Third-Party Scripts** 📡
+
 **Impact**: Medium
 **Effort**: Low
 
 Use Next.js Script component with optimal loading strategies.
 
 ### 12. **Implement Pagination or Infinite Scroll Properly** ♾️
+
 **Impact**: Medium
 **Effort**: Medium
 
 Currently loading all items upfront. Implement cursor-based pagination.
 
 ### 13. **Reduce Main Thread Work** ⚙️
+
 **Impact**: Medium
 **Effort**: Medium
 
@@ -145,6 +164,7 @@ Currently loading all items upfront. Implement cursor-based pagination.
 - Debounce/throttle scroll handlers (already implemented)
 
 ### 14. **Optimize CSS Delivery** 🎨
+
 **Impact**: Medium
 **Effort**: Low
 
@@ -159,31 +179,37 @@ experimental: {
 ## Low-Hanging Fruit (Quick Wins)
 
 ### 15. **Remove Console Logs in Production** 🔕
+
 ```typescript
 // Already configured in next.config.ts ✅
 ```
 
 ### 16. **Add Compression** 🗜️
+
 ```typescript
 // Already enabled ✅
 compress: true,
 ```
 
 ### 17. **Prefetch Critical Routes** 🔗
+
 ```typescript
 // Already implemented via OptimizedLink ✅
 ```
 
 ### 18. **Reduce Animation Complexity** 🎬
+
 **Impact**: Low-Medium
 **Effort**: Low
 
 Consider removing or simplifying heavy animations, especially:
+
 - Toast notifications with multiple animations
 - Complex scroll-triggered animations
 - Excessive blur effects (`backdrop-blur`)
 
 ### 19. **Optimize Toast Notifications** 🍞
+
 **Impact**: Low
 **Effort**: Low
 
@@ -192,6 +218,7 @@ Consider removing or simplifying heavy animations, especially:
 - Use CSS animations instead of Framer Motion
 
 ### 20. **Add Resource Hints** 🔮
+
 ```typescript
 // layout.tsx - Add to head
 <link rel="dns-prefetch" href="https://images.unsplash.com" />
@@ -201,20 +228,25 @@ Consider removing or simplifying heavy animations, especially:
 ## Database & Backend Optimizations
 
 ### 21. **Implement Connection Pooling** 🏊
+
 Ensure Supabase connection pooling is optimized.
 
 ### 22. **Add Redis Caching** 🔴
+
 For frequently accessed data:
+
 - Trending businesses
 - Leaderboard data
 - Business of the month
 
 ### 23. **Optimize Database Queries** 🔍
+
 - Use `select` to only fetch needed columns
 - Implement pagination at DB level
 - Use `explain analyze` to find slow queries
 
 ### 24. **Implement CDN for Static Assets** 🌐
+
 - Images
 - Fonts
 - Static JS/CSS bundles
@@ -222,6 +254,7 @@ For frequently accessed data:
 ## Monitoring & Analysis
 
 ### 25. **Set Up Performance Budgets** 📊
+
 ```typescript
 // next.config.ts
 experimental: {
@@ -233,14 +266,17 @@ experimental: {
 ```
 
 ### 26. **Implement Real User Monitoring (RUM)** 📈
+
 Use Vercel Analytics or add custom tracking.
 
 ### 27. **Add Lighthouse CI** 🏠
+
 Automate performance testing in CI/CD pipeline.
 
 ## Implementation Priority
 
 ### Phase 1 (Week 1) - Quick Wins
+
 1. Enable PPR
 2. Add API caching with SWR/React Query
 3. Optimize individual icon imports
@@ -250,6 +286,7 @@ Automate performance testing in CI/CD pipeline.
 **Expected Impact**: 30-40% faster initial load
 
 ### Phase 2 (Week 2) - Major Optimizations
+
 1. Implement ISR for static pages
 2. Add virtual scrolling for large lists
 3. Optimize image loading with blur placeholders
@@ -258,6 +295,7 @@ Automate performance testing in CI/CD pipeline.
 **Expected Impact**: 40-50% better perceived performance
 
 ### Phase 3 (Week 3) - Advanced Optimizations
+
 1. Add Redis caching layer
 2. Implement service worker
 3. Set up CDN
@@ -268,6 +306,7 @@ Automate performance testing in CI/CD pipeline.
 ## Specific File Changes Needed
 
 ### High Priority Files to Modify:
+
 1. `src/app/hooks/useBusinesses.ts` - Add caching
 2. `src/app/explore/page.tsx` - Add virtual scrolling
 3. `src/app/for-you/page.tsx` - Add virtual scrolling
@@ -277,7 +316,9 @@ Automate performance testing in CI/CD pipeline.
 7. `src/app/components/BusinessCard/*` - Optimize images
 
 ### Bundle Analysis
+
 Run these commands to identify bottlenecks:
+
 ```bash
 # Analyze bundle size
 npm run build
@@ -294,12 +335,14 @@ module.exports = withBundleAnalyzer(nextConfig)
 ## Measurement Targets
 
 ### Current (Estimated)
+
 - First Contentful Paint (FCP): ~1.5-2s
 - Largest Contentful Paint (LCP): ~2.5-3s
 - Time to Interactive (TTI): ~3-4s
 - Total Bundle Size: ~500KB+
 
 ### Target After Optimizations
+
 - First Contentful Paint (FCP): <1s
 - Largest Contentful Paint (LCP): <1.5s
 - Time to Interactive (TTI): <2s
@@ -308,6 +351,7 @@ module.exports = withBundleAnalyzer(nextConfig)
 ## Next Steps
 
 Would you like me to:
+
 1. **Start with Phase 1 optimizations** (SWR caching, PPR, icon imports)?
 2. **Analyze bundle size first** to see biggest opportunities?
 3. **Implement virtual scrolling** for your large card lists?
@@ -315,4 +359,3 @@ Would you like me to:
 5. **All of the above** - comprehensive optimization?
 
 Let me know which path you prefer, and I'll implement it!
-

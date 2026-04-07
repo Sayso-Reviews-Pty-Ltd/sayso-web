@@ -1,6 +1,6 @@
 type Percentiles = {
   punctuality?: number;
-  'cost-effectiveness'?: number;
+  "cost-effectiveness"?: number;
   friendliness?: number;
   trustworthiness?: number;
 };

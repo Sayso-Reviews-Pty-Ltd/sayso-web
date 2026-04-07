@@ -8,10 +8,7 @@ interface VerifiedBadgeProps {
   delay?: number;
 }
 
-export default function VerifiedBadge({
-  size = "md",
-  delay = 0,
-}: VerifiedBadgeProps) {
+export default function VerifiedBadge({ size = "md", delay = 0 }: VerifiedBadgeProps) {
   const sizeClasses = {
     sm: "w-4 h-4",
     md: "w-5 h-5",
@@ -37,12 +34,7 @@ export default function VerifiedBadge({
       }}
       className={`${sizeClasses[size]} bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md shadow-premium-sm ring-2 ring-off-white`}
     >
-      <Check
-        size={iconSizes[size]}
-        strokeWidth={3}
-        className="text-white"
-        aria-label="Verified"
-      />
+      <Check size={iconSizes[size]} strokeWidth={3} className="text-white" aria-label="Verified" />
     </m.div>
   );
 }

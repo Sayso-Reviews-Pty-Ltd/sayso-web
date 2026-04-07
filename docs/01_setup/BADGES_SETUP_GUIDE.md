@@ -9,11 +9,13 @@ The profile page was using an old achievements API (`/api/user/achievements`) th
 ## Changes Made
 
 ### 1. **Profile Page Updated** ✅
+
 - **File**: `src/app/profile/page.tsx`
 - **Change**: Now fetches badges from `/api/badges/user?user_id={id}` instead of `/api/user/achievements`
 - **Result**: Profile will now display badges from the `user_badges` table
 
 ### 2. **RLS Policies Created** ✅
+
 - **File**: `supabase/migrations/20260113_add_badges_rls_policies.sql`
 - **Change**: Added Row Level Security policies for badges tables
 - **Policies**:
@@ -22,6 +24,7 @@ The profile page was using an old achievements API (`/api/user/achievements`) th
   - Badges cannot be updated once awarded
 
 ### 3. **Review Cards Updated** ✅
+
 - **File**: `src/app/components/ReviewerCard/ReviewerCard.tsx`
 - **Change**: Review card variant now displays user badges
 - **Result**: Badges will show on both reviewer cards and review cards
@@ -33,23 +36,27 @@ The profile page was using an old achievements API (`/api/user/achievements`) th
 You need to run TWO migrations in your Supabase SQL editor:
 
 #### Migration 1: Create Badges System
+
 ```sql
 -- Run the entire contents of:
 -- supabase/migrations/20260112_create_badges_system.sql
 ```
 
 This creates:
+
 - `badges` table with 60+ badge definitions
 - `user_badges` table to track earned badges
 - Includes the "New Voice" (First Timer) badge
 
 #### Migration 2: Add RLS Policies
+
 ```sql
 -- Run the entire contents of:
 -- supabase/migrations/20260113_add_badges_rls_policies.sql
 ```
 
 This adds:
+
 - Row Level Security policies
 - Proper access control for badge awarding
 
@@ -61,6 +68,7 @@ This adds:
 ```
 
 This creates:
+
 - `get_user_badge_stats()` - Calculates user statistics
 - `check_badge_earned()` - Validates badge eligibility
 
@@ -75,6 +83,7 @@ WHERE id = 'milestone_new_voice';
 ```
 
 Expected result:
+
 ```
 id                    | name       | description              | badge_group | icon_path              | rule_type    | threshold
 ----------------------|------------|--------------------------|-------------|------------------------|--------------|----------
@@ -93,6 +102,7 @@ ON CONFLICT (user_id, badge_id) DO NOTHING;
 ```
 
 To find your user ID:
+
 ```sql
 SELECT id, email FROM auth.users WHERE email = 'your-email@example.com';
 ```
@@ -100,6 +110,7 @@ SELECT id, email FROM auth.users WHERE email = 'your-email@example.com';
 ### Step 5: Test Badge Awarding Flow
 
 1. **Clear existing test data** (optional):
+
 ```sql
 -- Delete test badges
 DELETE FROM public.user_badges WHERE user_id = 'YOUR_USER_ID';
@@ -108,6 +119,7 @@ DELETE FROM public.user_badges WHERE user_id = 'YOUR_USER_ID';
 2. **Submit a new review** through the app
 
 3. **Check if badge was awarded**:
+
 ```sql
 SELECT ub.*, b.name, b.description
 FROM public.user_badges ub
@@ -117,6 +129,7 @@ ORDER BY ub.awarded_at DESC;
 ```
 
 4. **Check server logs** for badge awarding:
+
 - Look for: `[Badge Check] User xxx earned X new badges`
 - If you see errors, they will appear in your Next.js console
 
@@ -135,6 +148,7 @@ ORDER BY ub.awarded_at DESC;
 ### Badge not showing on profile?
 
 1. **Check if migrations ran**:
+
 ```sql
 -- Check if tables exist
 SELECT table_name FROM information_schema.tables
@@ -143,20 +157,24 @@ AND table_name IN ('badges', 'user_badges');
 ```
 
 2. **Check if badge was awarded**:
+
 ```sql
 SELECT * FROM public.user_badges WHERE user_id = 'YOUR_USER_ID';
 ```
 
 3. **Check RLS policies**:
+
 ```sql
 SELECT * FROM pg_policies WHERE tablename IN ('badges', 'user_badges');
 ```
 
 4. **Check browser console** for API errors:
+
 - Open DevTools → Console
 - Look for errors from `/api/badges/user`
 
 5. **Check if badge catalog is populated**:
+
 ```sql
 SELECT COUNT(*) as total_badges FROM public.badges;
 -- Should return 60+
@@ -169,12 +187,14 @@ SELECT COUNT(*) as total_badges FROM public.badges;
    - `[Review Create] Error triggering badge check`
 
 2. **Manually trigger badge check**:
+
 ```bash
 curl -X POST http://localhost:3000/api/badges/check-and-award \
   -H "Cookie: your-session-cookie"
 ```
 
 3. **Check RPC functions exist**:
+
 ```sql
 SELECT routine_name FROM information_schema.routines
 WHERE routine_schema = 'public'
@@ -188,6 +208,7 @@ AND routine_name IN ('get_user_badge_stats', 'check_badge_earned');
    - Should have 74 PNG files in that directory
 
 2. **Check icon_path in database**:
+
 ```sql
 SELECT icon_path FROM public.badges WHERE id = 'milestone_new_voice';
 ```
@@ -250,6 +271,7 @@ SELECT icon_path FROM public.badges WHERE id = 'milestone_new_voice';
 ## Next Steps
 
 After setup:
+
 1. Test with a fresh user account
 2. Submit a review and verify badge appears immediately
 3. Check all badge types are working (milestone, specialist, explorer, community)
@@ -258,6 +280,7 @@ After setup:
 ## Support
 
 If issues persist:
+
 1. Check server logs for errors
 2. Verify all migrations ran successfully
 3. Test badge API endpoints directly

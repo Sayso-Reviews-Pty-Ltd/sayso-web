@@ -1,6 +1,6 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 interface ConsentCheckboxProps {
   checked: boolean;
@@ -31,4 +31,3 @@ export default function ConsentCheckbox({ checked, onChange }: ConsentCheckboxPr
     </div>
   );
 }
-

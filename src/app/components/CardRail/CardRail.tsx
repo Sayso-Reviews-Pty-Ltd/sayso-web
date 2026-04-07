@@ -24,10 +24,7 @@ export default function CardRail<T>({
   return (
     <div className={`flex gap-2.5 sm:gap-3 ${containerClassName}`}>
       {items.map((item, index) => (
-        <div
-          key={getKey(item, index)}
-          className={cardClassName}
-        >
+        <div key={getKey(item, index)} className={cardClassName}>
           {renderCard(item, index)}
         </div>
       ))}

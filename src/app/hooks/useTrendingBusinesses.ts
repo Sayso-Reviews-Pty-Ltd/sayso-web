@@ -11,10 +11,10 @@
  * Uses SWR for caching and deduplication.
  */
 
-import { useEffect } from 'react';
-import useSWR from 'swr';
-import { Business } from '../components/BusinessCard/BusinessCard';
-import { swrConfig } from '../lib/swrConfig';
+import { useEffect } from "react";
+import useSWR from "swr";
+import { Business } from "../components/BusinessCard/BusinessCard";
+import { swrConfig } from "../lib/swrConfig";
 
 export interface UseTrendingOptions {
   limit?: number;
@@ -44,9 +44,9 @@ async function fetchTrendingData(
   debug: boolean
 ): Promise<{ businesses: Business[]; count: number; refreshedAt: string | null }> {
   const params = new URLSearchParams();
-  params.set('limit', limit.toString());
-  if (category) params.set('category', category);
-  if (debug) params.set('debug', '1');
+  params.set("limit", limit.toString());
+  if (category) params.set("category", category);
+  if (debug) params.set("debug", "1");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 18_000);
@@ -58,15 +58,17 @@ async function fetchTrendingData(
 
   if (response.status === 404) {
     usedLegacyFallback = true;
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[useTrendingBusinesses] /api/trending returned 404, falling back to /api/businesses');
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[useTrendingBusinesses] /api/trending returned 404, falling back to /api/businesses"
+      );
     }
     const fallbackParams = new URLSearchParams();
-    fallbackParams.set('limit', limit.toString());
-    if (category) fallbackParams.set('category', category);
-    fallbackParams.set('feed_strategy', 'standard');
-    fallbackParams.set('sort_by', 'total_reviews');
-    fallbackParams.set('sort_order', 'desc');
+    fallbackParams.set("limit", limit.toString());
+    if (category) fallbackParams.set("category", category);
+    fallbackParams.set("feed_strategy", "standard");
+    fallbackParams.set("sort_by", "total_reviews");
+    fallbackParams.set("sort_order", "desc");
     response = await fetch(`/api/businesses?${fallbackParams.toString()}`, {
       signal: controller.signal,
     });
@@ -103,12 +105,10 @@ async function fetchTrendingData(
   };
 }
 
-export function useTrendingBusinesses(
-  options: UseTrendingOptions = {},
-): UseTrendingResult {
+export function useTrendingBusinesses(options: UseTrendingOptions = {}): UseTrendingResult {
   const { limit = 20, category, skip = false, debug = false, fallbackData } = options;
 
-  const swrKey = skip ? null : ['trending', limit, category ?? '', debug];
+  const swrKey = skip ? null : ["trending", limit, category ?? "", debug];
 
   const fallbackSWRData = fallbackData
     ? { businesses: fallbackData, count: fallbackData.length, refreshedAt: null }
@@ -116,7 +116,8 @@ export function useTrendingBusinesses(
 
   const { data, error, isLoading, mutate } = useSWR(
     swrKey,
-    ([, l, c, d]: [string, number, string, boolean]) => fetchTrendingData('trending', l, c || undefined, d),
+    ([, l, c, d]: [string, number, string, boolean]) =>
+      fetchTrendingData("trending", l, c || undefined, d),
     {
       ...swrConfig,
       dedupingInterval: 60000, // Longer for Trending - same data for everyone
@@ -129,15 +130,15 @@ export function useTrendingBusinesses(
   useEffect(() => {
     if (skip) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         mutate();
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [skip, mutate]);
 
-  const err = error as Error & { status?: number } | undefined;
+  const err = error as (Error & { status?: number }) | undefined;
   return {
     businesses: data?.businesses ?? [],
     loading: isLoading,

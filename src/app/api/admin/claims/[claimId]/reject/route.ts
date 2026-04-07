@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAdmin } from "@/app/api/_lib/withAuth";
 import { EmailService } from "@/app/lib/services/emailService";
-import {
-  createClaimNotification,
-  updateClaimLastNotified,
-} from "@/app/lib/claimNotifications";
+import { createClaimNotification, updateClaimLastNotified } from "@/app/lib/claimNotifications";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -12,20 +9,15 @@ export const runtime = "nodejs";
 
 const BUCKET = "business-verification";
 
-export const POST = withAdmin(async (
-  req: NextRequest,
-  { user, service, params }
-) => {
+export const POST = withAdmin(async (req: NextRequest, { user, service, params }) => {
   const claimId = (await params)?.claimId;
   if (!claimId) {
     return NextResponse.json({ error: "claimId required" }, { status: 400 });
   }
 
-  const body = await req.json().catch(() => ({} as any));
-  const reason: string =
-    (body?.reason ?? body?.rejection_reason ?? "")?.toString?.() ?? "";
-  const adminNotes: string | null =
-    (body?.admin_notes ?? body?.adminNotes ?? null) ?? null;
+  const body = await req.json().catch(() => ({}) as any);
+  const reason: string = (body?.reason ?? body?.rejection_reason ?? "")?.toString?.() ?? "";
+  const adminNotes: string | null = body?.admin_notes ?? body?.adminNotes ?? null ?? null;
 
   const { data: claim, error: claimError } = await service
     .from("business_claims")
@@ -45,10 +37,7 @@ export const POST = withAdmin(async (
   };
 
   if (claimRow.status === "verified" || claimRow.status === "rejected") {
-    return NextResponse.json(
-      { error: "Claim already processed" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Claim already processed" }, { status: 400 });
   }
 
   // Delete documents (storage + rows)
@@ -68,33 +57,21 @@ export const POST = withAdmin(async (
     }
   }
 
-  await service
-    .from("business_claim_documents")
-    .delete()
-    .eq("claim_id", claimId);
+  await service.from("business_claim_documents").delete().eq("claim_id", claimId);
 
-  const { data: rpcResult, error: rpcError } = await (service as any).rpc(
-    "verify_business_claim",
-    {
-      p_claim_id: claimId,
-      p_admin_user_id: user.id,
-      p_approved: false,
-      p_rejection_reason: reason || null,
-      p_admin_notes: adminNotes,
-    }
-  );
+  const { data: rpcResult, error: rpcError } = await (service as any).rpc("verify_business_claim", {
+    p_claim_id: claimId,
+    p_admin_user_id: user.id,
+    p_approved: false,
+    p_rejection_reason: reason || null,
+    p_admin_notes: adminNotes,
+  });
 
-  const rpcOk =
-    !!rpcResult &&
-    typeof rpcResult === "object" &&
-    (rpcResult as any).success === true;
+  const rpcOk = !!rpcResult && typeof rpcResult === "object" && (rpcResult as any).success === true;
 
   if (rpcError || !rpcOk) {
     console.error("verify_business_claim reject error:", rpcError, rpcResult);
-    return NextResponse.json(
-      { error: "Failed to reject claim" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to reject claim" }, { status: 500 });
   }
 
   const { data: businessData } = await service
@@ -123,9 +100,7 @@ export const POST = withAdmin(async (
     (profileData &&
     typeof profileData === "object" &&
     ("display_name" in profileData || "username" in profileData)
-      ? ((profileData as any).display_name ||
-          (profileData as any).username) ??
-        undefined
+      ? (((profileData as any).display_name || (profileData as any).username) ?? undefined)
       : undefined) ?? undefined;
 
   let recipientEmail: string | undefined;
@@ -163,9 +138,7 @@ export const POST = withAdmin(async (
       businessName: businessName ?? "Your business",
       status: "rejected",
       message,
-    }).catch((err) =>
-      console.error("Claim rejected email failed:", err)
-    );
+    }).catch((err) => console.error("Claim rejected email failed:", err));
   }
 
   return NextResponse.json({ success: true, message: "Claim rejected." });

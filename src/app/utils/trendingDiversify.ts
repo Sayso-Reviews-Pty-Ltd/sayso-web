@@ -14,10 +14,12 @@ function defaultCategoryKey(item: any): string {
     item?.bucket ??
     item?.category_label ??
     item?.subInterestLabel ??
-    'miscellaneous';
+    "miscellaneous";
 
-  const key = String(raw ?? 'miscellaneous').trim().toLowerCase();
-  return key || 'miscellaneous';
+  const key = String(raw ?? "miscellaneous")
+    .trim()
+    .toLowerCase();
+  return key || "miscellaneous";
 }
 
 /**
@@ -33,7 +35,7 @@ function defaultCategoryKey(item: any): string {
 export function diversifyTrendingItems<T>(
   items: T[],
   limit: number,
-  options: TrendingDiversifyOptions<T> = {},
+  options: TrendingDiversifyOptions<T> = {}
 ): T[] {
   const safeLimit = Math.max(0, limit | 0);
   if (safeLimit === 0 || items.length === 0) return [];
@@ -48,7 +50,10 @@ export function diversifyTrendingItems<T>(
   // 1) One per category (in input order)
   for (const item of items) {
     const keyRaw = getCategoryKey(item);
-    const key = String(keyRaw ?? 'miscellaneous').trim().toLowerCase() || 'miscellaneous';
+    const key =
+      String(keyRaw ?? "miscellaneous")
+        .trim()
+        .toLowerCase() || "miscellaneous";
     if (usedCategories.has(key)) continue;
     result.push(item);
     usedCategories.add(key);

@@ -27,20 +27,15 @@ const actionsVariants = {
   },
 };
 
-export default function SubcategoryActions({ 
-  canProceed, 
-  isNavigating, 
-  isLoading, 
-  selectedCount, 
-  onContinue
+export default function SubcategoryActions({
+  canProceed,
+  isNavigating,
+  isLoading,
+  selectedCount,
+  onContinue,
 }: SubcategoryActionsProps) {
   return (
-    <m.div
-      className="pt-6"
-      variants={actionsVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <m.div className="pt-6" variants={actionsVariants} initial="hidden" animate="visible">
       <OnboardingButton
         canProceed={canProceed}
         isNavigating={isNavigating}

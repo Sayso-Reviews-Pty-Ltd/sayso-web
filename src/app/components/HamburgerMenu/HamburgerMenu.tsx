@@ -29,9 +29,10 @@ export default function HamburgerMenu({ isOpen, onToggle, className = "" }: Hamb
         {/* Top line */}
         <span
           className={`block h-0.5 w-5 bg-charcoal/70 transition-all duration-300 ease-in-out
-            ${isOpen
-              ? 'rotate-45 translate-y-1.5 bg-coral'
-              : 'rotate-0 translate-y-0 hover:bg-card-bg'
+            ${
+              isOpen
+                ? "rotate-45 translate-y-1.5 bg-coral"
+                : "rotate-0 translate-y-0 hover:bg-card-bg"
             }
           `}
         />
@@ -39,19 +40,17 @@ export default function HamburgerMenu({ isOpen, onToggle, className = "" }: Hamb
         {/* Middle line */}
         <span
           className={`block h-0.5 w-5 bg-charcoal/70 transition-all duration-300 ease-in-out mt-1
-            ${isOpen
-              ? 'opacity-0 scale-0'
-              : 'opacity-100 scale-100 hover:bg-card-bg'
-            }
+            ${isOpen ? "opacity-0 scale-0" : "opacity-100 scale-100 hover:bg-card-bg"}
           `}
         />
 
         {/* Bottom line */}
         <span
           className={`block h-0.5 w-5 bg-charcoal/70 transition-all duration-300 ease-in-out mt-1
-            ${isOpen
-              ? '-rotate-45 -translate-y-1.5 bg-coral'
-              : 'rotate-0 translate-y-0 hover:bg-card-bg'
+            ${
+              isOpen
+                ? "-rotate-45 -translate-y-1.5 bg-coral"
+                : "rotate-0 translate-y-0 hover:bg-card-bg"
             }
           `}
         />

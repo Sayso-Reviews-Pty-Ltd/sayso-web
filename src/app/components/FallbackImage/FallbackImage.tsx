@@ -43,17 +43,13 @@ export default function FallbackImage({
   // If src is empty or falsy, show fallback immediately
   if (!src || src.trim() === "" || imageError) {
     return (
-      <div className={`bg-gradient-to-br from-sage/10 to-coral/10 flex items-center justify-center ${className}`}>
+      <div
+        className={`bg-gradient-to-br from-sage/10 to-coral/10 flex items-center justify-center ${className}`}
+      >
         {fallbackType === "profile" ? (
-          <User
-            className="text-charcoal/60"
-            style={{ fontSize: fill ? "2rem" : "1.5rem" }}
-          />
+          <User className="text-charcoal/60" style={{ fontSize: fill ? "2rem" : "1.5rem" }} />
         ) : (
-          <ImageIcon
-            className="text-charcoal/60"
-            style={{ fontSize: fill ? "2.5rem" : "2rem" }}
-          />
+          <ImageIcon className="text-charcoal/60" style={{ fontSize: fill ? "2.5rem" : "2rem" }} />
         )}
       </div>
     );
@@ -62,12 +58,14 @@ export default function FallbackImage({
   return (
     <>
       {isLoading && (
-        <div className={`absolute inset-0 bg-gradient-to-br from-sage/5 to-coral/5 animate-pulse ${className}`} />
+        <div
+          className={`absolute inset-0 bg-gradient-to-br from-sage/5 to-coral/5 animate-pulse ${className}`}
+        />
       )}
       <Image
         src={src}
         alt={alt}
-        className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
+        className={`transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"} ${className}`}
         fill={fill}
         width={!fill ? width : undefined}
         height={!fill ? height : undefined}

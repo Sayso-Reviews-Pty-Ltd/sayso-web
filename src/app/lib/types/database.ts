@@ -10,8 +10,8 @@ export interface User {
 
 export interface Profile {
   id: string;
-  role?: 'user' | 'business_owner' | 'admin';
-  account_role?: 'user' | 'business_owner' | 'admin';
+  role?: "user" | "business_owner" | "admin";
+  account_role?: "user" | "business_owner" | "admin";
   email?: string;
   email_verified?: boolean;
   email_verified_at?: string;
@@ -71,7 +71,7 @@ export interface SignUpData {
   email: string;
   password: string;
   username: string;
-  accountType?: 'user' | 'business_owner';
+  accountType?: "user" | "business_owner";
   displayName?: string;
   consentGiven?: boolean;
 }
@@ -93,7 +93,7 @@ export interface Business {
   website?: string;
   image_url?: string;
   verified: boolean;
-  price_range: '$' | '$$' | '$$$' | '$$$$';
+  price_range: "$" | "$$" | "$$$" | "$$$$";
   created_at: string;
   updated_at: string;
   owner_id?: string;
@@ -135,7 +135,7 @@ export interface BusinessStats {
     punctuality: number;
     friendliness: number;
     trustworthiness: number;
-    'cost-effectiveness': number;
+    "cost-effectiveness": number;
   };
 }
 
@@ -269,7 +269,7 @@ export interface BusinessSearchFilters {
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'review' | 'business' | 'user' | 'highlyRated' | 'gamification';
+  type: "review" | "business" | "user" | "highlyRated" | "gamification";
   message: string;
   title: string;
   image?: string | null;
@@ -282,7 +282,7 @@ export interface Notification {
 
 export interface CreateNotificationData {
   user_id?: string; // Optional, defaults to authenticated user
-  type: 'review' | 'business' | 'user' | 'highlyRated' | 'gamification';
+  type: "review" | "business" | "user" | "highlyRated" | "gamification";
   message: string;
   title: string;
   image?: string;

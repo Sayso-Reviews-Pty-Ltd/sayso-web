@@ -6,7 +6,7 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 30;
 
 // In-memory cache with TTL (30 seconds)
@@ -17,7 +17,7 @@ function getCacheKey(searchParams: URLSearchParams): string {
   return Array.from(searchParams.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => `${key}=${value}`)
-    .join('&');
+    .join("&");
 }
 
 function getCachedData(key: string) {
@@ -33,8 +33,9 @@ function setCachedData(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
   // Clean up old cache entries (keep last 50)
   if (cache.size > 50) {
-    const oldestKey = Array.from(cache.entries())
-      .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
+    const oldestKey = Array.from(cache.entries()).sort(
+      ([, a], [, b]) => a.timestamp - b.timestamp
+    )[0][0];
     cache.delete(oldestKey);
   }
 }
@@ -205,8 +206,9 @@ function calculateHypeScore(event: any): number {
     const eventDate = new Date(event.start_date);
     const now = new Date();
     const daysUntil = (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    
-    if (daysUntil <= 7) score += 20; // This week
+
+    if (daysUntil <= 7)
+      score += 20; // This week
     else if (daysUntil <= 30) score += 10; // This month
   }
 
@@ -219,7 +221,7 @@ function calculateHypeScore(event: any): number {
 // ---- SORTING ----
 function sortByHype(events: any[]): any[] {
   return events
-    .map(event => ({
+    .map((event) => ({
       ...event,
       hypeScore: calculateHypeScore(event),
       tags: getEventTags(event),
@@ -254,8 +256,8 @@ export async function GET(req: NextRequest) {
     if (cached && !debug) {
       return NextResponse.json(cached, {
         headers: {
-          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
-          'X-Cache': 'hit',
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+          "X-Cache": "hit",
         },
       });
     }
@@ -267,7 +269,9 @@ export async function GET(req: NextRequest) {
     // ticketmaster_events table is deprecated for reads.
     let query = supabase
       .from("events_and_specials")
-      .select("id, title, description, type, start_date, end_date, location, venue_name, image, booking_url, icon, price")
+      .select(
+        "id, title, description, type, start_date, end_date, location, venue_name, image, booking_url, icon, price"
+      )
       .eq("icon", "ticketmaster")
       .eq("type", "event")
       .gte("start_date", nowIso)
@@ -280,10 +284,7 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error("[GET /ticketmaster/events] Supabase error:", error);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
     // Normalize events_and_specials field names to match the legacy response shape
@@ -302,23 +303,26 @@ export async function GET(req: NextRequest) {
     }));
 
     if (debug) {
-      return NextResponse.json({
-        success: true,
-        debug: true,
-        total: allEvents.length,
-        sample: allEvents.slice(0, 20),
-      }, {
-        headers: {
-          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+      return NextResponse.json(
+        {
+          success: true,
+          debug: true,
+          total: allEvents.length,
+          sample: allEvents.slice(0, 20),
         },
-      });
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+          },
+        }
+      );
     }
 
     // Filter dopamine events
     let filtered = allEvents.filter((event) => isDopamineEvent(event));
 
     // Add tags and hype scores
-    filtered = filtered.map(event => ({
+    filtered = filtered.map((event) => ({
       ...event,
       tags: getEventTags(event),
       hypeScore: calculateHypeScore(event),
@@ -355,8 +359,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
-        'X-Cache': 'miss',
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+        "X-Cache": "miss",
       },
     });
   } catch (err: any) {

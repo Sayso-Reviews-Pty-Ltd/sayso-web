@@ -6,7 +6,11 @@ import { Trophy, Star, ImageIcon } from "@/app/lib/icons";
 import Link from "next/link";
 import Image from "next/image";
 import { BusinessOfTheMonth } from "../../types/community";
-import { getCategoryPlaceholder, getCategoryPlaceholderFromLabels, isPlaceholderImage } from "../../utils/categoryToPngMapping";
+import {
+  getCategoryPlaceholder,
+  getCategoryPlaceholderFromLabels,
+  isPlaceholderImage,
+} from "../../utils/categoryToPngMapping";
 import { getCategorySlugFromBusiness } from "../../utils/subcategoryPlaceholders";
 
 interface BusinessOfMonthPodiumProps {
@@ -14,7 +18,13 @@ interface BusinessOfMonthPodiumProps {
 }
 
 // Helper component for business image with fallback logic
-function BusinessImage({ business, size }: { business: BusinessOfTheMonth; size: 'small' | 'medium' | 'large' }) {
+function BusinessImage({
+  business,
+  size,
+}: {
+  business: BusinessOfTheMonth;
+  size: "small" | "medium" | "large";
+}) {
   const [imgError, setImgError] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
 
@@ -24,36 +34,45 @@ function BusinessImage({ business, size }: { business: BusinessOfTheMonth; size:
     const uploadedImages = (business as any).uploaded_images;
     if (uploadedImages && Array.isArray(uploadedImages) && uploadedImages.length > 0) {
       const firstImageUrl = uploadedImages[0];
-      if (firstImageUrl &&
-        typeof firstImageUrl === 'string' &&
-        firstImageUrl.trim() !== '' &&
-        !isPlaceholderImage(firstImageUrl)) {
+      if (
+        firstImageUrl &&
+        typeof firstImageUrl === "string" &&
+        firstImageUrl.trim() !== "" &&
+        !isPlaceholderImage(firstImageUrl)
+      ) {
         return { image: firstImageUrl, isPlaceholder: false };
       }
     }
 
     const imageUrl = (business as any).image_url;
-    if (imageUrl &&
-      typeof imageUrl === 'string' &&
-      imageUrl.trim() !== '' &&
-      !isPlaceholderImage(imageUrl)) {
+    if (
+      imageUrl &&
+      typeof imageUrl === "string" &&
+      imageUrl.trim() !== "" &&
+      !isPlaceholderImage(imageUrl)
+    ) {
       return { image: imageUrl, isPlaceholder: false };
     }
 
-    if (business.image &&
-      typeof business.image === 'string' &&
-      business.image.trim() !== '' &&
-      !isPlaceholderImage(business.image)) {
+    if (
+      business.image &&
+      typeof business.image === "string" &&
+      business.image.trim() !== "" &&
+      !isPlaceholderImage(business.image)
+    ) {
       return { image: business.image, isPlaceholder: false };
     }
 
-    const placeholder = getCategoryPlaceholderFromLabels([
-      (business as any).subInterestId,
-      (business as any).subInterestLabel,
-      business.category,
-      categoryKey,
-      business.monthAchievement
-    ], (business as any).interestId);
+    const placeholder = getCategoryPlaceholderFromLabels(
+      [
+        (business as any).subInterestId,
+        (business as any).subInterestLabel,
+        business.category,
+        categoryKey,
+        business.monthAchievement,
+      ],
+      (business as any).interestId
+    );
     return { image: placeholder, isPlaceholder: true };
   }, [
     business.image,
@@ -79,9 +98,9 @@ function BusinessImage({ business, size }: { business: BusinessOfTheMonth; size:
   };
 
   const sizeClasses = {
-    small: 'w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24',
-    medium: 'w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32',
-    large: 'w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32',
+    small: "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24",
+    medium: "w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32",
+    large: "w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32",
   };
 
   return (
@@ -99,7 +118,7 @@ function BusinessImage({ business, size }: { business: BusinessOfTheMonth; size:
       ) : (
         <div
           className="w-full h-full flex items-center justify-center"
-          style={{ backgroundColor: '#E5E0E5' }}
+          style={{ backgroundColor: "#E5E0E5" }}
         >
           <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-charcoal/20" aria-hidden="true" />
         </div>
@@ -114,11 +133,7 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
   }
 
   // Ensure we have at least 3 businesses, pad with empty slots if needed
-  const businesses = [
-    topBusinesses[0],
-    topBusinesses[1] || null,
-    topBusinesses[2] || null,
-  ];
+  const businesses = [topBusinesses[0], topBusinesses[1] || null, topBusinesses[2] || null];
 
   return (
     <div className="flex flex-row justify-center items-end gap-1.5 sm:gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8 md:mb-12 pt-6 sm:pt-8 md:pt-10 px-2 sm:px-4 md:px-6 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
@@ -136,19 +151,20 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
                 <div className="flex items-center justify-center mx-auto">
                   <BusinessImage business={businesses[1]} size="small" />
                 </div>
-              <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-slate-100 to-slate-300 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-2 border-white ring-2 ring-white/50">
-              <span className="text-body-sm sm:text-body font-bold text-charcoal">2</span>
-            </div> 
+                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-slate-100 to-slate-300 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-2 border-white ring-2 ring-white/50">
+                  <span className="text-body-sm sm:text-body font-bold text-charcoal">2</span>
+                </div>
               </div>
 
               <div className="font-urbanist text-xs sm:text-body-sm md:text-body font-700 text-charcoal mb-1 line-clamp-2 px-1 sm:px-2 max-w-full min-h-[2rem] sm:min-h-[2.5rem] md:min-h-[3rem] break-words flex items-start justify-center gap-1">
-                
                 <span className="line-clamp-2">{businesses[1].name}</span>
               </div>
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[1].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[1].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[1].reviews || 0})</span>
               </div>
 
@@ -175,7 +191,9 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[1].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[1].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[1].reviews || 0})</span>
               </div>
 
@@ -208,15 +226,15 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
               </div>
 
               <div className="font-urbanist text-sm sm:text-body md:text-h3 font-700 text-charcoal mb-1 line-clamp-2 px-1 sm:px-2 max-w-full min-h-[2rem] sm:min-h-[2.5rem] md:min-h-[3rem] break-words flex items-start justify-center gap-1">
-                <span className="shrink-0 inline-flex items-center gap-1 font-800 text-charcoal">
-                
-                </span>
+                <span className="shrink-0 inline-flex items-center gap-1 font-800 text-charcoal"></span>
                 <span className="line-clamp-2">{businesses[0].name}</span>
               </div>
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[0].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[0].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[0].reviews || 0})</span>
               </div>
 
@@ -246,7 +264,9 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[0].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[0].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[0].reviews || 0})</span>
               </div>
 
@@ -279,13 +299,14 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
               </div>
 
               <div className="font-urbanist text-body-sm sm:text-body font-700 text-charcoal mb-1 truncate px-2 max-w-full overflow-hidden min-h-[1.5rem] sm:min-h-[1.75rem] flex items-center justify-center gap-1">
-              
                 <span className="truncate">{businesses[2].name}</span>
               </div>
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[2].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[2].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[2].reviews || 0})</span>
               </div>
 
@@ -312,7 +333,9 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
 
               <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 mb-2 flex items-center justify-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-                <span className="font-700 text-charcoal">{businesses[2].totalRating?.toFixed(1) || "0.0"}</span>
+                <span className="font-700 text-charcoal">
+                  {businesses[2].totalRating?.toFixed(1) || "0.0"}
+                </span>
                 <span className="text-charcoal/70">({businesses[2].reviews || 0})</span>
               </div>
 
@@ -329,4 +352,3 @@ function BusinessOfMonthPodium({ topBusinesses }: BusinessOfMonthPodiumProps) {
 }
 
 export default memo(BusinessOfMonthPodium);
-

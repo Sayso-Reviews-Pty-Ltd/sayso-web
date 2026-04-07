@@ -32,7 +32,7 @@ export default function GlobalHeader() {
 
   const shouldHide = useMemo(() => {
     if (!pathname) return false;
-    return EXCLUDED_ROUTES.some(route => pathname === route || pathname.startsWith(route + "/"));
+    return EXCLUDED_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
   }, [pathname]);
 
   if (shouldHide) return null;

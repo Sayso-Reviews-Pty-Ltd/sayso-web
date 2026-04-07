@@ -3,15 +3,15 @@
  * Uses SWR for caching and deduplication. Shared by BusinessOwnedEventsSection and EventsForm.
  */
 
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
 
 export interface BusinessEvent {
   id: string;
   title: string;
-  type: 'event' | 'special';
+  type: "event" | "special";
   startDate: string;
   endDate?: string;
   location: string;
@@ -27,7 +27,7 @@ export interface BusinessEvent {
 
 async function fetchBusinessEvents([, businessId]: [string, string]): Promise<BusinessEvent[]> {
   const res = await fetch(`/api/businesses/${businessId}/events`);
-  if (!res.ok) throw new Error('Failed to fetch events');
+  if (!res.ok) throw new Error("Failed to fetch events");
   const result = await res.json();
   return result.data ?? [];
 }

@@ -29,7 +29,7 @@ async function screenshot(page, name) {
     // Step 2 — Click "Forgot password?" link
     console.log("[2/5] Looking for Forgot password link...");
     const forgotLink = page.locator('a[href="/forgot-password"]').first();
-    if (await forgotLink.count() === 0) {
+    if ((await forgotLink.count()) === 0) {
       console.log("  Link not found on login page — navigating directly to /forgot-password");
       await page.goto(`${BASE_URL}/forgot-password`, { waitUntil: "networkidle" });
     } else {
@@ -57,21 +57,30 @@ async function screenshot(page, name) {
     // Step 5 — Wait for success state
     console.log("[5/5] Waiting for success screen...");
     try {
-      await page.waitForSelector('text=Check your email', { timeout: 10000 });
+      await page.waitForSelector("text=Check your email", { timeout: 10000 });
       console.log("  Success screen detected!");
     } catch {
-      console.log("  'Check your email' heading not found within timeout — capturing current state anyway");
+      console.log(
+        "  'Check your email' heading not found within timeout — capturing current state anyway"
+      );
     }
     await page.waitForTimeout(1500);
     await screenshot(page, "fp-05-success-screen.png");
 
     // Report final state
-    const heading = await page.locator("h2").first().textContent().catch(() => "(none)");
-    const emailDisplay = await page.locator(`text=${EMAIL}`).first().textContent().catch(() => "(not visible)");
+    const heading = await page
+      .locator("h2")
+      .first()
+      .textContent()
+      .catch(() => "(none)");
+    const emailDisplay = await page
+      .locator(`text=${EMAIL}`)
+      .first()
+      .textContent()
+      .catch(() => "(not visible)");
     console.log(`\n  Page heading: "${heading}"`);
     console.log(`  Email on screen: "${emailDisplay}"`);
     console.log("\nFORGOT PASSWORD FLOW: PASS");
-
   } catch (err) {
     console.error("\n  ERROR during test:", err.message);
     await screenshot(page, "fp-error-state.png").catch(() => {});

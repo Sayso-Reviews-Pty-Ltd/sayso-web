@@ -10,12 +10,12 @@
  * reviews, or recency get a boost so they still surface (don't permanently bury new/uncategorized).
  */
 
-import { CANONICAL_SUBCATEGORY_SLUGS, INTEREST_LABELS } from './subcategoryPlaceholders';
+import { CANONICAL_SUBCATEGORY_SLUGS, INTEREST_LABELS } from "./subcategoryPlaceholders";
 import {
   calculateContactRankingBoost,
   compareContactCompletenessDesc,
   type ContactCompletenessCandidate,
-} from '@/app/lib/utils/contactCompleteness';
+} from "@/app/lib/utils/contactCompleteness";
 
 /** Minimal shape needed for tier/priority; feed items (e.g. Business, SearchResult) extend this. */
 export type BusinessWithClassification = ContactCompletenessCandidate & {
@@ -40,14 +40,14 @@ export type BusinessWithClassification = ContactCompletenessCandidate & {
 
 /** Normalize interest id for Tier 2 check (lowercase, trimmed) */
 function normalizeInterestId(value: string | null | undefined): string | null {
-  if (value == null || typeof value !== 'string') return null;
+  if (value == null || typeof value !== "string") return null;
   const s = value.trim().toLowerCase();
   return s || null;
 }
 
 /** Known interest slugs (top-level) — from subcategoryPlaceholders, exclude miscellaneous */
 const KNOWN_INTEREST_SLUGS = Object.keys(INTEREST_LABELS).filter(
-  (slug) => slug !== 'miscellaneous'
+  (slug) => slug !== "miscellaneous"
 ) as string[];
 export enum BusinessTier {
   TIER_1_CANONICAL = 1,
@@ -64,8 +64,13 @@ export function getBusinessTier(business: BusinessWithClassification): BusinessT
   const interestId = normalizeInterestId(business.interest_id ?? business.interestId);
 
   // Tier 1: Has canonical sub_interest_id, excluding "miscellaneous"
-  if (subInterestId && CANONICAL_SUBCATEGORY_SLUGS.includes(subInterestId as (typeof CANONICAL_SUBCATEGORY_SLUGS)[number])) {
-    if (subInterestId === 'miscellaneous') return BusinessTier.TIER_3_MISCELLANEOUS;
+  if (
+    subInterestId &&
+    CANONICAL_SUBCATEGORY_SLUGS.includes(
+      subInterestId as (typeof CANONICAL_SUBCATEGORY_SLUGS)[number]
+    )
+  ) {
+    if (subInterestId === "miscellaneous") return BusinessTier.TIER_3_MISCELLANEOUS;
     return BusinessTier.TIER_1_CANONICAL;
   }
 
@@ -81,17 +86,22 @@ export function getBusinessTier(business: BusinessWithClassification): BusinessT
  */
 export function hasUploadedImages(business: BusinessWithClassification): boolean {
   // Check uploaded_images array first
-  if (business.uploaded_images && Array.isArray(business.uploaded_images) && business.uploaded_images.length > 0) {
+  if (
+    business.uploaded_images &&
+    Array.isArray(business.uploaded_images) &&
+    business.uploaded_images.length > 0
+  ) {
     return true;
   }
-  
+
   // Check if image_url exists and doesn't look like a placeholder
   if (business.image_url) {
-    const isPlaceholder = business.image_url.includes('/businessImagePlaceholders/') || 
-                         business.image_url.includes('placeholder');
+    const isPlaceholder =
+      business.image_url.includes("/businessImagePlaceholders/") ||
+      business.image_url.includes("placeholder");
     return !isPlaceholder;
   }
-  
+
   return false;
 }
 
@@ -117,7 +127,7 @@ export function getMiscellaneousBoost(business: BusinessWithClassification): num
   if (trendingScore > 0) boost += 60;
 
   const updatedAt = business.updated_at;
-  if (updatedAt && typeof updatedAt === 'string') {
+  if (updatedAt && typeof updatedAt === "string") {
     const ageMs = Date.now() - new Date(updatedAt).getTime();
     if (ageMs < 7 * 24 * 60 * 60 * 1000) boost += 50; // updated in last 7 days
   }
@@ -181,11 +191,11 @@ export function getBusinessTierStats(businesses: BusinessWithClassification[]): 
     tier1WithImages: 0,
     total: businesses.length,
   };
-  
-  businesses.forEach(business => {
+
+  businesses.forEach((business) => {
     const tier = getBusinessTier(business);
     const hasImages = hasUploadedImages(business);
-    
+
     if (tier === BusinessTier.TIER_1_CANONICAL) {
       stats.tier1++;
       if (hasImages) stats.tier1WithImages++;
@@ -195,6 +205,6 @@ export function getBusinessTierStats(businesses: BusinessWithClassification[]): 
       stats.tier3++;
     }
   });
-  
+
   return stats;
 }

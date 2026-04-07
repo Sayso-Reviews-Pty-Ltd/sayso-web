@@ -1,4 +1,4 @@
-import { getServerSupabase } from '../supabase/server';
+import { getServerSupabase } from "../supabase/server";
 
 interface RateLimitResult {
   allowed: boolean;
@@ -18,19 +18,19 @@ export class ReviewRateLimiter {
   static async checkRateLimit(userId: string): Promise<RateLimitResult> {
     try {
       const supabase = await getServerSupabase();
-      
+
       // Get reviews from the last hour
       const oneHourAgo = new Date(Date.now() - this.WINDOW_MS).toISOString();
-      
+
       const { data: recentReviews, error } = await supabase
-        .from('reviews')
-        .select('created_at')
-        .eq('user_id', userId)
-        .gte('created_at', oneHourAgo)
-        .order('created_at', { ascending: false });
+        .from("reviews")
+        .select("created_at")
+        .eq("user_id", userId)
+        .gte("created_at", oneHourAgo)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Error checking rate limit:', error);
+        console.error("Error checking rate limit:", error);
         // On error, allow the request to avoid blocking legitimate users
         // but log the error for monitoring
         return {
@@ -59,7 +59,7 @@ export class ReviewRateLimiter {
           allowed: false,
           remainingAttempts: 0,
           resetAt,
-          error: `Rate limit exceeded. You can submit ${this.MAX_REVIEWS_PER_HOUR} reviews per hour. Please try again in ${minutesUntilReset} minute${minutesUntilReset !== 1 ? 's' : ''}.`,
+          error: `Rate limit exceeded. You can submit ${this.MAX_REVIEWS_PER_HOUR} reviews per hour. Please try again in ${minutesUntilReset} minute${minutesUntilReset !== 1 ? "s" : ""}.`,
         };
       }
 
@@ -69,7 +69,7 @@ export class ReviewRateLimiter {
         resetAt,
       };
     } catch (error) {
-      console.error('Unexpected error in rate limit check:', error);
+      console.error("Unexpected error in rate limit check:", error);
       // Fail open - allow request on unexpected errors
       return {
         allowed: true,
@@ -79,4 +79,3 @@ export class ReviewRateLimiter {
     }
   }
 }
-

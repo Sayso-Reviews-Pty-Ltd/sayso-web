@@ -25,6 +25,7 @@
 ### Test 0.1: Create Business - Happy Path (No Images)
 
 **Steps:**
+
 1. Navigate to `/add-business`
 2. Fill out required fields:
    - Business Name: "Test Restaurant"
@@ -43,6 +44,7 @@
 6. Verify redirect to business profile or owner dashboard
 
 **Expected Results:**
+
 - ✅ Form validation passes
 - ✅ Business created in database
 - ✅ Business owner record created automatically
@@ -52,6 +54,7 @@
 - ✅ Redirects to business page or owner dashboard
 
 **Database Checks:**
+
 ```sql
 -- Check business created
 SELECT id, name, category, location, slug, owner_id, verified, status
@@ -74,6 +77,7 @@ WHERE business_id = '<business_id>';
 ### Test 0.2: Create Business with Images
 
 **Steps:**
+
 1. Navigate to `/add-business`
 2. Fill out required fields (same as Test 0.1)
 3. Select 3-5 images before submitting
@@ -82,6 +86,7 @@ WHERE business_id = '<business_id>';
 6. Verify images uploaded and saved
 
 **Expected Results:**
+
 - ✅ Business created first
 - ✅ Images uploaded to storage
 - ✅ URLs saved to `uploaded_images` array
@@ -90,6 +95,7 @@ WHERE business_id = '<business_id>';
 - ✅ No orphaned files if DB update fails
 
 **Database Check:**
+
 ```sql
 SELECT uploaded_images, array_length(uploaded_images, 1) as image_count
 FROM businesses
@@ -103,12 +109,14 @@ WHERE id = '<business_id>';
 **Test 0.3a: Missing Business Name**
 
 **Steps:**
+
 1. Leave "Business Name" empty
 2. Fill other required fields
 3. Try to submit
 4. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Business name is required"
 - ✅ Form does not submit
 - ✅ Error message visible
@@ -116,29 +124,34 @@ WHERE id = '<business_id>';
 **Test 0.3b: Missing Category**
 
 **Steps:**
+
 1. Fill name but leave category empty
 2. Try to submit
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Category is required"
 - ✅ Form does not submit
 
 **Test 0.3c: Missing Location (Physical Business)**
 
 **Steps:**
+
 1. Select "Physical Location" as business type
 2. Leave location empty
 3. Try to submit
 4. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Location is required"
 - ✅ Form does not submit
 
 **Test 0.3d: Location Not Required (Online-Only Business)**
 
 **Steps:**
+
 1. Select "Online Only" as business type
 2. Leave location empty
 3. Fill other required fields
@@ -146,6 +159,7 @@ WHERE id = '<business_id>';
 5. Verify business created
 
 **Expected Results:**
+
 - ✅ No location error
 - ✅ Business created successfully
 - ✅ Location can be null for online-only businesses
@@ -157,45 +171,53 @@ WHERE id = '<business_id>';
 **Test 0.4a: Invalid Email Format**
 
 **Steps:**
+
 1. Enter invalid email (e.g., "notanemail")
 2. Try to submit
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Please enter a valid email address"
 - ✅ Form does not submit
 
 **Test 0.4b: Invalid Website URL**
 
 **Steps:**
+
 1. Enter invalid website (e.g., "notawebsite")
 2. Try to submit
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Please enter a valid website URL"
 - ✅ Form does not submit
 
 **Test 0.4c: Invalid Phone Number**
 
 **Steps:**
+
 1. Enter invalid phone (e.g., "abc123")
 2. Try to submit
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Please enter a valid phone number"
 - ✅ Form does not submit
 
 **Test 0.4d: Invalid Coordinates**
 
 **Steps:**
+
 1. Enter latitude > 90 or < -90
 2. Enter longitude > 180 or < -180
 3. Try to submit
 4. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Latitude must be between -90 and 90"
 - ✅ Error: "Longitude must be between -180 and 180"
 - ✅ Form does not submit
@@ -207,11 +229,13 @@ WHERE id = '<business_id>';
 **Test 0.5a: Simple Slug Generation**
 
 **Steps:**
+
 1. Create business with name: "My Awesome Restaurant"
 2. Verify slug generated
 3. Check database
 
 **Expected Results:**
+
 - ✅ Slug: "my-awesome-restaurant"
 - ✅ Special characters removed
 - ✅ Spaces converted to hyphens
@@ -220,17 +244,20 @@ WHERE id = '<business_id>';
 **Test 0.5b: Duplicate Slug Handling**
 
 **Steps:**
+
 1. Create business: "Test Business"
 2. Create another business: "Test Business"
 3. Verify second business gets unique slug
 
 **Expected Results:**
+
 - ✅ First business: slug = "test-business"
 - ✅ Second business: slug = "test-business-1"
 - ✅ Third business: slug = "test-business-2"
 - ✅ No duplicate slugs
 
 **Database Check:**
+
 ```sql
 SELECT name, slug FROM businesses
 WHERE name LIKE 'Test Business%'
@@ -240,10 +267,12 @@ ORDER BY created_at;
 **Test 0.5c: Special Characters in Name**
 
 **Steps:**
+
 1. Create business: "Joe's Café & Bar!"
 2. Verify slug generation
 
 **Expected Results:**
+
 - ✅ Slug: "joes-cafe-bar"
 - ✅ Special characters removed
 - ✅ Apostrophes removed
@@ -255,6 +284,7 @@ ORDER BY created_at;
 **Test 0.6a: Physical Location Business**
 
 **Steps:**
+
 1. Select "Physical Location" as business type
 2. Fill location (required)
 3. Fill address (optional)
@@ -262,6 +292,7 @@ ORDER BY created_at;
 5. Verify business created
 
 **Expected Results:**
+
 - ✅ Location required
 - ✅ Business created with location
 - ✅ Can have address
@@ -270,12 +301,14 @@ ORDER BY created_at;
 **Test 0.6b: Service Area Business**
 
 **Steps:**
+
 1. Select "Service Area" as business type
 2. Fill location (required)
 3. Submit form
 4. Verify business created
 
 **Expected Results:**
+
 - ✅ Location required
 - ✅ Business created
 - ✅ May not have specific address
@@ -283,6 +316,7 @@ ORDER BY created_at;
 **Test 0.6c: Online-Only Business**
 
 **Steps:**
+
 1. Select "Online Only" as business type
 2. Leave location empty
 3. Fill other required fields
@@ -290,6 +324,7 @@ ORDER BY created_at;
 5. Verify business created
 
 **Expected Results:**
+
 - ✅ Location not required
 - ✅ Business created successfully
 - ✅ Location can be null
@@ -299,11 +334,13 @@ ORDER BY created_at;
 ### Test 0.7: Owner Assignment
 
 **Steps:**
+
 1. Create business as authenticated user
 2. Verify owner automatically assigned
 3. Check database records
 
 **Expected Results:**
+
 - ✅ `businesses.owner_id` = current user ID
 - ✅ `business_owners` record created
 - ✅ `business_owners.role` = 'owner'
@@ -311,8 +348,9 @@ ORDER BY created_at;
 - ✅ User can immediately access owner dashboard
 
 **Database Check:**
+
 ```sql
-SELECT 
+SELECT
   b.id,
   b.name,
   b.owner_id,
@@ -329,10 +367,12 @@ WHERE b.id = '<business_id>';
 ### Test 0.8: Business Stats Initialization
 
 **Steps:**
+
 1. Create new business
 2. Check business_stats record
 
 **Expected Results:**
+
 - ✅ `business_stats` record created
 - ✅ `total_reviews` = 0
 - ✅ `average_rating` = 0.0
@@ -340,6 +380,7 @@ WHERE b.id = '<business_id>';
 - ✅ `percentiles` = {}
 
 **Database Check:**
+
 ```sql
 SELECT * FROM business_stats
 WHERE business_id = '<business_id>';
@@ -352,12 +393,14 @@ WHERE business_id = '<business_id>';
 **Test 0.9a: Upload Valid Images**
 
 **Steps:**
+
 1. Create business form
 2. Select 5 valid images (< 5MB each, JPG/PNG/WebP)
 3. Submit form
 4. Monitor upload progress
 
 **Expected Results:**
+
 - ✅ Images upload successfully
 - ✅ URLs saved to `uploaded_images` array
 - ✅ First image is primary
@@ -366,12 +409,14 @@ WHERE business_id = '<business_id>';
 **Test 0.9b: Upload Too Many Images**
 
 **Steps:**
+
 1. Create business form
 2. Select 12 images (exceeds 10 limit)
 3. Submit form
 4. Verify limit enforcement
 
 **Expected Results:**
+
 - ✅ Only first 10 images uploaded
 - ✅ Warning message: "Maximum 10 images allowed. Only the first 10 images were saved."
 - ✅ Excess images not uploaded
@@ -379,12 +424,14 @@ WHERE business_id = '<business_id>';
 **Test 0.9c: Upload Invalid Images**
 
 **Steps:**
+
 1. Create business form
 2. Select invalid files (.pdf, .txt, >5MB)
 3. Try to submit
 4. Verify validation
 
 **Expected Results:**
+
 - ✅ Invalid files rejected
 - ✅ Error message shown
 - ✅ Only valid images uploaded (if any)
@@ -392,11 +439,13 @@ WHERE business_id = '<business_id>';
 **Test 0.9d: Storage Upload Succeeds, DB Update Fails**
 
 **Steps:**
+
 1. Create business with images
 2. Manually delete business record during upload (simulate DB failure)
 3. Verify rollback behavior
 
 **Expected Results:**
+
 - ✅ Storage files cleaned up
 - ✅ Error message: "Images uploaded but failed to save to database. Uploaded files have been removed."
 - ✅ No orphaned files
@@ -406,22 +455,26 @@ WHERE business_id = '<business_id>';
 ### Test 0.10: Unauthorized Access
 
 **Steps:**
+
 1. Log out or use unauthenticated session
 2. Try to access `/add-business`
 3. Verify redirect or error
 
 **Expected Results:**
+
 - ✅ Redirects to login page
 - ✅ Or shows "Unauthorized" error
 - ✅ Cannot create business without authentication
 
 **API Test:**
+
 ```bash
 POST /api/businesses
 # Without authentication token
 ```
 
 **Expected Results:**
+
 - ✅ 401 Unauthorized
 - ✅ Error: "Unauthorized. Please log in to create a business."
 
@@ -432,11 +485,13 @@ POST /api/businesses
 **Test 0.11a: Database Insert Failure**
 
 **Steps:**
+
 1. Create business with invalid data (e.g., too long name)
 2. Try to submit
 3. Verify error handling
 
 **Expected Results:**
+
 - ✅ Error message shown
 - ✅ No partial business created
 - ✅ User can retry
@@ -444,11 +499,13 @@ POST /api/businesses
 **Test 0.11b: Owner Record Creation Failure**
 
 **Steps:**
+
 1. Create business successfully
 2. Simulate `business_owners` insert failure
 3. Verify cleanup
 
 **Expected Results:**
+
 - ✅ Business record deleted (rollback)
 - ✅ Error: "Failed to assign ownership"
 - ✅ No orphaned business record
@@ -460,6 +517,7 @@ POST /api/businesses
 ### Test 0.12: Business Hours and Specials
 
 **Steps:**
+
 1. Create business form
 2. Fill business hours for each day
 3. Add specials/offers
@@ -467,11 +525,13 @@ POST /api/businesses
 5. Verify data saved
 
 **Expected Results:**
+
 - ✅ Hours saved correctly
 - ✅ Specials saved
 - ✅ Data visible on business profile
 
 **Database Check:**
+
 ```sql
 SELECT hours FROM businesses
 WHERE id = '<business_id>';
@@ -485,22 +545,26 @@ WHERE id = '<business_id>';
 **Test 0.13a: Owner Intent**
 
 **Steps:**
+
 1. Create business with `intent: 'owner'`
 2. Submit form
 3. Verify redirect
 
 **Expected Results:**
+
 - ✅ Redirects to `/owners/businesses/{businessId}`
 - ✅ Owner dashboard loads
 
 **Test 0.13b: Public Intent**
 
 **Steps:**
+
 1. Create business with `intent: 'public'` or no intent
 2. Submit form
 3. Verify redirect
 
 **Expected Results:**
+
 - ✅ Redirects to `/business/{businessId}`
 - ✅ Public business profile loads
 
@@ -509,6 +573,7 @@ WHERE id = '<business_id>';
 ### Test 0.14: Complete Workflow - Business Creation with Images
 
 **Steps:**
+
 1. Navigate to `/add-business`
 2. Fill all required fields
 3. Fill optional fields (email, phone, website)
@@ -525,6 +590,7 @@ WHERE id = '<business_id>';
    - All data visible on profile
 
 **Expected Results:**
+
 - ✅ All steps complete successfully
 - ✅ All data saved correctly
 - ✅ Images display properly
@@ -538,6 +604,7 @@ WHERE id = '<business_id>';
 ### Test 1.1: Search and Claim Business (Happy Path)
 
 **Steps:**
+
 1. Navigate to `/claim-business` or `/for-businesses`
 2. Search for an existing business (type at least 2 characters)
 3. Verify business appears in results
@@ -552,6 +619,7 @@ WHERE id = '<business_id>';
 8. Verify claim request created in database
 
 **Expected Results:**
+
 - ✅ Business search returns results
 - ✅ Claim modal opens
 - ✅ Form validation works (email required)
@@ -559,10 +627,11 @@ WHERE id = '<business_id>';
 - ✅ `business_ownership_requests` table has new record with status='pending'
 
 **Database Check:**
+
 ```sql
-SELECT * FROM business_ownership_requests 
-WHERE user_id = '<test_user_id>' 
-ORDER BY created_at DESC 
+SELECT * FROM business_ownership_requests
+WHERE user_id = '<test_user_id>'
+ORDER BY created_at DESC
 LIMIT 1;
 ```
 
@@ -571,12 +640,14 @@ LIMIT 1;
 ### Test 1.2: Claim Already Claimed Business
 
 **Steps:**
+
 1. Search for a business that's already claimed
 2. Verify status badge shows "Business already claimed"
 3. Click "Claim this business"
 4. Verify appropriate message/behavior
 
 **Expected Results:**
+
 - ✅ Status badge visible
 - ✅ Claim button disabled or shows appropriate message
 - ✅ Cannot submit duplicate claim
@@ -586,6 +657,7 @@ LIMIT 1;
 ### Test 1.3: Claim Business You Already Own
 
 **Steps:**
+
 1. As a user who already owns a business
 2. Search for that business
 3. Verify button shows "Go to dashboard"
@@ -593,6 +665,7 @@ LIMIT 1;
 5. Verify redirects to `/owners/businesses/{businessId}`
 
 **Expected Results:**
+
 - ✅ Button text changes to "Go to dashboard"
 - ✅ Redirects to owner dashboard
 - ✅ No duplicate claim created
@@ -602,11 +675,13 @@ LIMIT 1;
 ### Test 1.4: Claim with Pending Request
 
 **Steps:**
+
 1. Submit a claim request for a business
 2. Try to claim the same business again
 3. Verify "Claim pending review" message
 
 **Expected Results:**
+
 - ✅ Cannot create duplicate pending request
 - ✅ Shows "Claim pending review" status
 - ✅ Button disabled
@@ -616,6 +691,7 @@ LIMIT 1;
 ### Test 1.5: Admin Approval Flow
 
 **Steps:**
+
 1. As admin, find pending claim request
 2. Approve the claim via API or admin panel
 3. Verify `business_owners` record created
@@ -623,26 +699,29 @@ LIMIT 1;
 5. As business owner, verify access to dashboard
 
 **API Test:**
+
 ```bash
 POST /api/businesses/claims/{claim_id}/approve
 Authorization: Bearer <admin_token>
 ```
 
 **Expected Results:**
+
 - ✅ `business_owners` table has new record
 - ✅ `business_ownership_requests.status` = 'approved'
 - ✅ Owner can access `/owners/businesses/{businessId}`
 - ✅ Approval email sent (check logs)
 
 **Database Check:**
+
 ```sql
 -- Check business owner created
-SELECT * FROM business_owners 
-WHERE business_id = '<business_id>' 
+SELECT * FROM business_owners
+WHERE business_id = '<business_id>'
 AND user_id = '<owner_user_id>';
 
 -- Check claim status
-SELECT status FROM business_ownership_requests 
+SELECT status FROM business_ownership_requests
 WHERE id = '<claim_id>';
 ```
 
@@ -653,6 +732,7 @@ WHERE id = '<claim_id>';
 ### Test 2.1: Upload Images During Business Creation (Happy Path)
 
 **Steps:**
+
 1. Navigate to `/add-business`
 2. Fill out business form
 3. Select 3-5 images (all valid, < 5MB each)
@@ -662,6 +742,7 @@ WHERE id = '<claim_id>';
 7. Check business profile page for images
 
 **Expected Results:**
+
 - ✅ Images upload successfully
 - ✅ URLs saved to `businesses.uploaded_images` array
 - ✅ Images visible on business profile
@@ -669,13 +750,15 @@ WHERE id = '<claim_id>';
 - ✅ No orphaned files in storage
 
 **Database Check:**
+
 ```sql
-SELECT uploaded_images FROM businesses 
+SELECT uploaded_images FROM businesses
 WHERE id = '<business_id>';
 -- Should return array of URLs
 ```
 
 **Storage Check:**
+
 - Verify files exist in `business-images` bucket
 - Path format: `{businessId}/{businessId}_{index}_{timestamp}.{ext}`
 
@@ -684,6 +767,7 @@ WHERE id = '<business_id>';
 ### Test 2.2: Upload Images After Claiming (Owner Dashboard)
 
 **Steps:**
+
 1. As business owner, navigate to `/owners/businesses/{businessId}`
 2. Go to edit page or image upload section
 3. Select 2-3 images
@@ -692,6 +776,7 @@ WHERE id = '<business_id>';
 6. Verify images saved to database
 
 **API Test:**
+
 ```bash
 POST /api/businesses/{businessId}/images
 Authorization: Bearer <owner_token>
@@ -706,6 +791,7 @@ Content-Type: application/json
 ```
 
 **Expected Results:**
+
 - ✅ Images appended to existing array
 - ✅ All images visible (old + new)
 - ✅ No duplicates
@@ -718,12 +804,14 @@ Content-Type: application/json
 **Test 2.3a: Try to Upload More Than 10 Images**
 
 **Steps:**
+
 1. Business already has 8 images
 2. Try to upload 5 more images (would be 13 total)
 3. Verify error message
 4. Verify only 2 images added (to reach 10)
 
 **Expected Results:**
+
 - ✅ Error: "Only 2 image(s) can be added. Maximum limit is 10 images."
 - ✅ Only 2 images added
 - ✅ Total remains at 10 images
@@ -731,18 +819,21 @@ Content-Type: application/json
 **Test 2.3b: Business Already Has 10 Images**
 
 **Steps:**
+
 1. Business has exactly 10 images
 2. Try to upload 1 more image
 3. Verify error message
 
 **Expected Results:**
+
 - ✅ Error: "Maximum image limit reached (10 images). Please delete some images before adding new ones."
 - ✅ No new images added
 
 **Database Check:**
+
 ```sql
-SELECT array_length(uploaded_images, 1) as image_count 
-FROM businesses 
+SELECT array_length(uploaded_images, 1) as image_count
+FROM businesses
 WHERE id = '<business_id>';
 -- Should never exceed 10
 ```
@@ -754,11 +845,13 @@ WHERE id = '<business_id>';
 **Test 2.4a: File Too Large (> 5MB)**
 
 **Steps:**
+
 1. Select image file > 5MB
 2. Try to upload
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "File size exceeds 5MB limit"
 - ✅ File not uploaded
 - ✅ No storage file created
@@ -766,22 +859,26 @@ WHERE id = '<business_id>';
 **Test 2.4b: Invalid File Type**
 
 **Steps:**
+
 1. Select non-image file (e.g., .pdf, .txt)
 2. Try to upload
 3. Verify validation error
 
 **Expected Results:**
+
 - ✅ Error: "Invalid file type. Only JPG, PNG, WebP, GIF allowed"
 - ✅ File not uploaded
 
 **Test 2.4c: Corrupted Image File**
 
 **Steps:**
+
 1. Select corrupted image file (rename .txt to .jpg)
 2. Try to upload
 3. Verify behavior
 
 **Expected Results:**
+
 - ✅ May pass client validation
 - ✅ Upload may succeed but image won't display
 - ✅ Browser shows broken image icon
@@ -791,17 +888,20 @@ WHERE id = '<business_id>';
 ### Test 2.5: Storage Upload Succeeds, Database Update Fails
 
 **Steps:**
+
 1. Upload images normally
 2. Manually delete business record from database (simulate DB failure)
 3. Try to save images
 4. Verify rollback behavior
 
 **Expected Results:**
+
 - ✅ Storage files deleted (rollback)
 - ✅ Error message: "Business was deleted during upload. Uploaded files have been removed."
 - ✅ No orphaned files in storage
 
 **Storage Check:**
+
 ```bash
 # Check storage bucket - should be empty for this business
 # Or verify files were removed
@@ -812,6 +912,7 @@ WHERE id = '<business_id>';
 ### Test 2.6: Concurrent Image Uploads (Race Condition Test)
 
 **Steps:**
+
 1. Open two browser tabs/windows
 2. As same user, upload different images to same business simultaneously
 3. Submit both requests at nearly the same time
@@ -819,6 +920,7 @@ WHERE id = '<business_id>';
 5. Verify no data loss
 
 **Expected Results:**
+
 - ✅ Both images appear in array
 - ✅ No images lost
 - ✅ Array contains all uploaded images
@@ -826,10 +928,11 @@ WHERE id = '<business_id>';
 - ✅ If using fallback, may have minor race condition (acceptable)
 
 **Database Check:**
+
 ```sql
 -- Check final array length
-SELECT array_length(uploaded_images, 1) as count, uploaded_images 
-FROM businesses 
+SELECT array_length(uploaded_images, 1) as count, uploaded_images
+FROM businesses
 WHERE id = '<business_id>';
 -- Should have both images
 ```
@@ -839,12 +942,14 @@ WHERE id = '<business_id>';
 ### Test 2.7: Business Deleted During Upload
 
 **Steps:**
+
 1. Start uploading images
 2. In another session, delete the business
 3. Complete image upload
 4. Verify cleanup behavior
 
 **Expected Results:**
+
 - ✅ Business existence check catches deletion
 - ✅ Storage files cleaned up
 - ✅ Error message shown to user
@@ -855,6 +960,7 @@ WHERE id = '<business_id>';
 ### Test 2.8: Delete Image
 
 **Steps:**
+
 1. Business has multiple images
 2. Delete one image (not primary)
 3. Verify image removed from array
@@ -862,20 +968,23 @@ WHERE id = '<business_id>';
 5. Verify other images still present
 
 **API Test:**
+
 ```bash
 DELETE /api/businesses/{businessId}/images/{imageUrl}
 Authorization: Bearer <owner_token>
 ```
 
 **Expected Results:**
+
 - ✅ Image URL removed from array
 - ✅ Storage file deleted
 - ✅ Other images remain
 - ✅ Primary image unchanged (if not deleted)
 
 **Database Check:**
+
 ```sql
-SELECT uploaded_images FROM businesses 
+SELECT uploaded_images FROM businesses
 WHERE id = '<business_id>';
 -- Should have one less URL
 ```
@@ -885,12 +994,14 @@ WHERE id = '<business_id>';
 ### Test 2.9: Delete Primary Image
 
 **Steps:**
+
 1. Business has multiple images
 2. Delete the first image (primary)
 3. Verify next image becomes primary
 4. Verify array updated correctly
 
 **Expected Results:**
+
 - ✅ First image removed
 - ✅ Second image becomes primary (index 0)
 - ✅ All other images shift down
@@ -901,12 +1012,14 @@ WHERE id = '<business_id>';
 ### Test 2.10: Network Interruption During Upload
 
 **Steps:**
+
 1. Start uploading large image
 2. Disconnect network mid-upload
 3. Verify error handling
 4. Reconnect and verify state
 
 **Expected Results:**
+
 - ✅ Upload fails gracefully
 - ✅ Error message shown
 - ✅ No partial state saved
@@ -919,16 +1032,19 @@ WHERE id = '<business_id>';
 ### Test 3.1: Unauthorized Access
 
 **Steps:**
+
 1. As non-owner, try to upload images to business
 2. Verify 403 error
 
 **API Test:**
+
 ```bash
 POST /api/businesses/{businessId}/images
 Authorization: Bearer <non_owner_token>
 ```
 
 **Expected Results:**
+
 - ✅ 403 Forbidden error
 - ✅ Error: "You do not have permission to add images to this business"
 - ✅ No images uploaded
@@ -938,10 +1054,12 @@ Authorization: Bearer <non_owner_token>
 ### Test 3.2: Business Not Found
 
 **Steps:**
+
 1. Try to upload images to non-existent business ID
 2. Verify 404 error
 
 **Expected Results:**
+
 - ✅ 404 Not Found error
 - ✅ Error: "Business not found"
 - ✅ No images uploaded
@@ -951,10 +1069,12 @@ Authorization: Bearer <non_owner_token>
 ### Test 3.3: Empty Image Array
 
 **Steps:**
+
 1. Try to upload empty array
 2. Verify validation error
 
 **Expected Results:**
+
 - ✅ 400 Bad Request
 - ✅ Error: "Images array is required"
 
@@ -963,10 +1083,12 @@ Authorization: Bearer <non_owner_token>
 ### Test 3.4: Invalid Image URLs
 
 **Steps:**
+
 1. Try to upload with invalid/malformed URLs
 2. Verify validation
 
 **Expected Results:**
+
 - ✅ Invalid URLs filtered out
 - ✅ Only valid URLs saved
 - ✅ Error if no valid URLs remain
@@ -978,11 +1100,13 @@ Authorization: Bearer <non_owner_token>
 ### Test 4.1: Upload Multiple Large Images
 
 **Steps:**
+
 1. Upload 5 images, each ~4MB
 2. Monitor upload time
 3. Verify all upload successfully
 
 **Expected Results:**
+
 - ✅ All images upload within reasonable time
 - ✅ Progress indicators work (if implemented)
 - ✅ No timeout errors
@@ -992,12 +1116,14 @@ Authorization: Bearer <non_owner_token>
 ### Test 4.2: Rapid Sequential Uploads
 
 **Steps:**
+
 1. Upload image
 2. Immediately upload another
 3. Repeat 5 times
 4. Verify all saved correctly
 
 **Expected Results:**
+
 - ✅ All images saved
 - ✅ No race conditions
 - ✅ Array contains all images in order
@@ -1009,6 +1135,7 @@ Authorization: Bearer <non_owner_token>
 ### Test 5.1: Complete Workflow - Add Business
 
 **Steps:**
+
 1. Create new user account
 2. Navigate to `/add-business`
 3. Fill out complete business form
@@ -1023,6 +1150,7 @@ Authorization: Bearer <non_owner_token>
 12. Verify final state
 
 **Expected Results:**
+
 - ✅ All steps complete successfully
 - ✅ Business has correct owner
 - ✅ Images display correctly (6 total after delete/add)
@@ -1032,6 +1160,7 @@ Authorization: Bearer <non_owner_token>
 ### Test 5.2: Complete Workflow - Claim Existing Business
 
 **Steps:**
+
 1. Create new business account
 2. Search for existing business
 3. Claim business
@@ -1043,6 +1172,7 @@ Authorization: Bearer <non_owner_token>
 9. Verify final state
 
 **Expected Results:**
+
 - ✅ All steps complete successfully
 - ✅ Business has correct owner
 - ✅ Images display correctly
@@ -1056,7 +1186,7 @@ Authorization: Bearer <non_owner_token>
 
 ```sql
 -- Check business ownership
-SELECT 
+SELECT
   b.id,
   b.name,
   b.uploaded_images,
@@ -1069,7 +1199,7 @@ LEFT JOIN business_owners bo ON b.id = bo.business_id
 WHERE b.id = '<business_id>';
 
 -- Check pending claims
-SELECT 
+SELECT
   bor.id,
   bor.business_id,
   bor.user_id,
@@ -1082,7 +1212,7 @@ WHERE bor.status = 'pending'
 ORDER BY bor.created_at DESC;
 
 -- Check image count per business
-SELECT 
+SELECT
   id,
   name,
   array_length(uploaded_images, 1) as image_count,
@@ -1092,7 +1222,7 @@ WHERE uploaded_images IS NOT NULL
 ORDER BY array_length(uploaded_images, 1) DESC;
 
 -- Find businesses with too many images (shouldn't happen)
-SELECT 
+SELECT
   id,
   name,
   array_length(uploaded_images, 1) as image_count
@@ -1108,33 +1238,33 @@ WHERE array_length(uploaded_images, 1) > 10;
 
 ```typescript
 // test-business-claim-and-images.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Business Claim and Image Upload', () => {
-  test('complete workflow', async ({ page }) => {
+test.describe("Business Claim and Image Upload", () => {
+  test("complete workflow", async ({ page }) => {
     // 1. Login
-    await page.goto('/login');
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'password');
+    await page.goto("/login");
+    await page.fill('[name="email"]', "test@example.com");
+    await page.fill('[name="password"]', "password");
     await page.click('button[type="submit"]');
-    
+
     // 2. Search for business
-    await page.goto('/claim-business');
-    await page.fill('input[type="text"]', 'Test Business');
-    await page.waitForSelector('.business-result');
-    
+    await page.goto("/claim-business");
+    await page.fill('input[type="text"]', "Test Business");
+    await page.waitForSelector(".business-result");
+
     // 3. Claim business
     await page.click('button:has-text("Claim this business")');
-    await page.fill('[name="email"]', 'owner@business.com');
+    await page.fill('[name="email"]', "owner@business.com");
     await page.click('button:has-text("Submit Claim")');
-    await expect(page.locator('.toast-success')).toBeVisible();
-    
+    await expect(page.locator(".toast-success")).toBeVisible();
+
     // 4. Upload images (after approval)
-    await page.goto('/owners/businesses/{businessId}');
+    await page.goto("/owners/businesses/{businessId}");
     const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles(['test-image-1.jpg', 'test-image-2.jpg']);
+    await fileInput.setInputFiles(["test-image-1.jpg", "test-image-2.jpg"]);
     await page.click('button:has-text("Upload")');
-    await expect(page.locator('.image-gallery img')).toHaveCount(2);
+    await expect(page.locator(".image-gallery img")).toHaveCount(2);
   });
 });
 ```
@@ -1146,6 +1276,7 @@ test.describe('Business Claim and Image Upload', () => {
 ### Quick Smoke Test Checklist
 
 **Add Business:**
+
 - [ ] Can access `/add-business` page
 - [ ] Form validation works (required fields)
 - [ ] Can create business without images
@@ -1156,11 +1287,13 @@ test.describe('Business Claim and Image Upload', () => {
 - [ ] Redirect works after creation
 
 **Claim Business:**
+
 - [ ] Can search for businesses
 - [ ] Can submit claim request
 - [ ] Claim approval works
 
 **Image Upload:**
+
 - [ ] Can upload images during business creation
 - [ ] Can upload images after claiming
 - [ ] Image limit (10) enforced
@@ -1304,4 +1437,3 @@ INSERT INTO business_ownership_requests (
 ✅ Error messages are user-friendly
 ✅ Database state is consistent
 ✅ Storage cleanup works correctly
-

@@ -1,15 +1,14 @@
-import type { Event } from '../../lib/types/Event';
+import type { Event } from "../../lib/types/Event";
 import {
   EVENT_IMAGE_BASE_PATH,
   SPECIAL_FOOD_KEYWORDS,
   SPECIAL_DRINK_KEYWORDS,
   EVENT_SPORT_KEYWORDS,
-} from './EventCard.constants';
+} from "./EventCard.constants";
 
 export const loadedEventImageKeys = new Set<string>();
 
-export const fixImageUrl = (url: string): string =>
-  url.startsWith("//") ? `https:${url}` : url;
+export const fixImageUrl = (url: string): string => (url.startsWith("//") ? `https:${url}` : url);
 
 export const getImageCacheKey = (url: string): string => {
   const normalizedUrl = fixImageUrl(url.trim());
@@ -34,7 +33,8 @@ export const getEventMediaImage = (event: Event) => {
   // Priority 0: Uploaded images array (newer events)
   const uploadedImages = (event as any).uploaded_images as string[] | undefined;
   if (uploadedImages && Array.isArray(uploadedImages) && uploadedImages.length > 0) {
-    const first = uploadedImages.find((img) => typeof img === "string" && img.trim()) || uploadedImages[0];
+    const first =
+      uploadedImages.find((img) => typeof img === "string" && img.trim()) || uploadedImages[0];
     if (first && typeof first === "string" && first.trim()) {
       return fixImageUrl(first);
     }
@@ -46,15 +46,27 @@ export const getEventMediaImage = (event: Event) => {
   }
 
   // Priority 1b: Common API aliases
-  if ((event as any).image_url && typeof (event as any).image_url === "string" && (event as any).image_url.trim()) {
+  if (
+    (event as any).image_url &&
+    typeof (event as any).image_url === "string" &&
+    (event as any).image_url.trim()
+  ) {
     return fixImageUrl((event as any).image_url as string);
   }
 
-  if ((event as any).heroImage && typeof (event as any).heroImage === "string" && (event as any).heroImage.trim()) {
+  if (
+    (event as any).heroImage &&
+    typeof (event as any).heroImage === "string" &&
+    (event as any).heroImage.trim()
+  ) {
     return fixImageUrl((event as any).heroImage as string);
   }
 
-  if ((event as any).bannerImage && typeof (event as any).bannerImage === "string" && (event as any).bannerImage.trim()) {
+  if (
+    (event as any).bannerImage &&
+    typeof (event as any).bannerImage === "string" &&
+    (event as any).bannerImage.trim()
+  ) {
     return fixImageUrl((event as any).bannerImage as string);
   }
 

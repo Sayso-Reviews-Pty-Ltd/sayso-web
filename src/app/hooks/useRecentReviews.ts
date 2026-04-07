@@ -3,11 +3,11 @@
  * Uses SWR for caching and deduplication.
  */
 
-'use client';
+"use client";
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import type { Review } from '../types/community';
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import type { Review } from "../types/community";
 
 async function fetchRecentReviews([, limit]: [string, number]): Promise<Review[]> {
   const response = await fetch(`/api/reviews/recent?limit=${limit}`);
@@ -21,7 +21,7 @@ async function fetchRecentReviews([, limit]: [string, number]): Promise<Review[]
 }
 
 export function useRecentReviews(limit = 10) {
-  const swrKey = ['/api/reviews/recent', limit] as [string, number];
+  const swrKey = ["/api/reviews/recent", limit] as [string, number];
 
   const { data, error, isLoading } = useSWR(swrKey, fetchRecentReviews, {
     ...swrConfig,
@@ -37,6 +37,6 @@ export function useRecentReviews(limit = 10) {
 
 export function invalidateRecentReviews() {
   // Invalidate common limits
-  globalMutate(['/api/reviews/recent', 10]);
-  globalMutate(['/api/reviews/recent', 12]);
+  globalMutate(["/api/reviews/recent", 10]);
+  globalMutate(["/api/reviews/recent", 12]);
 }

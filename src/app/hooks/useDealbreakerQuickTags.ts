@@ -47,4 +47,3 @@ export function useDealbreakerQuickTags(): string[] {
 
   return tags;
 }
-

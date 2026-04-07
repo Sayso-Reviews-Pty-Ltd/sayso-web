@@ -3,11 +3,11 @@
  * Uses SWR with optimistic add/update/delete.
  */
 
-'use client';
+"use client";
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { isOptimisticId, isValidUUID } from '../lib/utils/validation';
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { isOptimisticId, isValidUUID } from "../lib/utils/validation";
 
 interface Reply {
   id: string;
@@ -33,7 +33,7 @@ async function fetchReviewReplies([, reviewId]: [string, string]): Promise<Reply
 
 export function useReviewReplies(reviewId: string) {
   const isSkipped = !reviewId || isOptimisticId(reviewId) || !isValidUUID(reviewId);
-  const swrKey = isSkipped ? null : (['/api/reviews/replies', reviewId] as [string, string]);
+  const swrKey = isSkipped ? null : (["/api/reviews/replies", reviewId] as [string, string]);
 
   const { data, isLoading, mutate } = useSWR(swrKey, fetchReviewReplies, {
     ...swrConfig,
@@ -45,8 +45,8 @@ export function useReviewReplies(reviewId: string) {
 
     try {
       const res = await fetch(`/api/reviews/${reviewId}/replies`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       });
 
@@ -70,14 +70,14 @@ export function useReviewReplies(reviewId: string) {
 
     // Optimistic update
     mutate(
-      prev.map(r => r.id === replyId ? { ...r, content } : r),
+      prev.map((r) => (r.id === replyId ? { ...r, content } : r)),
       { revalidate: false }
     );
 
     try {
       const res = await fetch(`/api/reviews/${reviewId}/replies`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId, content }),
       });
 
@@ -96,12 +96,15 @@ export function useReviewReplies(reviewId: string) {
     const prev = data ?? [];
 
     // Optimistic remove
-    mutate(prev.filter(r => r.id !== replyId), { revalidate: false });
+    mutate(
+      prev.filter((r) => r.id !== replyId),
+      { revalidate: false }
+    );
 
     try {
       const res = await fetch(`/api/reviews/${reviewId}/replies`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyId }),
       });
 
@@ -128,5 +131,5 @@ export function useReviewReplies(reviewId: string) {
 }
 
 export function invalidateReviewReplies(reviewId: string) {
-  globalMutate(['/api/reviews/replies', reviewId]);
+  globalMutate(["/api/reviews/replies", reviewId]);
 }

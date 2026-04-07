@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
-import { getTodayUTC } from '@/app/lib/services/eventLifecycle';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
+import { getTodayUTC } from "@/app/lib/services/eventLifecycle";
 
 // Cache configuration - 30 seconds for events data
 export const revalidate = 30;
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // In-memory cache with TTL (30 seconds)
 const cache = new Map<string, { data: any; timestamp: number }>();
@@ -14,7 +14,7 @@ function getCacheKey(searchParams: URLSearchParams): string {
   return Array.from(searchParams.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => `${key}=${value}`)
-    .join('&');
+    .join("&");
 }
 
 function getCachedData(key: string) {
@@ -30,8 +30,9 @@ function setCachedData(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
   // Clean up old cache entries (keep last 50)
   if (cache.size > 50) {
-    const oldestKey = Array.from(cache.entries())
-      .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
+    const oldestKey = Array.from(cache.entries()).sort(
+      ([, a], [, b]) => a.timestamp - b.timestamp
+    )[0][0];
     cache.delete(oldestKey);
   }
 }
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
     if (cached) {
       return NextResponse.json(cached, {
         headers: {
-          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
         },
       });
     }
@@ -65,28 +66,33 @@ export async function GET(req: NextRequest) {
     const supabase = await getServerSupabase(req);
 
     // Limit max results to prevent performance issues
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
-    const offset = parseInt(searchParams.get('offset') || '0', 10);
-    const city = searchParams.get('city');
-    const search = searchParams.get('search')?.trim();
-    const upcoming = searchParams.get('upcoming') !== 'false'; // Default to true
+    const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 100);
+    const offset = parseInt(searchParams.get("offset") || "0", 10);
+    const city = searchParams.get("city");
+    const search = searchParams.get("search")?.trim();
+    const upcoming = searchParams.get("upcoming") !== "false"; // Default to true
 
     let query = supabase
-      .from('events_and_specials')
-      .select('id, title, description, type, start_date, end_date, location, venue_name, image, booking_url, icon, price', { count: 'estimated' })
-      .eq('icon', 'ticketmaster')
-      .eq('type', 'event')
-      .order('start_date', { ascending: true });
+      .from("events_and_specials")
+      .select(
+        "id, title, description, type, start_date, end_date, location, venue_name, image, booking_url, icon, price",
+        { count: "estimated" }
+      )
+      .eq("icon", "ticketmaster")
+      .eq("type", "event")
+      .order("start_date", { ascending: true });
 
     // Filter by city (matched against composite location string)
     if (city) {
-      query = query.ilike('location', `%${city}%`);
+      query = query.ilike("location", `%${city}%`);
     }
 
     // Filter for upcoming events only
     if (upcoming) {
       const todayStart = getTodayUTC().toISOString();
-      query = query.or(`end_date.gte.${todayStart},and(end_date.is.null,start_date.gte.${todayStart})`);
+      query = query.or(
+        `end_date.gte.${todayStart},and(end_date.is.null,start_date.gte.${todayStart})`
+      );
     }
 
     // Constrain to current year
@@ -95,7 +101,9 @@ export async function GET(req: NextRequest) {
 
     // Search across title, description, venue_name, location
     if (search && search.length > 0) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,venue_name.ilike.%${search}%,location.ilike.%${search}%`);
+      query = query.or(
+        `title.ilike.%${search}%,description.ilike.%${search}%,venue_name.ilike.%${search}%,location.ilike.%${search}%`
+      );
     }
 
     // Apply pagination; allow 15s for slow DB
@@ -103,23 +111,23 @@ export async function GET(req: NextRequest) {
     const QUERY_TIMEOUT_MS = 15_000;
     let timeoutId: ReturnType<typeof setTimeout>;
     const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error('Query timeout')), QUERY_TIMEOUT_MS);
+      timeoutId = setTimeout(() => reject(new Error("Query timeout")), QUERY_TIMEOUT_MS);
     });
 
-    const result = await Promise.race([
+    const result = (await Promise.race([
       queryPromise.then((r) => {
         clearTimeout(timeoutId!);
         return r;
       }),
       timeoutPromise,
-    ]) as Awaited<ReturnType<typeof query.range>>;
+    ])) as Awaited<ReturnType<typeof query.range>>;
 
     const { data: events, error, count } = result;
 
     if (error) {
-      console.error('[Events API] Error fetching events:', error);
+      console.error("[Events API] Error fetching events:", error);
       return NextResponse.json(
-        { error: 'Failed to fetch events', details: error.message },
+        { error: "Failed to fetch events", details: error.message },
         { status: 500 }
       );
     }
@@ -143,28 +151,28 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
       },
     });
   } catch (error: any) {
-    console.error('[Events API] Unexpected error:', error);
-    
+    console.error("[Events API] Unexpected error:", error);
+
     // If timeout, return cached data if available
-    if (error.message === 'Query timeout') {
+    if (error.message === "Query timeout") {
       const cacheKey = getCacheKey(new URL(req.url).searchParams);
       const cached = getCachedData(cacheKey);
       if (cached) {
         return NextResponse.json(cached, {
           headers: {
-            'X-Cache': 'stale',
-            'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+            "X-Cache": "stale",
+            "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
           },
         });
       }
     }
-    
+
     return NextResponse.json(
-      { error: 'Internal server error', message: error?.message },
+      { error: "Internal server error", message: error?.message },
       { status: 500 }
     );
   }
@@ -180,13 +188,16 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const supabase = await getServerSupabase(req);
-    
+
     // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please log in to create an event.' },
+        { error: "Unauthorized. Please log in to create an event." },
         { status: 401 }
       );
     }
@@ -214,7 +225,7 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!title || !startDate || !location) {
       return NextResponse.json(
-        { error: 'Title, start date, and location are required' },
+        { error: "Title, start date, and location are required" },
         { status: 400 }
       );
     }
@@ -222,10 +233,7 @@ export async function POST(req: NextRequest) {
     // Validate date
     const startDateObj = new Date(startDate);
     if (isNaN(startDateObj.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid start date format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid start date format" }, { status: 400 });
     }
 
     // Generate unique ID for custom events (ticketmaster_id is required and unique)
@@ -237,7 +245,7 @@ export async function POST(req: NextRequest) {
       ticketmaster_id: customEventId, // Custom events use "custom-{uuid}" format
       title: title.trim(),
       description: description?.trim() || null,
-      type: type || 'event',
+      type: type || "event",
       start_date: startDate,
       end_date: endDate || null,
       location: location.trim(),
@@ -256,30 +264,32 @@ export async function POST(req: NextRequest) {
     };
 
     const { data: newEvent, error: insertError } = await supabase
-      .from('ticketmaster_events')
+      .from("ticketmaster_events")
       .insert(eventData)
       .select()
       .single();
 
     if (insertError) {
-      console.error('[Events API] Error creating event:', insertError);
+      console.error("[Events API] Error creating event:", insertError);
       return NextResponse.json(
-        { error: 'Failed to create event', details: insertError.message },
+        { error: "Failed to create event", details: insertError.message },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      event: newEvent,
-      message: 'Event created successfully!',
-    }, { status: 201 });
-  } catch (error: any) {
-    console.error('[Events API] Error creating event:', error);
     return NextResponse.json(
-      { error: 'Failed to create event', details: error.message },
+      {
+        success: true,
+        event: newEvent,
+        message: "Event created successfully!",
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error("[Events API] Error creating event:", error);
+    return NextResponse.json(
+      { error: "Failed to create event", details: error.message },
       { status: 500 }
     );
   }
 }
-

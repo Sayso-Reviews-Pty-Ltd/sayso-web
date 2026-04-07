@@ -172,7 +172,10 @@ export function useOtpHandlers({
         return;
       }
 
-      if ((payload as OtpApiSuccess)?.autoVerified && (payload as OtpApiSuccess)?.status === "under_review") {
+      if (
+        (payload as OtpApiSuccess)?.autoVerified &&
+        (payload as OtpApiSuccess)?.status === "under_review"
+      ) {
         onVerified(
           (payload as OtpApiSuccess)?.message ??
             "Phone verified successfully. Your claim is now under review."

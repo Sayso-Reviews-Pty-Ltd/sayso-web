@@ -66,7 +66,10 @@ async function buildCookieHeader() {
   return cookiePairs.join("; ");
 }
 
-async function fetchPreferences(baseUrl: string, cookieHeader: string): Promise<PreferencesFetchResult> {
+async function fetchPreferences(
+  baseUrl: string,
+  cookieHeader: string
+): Promise<PreferencesFetchResult> {
   try {
     const res = await fetchJsonWithTimeout<{
       interests?: Array<{ id: string; name: string }>;
@@ -111,10 +114,14 @@ export default async function ForYouPage() {
   const contract = buildForYouRequestContract({
     limit: 120,
     interestIds: preferencesResult.preferences?.interests?.map((i) => i.id).filter(Boolean) ?? [],
-    subInterestIds: preferencesResult.preferences?.subcategories?.map((s) => s.id).filter(Boolean) ?? [],
-    dealbreakerIds: preferencesResult.preferences?.dealbreakers?.map((d) => d.id).filter(Boolean) ?? [],
+    subInterestIds:
+      preferencesResult.preferences?.subcategories?.map((s) => s.id).filter(Boolean) ?? [],
+    dealbreakerIds:
+      preferencesResult.preferences?.dealbreakers?.map((d) => d.id).filter(Boolean) ?? [],
     preferredPriceRanges:
-      (preferencesResult.preferences?.dealbreakers?.map((d) => d.id).includes(VALUE_FOR_MONEY_DEALBREAKER_ID) ?? false)
+      (preferencesResult.preferences?.dealbreakers
+        ?.map((d) => d.id)
+        .includes(VALUE_FOR_MONEY_DEALBREAKER_ID) ?? false)
         ? ["$", "$$"]
         : [],
   });

@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
             refreshed: false,
             error: error?.message ?? "Unable to refresh session",
           },
-          { status: 401 },
-        ),
+          { status: 401 }
+        )
       );
     }
 
@@ -29,14 +29,14 @@ export async function POST(req: NextRequest) {
           email: data.session.user.email,
           email_verified: Boolean(data.session.user.email_confirmed_at),
         },
-      }),
+      })
     );
   } catch (error) {
     return applyPrivateCachePolicy(
       NextResponse.json(
         { refreshed: false, error: error instanceof Error ? error.message : "Refresh failed" },
-        { status: 500 },
-      ),
+        { status: 500 }
+      )
     );
   }
 }

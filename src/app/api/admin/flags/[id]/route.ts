@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAdmin } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withAdmin } from "@/app/api/_lib/withAuth";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-type AdminAction = 'dismiss' | 'remove_review' | 'warn';
+type AdminAction = "dismiss" | "remove_review" | "warn";
 
 /**
  * PATCH /api/admin/flags/[id]
@@ -16,55 +16,54 @@ type AdminAction = 'dismiss' | 'remove_review' | 'warn';
  * remove_review — delete the review and mark flag as reviewed
  * warn          — add admin_notes to flag and mark as reviewed (future: notify author)
  */
-export const PATCH = withAdmin(async (
-  req: NextRequest,
-  { user, service, params }
-) => {
+export const PATCH = withAdmin(async (req: NextRequest, { user, service, params }) => {
   const flagId = (await params)?.id;
   if (!flagId) {
-    return NextResponse.json({ error: 'Missing flag id' }, { status: 400 });
+    return NextResponse.json({ error: "Missing flag id" }, { status: 400 });
   }
 
   let body: { action: AdminAction; admin_notes?: string };
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const { action, admin_notes } = body;
-  if (!['dismiss', 'remove_review', 'warn'].includes(action)) {
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  if (!["dismiss", "remove_review", "warn"].includes(action)) {
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const svc = service as any;
 
   // Fetch the flag to get review_id
-  const { data: flag, error: fetchError } = await svc
-    .from('review_flags')
-    .select('id, review_id, status')
-    .eq('id', flagId)
-    .maybeSingle() as { data: { id: string; review_id: string; status: string } | null; error: unknown };
+  const { data: flag, error: fetchError } = (await svc
+    .from("review_flags")
+    .select("id, review_id, status")
+    .eq("id", flagId)
+    .maybeSingle()) as {
+    data: { id: string; review_id: string; status: string } | null;
+    error: unknown;
+  };
 
   if (fetchError || !flag) {
-    return NextResponse.json({ error: 'Flag not found' }, { status: 404 });
+    return NextResponse.json({ error: "Flag not found" }, { status: 404 });
   }
 
-  if (flag.status !== 'pending') {
-    return NextResponse.json({ error: 'Flag already actioned' }, { status: 409 });
+  if (flag.status !== "pending") {
+    return NextResponse.json({ error: "Flag already actioned" }, { status: 409 });
   }
 
   // For remove_review: delete the review (cascades to all flags for that review)
-  if (action === 'remove_review') {
-    const { error: deleteError } = await svc
-      .from('reviews')
+  if (action === "remove_review") {
+    const { error: deleteError } = (await svc
+      .from("reviews")
       .delete()
-      .eq('id', flag.review_id) as { error: unknown };
+      .eq("id", flag.review_id)) as { error: unknown };
 
     if (deleteError) {
-      console.error('Admin remove_review error:', deleteError);
-      return NextResponse.json({ error: 'Failed to remove review' }, { status: 500 });
+      console.error("Admin remove_review error:", deleteError);
+      return NextResponse.json({ error: "Failed to remove review" }, { status: 500 });
     }
 
     // Flags cascade-deleted with the review, so we're done
@@ -72,19 +71,19 @@ export const PATCH = withAdmin(async (
   }
 
   // For dismiss / warn: update the flag record
-  const { error: updateError } = await svc
-    .from('review_flags')
+  const { error: updateError } = (await svc
+    .from("review_flags")
     .update({
-      status: 'reviewed',
+      status: "reviewed",
       reviewed_at: new Date().toISOString(),
       reviewed_by: user.id,
       ...(admin_notes != null ? { admin_notes } : {}),
     })
-    .eq('id', flagId) as { error: unknown };
+    .eq("id", flagId)) as { error: unknown };
 
   if (updateError) {
-    console.error('Admin flag update error:', updateError);
-    return NextResponse.json({ error: 'Failed to update flag' }, { status: 500 });
+    console.error("Admin flag update error:", updateError);
+    return NextResponse.json({ error: "Failed to update flag" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true, action });

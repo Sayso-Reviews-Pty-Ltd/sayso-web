@@ -108,8 +108,8 @@ export const SUBCATEGORY_SLUG_TO_LABEL: Record<CanonicalSubcategorySlug, string>
 /** Canonical label (normalized) -> canonical slug. */
 const SUBCATEGORY_LABEL_TO_SLUG: Record<string, CanonicalSubcategorySlug> = Object.fromEntries(
   (Object.entries(SUBCATEGORY_SLUG_TO_LABEL) as Array<[CanonicalSubcategorySlug, string]>).map(
-    ([slug, label]) => [label.trim().toLowerCase(), slug],
-  ),
+    ([slug, label]) => [label.trim().toLowerCase(), slug]
+  )
 ) as Record<string, CanonicalSubcategorySlug>;
 
 /** Alias slug (seen in DB) -> canonical slug (used for placeholder resolution). */
@@ -234,7 +234,7 @@ const INTEREST_TO_DEFAULT_SUBCATEGORY: Record<string, CanonicalSubcategorySlug> 
 };
 
 const INTEREST_LABEL_TO_ID: Record<string, string> = Object.fromEntries(
-  Object.entries(INTEREST_LABELS).map(([id, label]) => [label.trim().toLowerCase(), id]),
+  Object.entries(INTEREST_LABELS).map(([id, label]) => [label.trim().toLowerCase(), id])
 );
 
 /**
@@ -273,7 +273,8 @@ export function getDisplayCategoryForBusiness(business: {
   const sub = business.sub_interest_id?.trim().toLowerCase();
   if (sub) return getSubcategoryLabel(sub);
   const interest = business.interest_id?.trim().toLowerCase();
-  if (interest) return INTEREST_LABELS[interest] ?? getSubcategoryLabel(interest) ?? "Miscellaneous";
+  if (interest)
+    return INTEREST_LABELS[interest] ?? getSubcategoryLabel(interest) ?? "Miscellaneous";
   return getSubcategoryLabel(business.category) ?? "Miscellaneous";
 }
 
@@ -333,9 +334,7 @@ export function getCategoryLabelFromBusiness(
   business: BusinessLikeForCategory | undefined | null
 ): string {
   const labelFromBusiness =
-    business?.primary_subcategory_label ??
-    business?.category_label ??
-    business?.subInterestLabel;
+    business?.primary_subcategory_label ?? business?.category_label ?? business?.subInterestLabel;
   if (labelFromBusiness != null && typeof labelFromBusiness === "string") {
     const label = labelFromBusiness.trim();
     if (label) return label;

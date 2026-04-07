@@ -36,28 +36,32 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
 
   const currentLat = lat ? parseFloat(lat) : null;
   const currentLng = lng ? parseFloat(lng) : null;
-  const hasValidCoords = currentLat != null && currentLng != null && !isNaN(currentLat) && !isNaN(currentLng);
+  const hasValidCoords =
+    currentLat != null && currentLng != null && !isNaN(currentLat) && !isNaN(currentLng);
 
-  const reverseGeocode = useCallback(async (latitude: number, longitude: number): Promise<MapPickerLocation | null> => {
-    try {
-      const res = await fetch(
-        `/api/reverse-geocode?lat=${encodeURIComponent(latitude)}&lng=${encodeURIComponent(longitude)}`,
-        { cache: "no-store" }
-      );
-      const data = await res.json().catch(() => null);
-      if (res.ok && data?.success) {
-        return {
-          lat: latitude,
-          lng: longitude,
-          address: data.address || "",
-          location: data.location || "",
-        };
+  const reverseGeocode = useCallback(
+    async (latitude: number, longitude: number): Promise<MapPickerLocation | null> => {
+      try {
+        const res = await fetch(
+          `/api/reverse-geocode?lat=${encodeURIComponent(latitude)}&lng=${encodeURIComponent(longitude)}`,
+          { cache: "no-store" }
+        );
+        const data = await res.json().catch(() => null);
+        if (res.ok && data?.success) {
+          return {
+            lat: latitude,
+            lng: longitude,
+            address: data.address || "",
+            location: data.location || "",
+          };
+        }
+        return { lat: latitude, lng: longitude, address: "", location: "" };
+      } catch {
+        return { lat: latitude, lng: longitude, address: "", location: "" };
       }
-      return { lat: latitude, lng: longitude, address: "", location: "" };
-    } catch {
-      return { lat: latitude, lng: longitude, address: "", location: "" };
-    }
-  }, []);
+    },
+    []
+  );
 
   const placeMarkerAndNotify = useCallback(
     async (latitude: number, longitude: number) => {
@@ -73,7 +77,9 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
     setIsSearching(true);
     setSearchError("");
     try {
-      const res = await fetch(`/api/geocode?address=${encodeURIComponent(query)}`, { cache: "no-store" });
+      const res = await fetch(`/api/geocode?address=${encodeURIComponent(query)}`, {
+        cache: "no-store",
+      });
       const data = await res.json().catch(() => null);
       if (res.ok && data?.success && typeof data.lat === "number" && typeof data.lng === "number") {
         await placeMarkerAndNotify(data.lat, data.lng);
@@ -107,7 +113,9 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
       // @ts-ignore - CSS import for side effects
       import("mapbox-gl/dist/mapbox-gl.css");
 
-      const center: [number, number] = hasValidCoords ? [currentLng!, currentLat!] : CAPE_TOWN_CENTER;
+      const center: [number, number] = hasValidCoords
+        ? [currentLng!, currentLat!]
+        : CAPE_TOWN_CENTER;
       const zoom = hasValidCoords ? 15 : 12;
 
       map.current = new mapboxgl.Map({
@@ -127,7 +135,9 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
             <svg style="transform:rotate(45deg)" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
           </div>
         `;
-        markerRef.current = new mapboxgl.Marker({ element: el }).setLngLat(lngLat).addTo(map.current);
+        markerRef.current = new mapboxgl.Marker({ element: el })
+          .setLngLat(lngLat)
+          .addTo(map.current);
       };
 
       map.current.on("load", () => {
@@ -187,7 +197,9 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
 
   if (hasError) {
     return (
-      <div className={`rounded-[12px] border border-charcoal/10 bg-off-white/50 p-6 text-center ${className}`}>
+      <div
+        className={`rounded-[12px] border border-charcoal/10 bg-off-white/50 p-6 text-center ${className}`}
+      >
         <span className={`${ICON_CHIP_CLASS} mx-auto mb-2 h-10 w-10`}>
           <AlertCircle className="h-5 w-5" />
         </span>
@@ -220,14 +232,21 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
           disabled={disabled || isSearching}
           className="shrink-0 px-4 py-2.5 rounded-full bg-sage/90 hover:bg-sage text-white transition-colors disabled:opacity-50 flex items-center gap-2"
         >
-          {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          {isSearching ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
           <span className="text-sm font-semibold" style={{ fontFamily: "Urbanist, sans-serif" }}>
             Search
           </span>
         </button>
       </div>
       {searchError && (
-        <p className="text-xs text-coral font-medium" style={{ fontFamily: "Urbanist, sans-serif" }}>
+        <p
+          className="text-xs text-coral font-medium"
+          style={{ fontFamily: "Urbanist, sans-serif" }}
+        >
           {searchError}
         </p>
       )}
@@ -239,7 +258,10 @@ function MapPickerInner({ lat, lng, onLocationSelect, disabled, className = "" }
           <div className="absolute inset-0 z-10 bg-off-white/90 flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-8 h-8 text-sage animate-spin" />
-              <span className="text-sm text-charcoal/70" style={{ fontFamily: "Urbanist, sans-serif" }}>
+              <span
+                className="text-sm text-charcoal/70"
+                style={{ fontFamily: "Urbanist, sans-serif" }}
+              >
                 Loading map...
               </span>
             </div>

@@ -38,7 +38,11 @@ const FALLBACK_SUBCATEGORIES = [
 
   // Entertainment & Experiences
   { id: "events-festivals", label: "Events & Festivals", interest_id: "experiences-entertainment" },
-  { id: "sports-recreation", label: "Sports & Recreation", interest_id: "experiences-entertainment" },
+  {
+    id: "sports-recreation",
+    label: "Sports & Recreation",
+    interest_id: "experiences-entertainment",
+  },
   { id: "nightlife", label: "Nightlife", interest_id: "experiences-entertainment" },
   { id: "comedy-clubs", label: "Comedy Clubs", interest_id: "experiences-entertainment" },
   { id: "cinemas", label: "Cinemas", interest_id: "experiences-entertainment" },
@@ -62,7 +66,7 @@ const FALLBACK_SUBCATEGORIES = [
   { id: "books", label: "Books & Media", interest_id: "shopping-lifestyle" },
 
   // Other
-  { id: "miscellaneous", label: "Miscellaneous", interest_id: "miscellaneous" }
+  { id: "miscellaneous", label: "Miscellaneous", interest_id: "miscellaneous" },
 ];
 
 export async function GET(req: Request) {
@@ -70,24 +74,27 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const idsParam = url.searchParams.get("interests");
     const ids = idsParam
-      ? idsParam.split(",").map(s => s.trim()).filter(Boolean)
+      ? idsParam
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
       : [];
 
     // Filter by interest IDs if provided
     let subcategories = FALLBACK_SUBCATEGORIES;
     if (ids.length > 0) {
-      subcategories = FALLBACK_SUBCATEGORIES.filter(sub =>
-        ids.includes(sub.interest_id)
-      );
+      subcategories = FALLBACK_SUBCATEGORIES.filter((sub) => ids.includes(sub.interest_id));
     }
 
     return cachedJsonResponse({ subcategories }, CachePresets.api(3600));
-
   } catch (error) {
     console.error("Subcategories API error:", error);
-    return NextResponse.json({
-      error: "Failed to load subcategories",
-      subcategories: []
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to load subcategories",
+        subcategories: [],
+      },
+      { status: 500 }
+    );
   }
 }

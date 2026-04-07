@@ -16,14 +16,14 @@ export default function MasonryGallery({ images, businessName }: MasonryGalleryP
   // Pinterest-style masonry layout - different heights and spans (larger images)
   const getImageClasses = (index: number) => {
     const patterns = [
-      { height: 'h-40', span: 'col-span-1' },
-      { height: 'h-56', span: 'col-span-2' },
-      { height: 'h-48', span: 'col-span-1' },
-      { height: 'h-52', span: 'col-span-1' },
-      { height: 'h-44', span: 'col-span-1' },
-      { height: 'h-60', span: 'col-span-2' },
-      { height: 'h-48', span: 'col-span-1' },
-      { height: 'h-40', span: 'col-span-1' },
+      { height: "h-40", span: "col-span-1" },
+      { height: "h-56", span: "col-span-2" },
+      { height: "h-48", span: "col-span-1" },
+      { height: "h-52", span: "col-span-1" },
+      { height: "h-44", span: "col-span-1" },
+      { height: "h-60", span: "col-span-2" },
+      { height: "h-48", span: "col-span-1" },
+      { height: "h-40", span: "col-span-1" },
     ];
     const pattern = patterns[index % patterns.length];
     return `${pattern.height} ${pattern.span}`;
@@ -31,18 +31,18 @@ export default function MasonryGallery({ images, businessName }: MasonryGalleryP
 
   const openLightbox = (index: number) => {
     setSelectedImage(index);
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   };
 
   const closeLightbox = () => {
     setSelectedImage(null);
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   };
 
-  const navigateLightbox = (direction: 'prev' | 'next') => {
+  const navigateLightbox = (direction: "prev" | "next") => {
     if (selectedImage === null) return;
 
-    if (direction === 'prev') {
+    if (direction === "prev") {
       setSelectedImage(selectedImage === 0 ? images.length - 1 : selectedImage - 1);
     } else {
       setSelectedImage(selectedImage === images.length - 1 ? 0 : selectedImage + 1);
@@ -112,7 +112,7 @@ export default function MasonryGallery({ images, businessName }: MasonryGalleryP
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                navigateLightbox('prev');
+                navigateLightbox("prev");
               }}
               className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-off-white  /10 hover:bg-off-white  /20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors duration-200 z-10"
               aria-label="Previous image"
@@ -126,7 +126,7 @@ export default function MasonryGallery({ images, businessName }: MasonryGalleryP
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                navigateLightbox('next');
+                navigateLightbox("next");
               }}
               className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-off-white  /10 hover:bg-off-white  /20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors duration-200 z-10"
               aria-label="Next image"

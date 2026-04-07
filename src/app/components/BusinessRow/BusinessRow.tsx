@@ -90,12 +90,7 @@ export default function BusinessRow({
   return (
     <>
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
-      <HomeSectionRow
-        title={title}
-        cta={cta}
-        href={href}
-        disableAnimations={disableAnimations}
-      >
+      <HomeSectionRow title={title} cta={cta} href={href} disableAnimations={disableAnimations}>
         <ScrollableSection
           enableMobilePeek
           hideArrowsOnDesktop={hideCarouselArrowsOnDesktop}

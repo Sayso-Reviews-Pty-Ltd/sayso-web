@@ -46,6 +46,7 @@ A Next.js application for discovering and reviewing local businesses with person
 We've implemented a comprehensive interests selection system with production-ready features:
 
 #### **Core Features**
+
 - **Smart Selection Limits**: 3-6 interest minimum/maximum with live counter
 - **Real-time API Integration**: Saves to Supabase `user_interests` table
 - **Offline Support**: Queues changes when offline, syncs when reconnected
@@ -53,6 +54,7 @@ We've implemented a comprehensive interests selection system with production-rea
 - **Prefetching**: Optimizes next step loading when minimum reached
 
 #### **User Experience Enhancements**
+
 - **Visual Feedback**: Shake animation for over-selection attempts
 - **Live Progress**: Color-coded counter with checkmark when minimum met
 - **Contextual Messaging**: Helpful hints based on selection state
@@ -60,12 +62,14 @@ We've implemented a comprehensive interests selection system with production-rea
 - **Typing Animation**: Engaging headline with cursor effect
 
 #### **Accessibility & Performance**
+
 - **WCAG Compliant**: `aria-pressed`, `aria-live` regions, keyboard navigation
 - **Reduced Motion**: Respects `prefers-reduced-motion: reduce`
 - **Touch Targets**: 44×44px minimum for mobile devices
 - **Lightweight**: 6.76kB bundle size for interests page
 
 #### **Network Resilience**
+
 - **Retry Logic**: 3 attempts with exponential backoff (200ms, 800ms, 1800ms)
 - **Error Recovery**: Graceful failures with user-friendly messages
 - **Optimistic Updates**: Immediate UI feedback with error rollback
@@ -78,17 +82,15 @@ We've implemented a comprehensive interests selection system with production-rea
 const saveInterests = async (selections: string[], retries = 3) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const response = await fetch('/api/user/interests', {
-        method: 'POST',
+      const response = await fetch("/api/user/interests", {
+        method: "POST",
         body: JSON.stringify({ selections }),
-        keepalive: true // survives navigation
+        keepalive: true, // survives navigation
       });
       if (response.ok) return true;
     } catch (error) {
       // Exponential backoff
-      await new Promise(resolve =>
-        setTimeout(resolve, 200 * attempt * attempt)
-      );
+      await new Promise((resolve) => setTimeout(resolve, 200 * attempt * attempt));
     }
   }
 };
@@ -96,15 +98,17 @@ const saveInterests = async (selections: string[], retries = 3) => {
 // Offline queue management
 if (!navigator.onLine) {
   offlineQueue.current = selections;
-  showToast('Working offline - changes will sync when online');
+  showToast("Working offline - changes will sync when online");
 }
 ```
 
 #### **API Endpoints**
+
 - `POST /api/user/interests` - Save user interest selections
 - `GET /api/user/interests` - Retrieve user's current interests
 
 #### **Database Schema**
+
 ```sql
 -- user_interests table structure
 CREATE TABLE user_interests (

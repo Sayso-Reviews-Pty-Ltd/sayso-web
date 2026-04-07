@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAdmin } from '@/app/api/_lib/withAuth';
-import { cleanupOrphanedImages } from '../../../lib/utils/orphanedImagesCleanup';
+import { NextRequest, NextResponse } from "next/server";
+import { withAdmin } from "@/app/api/_lib/withAuth";
+import { cleanupOrphanedImages } from "../../../lib/utils/orphanedImagesCleanup";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * POST /api/admin/cleanup-orphaned-images
@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 export const POST = withAdmin(async (req: NextRequest, { supabase }) => {
   try {
     const { searchParams } = new URL(req.url);
-    const businessId = searchParams.get('businessId') || undefined;
+    const businessId = searchParams.get("businessId") || undefined;
 
     const result = await cleanupOrphanedImages(
       supabase,
@@ -30,12 +30,12 @@ export const POST = withAdmin(async (req: NextRequest, { supabase }) => {
       message: `Checked ${result.totalChecked} images. Found ${result.orphanedFound} orphaned, deleted ${result.deleted}.`,
     });
   } catch (error: any) {
-    console.error('[API] Error in cleanup orphaned images:', error);
+    console.error("[API] Error in cleanup orphaned images:", error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
-        details: error.message
+        error: "Internal server error",
+        details: error.message,
       },
       { status: 500 }
     );

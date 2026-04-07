@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export function useForYouDebug(
   showDebugInfo: boolean,
@@ -58,5 +58,14 @@ export function useForYouDebug(
       zIndex: styles.zIndex,
       isPaginationLoading,
     });
-  }, [canRenderResults, canShowError, isMapMode, showDebugInfo, shouldShowSkeleton, totalCount, isPaginationLoading, resultsContainerRef]);
+  }, [
+    canRenderResults,
+    canShowError,
+    isMapMode,
+    showDebugInfo,
+    shouldShowSkeleton,
+    totalCount,
+    isPaginationLoading,
+    resultsContainerRef,
+  ]);
 }

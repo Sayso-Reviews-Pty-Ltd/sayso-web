@@ -3,10 +3,10 @@
  * Encapsulates verification and navigation for the complete page
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useOnboarding } from '../contexts/OnboardingContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useOnboarding } from "../contexts/OnboardingContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export interface UseCompletePageReturn {
   isVerifying: boolean;
@@ -20,11 +20,7 @@ export interface UseCompletePageReturn {
 export function useCompletePage(): UseCompletePageReturn {
   const router = useRouter();
   const { user, isLoading: authLoading, refreshUser } = useAuth();
-  const {
-    selectedInterests,
-    selectedSubInterests,
-    selectedDealbreakers,
-  } = useOnboarding();
+  const { selectedInterests, selectedSubInterests, selectedDealbreakers } = useOnboarding();
   const [isVerifying, setIsVerifying] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasVerified, setHasVerified] = useState(false);
@@ -56,7 +52,7 @@ export function useCompletePage(): UseCompletePageReturn {
           if (!cancelled) {
             setHasVerified(true);
             setIsVerifying(false);
-            router.replace('/login');
+            router.replace("/login");
           }
           return;
         }
@@ -66,16 +62,16 @@ export function useCompletePage(): UseCompletePageReturn {
         if (!cancelled) {
           setHasVerified(true);
           setIsVerifying(false);
-          console.log('[useCompletePage] Access verified, allowing page to handle navigation');
+          console.log("[useCompletePage] Access verified, allowing page to handle navigation");
         }
       } catch (error) {
-        console.error('[Complete] Error verifying access:', error);
+        console.error("[Complete] Error verifying access:", error);
         // On error, fail closed to login.
         if (!cancelled) {
-          setError('Failed to verify access');
+          setError("Failed to verify access");
           setHasVerified(true);
           setIsVerifying(false);
-          router.replace('/login');
+          router.replace("/login");
         }
       }
     };
@@ -96,14 +92,14 @@ export function useCompletePage(): UseCompletePageReturn {
 
     try {
       // Call /api/onboarding/complete to set onboarding_completed_at
-      const res = await fetch('/api/onboarding/complete', {
-        method: 'POST',
-        credentials: 'include',
+      const res = await fetch("/api/onboarding/complete", {
+        method: "POST",
+        credentials: "include",
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        console.error('[useCompletePage] Failed to mark onboarding complete:', body);
+        console.error("[useCompletePage] Failed to mark onboarding complete:", body);
         // Don't block navigation — profile may already be complete or prerequisites may be
         // satisfied. Proceed to home so the user isn't stuck on the celebration page.
       }
@@ -111,12 +107,12 @@ export function useCompletePage(): UseCompletePageReturn {
       // Refresh auth context so ProtectedRoute on /home sees the updated onboarding state
       await refreshUser();
 
-      const currentRole = user?.profile?.account_role || 'user';
-      const destination = currentRole === 'business_owner' ? '/claim-business' : '/home';
+      const currentRole = user?.profile?.account_role || "user";
+      const destination = currentRole === "business_owner" ? "/claim-business" : "/home";
       router.replace(destination);
     } catch (error) {
-      console.error('[useCompletePage] Error completing onboarding:', error);
-      router.replace('/home');
+      console.error("[useCompletePage] Error completing onboarding:", error);
+      router.replace("/home");
     }
   }, [user, router, refreshUser]);
 
@@ -129,5 +125,3 @@ export function useCompletePage(): UseCompletePageReturn {
     dealbreakers,
   };
 }
-
-

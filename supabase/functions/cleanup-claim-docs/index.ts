@@ -13,9 +13,9 @@ const BUCKET = "business-verification";
 // @ts-ignore — Deno global
 Deno.serve(async (_req: Request) => {
   try {
-    const supabaseUrl    = Deno.env.get("SUPABASE_URL")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase       = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const { data: expired } = await supabase
       .from("business_claim_documents")
@@ -27,7 +27,10 @@ Deno.serve(async (_req: Request) => {
 
     for (const doc of docList) {
       if (doc.storage_path) {
-        await supabase.storage.from(BUCKET).remove([doc.storage_path]).catch(() => {});
+        await supabase.storage
+          .from(BUCKET)
+          .remove([doc.storage_path])
+          .catch(() => {});
       }
       await supabase.from("business_claim_documents").delete().eq("id", doc.id);
       deletedCount++;
@@ -39,9 +42,9 @@ Deno.serve(async (_req: Request) => {
     }
 
     return Response.json({
-      ok:                true,
+      ok: true,
       deleted_documents: deletedCount,
-      message:           `Cleaned up ${deletedCount} expired claim document(s).`,
+      message: `Cleaned up ${deletedCount} expired claim document(s).`,
     });
   } catch (err) {
     console.error("Cleanup claim docs error:", err);

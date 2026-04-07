@@ -13,18 +13,18 @@ export type ForYouErrorDetails = {
 export type ForYouErrorStatus = 401 | 403 | 422 | 500;
 
 export type PreferenceReadError = {
-  source: 'user_interests' | 'user_subcategories' | 'user_dealbreakers';
+  source: "user_interests" | "user_subcategories" | "user_dealbreakers";
   details: ForYouErrorDetails;
 };
 
 export type EncodedFeedCursor =
   | {
-      kind: 'business-keyset';
+      kind: "business-keyset";
       cursor_id: string;
       cursor_created_at: string;
     }
   | {
-      kind: 'offset';
+      kind: "offset";
       offset: number;
     };
 

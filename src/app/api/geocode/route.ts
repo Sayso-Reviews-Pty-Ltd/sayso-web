@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/geocode
@@ -8,21 +8,15 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const rawAddress = searchParams.get('address');
+    const rawAddress = searchParams.get("address");
 
     if (!rawAddress || rawAddress.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Address is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Address is required" }, { status: 400 });
     }
 
     const candidates = buildAddressCandidates(rawAddress).slice(0, 8);
     if (candidates.length === 0) {
-      return NextResponse.json(
-        { error: 'Address is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Address is required" }, { status: 400 });
     }
 
     // Use Google Maps Geocoding API if available
@@ -37,7 +31,7 @@ export async function GET(req: NextRequest) {
           lng: googleResult.result.lng,
           formatted_address: googleResult.result.formattedAddress,
           query: googleResult.result.query,
-          provider: 'google',
+          provider: "google",
         });
       }
     }
@@ -51,22 +45,22 @@ export async function GET(req: NextRequest) {
         lng: nominatimResult.result.lng,
         formatted_address: nominatimResult.result.formattedAddress,
         query: nominatimResult.result.query,
-        provider: 'nominatim',
+        provider: "nominatim",
       });
     }
 
     return NextResponse.json(
       {
-        error: 'Address not found',
-        details: 'No geocoding match found after fallback attempts',
+        error: "Address not found",
+        details: "No geocoding match found after fallback attempts",
         attempted: candidates.slice(0, 5),
       },
       { status: 404 }
     );
   } catch (error: any) {
-    console.error('Geocoding error:', error);
+    console.error("Geocoding error:", error);
     return NextResponse.json(
-      { error: 'Failed to geocode address', details: error.message },
+      { error: "Failed to geocode address", details: error.message },
       { status: 500 }
     );
   }
@@ -86,13 +80,13 @@ type GeocodeAttemptResult = {
 
 function normalizeAddressInput(input: string): string {
   return input
-    .replace(/\r?\n/g, ', ')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*,\s*/g, ', ')
-    .replace(/,+/g, ',')
-    .replace(/\s*,\s*/g, ', ')
-    .replace(/,\s*,+/g, ', ')
-    .replace(/^,\s*|\s*,$/g, '')
+    .replace(/\r?\n/g, ", ")
+    .replace(/\s+/g, " ")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/,+/g, ",")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/,\s*,+/g, ", ")
+    .replace(/^,\s*|\s*,$/g, "")
     .trim();
 }
 
@@ -104,11 +98,7 @@ function dedupeAddressSegments(parts: string[]): string[] {
     const cleaned = part.trim();
     if (!cleaned) continue;
 
-    const key = cleaned
-      .toLowerCase()
-      .replace(/\./g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const key = cleaned.toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim();
 
     if (seen.has(key)) continue;
     seen.add(key);
@@ -119,26 +109,26 @@ function dedupeAddressSegments(parts: string[]): string[] {
 }
 
 function ensureCapeTownContext(address: string): string {
-  const segments = dedupeAddressSegments(address.split(','));
+  const segments = dedupeAddressSegments(address.split(","));
   const hasCapeTown = segments.some((segment) => /\bcape\s*town\b/i.test(segment));
   const hasSouthAfrica = segments.some((segment) => /\b(south\s*africa|za)\b/i.test(segment));
 
-  if (!hasCapeTown) segments.push('Cape Town');
-  if (!hasSouthAfrica) segments.push('South Africa');
+  if (!hasCapeTown) segments.push("Cape Town");
+  if (!hasSouthAfrica) segments.push("South Africa");
 
-  return normalizeAddressInput(segments.join(', '));
+  return normalizeAddressInput(segments.join(", "));
 }
 
 function expandStreetAbbreviations(address: string): string {
   const replacements: Array<[RegExp, string]> = [
-    [/\bRd\.?\b/gi, 'Road'],
-    [/\bSt\.?\b/gi, 'Street'],
-    [/\bAve\.?\b/gi, 'Avenue'],
-    [/\bAv\.?\b/gi, 'Avenue'],
-    [/\bBlvd\.?\b/gi, 'Boulevard'],
-    [/\bDr\.?\b/gi, 'Drive'],
-    [/\bLn\.?\b/gi, 'Lane'],
-    [/\bCtr\.?\b/gi, 'Centre'],
+    [/\bRd\.?\b/gi, "Road"],
+    [/\bSt\.?\b/gi, "Street"],
+    [/\bAve\.?\b/gi, "Avenue"],
+    [/\bAv\.?\b/gi, "Avenue"],
+    [/\bBlvd\.?\b/gi, "Boulevard"],
+    [/\bDr\.?\b/gi, "Drive"],
+    [/\bLn\.?\b/gi, "Lane"],
+    [/\bCtr\.?\b/gi, "Centre"],
   ];
 
   let normalized = address;
@@ -167,8 +157,8 @@ function buildAddressCandidates(rawAddress: string): string[] {
     candidates.push(normalized);
   };
 
-  const baseSegments = dedupeAddressSegments(base.split(','));
-  const dedupedBase = normalizeAddressInput(baseSegments.join(', '));
+  const baseSegments = dedupeAddressSegments(base.split(","));
+  const dedupedBase = normalizeAddressInput(baseSegments.join(", "));
   const expandedBase = expandStreetAbbreviations(dedupedBase);
 
   pushCandidate(dedupedBase);
@@ -195,30 +185,30 @@ async function geocodeWithGoogle(
   candidates: string[],
   apiKey: string
 ): Promise<GeocodeAttemptResult> {
-  let lastStatus = 'ZERO_RESULTS';
+  let lastStatus = "ZERO_RESULTS";
 
   for (const query of candidates) {
-    const geocodeUrl = new URL('https://maps.googleapis.com/maps/api/geocode/json');
-    geocodeUrl.searchParams.set('address', query);
-    geocodeUrl.searchParams.set('region', 'za');
-    geocodeUrl.searchParams.set('key', apiKey);
+    const geocodeUrl = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+    geocodeUrl.searchParams.set("address", query);
+    geocodeUrl.searchParams.set("region", "za");
+    geocodeUrl.searchParams.set("key", apiKey);
 
-    const response = await fetch(geocodeUrl.toString(), { cache: 'no-store' });
+    const response = await fetch(geocodeUrl.toString(), { cache: "no-store" });
     if (!response.ok) {
       lastStatus = `HTTP_${response.status}`;
       continue;
     }
 
     const data = await response.json();
-    const status = typeof data?.status === 'string' ? data.status : 'UNKNOWN';
+    const status = typeof data?.status === "string" ? data.status : "UNKNOWN";
     lastStatus = status;
 
-    if (status === 'OK' && Array.isArray(data.results) && data.results.length > 0) {
+    if (status === "OK" && Array.isArray(data.results) && data.results.length > 0) {
       const first = data.results[0];
       const lat = first?.geometry?.location?.lat;
       const lng = first?.geometry?.location?.lng;
 
-      if (typeof lat === 'number' && typeof lng === 'number') {
+      if (typeof lat === "number" && typeof lng === "number") {
         return {
           result: {
             lat,
@@ -230,7 +220,11 @@ async function geocodeWithGoogle(
       }
     }
 
-    if (status === 'OVER_QUERY_LIMIT' || status === 'REQUEST_DENIED' || status === 'INVALID_REQUEST') {
+    if (
+      status === "OVER_QUERY_LIMIT" ||
+      status === "REQUEST_DENIED" ||
+      status === "INVALID_REQUEST"
+    ) {
       break;
     }
   }
@@ -250,26 +244,26 @@ async function geocodeWithNominatim(candidates: string[]): Promise<GeocodeAttemp
     if (result) return { result };
   }
 
-  return { result: null, details: 'ZERO_RESULTS' };
+  return { result: null, details: "ZERO_RESULTS" };
 }
 
 async function queryNominatim(query: string, restrictToZA: boolean): Promise<GeocodeResult | null> {
-  const nominatimUrl = new URL('https://nominatim.openstreetmap.org/search');
-  nominatimUrl.searchParams.set('format', 'jsonv2');
-  nominatimUrl.searchParams.set('q', query);
-  nominatimUrl.searchParams.set('limit', '3');
-  nominatimUrl.searchParams.set('addressdetails', '1');
+  const nominatimUrl = new URL("https://nominatim.openstreetmap.org/search");
+  nominatimUrl.searchParams.set("format", "jsonv2");
+  nominatimUrl.searchParams.set("q", query);
+  nominatimUrl.searchParams.set("limit", "3");
+  nominatimUrl.searchParams.set("addressdetails", "1");
 
   if (restrictToZA) {
-    nominatimUrl.searchParams.set('countrycodes', 'za');
+    nominatimUrl.searchParams.set("countrycodes", "za");
   }
 
   const response = await fetch(nominatimUrl.toString(), {
     headers: {
-      'User-Agent': 'sayso-app/1.0',
-      Accept: 'application/json',
+      "User-Agent": "sayso-app/1.0",
+      Accept: "application/json",
     },
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) return null;
@@ -283,8 +277,8 @@ async function queryNominatim(query: string, restrictToZA: boolean): Promise<Geo
     display_name?: string;
   };
 
-  const lat = Number.parseFloat(first.lat || '');
-  const lng = Number.parseFloat(first.lon || '');
+  const lat = Number.parseFloat(first.lat || "");
+  const lng = Number.parseFloat(first.lon || "");
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
@@ -295,4 +289,3 @@ async function queryNominatim(query: string, restrictToZA: boolean): Promise<Geo
     query,
   };
 }
-

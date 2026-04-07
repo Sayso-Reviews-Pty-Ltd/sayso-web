@@ -5,6 +5,7 @@ This guide explains how the Ticketmaster events fetching system works in our cod
 ## Overview
 
 The system consists of:
+
 1. **Service Function** (`src/app/lib/services/ticketmasterService.ts`) - Handles API calls and database operations
 2. **API Route** (`src/app/api/cron/fetch-events/route.ts`) - Endpoint that can be called by cron services
 3. **Database Table** (`ticketmaster_events`) - Stores fetched events
@@ -72,8 +73,8 @@ name: Fetch Ticketmaster Events
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
-  workflow_dispatch:  # Allow manual trigger
+    - cron: "0 */6 * * *" # Every 6 hours
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   fetch-events:
@@ -87,6 +88,7 @@ jobs:
 ```
 
 Add secrets to GitHub:
+
 - `APP_URL`: Your application URL (e.g., `https://your-app.vercel.app`)
 - `CRON_SECRET`: Your cron secret (same as in `.env`)
 
@@ -107,12 +109,12 @@ Fetches events from Ticketmaster API and stores them in the database.
 
 **Query Parameters:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `keyword` | string | - | Search keyword (e.g., "Madonna") |
-| `city` | string | "Cape Town" | Filter by city |
-| `size` | number | 20 | Number of events per page |
-| `page` | number | 0 | Page number (0-indexed) |
+| Parameter | Type   | Default     | Description                      |
+| --------- | ------ | ----------- | -------------------------------- |
+| `keyword` | string | -           | Search keyword (e.g., "Madonna") |
+| `city`    | string | "Cape Town" | Filter by city                   |
+| `size`    | number | 20          | Number of events per page        |
+| `page`    | number | 0           | Page number (0-indexed)          |
 
 **Headers:**
 
@@ -148,10 +150,10 @@ The `TicketmasterService` class provides these methods:
 Fetches events from Ticketmaster API without storing them.
 
 ```typescript
-import { TicketmasterService } from '@/app/lib/services/ticketmasterService';
+import { TicketmasterService } from "@/app/lib/services/ticketmasterService";
 
 const events = await TicketmasterService.fetchEventsFromAPI(apiKey, {
-  city: 'Cape Town',
+  city: "Cape Town",
   size: 50,
 });
 ```
@@ -161,8 +163,8 @@ const events = await TicketmasterService.fetchEventsFromAPI(apiKey, {
 Stores events in the database.
 
 ```typescript
-import { TicketmasterService } from '@/app/lib/services/ticketmasterService';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { TicketmasterService } from "@/app/lib/services/ticketmasterService";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
 const supabase = await getServerSupabase();
 const result = await TicketmasterService.storeEventsInDatabase(supabase, events);
@@ -174,7 +176,7 @@ Fetches events and stores them in one call (used by the API route).
 
 ```typescript
 const result = await TicketmasterService.fetchAndStoreEvents(supabase, apiKey, {
-  city: 'Cape Town',
+  city: "Cape Town",
   size: 50,
 });
 ```
@@ -197,14 +199,14 @@ curl -X GET \
 
 ```typescript
 // In a Next.js API route or server component
-import { TicketmasterService } from '@/app/lib/services/ticketmasterService';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { TicketmasterService } from "@/app/lib/services/ticketmasterService";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
 const supabase = await getServerSupabase();
 const apiKey = process.env.TICKETMASTER_API_KEY!;
 
 const result = await TicketmasterService.fetchAndStoreEvents(supabase, apiKey, {
-  city: 'Cape Town',
+  city: "Cape Town",
   size: 20,
 });
 
@@ -247,14 +249,14 @@ CREATE TABLE ticketmaster_events (
 
 ```sql
 -- Get recent events
-SELECT title, city, start_date, segment 
-FROM ticketmaster_events 
-ORDER BY last_fetched_at DESC 
+SELECT title, city, start_date, segment
+FROM ticketmaster_events
+ORDER BY last_fetched_at DESC
 LIMIT 10;
 
 -- Count events by city
-SELECT city, COUNT(*) 
-FROM ticketmaster_events 
+SELECT city, COUNT(*)
+FROM ticketmaster_events
 GROUP BY city;
 
 -- Get upcoming events
@@ -276,15 +278,15 @@ LIMIT 20;
 
 ```sql
 -- Check last fetch time
-SELECT MAX(last_fetched_at) as last_fetch 
+SELECT MAX(last_fetched_at) as last_fetch
 FROM ticketmaster_events;
 
 -- Count total events
-SELECT COUNT(*) as total_events 
+SELECT COUNT(*) as total_events
 FROM ticketmaster_events;
 
 -- Check events by date
-SELECT 
+SELECT
   DATE(start_date) as event_date,
   COUNT(*) as event_count
 FROM ticketmaster_events
@@ -309,10 +311,12 @@ ORDER BY event_date ASC;
 ### Rate Limiting
 
 Ticketmaster API limits:
+
 - 5 requests/second
 - 5000 requests/day
 
 If you hit limits:
+
 - Reduce `size` parameter
 - Increase time between cron runs
 - Use pagination to fetch in batches
@@ -320,11 +324,13 @@ If you hit limits:
 ### Cron Job Not Running
 
 **Vercel:**
+
 - Check `vercel.json` is committed
 - Verify cron job appears in Vercel Dashboard → Settings → Cron Jobs
 - Check function logs for errors
 
 **GitHub Actions:**
+
 - Verify workflow file is in `.github/workflows/`
 - Check Actions tab for workflow runs
 - Ensure secrets are set correctly

@@ -30,7 +30,6 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
   const [accountType, setAccountType] = useState<AccountType>("personal");
   const [authMode, setAuthMode] = useState<AuthMode>(defaultAuthMode);
 
-
   const [personalUsername, setPersonalUsername] = useState("");
   const [businessUsername, setBusinessUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -48,8 +47,8 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
   const [mounted, setMounted] = useState(false);
   const [existingAccountError, setExistingAccountError] = useState(false);
 
-  type UsernameAvailability = 'idle' | 'checking' | 'available' | 'taken';
-  const [usernameAvailability, setUsernameAvailability] = useState<UsernameAvailability>('idle');
+  type UsernameAvailability = "idle" | "checking" | "available" | "taken";
+  const [usernameAvailability, setUsernameAvailability] = useState<UsernameAvailability>("idle");
   const usernameCheckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isLoading = authLoading;
@@ -71,7 +70,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       // Decode the message and show as toast
       const decodedMessage = decodeURIComponent(message.replace(/\+/g, " "));
       showToast(decodedMessage, "sage", 8000);
-      
+
       // Clean the URL
       if (typeof window !== "undefined") {
         const url = new URL(window.location.href);
@@ -106,7 +105,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     setError("");
     setExistingAccountError(false);
     setUsernameTouched(false);
-    setUsernameAvailability('idle');
+    setUsernameAvailability("idle");
     if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
   }, [accountType]);
 
@@ -114,18 +113,21 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
     const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
     if (!usernameRegex.test(value)) {
-      setUsernameAvailability('idle');
+      setUsernameAvailability("idle");
       return;
     }
-    setUsernameAvailability('checking');
+    setUsernameAvailability("checking");
     usernameCheckTimerRef.current = setTimeout(async () => {
       try {
         const res = await fetch(`/api/username/check?username=${encodeURIComponent(value)}`);
-        if (!res.ok) { setUsernameAvailability('idle'); return; }
+        if (!res.ok) {
+          setUsernameAvailability("idle");
+          return;
+        }
         const data = await res.json();
-        setUsernameAvailability(data.available ? 'available' : 'taken');
+        setUsernameAvailability(data.available ? "available" : "taken");
       } catch {
-        setUsernameAvailability('idle');
+        setUsernameAvailability("idle");
       }
     }, 500);
   }, []);
@@ -141,7 +143,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     setUsernameTouched(false);
     setEmailTouched(false);
     setPasswordTouched(false);
-    setUsernameAvailability('idle');
+    setUsernameAvailability("idle");
     if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current);
   };
 
@@ -157,7 +159,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     if (!validateUsername(usernameValue)) {
       return "Username can only contain letters, numbers, and underscores";
     }
-    if (usernameAvailability === 'taken') return "Username is already taken";
+    if (usernameAvailability === "taken") return "Username is already taken";
     return "";
   };
 
@@ -185,14 +187,11 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
           !email ||
           !password ||
           !validateEmail(email) ||
-          usernameAvailability !== 'available' ||
+          usernameAvailability !== "available" ||
           (isBusiness
-            ? !businessUsername ||
-              !validateUsername(businessUsername)
+            ? !businessUsername || !validateUsername(businessUsername)
             : !personalUsername || !validateUsername(personalUsername))
-        : !email ||
-          !password ||
-          !validateEmail(email))
+        : !email || !password || !validateEmail(email))
     : true;
 
   const handleLogin = async () => {
@@ -317,13 +316,12 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
     if (registrationError) {
       const lower = registrationError.toLowerCase();
       if (lower.includes("fetch") || lower.includes("network")) {
-        const msg =
-          "Connection error. Please check your internet and try again.";
+        const msg = "Connection error. Please check your internet and try again.";
         setError(msg);
         showToast(msg, "error", 4000);
       } else if (
-        registrationErrorCode === 'user_exists' ||
-        registrationErrorCode === 'duplicate_account_type' ||
+        registrationErrorCode === "user_exists" ||
+        registrationErrorCode === "duplicate_account_type" ||
         lower.includes("already in use") ||
         lower.includes("already registered") ||
         lower.includes("already exists") ||
@@ -339,8 +337,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
         lower.includes("invalid email") ||
         (lower.includes("email address") && lower.includes("invalid"))
       ) {
-        const msg =
-          "Email address is invalid. Please use a valid address like name@example.com.";
+        const msg = "Email address is invalid. Please use a valid address like name@example.com.";
         setError(msg);
         showToast(msg, "error", 4000);
       } else if (
@@ -411,7 +408,11 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
 
   const motionVariants = prefersReduced
     ? { initial: false, animate: { opacity: 1, y: 0 }, exit: { opacity: 1, y: 0 } }
-    : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } };
+    : {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
+      };
 
   const handleSwitchToLogin = () => {
     setExistingAccountError(false);
@@ -435,7 +436,7 @@ export default function AuthPage({ defaultAuthMode }: AuthPageProps) {
       accountType={accountType}
       authMode={authMode}
       existingAccountError={existingAccountError}
-      usernameChecking={usernameAvailability === 'checking'}
+      usernameChecking={usernameAvailability === "checking"}
       motionVariants={motionVariants}
       error={error}
       isOnline={isOnline}

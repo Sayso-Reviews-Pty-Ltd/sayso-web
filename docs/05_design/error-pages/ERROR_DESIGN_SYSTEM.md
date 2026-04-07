@@ -7,18 +7,21 @@ This document outlines the unified, consistent error page design system for the 
 ## Design Principles
 
 ### 1. **Premium & Minimal**
+
 - Clean, spacious layouts with purposeful whitespace
 - No visual clutter or over-decoration
 - Sophisticated typography and spacing hierarchy
 - Subtle animations that enhance rather than distract
 
 ### 2. **Intentional Visual Language**
+
 - Every element serves a purpose
 - Consistent iconography and visual patterns
 - Thoughtful use of color and contrast
 - Premium feel through restraint, not excess
 
 ### 3. **Brand Cohesion**
+
 - All error pages feel like natural extensions of the product
 - Typography, spacing, and layout align with site design language
 - Consistent use of brand colors and design tokens
@@ -54,13 +57,13 @@ Uses the Urbanist font family for consistency with the main application.
 
 ### Type Scale
 
-| Element | Mobile | Desktop | Weight | Usage |
-|---------|--------|---------|--------|-------|
-| Error Code (404, 500, etc) | 56px | 64px | 800 | Large display of error numbers |
-| Title | 24px | 32px | 700 | Main error heading |
-| Description | 16px | 18px | 500 | Error context and explanation |
-| Button Text | 16px | 16px | 600 | CTA labels |
-| Support Text | 14px | 14px | 500 | Help and contact info |
+| Element                    | Mobile | Desktop | Weight | Usage                          |
+| -------------------------- | ------ | ------- | ------ | ------------------------------ |
+| Error Code (404, 500, etc) | 56px   | 64px    | 800    | Large display of error numbers |
+| Title                      | 24px   | 32px    | 700    | Main error heading             |
+| Description                | 16px   | 18px    | 500    | Error context and explanation  |
+| Button Text                | 16px   | 16px    | 600    | CTA labels                     |
+| Support Text               | 14px   | 14px    | 500    | Help and contact info          |
 
 ## Best Practices
 

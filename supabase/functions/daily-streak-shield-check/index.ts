@@ -12,16 +12,18 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // @ts-ignore — Deno global
 Deno.serve(async (_req: Request) => {
-  const supabaseUrl    = Deno.env.get("SUPABASE_URL")!;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const supabase       = createClient(supabaseUrl, serviceRoleKey);
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-  const today      = new Date();
-  const yesterday  = new Date(today); yesterday.setDate(today.getDate() - 1);
-  const twoDaysAgo = new Date(today); twoDaysAgo.setDate(today.getDate() - 2);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const twoDaysAgo = new Date(today);
+  twoDaysAgo.setDate(today.getDate() - 2);
 
-  const todayStr      = today.toISOString().slice(0, 10);
-  const yesterdayStr  = yesterday.toISOString().slice(0, 10);
+  const todayStr = today.toISOString().slice(0, 10);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
   const twoDaysAgoStr = twoDaysAgo.toISOString().slice(0, 10);
 
   // Fetch all streaks not updated today or yesterday
@@ -36,7 +38,7 @@ Deno.serve(async (_req: Request) => {
   }
 
   let shieldConsumed = 0;
-  let streaksReset   = 0;
+  let streaksReset = 0;
 
   for (const row of staleRows ?? []) {
     if (row.shield_active && row.last_review_date === twoDaysAgoStr) {
@@ -44,9 +46,9 @@ Deno.serve(async (_req: Request) => {
       await supabase
         .from("user_streaks")
         .update({
-          shield_active:  false,
+          shield_active: false,
           shield_used_at: new Date().toISOString(),
-          updated_at:     new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
         .eq("user_id", row.user_id);
       shieldConsumed++;
@@ -56,8 +58,8 @@ Deno.serve(async (_req: Request) => {
         .from("user_streaks")
         .update({
           current_streak: 0,
-          shield_active:  false,
-          updated_at:     new Date().toISOString(),
+          shield_active: false,
+          updated_at: new Date().toISOString(),
         })
         .eq("user_id", row.user_id);
       streaksReset++;
@@ -65,10 +67,10 @@ Deno.serve(async (_req: Request) => {
   }
 
   return Response.json({
-    ok:             true,
-    processed:      (staleRows ?? []).length,
+    ok: true,
+    processed: (staleRows ?? []).length,
     shieldConsumed,
     streaksReset,
-    date:           todayStr,
+    date: todayStr,
   });
 });

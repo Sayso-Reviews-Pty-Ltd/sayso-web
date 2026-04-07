@@ -3,7 +3,8 @@ import { Compass, Target, Trophy, Users } from "@/app/lib/icons";
 export const BADGE_DETAILS: Record<string, { description: string; howToEarn: string }> = {
   // Explorer Badges
   explorer_dabbler: {
-    description: "You're dipping your toes into different categories, exploring what the city has to offer.",
+    description:
+      "You're dipping your toes into different categories, exploring what the city has to offer.",
     howToEarn: "Review businesses in 2 different categories",
   },
   explorer_newbie_nomad: {
@@ -316,7 +317,8 @@ export const CATEGORY_META = {
   explorer: {
     title: "Explorer Badges",
     subtitle: "Venture into the unknown",
-    description: "Earned by reviewing businesses across different categories. The more diverse your exploration, the more explorer badges you unlock.",
+    description:
+      "Earned by reviewing businesses across different categories. The more diverse your exploration, the more explorer badges you unlock.",
     icon: Compass,
     gradient: "from-emerald-500/20 to-teal-500/20",
     accentColor: "text-emerald-600",
@@ -325,7 +327,8 @@ export const CATEGORY_META = {
   specialist: {
     title: "Specialist Badges",
     subtitle: "Master your passions",
-    description: "Become an expert in specific categories. Deep knowledge in your favorite areas earns you specialist recognition.",
+    description:
+      "Become an expert in specific categories. Deep knowledge in your favorite areas earns you specialist recognition.",
     icon: Target,
     gradient: "from-sage/20 to-sage/10",
     accentColor: "text-sage",
@@ -334,7 +337,8 @@ export const CATEGORY_META = {
   milestone: {
     title: "Milestone Badges",
     subtitle: "Celebrate your journey",
-    description: "Mark your achievements as you grow with Sayso. Every review, photo, and helpful action counts toward your milestones.",
+    description:
+      "Mark your achievements as you grow with Sayso. Every review, photo, and helpful action counts toward your milestones.",
     icon: Trophy,
     gradient: "from-amber-500/20 to-yellow-500/20",
     accentColor: "text-amber-600",
@@ -343,7 +347,8 @@ export const CATEGORY_META = {
   community: {
     title: "Community Badges",
     subtitle: "Connect and inspire",
-    description: "Recognition for building and strengthening our community. Your contributions make Sayso better for everyone.",
+    description:
+      "Recognition for building and strengthening our community. Your contributions make Sayso better for everyone.",
     icon: Users,
     gradient: "from-coral/20 to-rose-500/20",
     accentColor: "text-coral",

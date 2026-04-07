@@ -3,15 +3,15 @@ import { cachedJsonResponse, CachePresets } from "@/app/lib/utils/httpCache";
 import { getServerSupabase } from "@/app/lib/supabase/server";
 import { normalizeBusinessImages } from "@/app/lib/utils/businessImages";
 import { getSubcategoryLabel } from "@/app/utils/subcategoryPlaceholders";
-import type { 
-  CuratedBusiness, 
-  CuratedBusinessesResponse, 
-  CuratedBusinessUI, 
-  CuratedBusinessesUIResponse 
+import type {
+  CuratedBusiness,
+  CuratedBusinessesResponse,
+  CuratedBusinessUI,
+  CuratedBusinessesUIResponse,
 } from "@/app/lib/types/curation";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 // In-memory cache for curated results (5-minute TTL)
 const cache = new Map<string, { data: CuratedBusinessesUIResponse; timestamp: number }>();
@@ -19,25 +19,26 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 function getCacheKey(interestId: string | null, lat: number | null, lng: number | null): string {
   // Round lat/lng to 2 decimal places for cache bucketing (~1km precision)
-  const roundedLat = lat !== null ? Math.round(lat * 100) / 100 : 'null';
-  const roundedLng = lng !== null ? Math.round(lng * 100) / 100 : 'null';
-  return `${interestId || 'all'}_${roundedLat}_${roundedLng}`;
+  const roundedLat = lat !== null ? Math.round(lat * 100) / 100 : "null";
+  const roundedLng = lng !== null ? Math.round(lng * 100) / 100 : "null";
+  return `${interestId || "all"}_${roundedLat}_${roundedLng}`;
 }
 
 /**
  * Fallback: fetch curated businesses using direct query when RPC doesn't exist
  */
 async function getCuratedFallback(
-  supabase: any, 
-  interestId: string | null, 
+  supabase: any,
+  interestId: string | null,
   limit: number
 ): Promise<CuratedBusiness[]> {
-  console.log('[CURATED API] Using fallback query (RPC not available)');
+  console.log("[CURATED API] Using fallback query (RPC not available)");
 
   // Build query
   let query = supabase
-    .from('businesses')
-    .select(`
+    .from("businesses")
+    .select(
+      `
       id,
       name,
       image_url,
@@ -57,20 +58,23 @@ async function getCuratedFallback(
         average_rating,
         total_reviews
       )
-    `)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
+    `
+    )
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
     .limit(limit * 2);
 
   // Apply interest filter if specified
   if (interestId) {
-    query = query.or(`interest_id.eq.${interestId},sub_interest_id.eq.${interestId},category.eq.${interestId}`);
+    query = query.or(
+      `interest_id.eq.${interestId},sub_interest_id.eq.${interestId},category.eq.${interestId}`
+    );
   }
 
   const { data: businesses, error } = await query;
 
   if (error) {
-    console.error('[CURATED API] Fallback query error:', error);
+    console.error("[CURATED API] Fallback query error:", error);
     return [];
   }
 
@@ -83,19 +87,20 @@ async function getCuratedFallback(
     const stats = b.business_stats?.[0] || b.business_stats || {};
     const avgRating = stats.average_rating || 0;
     const totalReviews = stats.total_reviews || 0;
-    
+
     // Simple Bayesian adjustment
     const priorMean = 4.0;
     const priorWeight = 5;
-    const weightedRating = (avgRating * totalReviews + priorMean * priorWeight) / (totalReviews + priorWeight);
-    
+    const weightedRating =
+      (avgRating * totalReviews + priorMean * priorWeight) / (totalReviews + priorWeight);
+
     // Simple score: weighted rating + log(reviews)
     const score = weightedRating * 0.7 + Math.log(1 + totalReviews) * 0.3;
-    
+
     return {
       id: b.id,
       name: b.name,
-      image_url: b.image_url || '',
+      image_url: b.image_url || "",
       category: b.category,
       sub_interest_id: b.sub_interest_id,
       interest_id: b.interest_id,
@@ -131,7 +136,7 @@ async function getCuratedFallback(
  * Transform raw curated business to UI format
  */
 function transformToUI(
-  business: CuratedBusiness, 
+  business: CuratedBusiness,
   businessImages: { [key: string]: any[] }
 ): CuratedBusinessUI {
   const images = businessImages[business.id] || [];
@@ -142,11 +147,13 @@ function transformToUI(
   return {
     id: business.id,
     name: business.name,
-    image: primaryImage?.url || business.image_url || '',
+    image: primaryImage?.url || business.image_url || "",
     alt: business.name,
     category: displayCategory,
-    description: business.description || `${business.is_top3 ? 'Top rated' : 'Featured'} in ${displayCategory}`,
-    location: business.location || 'Cape Town',
+    description:
+      business.description ||
+      `${business.is_top3 ? "Top rated" : "Featured"} in ${displayCategory}`,
+    location: business.location || "Cape Town",
     rating: business.average_rating > 0 ? 5 : 0, // UI expects 0 or 5 for star display
     reviewCount: business.total_reviews,
     totalRating: business.average_rating,
@@ -154,8 +161,8 @@ function transformToUI(
     badge: business.is_top3 ? "top3" : "curated",
     rank: business.rank_position,
     href: `/business/${business.slug || business.id}`,
-    monthAchievement: business.is_top3 
-      ? `#${business.rank_position} in ${displayCategory}` 
+    monthAchievement: business.is_top3
+      ? `#${business.rank_position} in ${displayCategory}`
       : `Featured ${displayCategory}`,
     verified: business.verified || business.owner_verified,
     isTop3: business.is_top3,
@@ -166,7 +173,7 @@ function transformToUI(
 /**
  * GET /api/curated
  * Returns curated businesses with top3 and next10 structure
- * 
+ *
  * Query params:
  * - interest_id: Filter by interest (optional, null = all interests)
  * - limit: Total businesses to return (default 13 = 3 + 10)
@@ -178,16 +185,16 @@ export async function GET(request: NextRequest) {
     const supabase = await getServerSupabase();
     const { searchParams } = new URL(request.url);
 
-    const interestId = searchParams.get('interest_id')?.trim() || null;
-    const limit = Math.min(parseInt(searchParams.get('limit') || '13'), 50);
-    const userLat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : null;
-    const userLng = searchParams.get('lng') ? parseFloat(searchParams.get('lng')!) : null;
+    const interestId = searchParams.get("interest_id")?.trim() || null;
+    const limit = Math.min(parseInt(searchParams.get("limit") || "13"), 50);
+    const userLat = searchParams.get("lat") ? parseFloat(searchParams.get("lat")!) : null;
+    const userLng = searchParams.get("lng") ? parseFloat(searchParams.get("lng")!) : null;
 
     // Check cache
     const cacheKey = getCacheKey(interestId, userLat, userLng);
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      console.log('[CURATED API] Returning cached result');
+      console.log("[CURATED API] Returning cached result");
       return cachedJsonResponse(cached.data, CachePresets.api(300));
     }
 
@@ -196,22 +203,21 @@ export async function GET(request: NextRequest) {
 
     // Try RPC first
     try {
-      const { data, error } = await supabase
-        .rpc('get_curated_businesses', {
-          p_interest_id: interestId,
-          p_limit: limit,
-          p_user_lat: userLat,
-          p_user_lng: userLng,
-        });
+      const { data, error } = await supabase.rpc("get_curated_businesses", {
+        p_interest_id: interestId,
+        p_limit: limit,
+        p_user_lat: userLat,
+        p_user_lng: userLng,
+      });
 
       if (error) {
-        console.warn('[CURATED API] RPC error, using fallback:', error.message);
+        console.warn("[CURATED API] RPC error, using fallback:", error.message);
         useRpc = false;
       } else {
         curatedData = (data || []) as CuratedBusiness[];
       }
     } catch (rpcError: any) {
-      console.warn('[CURATED API] RPC call failed, using fallback:', rpcError?.message);
+      console.warn("[CURATED API] RPC call failed, using fallback:", rpcError?.message);
       useRpc = false;
     }
 
@@ -233,14 +239,16 @@ export async function GET(request: NextRequest) {
     // Get business images for all curated businesses
     const businessIds = curatedData.map((b) => b.id);
     const { data: imagesData } = await supabase
-      .from('business_images')
-      .select('business_id, url, is_primary')
-      .in('business_id', businessIds)
-      .order('is_primary', { ascending: false })
-      .order('created_at', { ascending: false });
+      .from("business_images")
+      .select("business_id, url, is_primary")
+      .in("business_id", businessIds)
+      .order("is_primary", { ascending: false })
+      .order("created_at", { ascending: false });
 
     // Normalize images by business ID
-    const normalizedImages = normalizeBusinessImages(imagesData || []) as unknown as { [key: string]: any[] };
+    const normalizedImages = normalizeBusinessImages(imagesData || []) as unknown as {
+      [key: string]: any[];
+    };
 
     // Transform to UI format and split into top3/next10
     const top3: CuratedBusinessUI[] = [];
@@ -280,12 +288,8 @@ export async function GET(request: NextRequest) {
     }
 
     return cachedJsonResponse(response, CachePresets.api(300));
-
   } catch (error) {
-    console.error('[CURATED API] Unexpected error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("[CURATED API] Unexpected error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

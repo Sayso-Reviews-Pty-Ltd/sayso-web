@@ -1,29 +1,32 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { ITEMS_PER_PAGE } from '../ForYouClient.constants';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { ITEMS_PER_PAGE } from "../ForYouClient.constants";
 
 export function useForYouPagination() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const previousPageRef = useRef(currentPage);
 
-  const handlePageChange = useCallback((newPage: number) => {
-    if (newPage === currentPage) return;
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (newPage === currentPage) return;
 
-    setIsPaginationLoading(true);
+      setIsPaginationLoading(true);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      previousPageRef.current = currentPage;
-      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
 
       setTimeout(() => {
-        setIsPaginationLoading(false);
-      }, 300);
-    }, 150);
-  }, [currentPage]);
+        previousPageRef.current = currentPage;
+        setCurrentPage(newPage);
+
+        setTimeout(() => {
+          setIsPaginationLoading(false);
+        }, 300);
+      }, 150);
+    },
+    [currentPage]
+  );
 
   // Safety mechanism: Reset pagination loading after timeout
   useEffect(() => {

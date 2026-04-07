@@ -62,15 +62,34 @@ export const formatAuthMessage = (message: string, fallback: string): string => 
     return authCopy.connectionIssue;
   }
 
-  if (has(lower, ["invalid email", "email address", "email format"]) && has(lower, ["invalid", "format"])) {
+  if (
+    has(lower, ["invalid email", "email address", "email format"]) &&
+    has(lower, ["invalid", "format"])
+  ) {
     return authCopy.emailInvalid;
   }
 
-  if (has(lower, ["already in use", "already registered", "already exists", "already taken", "duplicate", "user_exists"])) {
+  if (
+    has(lower, [
+      "already in use",
+      "already registered",
+      "already exists",
+      "already taken",
+      "duplicate",
+      "user_exists",
+    ])
+  ) {
     return existingAccountMessage("Personal");
   }
 
-  if (has(lower, ["invalid login credentials", "invalid credentials", "incorrect email or password", "email or password is incorrect"])) {
+  if (
+    has(lower, [
+      "invalid login credentials",
+      "invalid credentials",
+      "incorrect email or password",
+      "email or password is incorrect",
+    ])
+  ) {
     return authCopy.loginInvalidCredentials;
   }
 
@@ -84,4 +103,3 @@ export const formatAuthMessage = (message: string, fallback: string): string => 
 
   return withPeriod(normalized);
 };
-

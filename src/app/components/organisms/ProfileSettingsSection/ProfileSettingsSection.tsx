@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 import { User, ArrowLeft, Mail } from "@/app/lib/icons";
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { ProfileInfoItem } from '@/components/molecules/ProfileInfoItem';
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { ProfileInfoItem } from "@/components/molecules/ProfileInfoItem";
 
 export interface ProfileSettingsSectionProps {
   email?: string;
@@ -25,15 +25,10 @@ export const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({
       <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-coral/10 to-transparent rounded-full blur-lg" />
       <div className="relative z-10">
         <div className="space-y-4">
-          <ProfileInfoItem
-            label="Email"
-            value={email || 'N/A'}
-            icon={Mail}
-            iconColor="coral"
-          />
+          <ProfileInfoItem label="Email" value={email || "N/A"} icon={Mail} iconColor="coral" />
           <ProfileInfoItem
             label="Account Created"
-            value={accountCreated || 'N/A'}
+            value={accountCreated || "N/A"}
             showBorder={false}
           />
         </div>
@@ -47,4 +42,3 @@ export const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({
     </SettingsCard>
   );
 };
-

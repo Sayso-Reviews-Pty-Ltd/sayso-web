@@ -31,7 +31,7 @@ function hashString(s: string): number {
 function tieBreakOrder(
   a: FeaturedColdStartCandidate,
   b: FeaturedColdStartCandidate,
-  seed: number,
+  seed: number
 ): number {
   const ha = hashString(a.id + String(seed));
   const hb = hashString(b.id + String(seed));
@@ -47,7 +47,7 @@ function tieBreakOrder(
  */
 export function selectFeaturedColdStart(
   candidates: FeaturedColdStartCandidate[],
-  options: FeaturedSelectionOptions,
+  options: FeaturedSelectionOptions
 ): FeaturedColdStartCandidate[] {
   const limit = Math.max(0, options.limit | 0);
   const maxPerCategory = options.maxPerCategory ?? DEFAULT_MAX_PER_CATEGORY;
@@ -56,9 +56,9 @@ export function selectFeaturedColdStart(
   if (limit === 0 || candidates.length === 0) return [];
 
   const S = (c: FeaturedColdStartCandidate) =>
-    (c.primary_subcategory_slug ?? '').trim().toLowerCase() || 'miscellaneous';
+    (c.primary_subcategory_slug ?? "").trim().toLowerCase() || "miscellaneous";
   const C = (c: FeaturedColdStartCandidate) =>
-    (c.primary_category_slug ?? '').trim().toLowerCase() || 'miscellaneous';
+    (c.primary_category_slug ?? "").trim().toLowerCase() || "miscellaneous";
 
   const bySubcategory = new Map<string, FeaturedColdStartCandidate[]>();
   for (const c of candidates) {
@@ -67,11 +67,7 @@ export function selectFeaturedColdStart(
     bySubcategory.get(s)!.push(c);
   }
   for (const arr of bySubcategory.values()) {
-    arr.sort(
-      (a, b) =>
-        b.featured_score - a.featured_score ||
-        tieBreakOrder(a, b, seed),
-    );
+    arr.sort((a, b) => b.featured_score - a.featured_score || tieBreakOrder(a, b, seed));
   }
 
   const result: FeaturedColdStartCandidate[] = [];
@@ -96,10 +92,7 @@ export function selectFeaturedColdStart(
   for (const arr of bySubcategory.values()) {
     if (arr.length > 0) winners.push(arr[0]);
   }
-  winners.sort(
-    (a, b) =>
-      b.featured_score - a.featured_score || tieBreakOrder(a, b, seed),
-  );
+  winners.sort((a, b) => b.featured_score - a.featured_score || tieBreakOrder(a, b, seed));
 
   for (const c of winners) {
     if (result.length >= limit) break;
@@ -111,10 +104,7 @@ export function selectFeaturedColdStart(
   for (const arr of bySubcategory.values()) {
     if (arr.length >= 2) seconds.push(arr[1]);
   }
-  seconds.sort(
-    (a, b) =>
-      b.featured_score - a.featured_score || tieBreakOrder(a, b, seed),
-  );
+  seconds.sort((a, b) => b.featured_score - a.featured_score || tieBreakOrder(a, b, seed));
   for (const c of seconds) {
     if (result.length >= limit) break;
     if (!usedIds.has(c.id)) addOne(c);
@@ -125,10 +115,7 @@ export function selectFeaturedColdStart(
   for (const arr of bySubcategory.values()) {
     for (let j = 2; j < arr.length; j++) rest.push(arr[j]);
   }
-  rest.sort(
-    (a, b) =>
-      b.featured_score - a.featured_score || tieBreakOrder(a, b, seed),
-  );
+  rest.sort((a, b) => b.featured_score - a.featured_score || tieBreakOrder(a, b, seed));
   for (const c of rest) {
     if (result.length >= limit) break;
     if (!usedIds.has(c.id)) addOne(c);
@@ -139,7 +126,7 @@ export function selectFeaturedColdStart(
 
 function dedupeAndCap(
   list: FeaturedColdStartCandidate[],
-  limit: number,
+  limit: number
 ): FeaturedColdStartCandidate[] {
   const seen = new Set<string>();
   const out: FeaturedColdStartCandidate[] = [];
@@ -158,7 +145,7 @@ export function getFeaturedSeed(location?: string | null): number {
   const dayMs = 24 * 60 * 60 * 1000;
   const bucket = Math.floor(now / dayMs);
   let h = 0;
-  const loc = (location ?? '').toString().trim().toLowerCase();
+  const loc = (location ?? "").toString().trim().toLowerCase();
   for (let i = 0; i < loc.length; i++) h = (h * 31 + loc.charCodeAt(i)) >>> 0;
   return (bucket * 1000003 + h) >>> 0;
 }

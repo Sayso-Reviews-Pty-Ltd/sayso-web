@@ -14,7 +14,7 @@ class QueryCache {
   private cache: Map<string, CacheEntry<any>> = new Map();
   private maxSize: number = 1000; // Maximum number of cache entries
   private defaultTTL: number = 60000; // Default TTL: 60 seconds
-  
+
   // Extended TTLs for different content types
   private extendedTTLs: Record<string, number> = {
     business: 600000, // 10 minutes for business data
@@ -30,8 +30,8 @@ class QueryCache {
   private generateKey(prefix: string, params: Record<string, any>): string {
     const sortedParams = Object.keys(params)
       .sort()
-      .map(key => `${key}:${JSON.stringify(params[key])}`)
-      .join('|');
+      .map((key) => `${key}:${JSON.stringify(params[key])}`)
+      .join("|");
     return `${prefix}:${sortedParams}`;
   }
 
@@ -40,7 +40,7 @@ class QueryCache {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -71,7 +71,7 @@ class QueryCache {
     let finalTTL = ttl;
     if (!finalTTL) {
       for (const [prefix, prefixTTL] of Object.entries(this.extendedTTLs)) {
-        if (key.startsWith(prefix + ':')) {
+        if (key.startsWith(prefix + ":")) {
           finalTTL = prefixTTL;
           break;
         }
@@ -82,7 +82,7 @@ class QueryCache {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: finalTTL
+      ttl: finalTTL,
     });
   }
 
@@ -118,14 +118,14 @@ class QueryCache {
    */
   deleteByPrefix(prefix: string): void {
     const keysToDelete: string[] = [];
-    
+
     for (const key of this.cache.keys()) {
       if (key.startsWith(prefix)) {
         keysToDelete.push(key);
       }
     }
 
-    keysToDelete.forEach(key => this.cache.delete(key));
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   /**
@@ -175,7 +175,7 @@ class QueryCache {
       total: this.cache.size,
       valid: validEntries,
       expired: expiredEntries,
-      maxSize: this.maxSize
+      maxSize: this.maxSize,
     };
   }
 
@@ -220,4 +220,3 @@ export function cached<T extends (...args: any[]) => Promise<any>>(
     return result;
   }) as T;
 }
-

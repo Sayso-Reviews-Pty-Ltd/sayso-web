@@ -3,6 +3,7 @@
 ## 🎯 Quick Start
 
 ### Import and Use
+
 ```typescript
 import ErrorPage from "@/app/components/ErrorPages/ErrorPage";
 
@@ -23,14 +24,14 @@ import ErrorPage from "@/app/components/ErrorPages/ErrorPage";
 
 ## 📋 Error Types Supported
 
-| Type | Use Case | Default Button |
-|------|----------|-----------------|
-| `404` | Page not found | Go Home → /interests |
-| `401` | Authentication required | Go Home → /interests |
-| `403` | Access denied | Go Home → /interests |
-| `500` | Server error | Go Home → /interests |
-| `503` | Service unavailable | Check Status → / |
-| `error` | Generic error | Go Home → /interests |
+| Type    | Use Case                | Default Button       |
+| ------- | ----------------------- | -------------------- |
+| `404`   | Page not found          | Go Home → /interests |
+| `401`   | Authentication required | Go Home → /interests |
+| `403`   | Access denied           | Go Home → /interests |
+| `500`   | Server error            | Go Home → /interests |
+| `503`   | Service unavailable     | Check Status → /     |
+| `error` | Generic error           | Go Home → /interests |
 
 ## 🎨 Colors Used
 
@@ -44,28 +45,31 @@ Off-white: #E5E0E5  /* Background */
 
 ```typescript
 interface ErrorPageProps {
-  errorType?: ErrorType;                    // Default: "error"
-  title?: string;                           // Override default
-  description?: string;                     // Override default
-  icon?: React.ReactNode;                   // Custom icon
-  primaryAction?: {                         // Override primary button
+  errorType?: ErrorType; // Default: "error"
+  title?: string; // Override default
+  description?: string; // Override default
+  icon?: React.ReactNode; // Custom icon
+  primaryAction?: {
+    // Override primary button
     label: string;
     href: string;
     icon?: React.ReactNode;
   };
-  secondaryAction?: {                       // Optional second button
+  secondaryAction?: {
+    // Optional second button
     label: string;
     onClick: () => void;
     icon?: React.ReactNode;
   };
-  showContactSupport?: boolean;             // Show support (default: true)
-  supportEmail?: string;                    // Support email
+  showContactSupport?: boolean; // Show support (default: true)
+  supportEmail?: string; // Support email
 }
 ```
 
 ## 🔧 Common Implementations
 
 ### 404 Not Found
+
 ```typescript
 <ErrorPage
   errorType="404"
@@ -77,6 +81,7 @@ interface ErrorPageProps {
 ```
 
 ### 401 Unauthorized
+
 ```typescript
 <ErrorPage
   errorType="401"
@@ -88,6 +93,7 @@ interface ErrorPageProps {
 ```
 
 ### 500 Server Error
+
 ```typescript
 <ErrorPage
   errorType="500"
@@ -99,6 +105,7 @@ interface ErrorPageProps {
 ```
 
 ### Custom Error
+
 ```typescript
 <ErrorPage
   errorType="error"
@@ -190,5 +197,6 @@ A: Yes, adjust max-width or integrate as overlay.
 ---
 
 **For more details, see:**
+
 - [ERROR_DESIGN_SYSTEM.md](./ERROR_DESIGN_SYSTEM.md)
 - [IMPLEMENTATION_EXAMPLES.md](./IMPLEMENTATION_EXAMPLES.md)

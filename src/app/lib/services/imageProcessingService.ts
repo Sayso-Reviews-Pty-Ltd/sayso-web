@@ -3,8 +3,8 @@
  * Handles image normalization, resizing, and storage in Supabase
  */
 
-import sharp from 'sharp';
-import { createClient } from '@supabase/supabase-js';
+import sharp from "sharp";
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -52,17 +52,17 @@ export class ImageProcessingService {
    */
   static async normalizeAspectRatio(
     buffer: Buffer,
-    aspectRatio: AspectRatio = 'square'
+    aspectRatio: AspectRatio = "square"
   ): Promise<Buffer> {
     const targetRatio = ASPECT_RATIOS[aspectRatio];
     const metadata = await sharp(buffer).metadata();
-    
+
     if (!metadata.width || !metadata.height) {
-      throw new Error('Invalid image metadata');
+      throw new Error("Invalid image metadata");
     }
 
     const currentRatio = metadata.width / metadata.height;
-    
+
     let width = metadata.width;
     let height = metadata.height;
 
@@ -80,8 +80,8 @@ export class ImageProcessingService {
     // Resize and center crop
     return sharp(buffer)
       .resize(width, height, {
-        fit: 'cover',
-        position: 'center',
+        fit: "cover",
+        position: "center",
       })
       .toBuffer();
   }
@@ -91,13 +91,13 @@ export class ImageProcessingService {
    */
   static async generateDerivatives(
     normalizedBuffer: Buffer,
-    sizes: ImageSize[] = ['thumb', 'small', 'medium', 'large', 'xlarge']
+    sizes: ImageSize[] = ["thumb", "small", "medium", "large", "xlarge"]
   ): Promise<Map<ImageSize, Buffer>> {
     const derivatives = new Map<ImageSize, Buffer>();
     const metadata = await sharp(normalizedBuffer).metadata();
-    
+
     if (!metadata.width || !metadata.height) {
-      throw new Error('Invalid image metadata');
+      throw new Error("Invalid image metadata");
     }
 
     const aspectRatio = metadata.width / metadata.height;
@@ -108,7 +108,7 @@ export class ImageProcessingService {
 
       const resized = await sharp(normalizedBuffer)
         .resize(targetWidth, targetHeight, {
-          fit: 'inside',
+          fit: "inside",
           withoutEnlargement: true,
         })
         .webp({ quality: 90 })
@@ -127,25 +127,23 @@ export class ImageProcessingService {
     buffer: Buffer,
     bucket: string,
     path: string,
-    contentType: string = 'image/webp'
+    contentType: string = "image/webp"
   ): Promise<string> {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(path, buffer, {
-        contentType,
-        cacheControl: '3600',
-        upsert: true,
-      });
+    const { error } = await supabase.storage.from(bucket).upload(path, buffer, {
+      contentType,
+      cacheControl: "3600",
+      upsert: true,
+    });
 
     if (error) {
       throw new Error(`Failed to upload image: ${error.message}`);
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(bucket).getPublicUrl(path);
 
     return publicUrl;
   }
@@ -162,7 +160,7 @@ export class ImageProcessingService {
       file,
       bucket,
       path,
-      aspectRatio = 'square',
+      aspectRatio = "square",
       quality = 90,
       generateThumb = true,
     } = options;
@@ -179,25 +177,21 @@ export class ImageProcessingService {
     // Normalize aspect ratio
     const normalizedBuffer = await this.normalizeAspectRatio(buffer, aspectRatio);
     const metadata = await sharp(normalizedBuffer).metadata();
-    
+
     if (!metadata.width || !metadata.height) {
-      throw new Error('Invalid image metadata after normalization');
+      throw new Error("Invalid image metadata after normalization");
     }
 
     // Generate derivatives
     const sizes: ImageSize[] = generateThumb
-      ? ['thumb', 'small', 'medium', 'large', 'xlarge']
-      : ['small', 'medium', 'large', 'xlarge'];
-    
+      ? ["thumb", "small", "medium", "large", "xlarge"]
+      : ["small", "medium", "large", "xlarge"];
+
     const derivatives = await this.generateDerivatives(normalizedBuffer, sizes);
 
     // Upload original normalized image
     const originalPath = `${path}/original.webp`;
-    const originalUrl = await this.uploadToStorage(
-      normalizedBuffer,
-      bucket,
-      originalPath
-    );
+    const originalUrl = await this.uploadToStorage(normalizedBuffer, bucket, originalPath);
 
     // Upload derivatives
     const derivativeUrls: Record<ImageSize, string> = {} as Record<ImageSize, string>;
@@ -205,11 +199,7 @@ export class ImageProcessingService {
 
     for (const [size, derivativeBuffer] of derivatives.entries()) {
       const sizePath = `${path}/${size}.webp`;
-      const sizeUrl = await this.uploadToStorage(
-        derivativeBuffer,
-        bucket,
-        sizePath
-      );
+      const sizeUrl = await this.uploadToStorage(derivativeBuffer, bucket, sizePath);
 
       const width = IMAGE_SIZES[size];
       const height = Math.round(width / (metadata.width / metadata.height));
@@ -226,7 +216,7 @@ export class ImageProcessingService {
 
     return {
       original: {
-        size: 'xlarge',
+        size: "xlarge",
         width: metadata.width,
         height: metadata.height,
         url: originalUrl,
@@ -243,10 +233,10 @@ export class ImageProcessingService {
   static getOptimizedUrl(
     baseUrl: string,
     width: number,
-    format: 'webp' | 'avif' | 'auto' = 'auto'
+    format: "webp" | "avif" | "auto" = "auto"
   ): string {
     // If using Supabase Storage, add transform parameters
-    if (baseUrl.includes('supabase.co/storage')) {
+    if (baseUrl.includes("supabase.co/storage")) {
       // Supabase Storage doesn't support transform params directly
       // We'll use the pre-generated sizes instead
       return baseUrl;
@@ -254,13 +244,12 @@ export class ImageProcessingService {
 
     // For other CDNs, add query parameters
     const url = new URL(baseUrl);
-    url.searchParams.set('width', width.toString());
-    if (format !== 'auto') {
-      url.searchParams.set('format', format);
+    url.searchParams.set("width", width.toString());
+    if (format !== "auto") {
+      url.searchParams.set("format", format);
     } else {
-      url.searchParams.set('auto', 'format');
+      url.searchParams.set("auto", "format");
     }
     return url.toString();
   }
 }
-

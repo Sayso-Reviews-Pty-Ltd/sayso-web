@@ -1,4 +1,4 @@
-import type { AuthContextType } from './AuthContext.types';
+import type { AuthContextType } from "./AuthContext.types";
 
 export const AUTH_DEBOUNCE_MS = 300;
 export const LOCALSTORAGE_CLEANUP_DELAY_MS = 100;

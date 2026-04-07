@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Input, InputProps } from '@/components/atoms/Input';
-import { Text } from '@/components/atoms/Text';
+import React from "react";
+import { Input, InputProps } from "@/components/atoms/Input";
+import { Text } from "@/components/atoms/Text";
 
-export interface FormFieldProps extends Omit<InputProps, 'label'> {
+export interface FormFieldProps extends Omit<InputProps, "label"> {
   label: string;
   required?: boolean;
   description?: string;
@@ -37,12 +37,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         </Text>
       )}
 
-      <Input
-        error={error}
-        helperText={helperText}
-        fullWidth
-        {...inputProps}
-      />
+      <Input error={error} helperText={helperText} fullWidth {...inputProps} />
     </div>
   );
 };

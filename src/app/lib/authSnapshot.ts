@@ -27,7 +27,7 @@ export function buildGuestSnapshot(source: "server" | "client"): AuthSnapshot {
 
 export function buildAuthenticatedSnapshot(
   user: AuthUser,
-  source: "server" | "client",
+  source: "server" | "client"
 ): AuthSnapshot {
   return {
     status: "authenticated",

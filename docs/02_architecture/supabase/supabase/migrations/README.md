@@ -5,6 +5,7 @@
 All Supabase migrations have been consolidated into a single directory: `supabase/migrations/`
 
 This unified approach makes it easier to:
+
 - Track migration history
 - Ensure sequential ordering
 - Avoid duplication
@@ -14,39 +15,47 @@ This unified approach makes it easier to:
 
 Migrations are organized by category and execution order:
 
-### Core Migrations (001_core_*)
+### Core Migrations (001*core*\*)
+
 - Database setup and initialization
 - Profile table creation
 - Role management
 
-### Business Migrations (002_business_*)
+### Business Migrations (002*business*\*)
+
 - Business schema creation
 - Business ownership
 - Business images
 - Performance indexes
 - Materialized views
 
-### Review Migrations (003_reviews_*)
+### Review Migrations (003*reviews*\*)
+
 - Reviews schema
 - Review images storage
 - Review helpful votes
 - Business stats updates
 
-### Event Review Migrations (004_event_reviews_*)
+### Event Review Migrations (004*event_reviews*\*)
+
 - Event reviews schema
 
-### Storage Migrations (004_storage_*)
+### Storage Migrations (004*storage*\*)
+
 - Storage bucket setup
 
-### Function Migrations (005_functions_*)
+### Function Migrations (005*functions*\*)
+
 - Database functions
 - RPC procedures
 - Business recommendation logic
 
-### Special Review Migrations (005_special_reviews_*)
+### Special Review Migrations (005*special_reviews*\*)
+
 - Special reviews schema
 
-### Saved Businesses Migrations (006_saved_businesses_*)
+### Saved Businesses Migrations (006*saved_businesses*\*)
+
 - Saved businesses schema
 
 ## File Structure
@@ -100,6 +109,7 @@ When adding new migrations:
 ## Previous Structure
 
 Migrations were previously scattered across:
+
 - `src/app/lib/migrations/001_core/`
 - `src/app/lib/migrations/002_business/`
 - `src/app/lib/migrations/003_reviews/`

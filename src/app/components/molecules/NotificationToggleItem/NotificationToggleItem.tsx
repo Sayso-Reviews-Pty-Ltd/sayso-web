@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Toggle } from '@/components/atoms/Toggle';
+import React from "react";
+import { Toggle } from "@/components/atoms/Toggle";
 
 export interface NotificationToggleItemProps {
   label: string;
@@ -26,4 +26,3 @@ export const NotificationToggleItem: React.FC<NotificationToggleItemProps> = ({
     </div>
   );
 };
-

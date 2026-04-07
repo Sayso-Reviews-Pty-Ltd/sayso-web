@@ -27,13 +27,13 @@ export async function getPooledSupabaseClient(request?: Request): Promise<Supaba
 
     // Read cookies from Request headers (for API routes)
     // This ensures we get the actual cookies sent by the browser
-    const requestCookies = request.headers.get('cookie') || '';
+    const requestCookies = request.headers.get("cookie") || "";
     const cookieMap = new Map<string, string>();
-    
+
     // Parse cookies from request header (handle URL-encoded values)
-    requestCookies.split(';').forEach(cookie => {
+    requestCookies.split(";").forEach((cookie) => {
       const trimmed = cookie.trim();
-      const equalIndex = trimmed.indexOf('=');
+      const equalIndex = trimmed.indexOf("=");
       if (equalIndex > 0) {
         const name = trimmed.substring(0, equalIndex).trim();
         const value = trimmed.substring(equalIndex + 1).trim();
@@ -51,7 +51,7 @@ export async function getPooledSupabaseClient(request?: Request): Promise<Supaba
 
     // Also get cookies from next/headers for setting (API routes can set cookies)
     const cookieStore = await cookies();
-    
+
     const client = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -60,37 +60,37 @@ export async function getPooledSupabaseClient(request?: Request): Promise<Supaba
           getAll() {
             // Return cookies from both Request and cookieStore
             const allCookies: Array<{ name: string; value: string }> = [];
-            
+
             // First, get cookies from Request (browser-sent cookies)
             cookieMap.forEach((value, name) => {
               allCookies.push({ name, value });
             });
-            
+
             // Then, get cookies from cookieStore (server-set cookies)
             const serverCookies = cookieStore.getAll();
-            serverCookies.forEach(cookie => {
+            serverCookies.forEach((cookie) => {
               // Don't override Request cookies with server cookies
               if (!cookieMap.has(cookie.name)) {
                 allCookies.push({ name: cookie.name, value: cookie.value });
               }
             });
-            
+
             return allCookies;
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
               try {
                 // Set cookie with proper flags for httpOnly, secure, sameSite
-                cookieStore.set({ 
-                  name, 
-                  value, 
+                cookieStore.set({
+                  name,
+                  value,
                   ...options,
                   // Ensure httpOnly for security (Supabase SSR handles this, but be explicit)
                   httpOnly: options?.httpOnly ?? true,
                   // Secure in production (HTTPS)
-                  secure: options?.secure ?? process.env.NODE_ENV === 'production',
+                  secure: options?.secure ?? process.env.NODE_ENV === "production",
                   // SameSite for CSRF protection
-                  sameSite: options?.sameSite ?? 'lax',
+                  sameSite: options?.sameSite ?? "lax",
                 });
               } catch (error) {
                 // Ignore cookie set errors in Server Components
@@ -175,4 +175,3 @@ export async function createParallelClients(count: number = 2): Promise<Supabase
 export function clearClientCache() {
   globalClient = null;
 }
-

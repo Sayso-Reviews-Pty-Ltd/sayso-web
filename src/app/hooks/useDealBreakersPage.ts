@@ -5,11 +5,11 @@
  * When user clicks "Continue", it saves dealbreakers and marks onboarding complete.
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useOnboarding } from '../contexts/OnboardingContext';
-import { useToast } from '../contexts/ToastContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useOnboarding } from "../contexts/OnboardingContext";
+import { useToast } from "../contexts/ToastContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface DealBreaker {
   id: string;
@@ -19,10 +19,30 @@ interface DealBreaker {
 }
 
 const DEMO_DEAL_BREAKERS: DealBreaker[] = [
-  { id: 'trustworthiness', label: 'Trustworthiness', description: 'Reliable and honest service', icon: 'shield-checkmark' },
-  { id: 'punctuality', label: 'Punctuality', description: 'On-time and respects your schedule', icon: 'time' },
-  { id: 'friendliness', label: 'Friendliness', description: 'Welcoming and helpful staff', icon: 'happy' },
-  { id: 'value-for-money', label: 'Value for Money', description: 'Fair pricing and good quality', icon: 'cash-outline' },
+  {
+    id: "trustworthiness",
+    label: "Trustworthiness",
+    description: "Reliable and honest service",
+    icon: "shield-checkmark",
+  },
+  {
+    id: "punctuality",
+    label: "Punctuality",
+    description: "On-time and respects your schedule",
+    icon: "time",
+  },
+  {
+    id: "friendliness",
+    label: "Friendliness",
+    description: "Welcoming and helpful staff",
+    icon: "happy",
+  },
+  {
+    id: "value-for-money",
+    label: "Value for Money",
+    description: "Fair pricing and good quality",
+    icon: "cash-outline",
+  },
 ];
 
 const MAX_SELECTIONS = 3;
@@ -47,7 +67,7 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
     setSelectedDealbreakers,
     selectedInterests,
     selectedSubInterests,
-    error: contextError
+    error: contextError,
   } = onboarding;
 
   // Keep a ref to access latest values in callbacks
@@ -62,8 +82,8 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
 
   // Early prefetching
   useEffect(() => {
-    router.prefetch('/complete');
-    router.prefetch('/home');
+    router.prefetch("/complete");
+    router.prefetch("/home");
   }, [router]);
 
   // Handle dealbreaker toggle
@@ -75,7 +95,7 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
         setSelectedDealbreakers(selectedDealbreakers.filter((id) => id !== dealbreakerId));
       } else {
         if (selectedDealbreakers.length >= MAX_SELECTIONS) {
-          showToast(`Max ${MAX_SELECTIONS} selected`, 'sage', 2000);
+          showToast(`Max ${MAX_SELECTIONS} selected`, "sage", 2000);
           return;
         }
         setSelectedDealbreakers([...selectedDealbreakers, dealbreakerId]);
@@ -87,7 +107,7 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
   // Handle next navigation - ATOMIC completion of ALL onboarding data
   const handleNext = useCallback(async () => {
     if (selectedDealbreakers.length === 0) {
-      showToast('Select at least one', 'sage', 2000);
+      showToast("Select at least one", "sage", 2000);
       return;
     }
 
@@ -99,17 +119,17 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
 
       // Validate we have all required data
       if (!selectedInterests || selectedInterests.length < 3) {
-        throw new Error('Please complete your interests selection first');
+        throw new Error("Please complete your interests selection first");
       }
       if (!selectedSubInterests || selectedSubInterests.length < 1) {
-        throw new Error('Please complete your subcategories selection first');
+        throw new Error("Please complete your subcategories selection first");
       }
 
       // Save dealbreakers and mark onboarding complete
-      const response = await fetch('/api/onboarding/deal-breakers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("/api/onboarding/deal-breakers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           dealbreakers: selectedDealbreakers,
         }),
@@ -117,14 +137,14 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || errorData.error || 'Failed to complete onboarding');
+        throw new Error(errorData.message || errorData.error || "Failed to complete onboarding");
       }
 
       // Clear localStorage after successful atomic completion
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('onboarding_interests');
-        localStorage.removeItem('onboarding_subcategories');
-        localStorage.removeItem('onboarding_dealbreakers');
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("onboarding_interests");
+        localStorage.removeItem("onboarding_subcategories");
+        localStorage.removeItem("onboarding_dealbreakers");
       }
 
       // CRITICAL: Refresh user profile to get latest onboarding completion status
@@ -132,11 +152,11 @@ export function useDealBreakersPage(): UseDealBreakersPageReturn {
       await refreshUser();
 
       // Navigate to celebration page
-      router.replace('/complete');
+      router.replace("/complete");
     } catch (error) {
-      console.error('[Deal-breakers] Error completing onboarding:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to complete onboarding';
-      showToast(errorMessage, 'sage', 4000);
+      console.error("[Deal-breakers] Error completing onboarding:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to complete onboarding";
+      showToast(errorMessage, "sage", 4000);
       setIsNavigating(false);
     }
   }, [selectedDealbreakers, showToast, router, refreshUser]);

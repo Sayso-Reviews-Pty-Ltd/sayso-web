@@ -117,22 +117,30 @@ const CATEGORY_NAME_ALIASES: Record<string, QuicketCategorySlug> = {
 const CATEGORY_NAME_PATTERNS: Array<{ pattern: RegExp; slug: QuicketCategorySlug }> = [
   { pattern: /\b(festival|carnival|celebration)\b/, slug: "festivals" },
   { pattern: /\b(music|concert|gig|nightlife|dj|party)\b/, slug: "music" },
-  { pattern: /\b(tech|technology|business|industry|startup|networking|conference|summit|innovation|fintech|science)\b/, slug: "tech-business" },
-  { pattern: /\b(art|arts|culture|theatre|theater|comedy|film|media|cinema|dance|exhibition|performance|afrikaans)\b/, slug: "arts" },
-  { pattern: /\b(food|drink|dining|restaurant|brunch|lunch|dinner|tasting|market)\b/, slug: "food-drink" },
-  { pattern: /\b(community|family|charity|fundraiser|workshop|education|wellness|health|sport|fitness|outdoor|travel|faith|spirituality|hobbies)\b/, slug: "community" },
+  {
+    pattern:
+      /\b(tech|technology|business|industry|startup|networking|conference|summit|innovation|fintech|science)\b/,
+    slug: "tech-business",
+  },
+  {
+    pattern:
+      /\b(art|arts|culture|theatre|theater|comedy|film|media|cinema|dance|exhibition|performance|afrikaans)\b/,
+    slug: "arts",
+  },
+  {
+    pattern: /\b(food|drink|dining|restaurant|brunch|lunch|dinner|tasting|market)\b/,
+    slug: "food-drink",
+  },
+  {
+    pattern:
+      /\b(community|family|charity|fundraiser|workshop|education|wellness|health|sport|fitness|outdoor|travel|faith|spirituality|hobbies)\b/,
+    slug: "community",
+  },
   { pattern: /\b(occasion|holiday|seasonal)\b/, slug: "festivals" },
 ];
 
 const CATEGORY_KEYWORDS: Record<QuicketCategorySlug, string[]> = {
-  festivals: [
-    "festival",
-    "fest",
-    "carnival",
-    "celebration",
-    "block party",
-    "street party",
-  ],
+  festivals: ["festival", "fest", "carnival", "celebration", "block party", "street party"],
   music: [
     "music",
     "concert",
@@ -223,8 +231,7 @@ const CATEGORY_PRECEDENCE: QuicketCategorySlug[] = [
   "community",
 ];
 
-const normalize = (value: string | null | undefined): string =>
-  (value ?? "").trim().toLowerCase();
+const normalize = (value: string | null | undefined): string => (value ?? "").trim().toLowerCase();
 
 const normalizeCategoryToken = (value: string | null | undefined): string =>
   normalize(value)
@@ -233,7 +240,9 @@ const normalizeCategoryToken = (value: string | null | undefined): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-export function normalizeQuicketCategoryParam(raw: string | null | undefined): QuicketCategorySlug | null {
+export function normalizeQuicketCategoryParam(
+  raw: string | null | undefined
+): QuicketCategorySlug | null {
   const normalized = normalize(raw);
   if (!normalized) return null;
   return QUICKET_CATEGORY_OPTIONS.some((option) => option.slug === normalized)
@@ -241,7 +250,9 @@ export function normalizeQuicketCategoryParam(raw: string | null | undefined): Q
     : null;
 }
 
-export function cleanQuicketCategoryNames(names: Array<string | null | undefined> | null | undefined): string[] {
+export function cleanQuicketCategoryNames(
+  names: Array<string | null | undefined> | null | undefined
+): string[] {
   if (!Array.isArray(names)) return [];
 
   return names
@@ -338,8 +349,9 @@ export function normalizeQuicketCategory(params: {
   categoryNames?: Array<string | null | undefined> | null;
   fallbackText?: string | null;
 }): { slug: QuicketCategorySlug; label: string; rawNames: string[] } {
-  const hasProvidedCategories = Array.isArray(params.categoryNames)
-    && params.categoryNames.some((name) => normalize(name).length > 0);
+  const hasProvidedCategories =
+    Array.isArray(params.categoryNames) &&
+    params.categoryNames.some((name) => normalize(name).length > 0);
   const rawNames = cleanQuicketCategoryNames(params.categoryNames);
   const slugFromNames = deriveCategoryFromNames(rawNames);
   const slug = hasProvidedCategories
@@ -353,10 +365,7 @@ export function normalizeQuicketCategory(params: {
   };
 }
 
-export function isQuicketEvent(params: {
-  type?: string | null;
-  icon?: string | null;
-}): boolean {
+export function isQuicketEvent(params: { type?: string | null; icon?: string | null }): boolean {
   return normalize(params.type) === "event" && normalize(params.icon) === "quicket";
 }
 
@@ -370,5 +379,7 @@ export function shouldIncludeForQuicketCategoryFilter(params: {
   if (!selectedCategory) return true;
   if (!isQuicketEvent(params)) return true;
 
-  return (normalizeQuicketCategoryParam(params.quicketCategorySlug) ?? "community") === selectedCategory;
+  return (
+    (normalizeQuicketCategoryParam(params.quicketCategorySlug) ?? "community") === selectedCategory
+  );
 }

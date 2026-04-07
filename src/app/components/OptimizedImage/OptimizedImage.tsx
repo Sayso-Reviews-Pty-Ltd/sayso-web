@@ -1,8 +1,8 @@
 // Performance-optimized image component
 "use client";
 
-import Image from 'next/image';
-import { useState, useCallback } from 'react';
+import Image from "next/image";
+import { useState, useCallback } from "react";
 
 interface OptimizedImageProps {
   src: string;
@@ -11,7 +11,7 @@ interface OptimizedImageProps {
   height?: number;
   className?: string;
   priority?: boolean;
-  placeholder?: 'blur' | 'empty';
+  placeholder?: "blur" | "empty";
   blurDataURL?: string;
   sizes?: string;
   quality?: number;
@@ -24,11 +24,11 @@ export default function OptimizedImage({
   alt,
   width,
   height,
-  className = '',
+  className = "",
   priority = false,
-  placeholder = 'empty',
+  placeholder = "empty",
   blurDataURL,
-  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
   quality = 75,
   onLoad,
   onError,
@@ -56,13 +56,13 @@ export default function OptimizedImage({
   }
 
   return (
-    <div className={`relative ${isLoading ? 'animate-pulse bg-gray-200' : ''} ${className}`}>
+    <div className={`relative ${isLoading ? "animate-pulse bg-gray-200" : ""} ${className}`}>
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
-        className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        className={`transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
         priority={priority}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
@@ -71,8 +71,8 @@ export default function OptimizedImage({
         onLoad={handleLoad}
         onError={handleError}
         style={{
-          objectFit: 'cover',
-          objectPosition: 'center',
+          objectFit: "cover",
+          objectPosition: "center",
         }}
       />
     </div>

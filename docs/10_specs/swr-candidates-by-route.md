@@ -2,20 +2,20 @@
 
 ## Already Using SWR
 
-| Hook/Context | API/Data | Used By |
-|--------------|----------|---------|
-| useBusinesses | /api/businesses | Home, Explore, Leaderboard, Trending |
-| useForYouBusinesses | /api/businesses (For You) | Home (For You tab) |
-| useTrendingBusinesses | /api/trending | Home |
-| useFeaturedBusinesses | /api/featured | Home |
-| useEvents | /api/events | Events listing |
-| useLiveSearch | /api/search | Search input |
-| useUserPreferences | /api/user/preferences | For You, deal-breakers |
-| useReviews | /api/reviews?business_id=X | Business detail reviews |
-| useUserProfile, useUserStats, useUserReviews, useUserBadges | /api/user/*, /api/badges/user | Profile page |
-| useSavedBusinessesDetails | /api/saved/businesses | Profile saved section |
-| SavedItemsContext | /api/saved/businesses (IDs) | Global saved state |
-| useSWR (achievements) | /api/badges/user | Achievements page |
+| Hook/Context                                                | API/Data                       | Used By                              |
+| ----------------------------------------------------------- | ------------------------------ | ------------------------------------ |
+| useBusinesses                                               | /api/businesses                | Home, Explore, Leaderboard, Trending |
+| useForYouBusinesses                                         | /api/businesses (For You)      | Home (For You tab)                   |
+| useTrendingBusinesses                                       | /api/trending                  | Home                                 |
+| useFeaturedBusinesses                                       | /api/featured                  | Home                                 |
+| useEvents                                                   | /api/events                    | Events listing                       |
+| useLiveSearch                                               | /api/search                    | Search input                         |
+| useUserPreferences                                          | /api/user/preferences          | For You, deal-breakers               |
+| useReviews                                                  | /api/reviews?business_id=X     | Business detail reviews              |
+| useUserProfile, useUserStats, useUserReviews, useUserBadges | /api/user/\*, /api/badges/user | Profile page                         |
+| useSavedBusinessesDetails                                   | /api/saved/businesses          | Profile saved section                |
+| SavedItemsContext                                           | /api/saved/businesses (IDs)    | Global saved state                   |
+| useSWR (achievements)                                       | /api/badges/user               | Achievements page                    |
 
 ---
 
@@ -48,6 +48,7 @@
 **Benefit:** Stale-while-revalidate, faster tab switching, shared event cache.
 
 **Proposed:**
+
 - `useEventDetail(eventId)` – `/api/events-and-specials/{id}` or `/api/events/{id}`
 - `useEventReviews(eventId)` – `/api/events/{id}/reviews`
 - `useSavedEvent(eventId)` – `/api/user/saved-events?event_id=X` (nullable key when not logged in)
@@ -64,7 +65,7 @@
 
 ### 5. Events-Specials Listing – `/events-specials`
 
-**Current:** Custom `fetchPage` with pagination, manual prefetch cache, timeout/retry. Does *not* use `useEvents`.
+**Current:** Custom `fetchPage` with pagination, manual prefetch cache, timeout/retry. Does _not_ use `useEvents`.
 
 **Benefit:** SWR for first page + `useSWRInfinite` or key-based pagination for “Load More”. Centralized cache instead of manual prefetch.
 
@@ -81,6 +82,7 @@
 **Benefit:** Deduplication if used in multiple places, cache when navigating home → away → home.
 
 **Proposed:**
+
 - `useReviewersTop(limit)` – key `['/api/reviewers/top', limit]`
 - `useRecentReviews(limit)` – key `['/api/reviews/recent', limit]`
 
@@ -99,12 +101,14 @@
 ### 8. Notifications – `/notifications`
 
 **Current:**
+
 - Personal: NotificationsContext uses `apiClient` + Supabase realtime (no SWR).
 - Business: Raw `fetch` in `useEffect` for `/api/notifications/business`.
 
 **Benefit:** SWR for both; background revalidation, dedup.
 
 **Proposed:**
+
 - `usePersonalNotifications()` – SWR with key `['/api/notifications/user', userId]`, plus existing realtime for live updates.
 - `useBusinessNotifications()` – key `['/api/notifications/business', userId]`. Current `useBusinessNotifications` hook exists but does different work (toast); rename or add SWR-based fetch hook.
 
@@ -139,6 +143,7 @@
 **Benefit:** Deduplication for same review across views; cache when navigating away and back.
 
 **Proposed:**
+
 - `useUserBadges(authorId)` for badges (already exists).
 - `useReviewHelpful(reviewId)` – `/api/reviews/{id}/helpful` and `/api/reviews/{id}/helpful/count`.
 - `useReviewReplies(reviewId)` – `/api/reviews/{id}/replies`.
@@ -177,15 +182,15 @@ Mutate on reply post/delete/update.
 
 ## Summary by Priority
 
-| Priority | Route/Component | Main Benefit |
-|----------|-----------------|---------------|
-| High | /business/[id] | Instant back navigation, heavy traffic |
-| High | /reviewer/[id] | Same as profile – public, frequently revisited |
-| High | /event/[id], /special/[id] | Multiple fetches, event browsing |
-| Medium | /events-specials | Pagination + prefetch simplification |
-| Medium | CommunityHighlights | Dedup reviewers top + recent reviews |
-| Medium | /saved | Full saved businesses cache |
-| Medium | /notifications | Both personal and business |
-| Low | ReviewerCard badges | N+1 dedup |
-| Low | ReviewCard | badges, helpful, replies dedup |
-| Low | Geocode, review edit | Smaller, situational wins |
+| Priority | Route/Component            | Main Benefit                                   |
+| -------- | -------------------------- | ---------------------------------------------- |
+| High     | /business/[id]             | Instant back navigation, heavy traffic         |
+| High     | /reviewer/[id]             | Same as profile – public, frequently revisited |
+| High     | /event/[id], /special/[id] | Multiple fetches, event browsing               |
+| Medium   | /events-specials           | Pagination + prefetch simplification           |
+| Medium   | CommunityHighlights        | Dedup reviewers top + recent reviews           |
+| Medium   | /saved                     | Full saved businesses cache                    |
+| Medium   | /notifications             | Both personal and business                     |
+| Low      | ReviewerCard badges        | N+1 dedup                                      |
+| Low      | ReviewCard                 | badges, helpful, replies dedup                 |
+| Low      | Geocode, review edit       | Smaller, situational wins                      |

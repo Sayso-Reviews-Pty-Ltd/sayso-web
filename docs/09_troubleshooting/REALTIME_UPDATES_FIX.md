@@ -1,6 +1,7 @@
 # Real-Time Update Issues - Diagnosis & Fix
 
 ## Problem
+
 The app is not updating in real-time because:
 
 1. **Supabase Realtime is not properly configured** for database tables
@@ -11,6 +12,7 @@ The app is not updating in real-time because:
 ## How Realtime Works in Your App
 
 ### Current Subscriptions
+
 Your app subscribes to these tables:
 
 1. **notifications** - User notifications (NotificationsContext)
@@ -21,15 +23,18 @@ Your app subscribes to these tables:
 ### What Was Missing
 
 #### 1. REPLICA IDENTITY FULL
+
 Supabase Realtime requires `REPLICA IDENTITY FULL` to track UPDATE and DELETE events. Without this setting, the database doesn't send enough information for realtime to work.
 
 **Before:**
+
 ```sql
 -- Tables created without REPLICA IDENTITY FULL
 CREATE TABLE notifications (...);
 ```
 
 **After:**
+
 ```sql
 ALTER TABLE notifications REPLICA IDENTITY FULL;
 ALTER TABLE businesses REPLICA IDENTITY FULL;
@@ -38,9 +43,11 @@ ALTER TABLE reviews REPLICA IDENTITY FULL;
 ```
 
 #### 2. Realtime Publication
+
 Tables must be explicitly added to the `supabase_realtime` publication to broadcast changes.
 
 **Fixed:**
+
 ```sql
 CREATE PUBLICATION supabase_realtime;
 ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
@@ -50,14 +57,17 @@ ALTER PUBLICATION supabase_realtime ADD TABLE reviews;
 ```
 
 #### 3. Subscription Status Logging
+
 The app wasn't logging subscription status, making it impossible to debug connection issues.
 
 **Before:**
+
 ```typescript
 .subscribe(); // No callback - can't see if it worked
 ```
 
 **After:**
+
 ```typescript
 .subscribe((status) => {
   if (status === 'SUBSCRIBED') {
@@ -112,24 +122,25 @@ Run these queries in Supabase SQL Editor to confirm:
 
 ```sql
 -- Check REPLICA IDENTITY (should all show 'full')
-SELECT relname, 
+SELECT relname,
        CASE relreplident
          WHEN 'd' THEN 'default'
          WHEN 'n' THEN 'nothing'
          WHEN 'f' THEN 'full'
          WHEN 'i' THEN 'index'
        END as replica_identity
-FROM pg_class 
+FROM pg_class
 WHERE relname IN ('notifications', 'businesses', 'business_stats', 'reviews');
 
 -- Check publication (should list all 4 tables)
-SELECT schemaname, tablename 
-FROM pg_publication_tables 
-WHERE pubname = 'supabase_realtime' 
+SELECT schemaname, tablename
+FROM pg_publication_tables
+WHERE pubname = 'supabase_realtime'
 ORDER BY tablename;
 ```
 
 Expected output:
+
 ```
 replica_identity
 ----------------
@@ -158,6 +169,7 @@ reviews
 ### Step 4: Test Real-Time Updates
 
 #### Test Notifications
+
 1. Open your app
 2. Open browser console (F12)
 3. Look for: `✅ [Notifications] Successfully subscribed to real-time updates`
@@ -165,6 +177,7 @@ reviews
 5. Notification should appear instantly without page refresh
 
 #### Test Business Notifications
+
 1. As a business owner, open your app
 2. Check console for: `✅ Subscribed to business notifications`
 3. Add a new business (or have someone else add one)
@@ -177,6 +190,7 @@ reviews
 Check browser console for these messages:
 
 **Good:**
+
 ```
 ✅ [Notifications] Successfully subscribed to real-time updates
 ✅ Subscribed to business notifications
@@ -185,6 +199,7 @@ Check browser console for these messages:
 ```
 
 **Bad:**
+
 ```
 ❌ [Notifications] Channel error - real-time updates may not work
 ⏱️ [Notifications] Subscription timed out - retrying...
@@ -193,31 +208,37 @@ Check browser console for these messages:
 ### Common Issues
 
 #### 1. "CHANNEL_ERROR" in console
+
 **Cause:** Realtime not enabled in Supabase Dashboard
 **Fix:** Enable realtime for tables in Database → Replication
 
 #### 2. "TIMED_OUT" in console
+
 **Cause:** Network firewall blocking WebSocket connections
 **Fix:** Check if wss:// connections are blocked
 
 #### 3. No subscription logs at all
+
 **Cause:** User not authenticated or wrong role
 **Fix:** Check `user` and `isBusinessAccountUser` state
 
 #### 4. Updates work for INSERT but not UPDATE/DELETE
+
 **Cause:** Missing REPLICA IDENTITY FULL
 **Fix:** Run the migration again for affected tables
 
 ### Debug Queries
 
 Check active realtime connections:
+
 ```sql
 SELECT * FROM pg_stat_replication;
 ```
 
 Check table configuration:
+
 ```sql
-SELECT 
+SELECT
   c.relname AS table_name,
   CASE c.relreplident
     WHEN 'd' THEN 'default'
@@ -226,9 +247,9 @@ SELECT
     WHEN 'i' THEN 'index'
   END AS replica_identity,
   EXISTS(
-    SELECT 1 
-    FROM pg_publication_tables pt 
-    WHERE pt.tablename = c.relname 
+    SELECT 1
+    FROM pg_publication_tables pt
+    WHERE pt.tablename = c.relname
     AND pt.pubname = 'supabase_realtime'
   ) AS in_publication
 FROM pg_class c
@@ -238,6 +259,7 @@ WHERE c.relname IN ('notifications', 'businesses', 'business_stats', 'reviews');
 ## Performance Considerations
 
 ### Current Setup (Optimized)
+
 - **Throttling:** 5-second minimum between toast notifications
 - **Filtering:** Subscriptions filter by user_id on server (efficient)
 - **Cleanup:** Channels properly removed on unmount (no leaks)
@@ -245,6 +267,7 @@ WHERE c.relname IN ('notifications', 'businesses', 'business_stats', 'reviews');
 ### Future Optimizations
 
 If you experience high traffic:
+
 1. **Add rate limiting** to realtime events
 2. **Batch notifications** instead of showing each individually
 3. **Debounce updates** for frequently changing data
@@ -257,7 +280,7 @@ Your app already has proper cache invalidation with `revalidatePath()`:
 ```typescript
 // Reviews API
 revalidatePath(`/business/${segment}`);
-revalidatePath('/profile');
+revalidatePath("/profile");
 
 // After helpful vote
 revalidatePath(`/business/${segment}`);
@@ -270,11 +293,12 @@ revalidatePath(`/business/${segment}`);
 ✅ **Fixed:** Added REPLICA IDENTITY FULL to all subscribed tables  
 ✅ **Fixed:** Added tables to supabase_realtime publication  
 ✅ **Fixed:** Added subscription status logging for debugging  
-✅ **Optimized:** Proper throttling and cleanup already in place  
+✅ **Optimized:** Proper throttling and cleanup already in place
 
 **Action Required:** Run the migration in Supabase SQL Editor and enable realtime in the Replication settings.
 
 After applying these fixes, your app will:
+
 - Show notifications instantly when created
 - Display new businesses immediately to business owners
 - Update review counts in real-time

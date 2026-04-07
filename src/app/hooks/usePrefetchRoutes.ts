@@ -3,17 +3,17 @@
  * Prefetches critical routes on mount to make navigation feel instant
  */
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const CRITICAL_ROUTES = [
-  '/trending',
-  '/for-you',
-  '/leaderboard',
-  '/events-specials',
-  '/saved',
-  '/profile',
-  '/home',
+  "/trending",
+  "/for-you",
+  "/leaderboard",
+  "/events-specials",
+  "/saved",
+  "/profile",
+  "/home",
 ] as const;
 
 export function usePrefetchRoutes() {

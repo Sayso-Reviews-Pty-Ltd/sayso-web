@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ImageProcessingService, AspectRatio } from '@/app/lib/services/imageProcessingService';
+import { NextRequest, NextResponse } from "next/server";
+import { ImageProcessingService, AspectRatio } from "@/app/lib/services/imageProcessingService";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 export const maxDuration = 30;
 
 /**
@@ -11,24 +11,18 @@ export const maxDuration = 30;
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const bucket = formData.get('bucket') as string || 'event-images';
-    const path = formData.get('path') as string;
-    const aspectRatio = (formData.get('aspectRatio') as AspectRatio) || 'square';
-    const quality = parseInt(formData.get('quality') as string) || 90;
+    const file = formData.get("file") as File;
+    const bucket = (formData.get("bucket") as string) || "event-images";
+    const path = formData.get("path") as string;
+    const aspectRatio = (formData.get("aspectRatio") as AspectRatio) || "square";
+    const quality = parseInt(formData.get("quality") as string) || 90;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
     if (!path) {
-      return NextResponse.json(
-        { error: 'No path provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No path provided" }, { status: 400 });
     }
 
     // Process image
@@ -48,11 +42,10 @@ export async function POST(req: NextRequest) {
       urls: result.urls,
     });
   } catch (error: any) {
-    console.error('[Image Processing API] Error:', error);
+    console.error("[Image Processing API] Error:", error);
     return NextResponse.json(
-      { error: 'Failed to process image', message: error.message },
+      { error: "Failed to process image", message: error.message },
       { status: 500 }
     );
   }
 }
-

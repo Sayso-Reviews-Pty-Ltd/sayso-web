@@ -9,10 +9,10 @@ Business images are stored in **Supabase Storage**, not in the database. The dat
 ## 🔄 Image Upload Flow
 
 ```
-1. User uploads image → 
-2. Image uploaded to Supabase Storage bucket `business-images` → 
-3. Public URL generated → 
-4. URL saved to `businesses.uploaded_image` field → 
+1. User uploads image →
+2. Image uploaded to Supabase Storage bucket `business-images` →
+3. Public URL generated →
+4. URL saved to `businesses.uploaded_image` field →
 5. Image displayed on business card & profile page
 ```
 
@@ -27,7 +27,7 @@ Business images are stored in **Supabase Storage**, not in the database. The dat
    - **Name**: `business-images` (must match exactly)
    - **Public**: ✅ **Yes** (required for public business listings)
    - **File size limit**: 5MB (or adjust as needed)
-   - **Allowed MIME types**: 
+   - **Allowed MIME types**:
      - `image/jpeg`
      - `image/png`
      - `image/webp`
@@ -91,11 +91,13 @@ USING (
 ### Step 3: Verify Setup
 
 1. **Check bucket exists:**
+
    ```sql
    SELECT * FROM storage.buckets WHERE id = 'business-images';
    ```
 
 2. **Check policies are active:**
+
    ```sql
    SELECT * FROM storage.policies WHERE bucket_id = 'business-images';
    ```
@@ -123,6 +125,7 @@ business-images/
 ```
 
 **Example:**
+
 ```
 business-images/
   └── 123e4567-e89b-12d3-a456-426614174000/
@@ -130,6 +133,7 @@ business-images/
 ```
 
 This structure:
+
 - ✅ Organizes images by business
 - ✅ Prevents filename conflicts
 - ✅ Makes RLS policies work correctly
@@ -142,32 +146,31 @@ This structure:
 ```typescript
 // 1. Upload image to storage
 const { error: uploadError } = await supabase.storage
-  .from('business-images')
+  .from("business-images")
   .upload(filePath, image, {
-    cacheControl: '3600',
-    upsert: false
+    cacheControl: "3600",
+    upsert: false,
   });
 
 // 2. Get public URL
-const { data: { publicUrl } } = supabase.storage
-  .from('business-images')
-  .getPublicUrl(filePath);
+const {
+  data: { publicUrl },
+} = supabase.storage.from("business-images").getPublicUrl(filePath);
 
 // 3. Save URL to database
-await supabase
-  .from('businesses')
-  .update({ uploaded_image: publicUrl })
-  .eq('id', businessId);
+await supabase.from("businesses").update({ uploaded_image: publicUrl }).eq("id", businessId);
 ```
 
 ### Display Process
 
 **Business Card** (`src/app/components/BusinessCard/BusinessCard.tsx`):
+
 - Checks `business.uploaded_image` first
 - Falls back to `business.image_url` if no uploaded image
 - Falls back to category PNG if neither exists
 
 **Business Profile** (`src/app/business/[id]/page.tsx`):
+
 - Uses `business.uploaded_image` as primary image
 - Displays in `BusinessHeroImage` component
 - Shows in gallery if multiple images exist
@@ -177,6 +180,7 @@ await supabase
 ### Issue: Images don't appear after upload
 
 **Possible causes:**
+
 1. ❌ Bucket doesn't exist → Create bucket in Supabase Dashboard
 2. ❌ Bucket is private → Set bucket to public
 3. ❌ RLS policies not set → Run the migration SQL
@@ -186,12 +190,14 @@ await supabase
 ### Issue: "Bucket not found" error
 
 **Solution:**
+
 - Verify bucket name is exactly `business-images` (case-sensitive)
 - Check bucket exists in Supabase Dashboard > Storage
 
 ### Issue: "Permission denied" error
 
 **Solution:**
+
 - Ensure RLS policies are set up correctly
 - Verify user is authenticated when uploading
 - Check that business owner matches authenticated user
@@ -199,6 +205,7 @@ await supabase
 ### Issue: Images load slowly
 
 **Solution:**
+
 - Enable CDN in Supabase project settings
 - Consider image optimization before upload
 - Use WebP format for better compression
@@ -238,10 +245,12 @@ CREATE TABLE businesses (
 ```
 
 **Current Implementation:**
+
 - `uploaded_image`: Single primary image URL (owner-uploaded)
 - `image_url`: External image URL (from Foursquare, etc.)
 
 **Future Enhancement:**
+
 - Consider adding `images TEXT[]` array for multiple images
 - First image in array = primary/cover image
 - Remaining images = gallery images
@@ -262,25 +271,21 @@ CREATE TABLE businesses (
 ```typescript
 // Test bucket exists
 const { data: buckets } = await supabase.storage.listBuckets();
-expect(buckets).toContainEqual(
-  expect.objectContaining({ id: 'business-images' })
-);
+expect(buckets).toContainEqual(expect.objectContaining({ id: "business-images" }));
 
 // Test upload
-const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
-const { error } = await supabase.storage
-  .from('business-images')
-  .upload('test/test.jpg', file);
+const file = new File(["test"], "test.jpg", { type: "image/jpeg" });
+const { error } = await supabase.storage.from("business-images").upload("test/test.jpg", file);
 expect(error).toBeNull();
 ```
 
 ## 📚 Related Files
 
 - **Upload Logic**: `src/app/add-business/page.tsx` (lines 540-613)
-- **Display Logic**: 
+- **Display Logic**:
   - `src/app/components/BusinessCard/BusinessCard.tsx`
   - `src/app/business/[id]/page.tsx`
-- **API Endpoints**: 
+- **API Endpoints**:
   - `src/app/api/businesses/[id]/route.ts` (PUT for updating images)
 - **Migration**: `src/app/lib/migrations/002_business/008_business-images-storage.sql`
 
@@ -293,4 +298,3 @@ expect(error).toBeNull();
 5. 🔄 Consider adding image optimization/processing
 6. 🔄 Consider supporting multiple images per business
 7. 🔄 Consider implementing image cleanup on business deletion
-

@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import useSWRInfinite from 'swr/infinite';
-import { mutate as globalMutate } from 'swr';
-import { getBrowserSupabase } from '@/app/lib/supabase/client';
-import { swrConfig } from '@/app/lib/swrConfig';
-import { useAuth } from '@/app/contexts/AuthContext';
-import type { ConversationMessage, MessagesPage, MessagingRole } from './types';
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import useSWRInfinite from "swr/infinite";
+import { mutate as globalMutate } from "swr";
+import { getBrowserSupabase } from "@/app/lib/supabase/client";
+import { swrConfig } from "@/app/lib/swrConfig";
+import { useAuth } from "@/app/contexts/AuthContext";
+import type { ConversationMessage, MessagesPage, MessagingRole } from "./types";
 
 function buildMessageBaseKey(conversationId: string) {
   return `/api/conversations/${conversationId}/messages`;
 }
 
 async function fetchPage(url: string): Promise<MessagesPage> {
-  const response = await fetch(url, { cache: 'no-store' });
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     const error: any = new Error(payload?.error || `Failed to fetch messages (${response.status})`);
@@ -25,9 +25,7 @@ async function fetchPage(url: string): Promise<MessagesPage> {
 
 function getFlattenedMessages(pages: MessagesPage[] | undefined): ConversationMessage[] {
   if (!pages || pages.length === 0) return [];
-  return [...pages]
-    .reverse()
-    .flatMap((page) => page.data.messages || []);
+  return [...pages].reverse().flatMap((page) => page.data.messages || []);
 }
 
 function patchMessageInPages(
@@ -122,8 +120,8 @@ function updateConversationCaches(
       { revalidate: false }
     );
 
-  void updateCache('/api/conversations?role=user');
-  void updateCache('/api/conversations?role=business');
+  void updateCache("/api/conversations?role=user");
+  void updateCache("/api/conversations?role=business");
   if (conversationBusinessId) {
     void updateCache(`/api/conversations?role=business&business_id=${conversationBusinessId}`);
   }
@@ -135,7 +133,11 @@ export interface UseConversationMessagesOptions {
   conversationBusinessId?: string | null;
 }
 
-export function useConversationMessages({ conversationId, role, conversationBusinessId }: UseConversationMessagesOptions) {
+export function useConversationMessages({
+  conversationId,
+  role,
+  conversationBusinessId,
+}: UseConversationMessagesOptions) {
   const { user } = useAuth();
   const supabaseRef = useRef(getBrowserSupabase());
 
@@ -202,34 +204,36 @@ export function useConversationMessages({ conversationId, role, conversationBusi
   const sendMessage = useCallback(
     async (body: string, retryMessageId?: string) => {
       if (!conversationId || !user?.id) {
-        return { ok: false, error: new Error('Missing conversation context') };
+        return { ok: false, error: new Error("Missing conversation context") };
       }
 
       const trimmed = body.trim();
       if (!trimmed) {
-        return { ok: false, error: new Error('Message body is required') };
+        return { ok: false, error: new Error("Message body is required") };
       }
 
-      const optimisticId = retryMessageId || `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const optimisticId =
+        retryMessageId || `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const optimisticMessage: ConversationMessage = {
         id: optimisticId,
         conversation_id: conversationId,
         body: trimmed,
-        status: 'sent',
+        status: "sent",
         sender_type: role,
         sender_user_id: user.id,
-        sender_business_id: role === 'business' ? (conversationBusinessId || null) : null,
+        sender_business_id: role === "business" ? conversationBusinessId || null : null,
         created_at: new Date().toISOString(),
         delivered_at: null,
         read_at: null,
-        client_state: 'sending',
+        client_state: "sending",
       };
 
       if (retryMessageId) {
         replaceMessage(retryMessageId, optimisticMessage);
       } else {
         mutate(
-          (previousPages) => appendOptimisticMessage(previousPages, conversationId, optimisticMessage),
+          (previousPages) =>
+            appendOptimisticMessage(previousPages, conversationId, optimisticMessage),
           { revalidate: false }
         );
       }
@@ -238,8 +242,8 @@ export function useConversationMessages({ conversationId, role, conversationBusi
 
       try {
         const response = await fetch(`/api/conversations/${conversationId}/messages`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ body: trimmed }),
         });
 
@@ -251,7 +255,7 @@ export function useConversationMessages({ conversationId, role, conversationBusi
         const payload = await response.json();
         const serverMessage = payload?.data as ConversationMessage | undefined;
         if (!serverMessage) {
-          throw new Error('Invalid send response');
+          throw new Error("Invalid send response");
         }
 
         replaceMessage(optimisticId, {
@@ -267,7 +271,7 @@ export function useConversationMessages({ conversationId, role, conversationBusi
       } catch (error: any) {
         replaceMessage(optimisticId, {
           ...optimisticMessage,
-          client_state: 'failed',
+          client_state: "failed",
         });
 
         return {
@@ -291,12 +295,12 @@ export function useConversationMessages({ conversationId, role, conversationBusi
     if (!conversationId) return;
 
     const response = await fetch(`/api/conversations/${conversationId}/read`, {
-      method: 'POST',
+      method: "POST",
     });
 
     if (response.ok) {
-      void globalMutate('/api/conversations?role=user');
-      void globalMutate('/api/conversations?role=business');
+      void globalMutate("/api/conversations?role=user");
+      void globalMutate("/api/conversations?role=business");
       if (conversationBusinessId) {
         void globalMutate(`/api/conversations?role=business&business_id=${conversationBusinessId}`);
       }
@@ -310,11 +314,11 @@ export function useConversationMessages({ conversationId, role, conversationBusi
     const channel = supabase
       .channel(`messages-${conversationId}-${user.id}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload: any) => {
@@ -328,9 +332,9 @@ export function useConversationMessages({ conversationId, role, conversationBusi
           const incomingMessage: ConversationMessage = {
             id: row.id,
             conversation_id: row.conversation_id,
-            body: row.body || row.content || '',
-            status: row.status || 'sent',
-            sender_type: row.sender_type || 'user',
+            body: row.body || row.content || "",
+            status: row.status || "sent",
+            sender_type: row.sender_type || "user",
             sender_user_id: row.sender_user_id,
             sender_business_id: row.sender_business_id,
             created_at: row.created_at,
@@ -339,27 +343,34 @@ export function useConversationMessages({ conversationId, role, conversationBusi
             client_state: null,
           };
 
-          mutate((previousPages) => {
-            if (!previousPages || previousPages.length === 0) {
+          mutate(
+            (previousPages) => {
+              if (!previousPages || previousPages.length === 0) {
+                return appendOptimisticMessage(previousPages, conversationId, incomingMessage);
+              }
+
+              if (
+                previousPages.some((page) =>
+                  page.data.messages.some((message) => message.id === incomingMessage.id)
+                )
+              ) {
+                return previousPages;
+              }
+
               return appendOptimisticMessage(previousPages, conversationId, incomingMessage);
-            }
-
-            if (previousPages.some((page) => page.data.messages.some((message) => message.id === incomingMessage.id))) {
-              return previousPages;
-            }
-
-            return appendOptimisticMessage(previousPages, conversationId, incomingMessage);
-          }, { revalidate: false });
+            },
+            { revalidate: false }
+          );
 
           updateConversationCaches(conversationId, incomingMessage.body, conversationBusinessId);
         }
       )
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload: any) => {

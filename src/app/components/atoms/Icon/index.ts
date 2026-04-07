@@ -13,5 +13,5 @@ export {
   IconBriefcase,
   IconEdit,
   IconTrash,
-} from './Icon';
-export type { IconProps, IconSize, IconColor } from './Icon';
+} from "./Icon";
+export type { IconProps, IconSize, IconColor } from "./Icon";

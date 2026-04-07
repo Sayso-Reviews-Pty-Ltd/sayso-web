@@ -9,13 +9,7 @@
  * - Stagger gap: 45ms. Max animated per batch: 10.
  */
 
-export type ChoreoIntent =
-  | "hero"
-  | "heading"
-  | "section"
-  | "sidebar"
-  | "listItem"
-  | "inline";
+export type ChoreoIntent = "hero" | "heading" | "section" | "sidebar" | "listItem" | "inline";
 
 export type ChoreoPreset = "balanced";
 

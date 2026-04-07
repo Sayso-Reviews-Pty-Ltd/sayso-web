@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
-const STORAGE_PREFIX = 'sayso_rsvp_';
+const STORAGE_PREFIX = "sayso_rsvp_";
 
 export function useEventRsvp(eventId: string) {
   const { user } = useAuth();
@@ -23,7 +23,7 @@ export function useEventRsvp(eventId: string) {
         if (user) {
           setIsGoing(data.userRsvpd ?? false);
         } else {
-          setIsGoing(localStorage.getItem(`${STORAGE_PREFIX}${eventId}`) === 'true');
+          setIsGoing(localStorage.getItem(`${STORAGE_PREFIX}${eventId}`) === "true");
         }
         setLoading(false);
       })
@@ -31,7 +31,9 @@ export function useEventRsvp(eventId: string) {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [eventId, user]);
 
   const toggle = useCallback(async () => {
@@ -41,7 +43,7 @@ export function useEventRsvp(eventId: string) {
       // Auth user — DB toggle
       setLoading(true);
       try {
-        const res = await fetch(`/api/events-and-specials/${eventId}/rsvp`, { method: 'POST' });
+        const res = await fetch(`/api/events-and-specials/${eventId}/rsvp`, { method: "POST" });
         const data = await res.json();
         setCount(data.count ?? 0);
         setIsGoing(data.isGoing ?? false);
@@ -53,7 +55,7 @@ export function useEventRsvp(eventId: string) {
       const next = !isGoing;
       setIsGoing(next);
       setCount((c) => Math.max(0, next ? c + 1 : c - 1));
-      if (next) localStorage.setItem(`${STORAGE_PREFIX}${eventId}`, 'true');
+      if (next) localStorage.setItem(`${STORAGE_PREFIX}${eventId}`, "true");
       else localStorage.removeItem(`${STORAGE_PREFIX}${eventId}`);
     }
   }, [eventId, isGoing, loading, user]);

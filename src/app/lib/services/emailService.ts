@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 // Lazy initialization of Resend client
 function getResendClient() {
@@ -9,8 +9,8 @@ function getResendClient() {
   return new Resend(apiKey);
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@sayso.app';
-const FROM_NAME = process.env.FROM_NAME || 'SaySo';
+const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@sayso.app";
+const FROM_NAME = process.env.FROM_NAME || "SaySo";
 
 interface ClaimReceivedEmailData {
   recipientEmail: string;
@@ -68,15 +68,18 @@ export class EmailService {
   /**
    * Send "We received your claim" email
    */
-  static async sendClaimReceivedEmail(data: ClaimReceivedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendClaimReceivedEmail(
+    data: ClaimReceivedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const resend = getResendClient();
       if (!resend) {
-        console.warn('RESEND_API_KEY not configured, skipping email');
+        console.warn("RESEND_API_KEY not configured, skipping email");
         return { success: true }; // Don't fail if email is not configured
       }
 
-      const { recipientEmail, recipientName, businessName, businessCategory, businessLocation } = data;
+      const { recipientEmail, recipientName, businessName, businessCategory, businessLocation } =
+        data;
 
       const { error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -96,7 +99,7 @@ export class EmailService {
               </div>
               
               <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px; border: 1px solid #e0e0e0; border-top: none;">
-                <p style="margin-top: 0;">${recipientName ? `Hi ${recipientName},` : 'Hi there,'}</p>
+                <p style="margin-top: 0;">${recipientName ? `Hi ${recipientName},` : "Hi there,"}</p>
                 
                 <p>Thank you for submitting a claim request for <strong>${businessName}</strong>.</p>
                 
@@ -123,16 +126,16 @@ export class EmailService {
       });
 
       if (error) {
-        console.error('Error sending claim received email:', error);
+        console.error("Error sending claim received email:", error);
         return { success: false, error: error.message };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Error in sendClaimReceivedEmail:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      console.error("Error in sendClaimReceivedEmail:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -140,15 +143,24 @@ export class EmailService {
   /**
    * Send "Your claim is approved" email
    */
-  static async sendClaimApprovedEmail(data: ClaimApprovedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendClaimApprovedEmail(
+    data: ClaimApprovedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const resend = getResendClient();
       if (!resend) {
-        console.warn('RESEND_API_KEY not configured, skipping email');
+        console.warn("RESEND_API_KEY not configured, skipping email");
         return { success: true }; // Don't fail if email is not configured
       }
 
-      const { recipientEmail, recipientName, businessName, businessCategory, businessLocation, dashboardUrl } = data;
+      const {
+        recipientEmail,
+        recipientName,
+        businessName,
+        businessCategory,
+        businessLocation,
+        dashboardUrl,
+      } = data;
 
       const { error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -168,7 +180,7 @@ export class EmailService {
               </div>
               
               <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px; border: 1px solid #e0e0e0; border-top: none;">
-                <p style="margin-top: 0;">${recipientName ? `Hi ${recipientName},` : 'Hi there,'}</p>
+                <p style="margin-top: 0;">${recipientName ? `Hi ${recipientName},` : "Hi there,"}</p>
                 
                 <p>Great news! Your claim request for <strong>${businessName}</strong> has been approved.</p>
                 
@@ -204,21 +216,23 @@ export class EmailService {
       });
 
       if (error) {
-        console.error('Error sending claim approved email:', error);
+        console.error("Error sending claim approved email:", error);
         return { success: false, error: error.message };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Error in sendClaimApprovedEmail:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      console.error("Error in sendClaimApprovedEmail:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
 
-  static async sendOtpSentEmail(data: OtpSentEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendOtpSentEmail(
+    data: OtpSentEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     const resend = getResendClient();
     if (!resend) return { success: true };
     const { recipientEmail, recipientName, businessName, maskedPhone } = data;
@@ -227,19 +241,21 @@ export class EmailService {
       to: recipientEmail,
       subject: `Verification code for ${businessName}`,
       html: minimalClaimHtml(
-        'Verification code sent',
+        "Verification code sent",
         recipientName,
         `We sent a verification code to ${maskedPhone} for your claim on <strong>${businessName}</strong>. Enter it in the app to continue. The code expires in 10 minutes.`
       ),
     });
     if (error) {
-      console.error('OtpSent email failed:', error);
+      console.error("OtpSent email failed:", error);
       return { success: false, error: error.message };
     }
     return { success: true };
   }
 
-  static async sendOtpVerifiedEmail(data: OtpVerifiedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendOtpVerifiedEmail(
+    data: OtpVerifiedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     const resend = getResendClient();
     if (!resend) return { success: true };
     const { recipientEmail, recipientName, businessName } = data;
@@ -248,19 +264,21 @@ export class EmailService {
       to: recipientEmail,
       subject: `Phone verified for ${businessName}`,
       html: minimalClaimHtml(
-        'Phone verification successful',
+        "Phone verification successful",
         recipientName,
         `Your phone has been verified for <strong>${businessName}</strong>. We'll review your claim and get back to you shortly.`
       ),
     });
     if (error) {
-      console.error('OtpVerified email failed:', error);
+      console.error("OtpVerified email failed:", error);
       return { success: false, error: error.message };
     }
     return { success: true };
   }
 
-  static async sendDocsRequestedEmail(data: DocsRequestedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendDocsRequestedEmail(
+    data: DocsRequestedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     const resend = getResendClient();
     if (!resend) return { success: true };
     const { recipientEmail, recipientName, businessName, claimBusinessUrl } = data;
@@ -269,20 +287,22 @@ export class EmailService {
       to: recipientEmail,
       subject: `Documents required for ${businessName}`,
       html: minimalClaimHtml(
-        'Documents required',
+        "Documents required",
         recipientName,
         `We need additional documents to verify your claim for <strong>${businessName}</strong>. Please upload a letterhead authorization and/or lease first page (PDF, JPG or PNG, max 5MB) in your claim page.`,
         claimBusinessUrl
       ),
     });
     if (error) {
-      console.error('DocsRequested email failed:', error);
+      console.error("DocsRequested email failed:", error);
       return { success: false, error: error.message };
     }
     return { success: true };
   }
 
-  static async sendDocsReceivedEmail(data: DocsReceivedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendDocsReceivedEmail(
+    data: DocsReceivedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     const resend = getResendClient();
     if (!resend) return { success: true };
     const { recipientEmail, recipientName, businessName } = data;
@@ -291,19 +311,21 @@ export class EmailService {
       to: recipientEmail,
       subject: `Documents received for ${businessName}`,
       html: minimalClaimHtml(
-        'Documents received',
+        "Documents received",
         recipientName,
         `We've received your documents for <strong>${businessName}</strong>. Our team will review them and notify you once the claim is processed.`
       ),
     });
     if (error) {
-      console.error('DocsReceived email failed:', error);
+      console.error("DocsReceived email failed:", error);
       return { success: false, error: error.message };
     }
     return { success: true };
   }
 
-  static async sendClaimStatusChangedEmail(data: ClaimStatusChangedEmailData): Promise<{ success: boolean; error?: string }> {
+  static async sendClaimStatusChangedEmail(
+    data: ClaimStatusChangedEmailData
+  ): Promise<{ success: boolean; error?: string }> {
     const resend = getResendClient();
     if (!resend) return { success: true };
     const { recipientEmail, recipientName, businessName, status, message, dashboardUrl } = data;
@@ -311,26 +333,26 @@ export class EmailService {
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: recipientEmail,
       subject: `Claim update: ${businessName} – ${status}`,
-      html: minimalClaimHtml(
-        `Claim ${status}`,
-        recipientName,
-        message,
-        dashboardUrl
-      ),
+      html: minimalClaimHtml(`Claim ${status}`, recipientName, message, dashboardUrl),
     });
     if (error) {
-      console.error('ClaimStatusChanged email failed:', error);
+      console.error("ClaimStatusChanged email failed:", error);
       return { success: false, error: error.message };
     }
     return { success: true };
   }
 }
 
-function minimalClaimHtml(title: string, recipientName: string | undefined, body: string, ctaUrl?: string): string {
-  const greeting = recipientName ? `Hi ${recipientName},` : 'Hi there,';
+function minimalClaimHtml(
+  title: string,
+  recipientName: string | undefined,
+  body: string,
+  ctaUrl?: string
+): string {
+  const greeting = recipientName ? `Hi ${recipientName},` : "Hi there,";
   const cta = ctaUrl
     ? `<p style="margin-top: 20px;"><a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #7D9B76 0%, #6B8A64 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; font-weight: 600;">View claim</a></p>`
-    : '';
+    : "";
   return `
 <!DOCTYPE html>
 <html>
@@ -349,4 +371,3 @@ function minimalClaimHtml(title: string, recipientName: string | undefined, body
 </body>
 </html>`;
 }
-

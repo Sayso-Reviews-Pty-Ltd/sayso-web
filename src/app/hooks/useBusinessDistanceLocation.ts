@@ -247,9 +247,7 @@ export interface UseBusinessDistanceLocationOptions {
   hasCoordinateBusinesses?: boolean;
 }
 
-export function useBusinessDistanceLocation(
-  options: UseBusinessDistanceLocationOptions = {}
-) {
+export function useBusinessDistanceLocation(options: UseBusinessDistanceLocationOptions = {}) {
   const [storeState, setStoreState] = useState<LocationStoreState>(state);
 
   useEffect(() => subscribe(setStoreState), []);
@@ -272,9 +270,7 @@ export function useBusinessDistanceLocation(
     updateState({ deniedDismissed: true });
   }, []);
 
-  const isPromptSnoozed = Boolean(
-    storeState.snoozedUntil && storeState.snoozedUntil > Date.now()
-  );
+  const isPromptSnoozed = Boolean(storeState.snoozedUntil && storeState.snoozedUntil > Date.now());
 
   const hasCoordinateBusinesses = options.hasCoordinateBusinesses === true;
 
@@ -293,10 +289,7 @@ export function useBusinessDistanceLocation(
       return null;
     }
 
-    if (
-      !isPromptSnoozed &&
-      (storeState.status === "idle" || storeState.status === "unavailable")
-    ) {
+    if (!isPromptSnoozed && (storeState.status === "idle" || storeState.status === "unavailable")) {
       return "request";
     }
 

@@ -15,12 +15,13 @@ export default function OnboardingItemGrid({
   gap = "md",
   className = "",
 }: OnboardingItemGridProps) {
-  const colClass = {
-    1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
-    4: "grid-cols-4",
-  }[columns] || "grid-cols-2";
+  const colClass =
+    {
+      1: "grid-cols-1",
+      2: "grid-cols-2",
+      3: "grid-cols-3",
+      4: "grid-cols-4",
+    }[columns] || "grid-cols-2";
 
   const gapClass = {
     sm: "gap-2 sm:gap-3",
@@ -29,11 +30,13 @@ export default function OnboardingItemGrid({
   }[gap];
 
   return (
-    <div className={`
+    <div
+      className={`
       grid ${colClass} ${gapClass}
       animate-fade-in-up delay-100
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );

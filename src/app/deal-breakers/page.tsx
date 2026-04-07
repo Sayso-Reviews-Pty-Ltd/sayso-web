@@ -35,13 +35,16 @@ function DealBreakersContent() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-[12px] p-4 text-center mb-4">
               <p className="text-sm font-semibold text-red-600">
-                {error.message || 'An error occurred'}
+                {error.message || "An error occurred"}
               </p>
             </div>
           )}
 
-          <DealBreakerSelection selectedCount={selectedDealbreakers.length} maxSelections={MAX_SELECTIONS}>
-            <DealBreakerGrid 
+          <DealBreakerSelection
+            selectedCount={selectedDealbreakers.length}
+            maxSelections={MAX_SELECTIONS}
+          >
+            <DealBreakerGrid
               dealbreakers={dealbreakers}
               selectedDealbreakers={selectedDealbreakers}
               maxSelections={MAX_SELECTIONS}
@@ -64,13 +67,15 @@ function DealBreakersContent() {
 export default function DealBreakersPage() {
   return (
     <ProtectedRoute requiresAuth={true}>
-      <Suspense fallback={
-        <OnboardingLayout step={3} backHref="/interests">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Loader size="md" variant="wavy" color="sage" />
-          </div>
-        </OnboardingLayout>
-      }>
+      <Suspense
+        fallback={
+          <OnboardingLayout step={3} backHref="/interests">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <Loader size="md" variant="wavy" color="sage" />
+            </div>
+          </OnboardingLayout>
+        }
+      >
         <DealBreakersContent />
       </Suspense>
     </ProtectedRoute>

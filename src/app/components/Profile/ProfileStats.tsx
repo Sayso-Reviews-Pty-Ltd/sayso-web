@@ -2,14 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import {
-  Award,
-  Briefcase,
-  ChevronRight,
-  Eye,
-  Star as StarIcon,
-  ThumbsUp,
-} from "@/app/lib/icons";
+import { Award, Briefcase, ChevronRight, Eye, Star as StarIcon, ThumbsUp } from "@/app/lib/icons";
 import type { UserStats } from "@/app/lib/types/user";
 
 interface ProfileStatsProps {
@@ -32,10 +25,7 @@ export function ProfileStats({
   savedBusinessesCount,
 }: ProfileStatsProps) {
   return (
-    <section
-      className="grid grid-cols-2 sm:grid-cols-4 gap-4"
-      aria-label="Profile statistics"
-    >
+    <section className="grid grid-cols-2 sm:grid-cols-4 gap-4" aria-label="Profile statistics">
       <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-off-white/70 hover:bg-off-white/90 transition-colors">
@@ -43,9 +33,7 @@ export function ProfileStats({
           </span>
           <span className="text-sm text-charcoal/70">Helpful votes</span>
         </div>
-        <p className="text-2xl font-bold text-charcoal">
-          {helpfulVotesCount}
-        </p>
+        <p className="text-2xl font-bold text-charcoal">{helpfulVotesCount}</p>
         <p className="text-xs text-charcoal/60">Received</p>
       </div>
       <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4">
@@ -55,9 +43,7 @@ export function ProfileStats({
           </span>
           <span className="text-sm text-charcoal/70">Reviews</span>
         </div>
-        <p className="text-2xl font-bold text-charcoal">
-          {reviewsCount}
-        </p>
+        <p className="text-2xl font-bold text-charcoal">{reviewsCount}</p>
         <p className="text-xs text-charcoal/60">Total written</p>
       </div>
       <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4">
@@ -88,11 +74,9 @@ export function ProfileStats({
             </span>
             <span className="text-sm text-charcoal/70">Saved</span>
           </div>
-          <p className="text-2xl font-bold text-charcoal">
-            {totalSavedCount}
-          </p>
+          <p className="text-2xl font-bold text-charcoal">{totalSavedCount}</p>
           <p className="text-xs text-charcoal/60">
-            {savedBusinessesCount > 0 ? `${savedBusinessesCount} businesses` : 'Your saved gems'}
+            {savedBusinessesCount > 0 ? `${savedBusinessesCount} businesses` : "Your saved gems"}
           </p>
           <Link
             href="/saved"

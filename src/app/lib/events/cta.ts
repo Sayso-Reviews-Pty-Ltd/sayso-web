@@ -91,7 +91,9 @@ export function buildWhatsAppMessage(params: {
   };
 
   if (template && template.trim()) {
-    return interpolateTemplate(template.trim(), values).replace(/\n{3,}/g, "\n\n").trim();
+    return interpolateTemplate(template.trim(), values)
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
   }
 
   if (event.type === "special") {
@@ -106,11 +108,9 @@ export function buildWhatsAppMessage(params: {
     ? `Hi! I'd like to book for ${values.title} on ${values.start_date}.`
     : `Hi! I'd like to book for ${values.title}.`;
 
-  return [
-    firstLine,
-    `People: ${values.qty}`,
-    `Here's the Sayso link: ${values.public_url}`,
-  ].join("\n");
+  return [firstLine, `People: ${values.qty}`, `Here's the Sayso link: ${values.public_url}`].join(
+    "\n"
+  );
 }
 
 export function buildWhatsAppDeepLink(params: { number: string; message: string }): string {
@@ -131,7 +131,8 @@ export function resolveCtaTarget(params: {
   const explicitWhatsappNumber = normalizeWhatsAppNumber(params.whatsappNumber);
   const urlWhatsappNumber = extractWhatsAppNumberFromUrl(bookingUrl);
   const whatsappNumber = explicitWhatsappNumber || urlWhatsappNumber;
-  const shouldUseWhatsapp = (source === "whatsapp" || isWhatsAppUrl(bookingUrl)) && Boolean(whatsappNumber);
+  const shouldUseWhatsapp =
+    (source === "whatsapp" || isWhatsAppUrl(bookingUrl)) && Boolean(whatsappNumber);
 
   if (shouldUseWhatsapp && whatsappNumber) {
     const message = buildWhatsAppMessage({

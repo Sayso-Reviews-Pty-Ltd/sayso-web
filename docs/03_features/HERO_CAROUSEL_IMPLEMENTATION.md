@@ -1,6 +1,7 @@
 # Hero Carousel Implementation - Complete
 
 ## Overview
+
 Successfully implemented a premium hero image carousel component that sits above the Trending section with integrated navbar functionality.
 
 ## ✅ Implementation Summary
@@ -8,6 +9,7 @@ Successfully implemented a premium hero image carousel component that sits above
 ### 1. **Hero Carousel Component** ([HeroCarousel.tsx](src/app/components/Hero/HeroCarousel.tsx))
 
 #### Key Features:
+
 - **Rounded Container**: Uses `rounded-[20px]` for modern, premium aesthetics
 - **Padding**: Wrapped with `p-4` padding for proper spacing
 - **Smooth Transitions**: 1000ms duration with `ease-in-out` for premium feel
@@ -19,11 +21,13 @@ Successfully implemented a premium hero image carousel component that sits above
   - `edward-franklin-Nb_Q-M3Cdzg-unsplash.jpg`
 
 #### Responsive Heights:
+
 - Mobile: `500px`
 - Tablet (sm): `600px`
 - Desktop (lg): `650px`
 
 #### Interactive Features:
+
 - **Navigation Arrows**: Left/right controls with hover effects
 - **Dot Indicators**: Active slide indicator with smooth transitions
 - **Keyboard Navigation**: Arrow keys support
@@ -34,12 +38,14 @@ Successfully implemented a premium hero image carousel component that sits above
 ### 2. **Navbar Integration**
 
 #### Desktop (lg and above):
+
 - Navbar overlays **inside** the hero component at the top
 - Uses `absolute` positioning with `z-40` layering
 - Semi-transparent background: `bg-navbar-bg/80 backdrop-blur-md`
 - Seamlessly integrated into the hero visual area
 
 #### Mobile/Tablet (below lg):
+
 - Navbar displayed **separately above** the hero component
 - Uses standard navbar styling
 - Maintains clarity and usability on smaller screens
@@ -48,17 +54,19 @@ Successfully implemented a premium hero image carousel component that sits above
 ### 3. **Trending Page Integration** ([trending/page.tsx](src/app/trending/page.tsx))
 
 #### Changes Made:
+
 1. **Removed standalone Header component** - Now integrated in HeroCarousel
 2. **Added HeroCarousel import and component** - Sits at top of page
 3. **Adjusted main padding** - Removed top padding since hero handles navbar
 4. **Preserved all existing functionality** - Filters, search, pagination, etc.
 
 #### Layout Structure:
+
 ```jsx
 <div className="min-h-dvh bg-off-white">
   {/* Hero Carousel with integrated navbar */}
   <HeroCarousel />
-  
+
   <main className="pb-6 sm:pb-10">
     {/* Breadcrumb */}
     {/* Page Title */}
@@ -72,6 +80,7 @@ Successfully implemented a premium hero image carousel component that sits above
 ## 🎨 Design Features
 
 ### Visual Enhancements:
+
 1. **Gradient Overlays**: Improves text readability on images
 2. **Liquid Glass Effects**: Subtle ambient lighting layers
 3. **Premium Shadow**: `shadow-2xl` on carousel container
@@ -79,6 +88,7 @@ Successfully implemented a premium hero image carousel component that sits above
 5. **Wavy Typed Titles**: Engaging title animations
 
 ### Color & Styling:
+
 - Text: White/off-white with proper contrast
 - Background gradients: Black overlays for readability
 - Dot indicators: White with opacity variations
@@ -89,23 +99,27 @@ Successfully implemented a premium hero image carousel component that sits above
 ### Breakpoint Behavior:
 
 #### Mobile (< 640px):
+
 - Navbar separate and fixed at top
 - Hero height: 500px
 - Content padding adjusted for small screens
 - Touch-friendly controls
 
 #### Tablet (640px - 1024px):
+
 - Navbar still separate
 - Hero height: 600px
 - Improved spacing and typography
 
 #### Desktop (≥ 1024px):
+
 - Navbar overlays inside hero
 - Hero height: 650px
 - Full visual impact with integrated navigation
 - Hover effects on navigation controls
 
 ### No Layout Shifts:
+
 - Fixed heights prevent content jumping
 - Proper z-index layering ensures no overlap
 - Smooth transitions between breakpoints
@@ -140,6 +154,7 @@ Successfully implemented a premium hero image carousel component that sits above
 ## 🧪 Testing Recommendations
 
 ### Manual Testing:
+
 - [ ] Verify carousel autoplay works (8s intervals)
 - [ ] Test navigation arrows on all breakpoints
 - [ ] Confirm dot indicators show correct active state
@@ -152,6 +167,7 @@ Successfully implemented a premium hero image carousel component that sits above
 - [ ] Check focus indicators for accessibility
 
 ### Browser Testing:
+
 - [ ] Chrome/Edge
 - [ ] Firefox
 - [ ] Safari (desktop & mobile)
@@ -179,6 +195,7 @@ export default function YourPage() {
 ## 🔧 Customization
 
 ### To Change Images:
+
 Edit the `HERO_SLIDES` array in [HeroCarousel.tsx](src/app/components/Hero/HeroCarousel.tsx):
 
 ```tsx
@@ -194,17 +211,21 @@ const HERO_SLIDES: HeroSlide[] = [
 ```
 
 ### To Adjust Timing:
+
 Modify the autoplay interval in the progress animation effect (currently 8000ms).
 
 ### To Change Heights:
+
 Update the height classes in the section element:
+
 ```tsx
-className="relative h-[YOUR_MOBILEpx] sm:h-[YOUR_TABLETpx] lg:h-[YOUR_DESKTOPpx] ..."
+className = "relative h-[YOUR_MOBILEpx] sm:h-[YOUR_TABLETpx] lg:h-[YOUR_DESKTOPpx] ...";
 ```
 
 ## ✨ Final Result
 
 The hero carousel provides:
+
 - **Premium Visual Impact**: Large, high-quality images with smooth transitions
 - **Seamless Navigation**: Desktop navbar overlays naturally, mobile stays separate
 - **Modern Design**: Rounded corners, shadows, and polished interactions

@@ -87,11 +87,7 @@ export default function DesktopNav(props: DesktopNavProps) {
   }
 
   if (mode === "navOnly") {
-    return (
-      <div className="w-full flex items-center justify-center">
-        {centerNav}
-      </div>
-    );
+    return <div className="w-full flex items-center justify-center">{centerNav}</div>;
   }
 
   return (

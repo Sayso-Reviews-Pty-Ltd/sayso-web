@@ -5,6 +5,7 @@ This document outlines all performance optimizations implemented for fast load t
 ## Overview
 
 The application uses a multi-layered performance optimization strategy:
+
 1. **Image Optimization** - Next.js Image with modern formats (AVIF, WebP)
 2. **CDN** - Supabase Storage with built-in CDN + Next.js Image CDN
 3. **Caching** - HTTP headers, in-memory cache, and service worker
@@ -18,6 +19,7 @@ The application uses a multi-layered performance optimization strategy:
 **Location:** `next.config.ts`
 
 **Features:**
+
 - **Modern Formats**: AVIF and WebP support for smaller file sizes
 - **Device-Specific Sizes**: Optimized image sizes for different devices
 - **Minimum Cache TTL**: 60 seconds for optimized images
@@ -41,6 +43,7 @@ images: {
 **Location:** `src/app/components/Performance/OptimizedImage.tsx`
 
 **Features:**
+
 - Automatic quality selection based on use case
 - Responsive sizing generation
 - Priority preloading for above-the-fold images
@@ -48,6 +51,7 @@ images: {
 - Blur placeholder support
 
 **Usage:**
+
 ```tsx
 <OptimizedImage
   src={imageUrl}
@@ -64,6 +68,7 @@ images: {
 **Location:** `src/app/lib/utils/cdnUtils.ts`
 
 **Functions:**
+
 - `getOptimizedImageUrl()` - Get CDN-optimized image URLs
 - `getResponsiveSizes()` - Generate responsive image sizes
 - `getOptimalQuality()` - Get optimal quality for use case
@@ -79,6 +84,7 @@ images: {
 **Location:** `src/app/lib/utils/httpCache.ts`
 
 **Features:**
+
 - Configurable cache strategies
 - Presets for different content types
 - ETag support for 304 Not Modified responses
@@ -88,29 +94,30 @@ images: {
 
 ```typescript
 // Static assets - 1 year cache
-CachePresets.static()
+CachePresets.static();
 
 // API responses - 5 minutes cache, 1 hour stale-while-revalidate
-CachePresets.api()
+CachePresets.api();
 
 // Business data - 10 minutes cache, 20 minutes on CDN
-CachePresets.business()
+CachePresets.business();
 
 // Review data - 5 minutes cache
-CachePresets.reviews()
+CachePresets.reviews();
 
 // Dynamic content - 1 minute cache, immediate revalidation
-CachePresets.dynamic()
+CachePresets.dynamic();
 
 // User data - No cache
-CachePresets.user()
+CachePresets.user();
 ```
 
 ### Implementation in API Routes
 
 **Example:**
+
 ```typescript
-import { cachedJsonResponse, CachePresets } from '@/app/lib/utils/httpCache';
+import { cachedJsonResponse, CachePresets } from "@/app/lib/utils/httpCache";
 
 export async function GET() {
   const data = await fetchData();
@@ -123,6 +130,7 @@ export async function GET() {
 **Location:** `next.config.ts`
 
 **Headers Configuration:**
+
 - Images: `max-age=31536000, immutable` (1 year)
 - Static files: `max-age=31536000, immutable` (1 year)
 - Next.js optimized images: `max-age=31536000, immutable` (1 year)
@@ -136,12 +144,14 @@ export async function GET() {
 **Location:** `src/app/lib/cache/queryCache.ts`
 
 **Features:**
+
 - TTL-based cache expiration
 - Automatic cache eviction (LRU-style)
 - Extended TTLs for different content types
 - Cache statistics
 
 **Extended TTLs:**
+
 - Business data: 10 minutes
 - Business lists: 5 minutes
 - Reviews: 5 minutes
@@ -149,14 +159,15 @@ export async function GET() {
 - Profiles: 10 minutes
 
 **Usage:**
+
 ```typescript
-import { queryCache } from '@/app/lib/cache/queryCache';
+import { queryCache } from "@/app/lib/cache/queryCache";
 
 // Get from cache
-const cached = queryCache.get('business:123');
+const cached = queryCache.get("business:123");
 
 // Set in cache
-queryCache.set('business:123', data, 600000); // 10 minutes
+queryCache.set("business:123", data, 600000); // 10 minutes
 ```
 
 ### Optimized Queries
@@ -164,6 +175,7 @@ queryCache.set('business:123', data, 600000); // 10 minutes
 **Location:** `src/app/lib/utils/optimizedQueries.ts`
 
 **Features:**
+
 - Parallel query execution
 - Automatic caching with TTL
 - Slug and ID lookup support
@@ -178,6 +190,7 @@ queryCache.set('business:123', data, 600000); // 10 minutes
 **Location:** `public/sw.js`
 
 **Features:**
+
 - **Cache-First Strategy** for images and static assets
 - **Stale-While-Revalidate** for API responses
 - **Network-First Strategy** for dynamic content
@@ -206,6 +219,7 @@ The service worker is automatically registered in production mode.
 ### Supabase Storage CDN
 
 Supabase Storage automatically provides CDN for all uploaded images. URLs are already optimized:
+
 - Global CDN distribution
 - Automatic HTTPS
 - Edge caching
@@ -213,6 +227,7 @@ Supabase Storage automatically provides CDN for all uploaded images. URLs are al
 ### Next.js Image CDN
 
 Next.js Image component automatically:
+
 - Optimizes images on-demand
 - Serves from CDN
 - Converts to modern formats (AVIF, WebP)
@@ -315,5 +330,4 @@ No additional environment variables required. All optimizations work with existi
 
 ---
 
-*Last Updated: Performance optimization implementation complete*
-
+_Last Updated: Performance optimization implementation complete_

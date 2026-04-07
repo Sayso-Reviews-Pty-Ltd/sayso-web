@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
-import { AuthService } from '../../lib/auth';
-import { useToast } from '../../contexts/ToastContext';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
+import { AuthService } from "../../lib/auth";
+import { useToast } from "../../contexts/ToastContext";
 import { Mail, CheckCircle, AlertCircle, Loader, ExternalLink } from "@/app/lib/icons";
 
 interface EmailVerificationGuardProps {
@@ -17,18 +17,18 @@ interface EmailVerificationGuardProps {
 export default function EmailVerificationGuard({
   children,
   fallback,
-  onVerificationRequired
+  onVerificationRequired,
 }: EmailVerificationGuardProps) {
   const { user, isLoading, updateUser } = useAuth();
   const { showToast } = useToast();
   const [isResending, setIsResending] = useState(false);
   const searchParams = useSearchParams();
-  const emailVerifiedParam = searchParams?.get('email_verified');
-  const verifiedParam = searchParams?.get('verified');
+  const emailVerifiedParam = searchParams?.get("email_verified");
+  const verifiedParam = searchParams?.get("verified");
 
   // Optimistically allow access if URL param indicates verification
   // Check both 'email_verified' and 'verified' params to handle different redirect scenarios
-  const isVerifiedFromUrl = emailVerifiedParam === 'true' || verifiedParam === '1';
+  const isVerifiedFromUrl = emailVerifiedParam === "true" || verifiedParam === "1";
 
   // Extract stable primitives to prevent re-render loops
   const userId = user?.id ?? null;
@@ -43,14 +43,16 @@ export default function EmailVerificationGuard({
     }
 
     // Optimistically update user state
-    AuthService.getCurrentUser().then(freshUser => {
-      if (freshUser?.email_verified) {
-        updateUser({ email_verified: true });
-      }
-    }).catch((err) => {
-      console.error('[EmailVerificationGuard] Error refreshing user:', err);
-      // Silently fail - will be handled by normal flow
-    });
+    AuthService.getCurrentUser()
+      .then((freshUser) => {
+        if (freshUser?.email_verified) {
+          updateUser({ email_verified: true });
+        }
+      })
+      .catch((err) => {
+        console.error("[EmailVerificationGuard] Error refreshing user:", err);
+        // Silently fail - will be handled by normal flow
+      });
   }, [isVerifiedFromUrl, userId, emailVerified]);
 
   // More accurate user existence check - check if we have user data, not just the object
@@ -69,9 +71,7 @@ export default function EmailVerificationGuard({
             <p className="font-urbanist text-sm text-charcoal/70">Loading...</p>
           </div>
         </div>
-        <div className="opacity-0 pointer-events-none">
-          {children}
-        </div>
+        <div className="opacity-0 pointer-events-none">{children}</div>
       </div>
     );
   }
@@ -90,11 +90,11 @@ export default function EmailVerificationGuard({
   // If email is not verified, show verification prompt
   const handleResendVerification = async () => {
     if (!userEmail) {
-      showToast('No email address found. Please log in again.', 'error');
+      showToast("No email address found. Please log in again.", "error");
       return;
     }
     if (emailVerified) {
-      showToast('Your email is already verified.', 'info');
+      showToast("Your email is already verified.", "info");
       return;
     }
 
@@ -103,25 +103,31 @@ export default function EmailVerificationGuard({
       const { error: resendError } = await AuthService.resendVerificationEmail(userEmail);
 
       if (resendError) {
-        console.error('[EmailVerificationGuard] Resend failed', {
+        console.error("[EmailVerificationGuard] Resend failed", {
           email: userEmail,
           code: resendError.code,
           message: resendError.message,
           details: resendError.details,
         });
-        if (resendError.code === 'rate_limit') {
-          showToast('Too many attempts. Please wait a few minutes and try again.', 'error');
-        } else if (resendError.code === 'already_verified') {
-          showToast(resendError.message || 'Your email is already verified.', 'info');
+        if (resendError.code === "rate_limit") {
+          showToast("Too many attempts. Please wait a few minutes and try again.", "error");
+        } else if (resendError.code === "already_verified") {
+          showToast(resendError.message || "Your email is already verified.", "info");
         } else {
-          showToast(resendError.message || 'Failed to resend verification email. Please try again.', 'error');
+          showToast(
+            resendError.message || "Failed to resend verification email. Please try again.",
+            "error"
+          );
         }
       } else {
-        showToast('Verification email sent! Check your inbox.', 'success');
+        showToast("Verification email sent! Check your inbox.", "success");
       }
     } catch (error) {
-      console.error('[EmailVerificationGuard] Unexpected resend error', { email: userEmail, error });
-      showToast('Failed to resend verification email. Please try again.', 'error');
+      console.error("[EmailVerificationGuard] Unexpected resend error", {
+        email: userEmail,
+        error,
+      });
+      showToast("Failed to resend verification email. Please try again.", "error");
     } finally {
       setIsResending(false);
     }
@@ -141,14 +147,13 @@ export default function EmailVerificationGuard({
           </div>
 
           {/* Title */}
-          <h2 className="font-urbanist text-xl font-700 text-charcoal mb-3">
-            Verify Your Email
-          </h2>
+          <h2 className="font-urbanist text-xl font-700 text-charcoal mb-3">Verify Your Email</h2>
 
           {/* Description */}
           <p className="font-urbanist text-sm text-charcoal/70 mb-6 leading-relaxed">
-            We've sent a verification link to <span className="font-600 text-charcoal">{userEmail}</span>. 
-            Please check your email and click the link to verify your account.
+            We've sent a verification link to{" "}
+            <span className="font-600 text-charcoal">{userEmail}</span>. Please check your email and
+            click the link to verify your account.
           </p>
 
           {/* Benefits */}
@@ -181,7 +186,7 @@ export default function EmailVerificationGuard({
           <div className="space-y-3">
             {/* Open Gmail Button */}
             <button
-              onClick={() => window.open('https://mail.google.com', '_blank')}
+              onClick={() => window.open("https://mail.google.com", "_blank")}
               className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-urbanist text-sm font-600 py-3 px-4 rounded-[12px] hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <Mail className="w-4 h-4" />
@@ -226,5 +231,3 @@ export default function EmailVerificationGuard({
     </div>
   );
 }
-
-

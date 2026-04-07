@@ -74,14 +74,17 @@ export default function VerifyEmailPage() {
   const verificationCallbackHandledRef = useRef(false);
   const verificationCodeHandledRef = useRef(false);
   const prefersReduced = usePrefersReducedMotion();
-  const debugLog = useCallback((message: string, payload?: Record<string, unknown>) => {
-    if (!isDev) return;
-    if (payload) {
-      console.log(`[VerifyEmail] ${message}`, payload);
-      return;
-    }
-    console.log(`[VerifyEmail] ${message}`);
-  }, [isDev]);
+  const debugLog = useCallback(
+    (message: string, payload?: Record<string, unknown>) => {
+      if (!isDev) return;
+      if (payload) {
+        console.log(`[VerifyEmail] ${message}`, payload);
+        return;
+      }
+      console.log(`[VerifyEmail] ${message}`);
+    },
+    [isDev]
+  );
 
   // Clean ?expired param from URL without re-render
   useEffect(() => {
@@ -107,30 +110,34 @@ export default function VerifyEmailPage() {
     };
   }, []);
 
-  const getPostVerifyRedirect = useCallback((candidate?: AuthUser | null): string => {
-    const resolvedUser = candidate || user;
-    if (!resolvedUser) return "/verify-email";
+  const getPostVerifyRedirect = useCallback(
+    (candidate?: AuthUser | null): string => {
+      const resolvedUser = candidate || user;
+      if (!resolvedUser) return "/verify-email";
 
-    const profile = resolvedUser.profile as (AuthUser["profile"] & { is_admin?: boolean }) | undefined;
-    const roleRaw =
-      profile?.account_role ||
-      profile?.role ||
-      (resolvedUser as any)?.current_role ||
-      "";
-    const role = String(roleRaw).toLowerCase();
+      const profile = resolvedUser.profile as
+        | (AuthUser["profile"] & { is_admin?: boolean })
+        | undefined;
+      const roleRaw =
+        profile?.account_role || profile?.role || (resolvedUser as any)?.current_role || "";
+      const role = String(roleRaw).toLowerCase();
 
-    const isAdmin = profile?.is_admin === true || role === "admin" || role === "super_admin" || role === "superadmin";
-    if (isAdmin) return "/admin";
+      const isAdmin =
+        profile?.is_admin === true ||
+        role === "admin" ||
+        role === "super_admin" ||
+        role === "superadmin";
+      if (isAdmin) return "/admin";
 
-    const isBusinessAccount =
-      role === "business_owner" ||
-      role === "business" ||
-      role === "owner";
-    if (isBusinessAccount) return "/my-businesses";
+      const isBusinessAccount =
+        role === "business_owner" || role === "business" || role === "owner";
+      if (isBusinessAccount) return "/my-businesses";
 
-    const onboardingDone = Boolean(profile?.onboarding_completed_at);
-    return onboardingDone ? "/profile" : "/interests";
-  }, [user]);
+      const onboardingDone = Boolean(profile?.onboarding_completed_at);
+      return onboardingDone ? "/profile" : "/interests";
+    },
+    [user]
+  );
 
   useEffect(() => {
     if (resendCooldownSeconds <= 0) return;
@@ -140,69 +147,70 @@ export default function VerifyEmailPage() {
     return () => window.clearInterval(timer);
   }, [resendCooldownSeconds]);
 
-  const handleResendVerification = useCallback(async (
-    overrideEmail?: string,
-    options?: { onSuccess?: () => void }
-  ) => {
-    const email = overrideEmail || user?.email || pendingEmail;
-    if (!email) {
-      showToast("No email address found. Please register or log in again.", "error", 3200);
-      return;
-    }
-    if (user?.email_verified) {
-      showToast("Your email is already verified.", "info", 2600);
-      return;
-    }
-    if (resendSubmittingRef.current || isResending || resendCooldownSeconds > 0) return;
-
-    resendSubmittingRef.current = true;
-    setIsResending(true);
-    setResendRateLimitMessage(null);
-
-    try {
-      const result = await resendVerificationEmail(email);
-      if (result.success) {
-        setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
-        showToast("Email sent. Check inbox.", "sage", 2500);
-        options?.onSuccess?.();
+  const handleResendVerification = useCallback(
+    async (overrideEmail?: string, options?: { onSuccess?: () => void }) => {
+      const email = overrideEmail || user?.email || pendingEmail;
+      if (!email) {
+        showToast("No email address found. Please register or log in again.", "error", 3200);
         return;
       }
-
-      if (result.errorCode === "rate_limit") {
-        setResendRateLimitMessage("Too many attempts. Please wait a few minutes and try again.");
-        setResendCooldownSeconds((current) => Math.max(current, RESEND_COOLDOWN_SECONDS));
-        showToast("Too many attempts. Please wait a few minutes and try again.", "error", 3200);
+      if (user?.email_verified) {
+        showToast("Your email is already verified.", "info", 2600);
         return;
       }
+      if (resendSubmittingRef.current || isResending || resendCooldownSeconds > 0) return;
 
-      if (result.errorCode === "already_verified") {
-        showToast(result.errorMessage || "Your email is already verified.", "info", 3000);
-        return;
+      resendSubmittingRef.current = true;
+      setIsResending(true);
+      setResendRateLimitMessage(null);
+
+      try {
+        const result = await resendVerificationEmail(email);
+        if (result.success) {
+          setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
+          showToast("Email sent. Check inbox.", "sage", 2500);
+          options?.onSuccess?.();
+          return;
+        }
+
+        if (result.errorCode === "rate_limit") {
+          setResendRateLimitMessage("Too many attempts. Please wait a few minutes and try again.");
+          setResendCooldownSeconds((current) => Math.max(current, RESEND_COOLDOWN_SECONDS));
+          showToast("Too many attempts. Please wait a few minutes and try again.", "error", 3200);
+          return;
+        }
+
+        if (result.errorCode === "already_verified") {
+          showToast(result.errorMessage || "Your email is already verified.", "info", 3000);
+          return;
+        }
+
+        const errorMessage =
+          result.errorMessage || "Could not resend. Please wait a moment and try again.";
+        console.error("[VerifyEmail] Resend verification failed", {
+          email,
+          code: result.errorCode,
+          message: result.errorMessage,
+        });
+        showToast(errorMessage, "error", 3200);
+      } catch (error) {
+        console.error("[VerifyEmail] Unexpected resend verification error", { email, error });
+        showToast("Failed to resend. Try again.", "error", 3000);
+      } finally {
+        resendSubmittingRef.current = false;
+        setIsResending(false);
       }
-
-      const errorMessage = result.errorMessage || "Could not resend. Please wait a moment and try again.";
-      console.error("[VerifyEmail] Resend verification failed", {
-        email,
-        code: result.errorCode,
-        message: result.errorMessage,
-      });
-      showToast(errorMessage, "error", 3200);
-    } catch (error) {
-      console.error("[VerifyEmail] Unexpected resend verification error", { email, error });
-      showToast("Failed to resend. Try again.", "error", 3000);
-    } finally {
-      resendSubmittingRef.current = false;
-      setIsResending(false);
-    }
-  }, [
-    isResending,
-    pendingEmail,
-    resendCooldownSeconds,
-    resendVerificationEmail,
-    showToast,
-    user?.email_verified,
-    user?.email,
-  ]);
+    },
+    [
+      isResending,
+      pendingEmail,
+      resendCooldownSeconds,
+      resendVerificationEmail,
+      showToast,
+      user?.email_verified,
+      user?.email,
+    ]
+  );
 
   const handleOpenInbox = () => {
     const email = user?.email || pendingEmail;
@@ -215,7 +223,8 @@ export default function VerifyEmailPage() {
     else if (domain?.includes("outlook") || domain?.includes("hotmail") || domain?.includes("live"))
       inboxUrl = "https://outlook.live.com/mail";
     else if (domain?.includes("yahoo")) inboxUrl = "https://mail.yahoo.com";
-    else if (domain?.includes("icloud") || domain?.includes("me.com")) inboxUrl = "https://www.icloud.com/mail";
+    else if (domain?.includes("icloud") || domain?.includes("me.com"))
+      inboxUrl = "https://www.icloud.com/mail";
     else if (domain) inboxUrl = `https://${domain}`;
 
     window.open(inboxUrl, "_blank");
@@ -226,182 +235,187 @@ export default function VerifyEmailPage() {
     resendCooldownSeconds > 0
       ? `We've sent a link. Try again in ${resendCooldownSeconds} second${resendCooldownSeconds === 1 ? "" : "s"}.`
       : null;
-  const useDifferentEmailHref = pendingAccountType === "business_owner" ? "/business/register" : "/register";
+  const useDifferentEmailHref =
+    pendingAccountType === "business_owner" ? "/business/register" : "/register";
 
-  const checkVerificationStatus = useCallback(async (options?: {
-    manual?: boolean;
-    showSuccessToast?: boolean;
-    fromVerificationCallback?: boolean;
-  }): Promise<boolean> => {
-    const {
-      manual = false,
-      showSuccessToast = true,
-      fromVerificationCallback = false,
-    } = options || {};
-    if (redirectingRef.current || checkingRef.current) return false;
+  const checkVerificationStatus = useCallback(
+    async (options?: {
+      manual?: boolean;
+      showSuccessToast?: boolean;
+      fromVerificationCallback?: boolean;
+    }): Promise<boolean> => {
+      const {
+        manual = false,
+        showSuccessToast = true,
+        fromVerificationCallback = false,
+      } = options || {};
+      if (redirectingRef.current || checkingRef.current) return false;
 
-    checkingRef.current = true;
-    if (manual) {
-      setVerificationStatusMessage(null);
-    }
+      checkingRef.current = true;
+      if (manual) {
+        setVerificationStatusMessage(null);
+      }
 
-    const supabase = getBrowserSupabase();
-    const notVerifiedMessage =
-      "We still can't detect verification. Please check your inbox and try again.";
-    const verificationSessionMessage =
-      "Verification completed. Please open the verification link in the same browser to continue automatically.";
+      const supabase = getBrowserSupabase();
+      const notVerifiedMessage =
+        "We still can't detect verification. Please check your inbox and try again.";
+      const verificationSessionMessage =
+        "Verification completed. Please open the verification link in the same browser to continue automatically.";
 
-    try {
-      debugLog("checkVerificationStatus started", {
-        manual,
-        fromVerificationCallback,
-      });
-
-      // Backward compatibility path for legacy /verify-email?verified=1 callbacks.
-      if (fromVerificationCallback) {
-        const currentUrl = typeof window !== "undefined" ? new URL(window.location.href) : null;
-        const callbackCode = currentUrl?.searchParams.get("code") || searchParams.get("code");
-        debugLog("legacy callback verification detected", {
-          hasCode: Boolean(callbackCode),
+      try {
+        debugLog("checkVerificationStatus started", {
+          manual,
+          fromVerificationCallback,
         });
-        if (callbackCode) {
-          const { error: callbackExchangeError } = await supabase.auth.exchangeCodeForSession(callbackCode);
-          if (callbackExchangeError) {
-            debugLog("legacy callback exchange failed", {
-              error: callbackExchangeError.message,
-            });
+
+        // Backward compatibility path for legacy /verify-email?verified=1 callbacks.
+        if (fromVerificationCallback) {
+          const currentUrl = typeof window !== "undefined" ? new URL(window.location.href) : null;
+          const callbackCode = currentUrl?.searchParams.get("code") || searchParams.get("code");
+          debugLog("legacy callback verification detected", {
+            hasCode: Boolean(callbackCode),
+          });
+          if (callbackCode) {
+            const { error: callbackExchangeError } =
+              await supabase.auth.exchangeCodeForSession(callbackCode);
+            if (callbackExchangeError) {
+              debugLog("legacy callback exchange failed", {
+                error: callbackExchangeError.message,
+              });
+            }
           }
         }
-      }
 
-      // Ensure a valid active session exists before checking confirmed state.
-      let { data: sessionData } = await supabase.auth.getSession();
-      let session = sessionData.session;
+        // Ensure a valid active session exists before checking confirmed state.
+        let { data: sessionData } = await supabase.auth.getSession();
+        let session = sessionData.session;
 
-      debugLog("session lookup completed", {
-        hasSession: Boolean(session),
-      });
-
-      if (!session) {
-        await supabase.auth.refreshSession().catch(() => undefined);
-        ({ data: sessionData } = await supabase.auth.getSession());
-        session = sessionData.session;
-        debugLog("session refresh attempted", {
-          hasSessionAfterRefresh: Boolean(session),
-        });
-      }
-
-      if (!session) {
-        if (manual || fromVerificationCallback) {
-          setVerificationStatusMessage(verificationSessionMessage);
-        }
-        return false;
-      }
-
-      if (!session.user?.email_confirmed_at) {
-        if (manual || fromVerificationCallback) {
-          setVerificationStatusMessage(notVerifiedMessage);
-        }
-        return false;
-      }
-
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      debugLog("getUser completed", {
-        hasUser: Boolean(userData?.user),
-        hasEmailConfirmedAt: Boolean(userData?.user?.email_confirmed_at),
-      });
-      if (userError || !userData?.user) {
-        if (manual || fromVerificationCallback) {
-          setVerificationStatusMessage(verificationSessionMessage);
-        }
-        return false;
-      }
-
-      const authUser = userData.user;
-      if (!authUser.email_confirmed_at) {
-        if (manual || fromVerificationCallback) setVerificationStatusMessage(notVerifiedMessage);
-        return false;
-      }
-
-      // Ensure profile exists and role/account_type are synced before redirect decisions.
-      try {
-        const syncResponse = await fetch('/api/auth/sync-profile-role', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          cache: 'no-store',
+        debugLog("session lookup completed", {
+          hasSession: Boolean(session),
         });
 
-        if (!syncResponse.ok) {
-          debugLog('sync-profile-role failed', { status: syncResponse.status });
+        if (!session) {
+          await supabase.auth.refreshSession().catch(() => undefined);
+          ({ data: sessionData } = await supabase.auth.getSession());
+          session = sessionData.session;
+          debugLog("session refresh attempted", {
+            hasSessionAfterRefresh: Boolean(session),
+          });
         }
-      } catch (syncError) {
-        debugLog('sync-profile-role error', { error: String(syncError) });
-      }
 
-      if (typeof window !== "undefined") {
-        sessionStorage.removeItem("pendingVerificationEmail");
-        sessionStorage.removeItem("pendingVerificationAccountType");
-      }
+        if (!session) {
+          if (manual || fromVerificationCallback) {
+            setVerificationStatusMessage(verificationSessionMessage);
+          }
+          return false;
+        }
 
-      await refreshUser();
+        if (!session.user?.email_confirmed_at) {
+          if (manual || fromVerificationCallback) {
+            setVerificationStatusMessage(notVerifiedMessage);
+          }
+          return false;
+        }
 
-      let profile: AuthUser["profile"] | undefined = user?.profile;
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("role, account_role, onboarding_completed_at")
-        .eq("user_id", authUser.id)
-        .maybeSingle();
-
-      if (profileData) {
-        profile = {
-          ...(profile || {}),
-          role: profileData.role as any,
-          account_role: profileData.account_role as any,
-          onboarding_completed_at: profileData.onboarding_completed_at || undefined,
-        } as AuthUser["profile"];
-      }
-
-      const verifiedUser: AuthUser = {
-        id: authUser.id,
-        email: authUser.email || user?.email || "",
-        email_verified: true,
-        created_at: authUser.created_at,
-        updated_at: authUser.updated_at || authUser.created_at,
-        profile,
-      };
-
-      setVerificationSuccess(true);
-      setVerificationStatusMessage(null);
-      const redirectTarget = getPostVerifyRedirect(verifiedUser);
-      if (showSuccessToast) {
-        queueFlashToast(POST_VERIFY_SUCCESS_MESSAGE, "sage", 3000, {
-          targetPath: redirectTarget,
-          onceKey: POST_VERIFY_SUCCESS_ONCE_KEY,
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        debugLog("getUser completed", {
+          hasUser: Boolean(userData?.user),
+          hasEmailConfirmedAt: Boolean(userData?.user?.email_confirmed_at),
         });
+        if (userError || !userData?.user) {
+          if (manual || fromVerificationCallback) {
+            setVerificationStatusMessage(verificationSessionMessage);
+          }
+          return false;
+        }
+
+        const authUser = userData.user;
+        if (!authUser.email_confirmed_at) {
+          if (manual || fromVerificationCallback) setVerificationStatusMessage(notVerifiedMessage);
+          return false;
+        }
+
+        // Ensure profile exists and role/account_type are synced before redirect decisions.
+        try {
+          const syncResponse = await fetch("/api/auth/sync-profile-role", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+          });
+
+          if (!syncResponse.ok) {
+            debugLog("sync-profile-role failed", { status: syncResponse.status });
+          }
+        } catch (syncError) {
+          debugLog("sync-profile-role error", { error: String(syncError) });
+        }
+
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("pendingVerificationEmail");
+          sessionStorage.removeItem("pendingVerificationAccountType");
+        }
+
+        await refreshUser();
+
+        let profile: AuthUser["profile"] | undefined = user?.profile;
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("role, account_role, onboarding_completed_at")
+          .eq("user_id", authUser.id)
+          .maybeSingle();
+
+        if (profileData) {
+          profile = {
+            ...(profile || {}),
+            role: profileData.role as any,
+            account_role: profileData.account_role as any,
+            onboarding_completed_at: profileData.onboarding_completed_at || undefined,
+          } as AuthUser["profile"];
+        }
+
+        const verifiedUser: AuthUser = {
+          id: authUser.id,
+          email: authUser.email || user?.email || "",
+          email_verified: true,
+          created_at: authUser.created_at,
+          updated_at: authUser.updated_at || authUser.created_at,
+          profile,
+        };
+
+        setVerificationSuccess(true);
+        setVerificationStatusMessage(null);
+        const redirectTarget = getPostVerifyRedirect(verifiedUser);
+        if (showSuccessToast) {
+          queueFlashToast(POST_VERIFY_SUCCESS_MESSAGE, "sage", 3000, {
+            targetPath: redirectTarget,
+            onceKey: POST_VERIFY_SUCCESS_ONCE_KEY,
+          });
+        }
+        redirectingRef.current = true;
+        debugLog("redirect chosen", { redirectTarget });
+        router.replace(redirectTarget);
+        return true;
+      } catch {
+        if (manual) {
+          setVerificationStatusMessage("Could not check verification status. Please try again.");
+        }
+        return false;
+      } finally {
+        checkingRef.current = false;
       }
-      redirectingRef.current = true;
-      debugLog("redirect chosen", { redirectTarget });
-      router.replace(redirectTarget);
-      return true;
-    } catch {
-      if (manual) {
-        setVerificationStatusMessage("Could not check verification status. Please try again.");
-      }
-      return false;
-    } finally {
-      checkingRef.current = false;
-    }
-  }, [
-    debugLog,
-    getPostVerifyRedirect,
-    queueFlashToast,
-    refreshUser,
-    router,
-    searchParams,
-    showToast,
-    user?.email,
-    user?.profile,
-  ]);
+    },
+    [
+      debugLog,
+      getPostVerifyRedirect,
+      queueFlashToast,
+      refreshUser,
+      router,
+      searchParams,
+      showToast,
+      user?.email,
+      user?.profile,
+    ]
+  );
 
   // PKCE flow: exchange auth code for session when verification link lands on /verify-email.
   useEffect(() => {
@@ -427,7 +441,9 @@ export default function VerifyEmailPage() {
 
         if (!callbackCode) {
           if (!cancelled) {
-            setVerificationLinkError("Verification link invalid or expired. Please request a new link.");
+            setVerificationLinkError(
+              "Verification link invalid or expired. Please request a new link."
+            );
           }
           return;
         }
@@ -445,7 +461,9 @@ export default function VerifyEmailPage() {
             if (isExpiredVerificationError(exchangeError.message || "")) {
               setLinkExpired(true);
             } else {
-              setVerificationLinkError("Verification link invalid or expired. Please request a new link.");
+              setVerificationLinkError(
+                "Verification link invalid or expired. Please request a new link."
+              );
             }
           }
           return;
@@ -457,7 +475,9 @@ export default function VerifyEmailPage() {
         });
         if (!sessionData.session) {
           if (!cancelled) {
-            setVerificationLinkError("Verification succeeded but we could not establish a session. Please log in.");
+            setVerificationLinkError(
+              "Verification succeeded but we could not establish a session. Please log in."
+            );
           }
           return;
         }
@@ -470,7 +490,9 @@ export default function VerifyEmailPage() {
         });
         if (userError || !userData?.user?.email_confirmed_at) {
           if (!cancelled) {
-            setVerificationLinkError("Verification link invalid or expired. Please request a new link.");
+            setVerificationLinkError(
+              "Verification link invalid or expired. Please request a new link."
+            );
           }
           return;
         }
@@ -487,14 +509,18 @@ export default function VerifyEmailPage() {
           showSuccessToast: true,
         });
         if (!verified && !cancelled && !redirectingRef.current) {
-          setVerificationLinkError("Could not confirm verification. Please log in or request a new link.");
+          setVerificationLinkError(
+            "Could not confirm verification. Please log in or request a new link."
+          );
         }
       } catch (error) {
         if (isDev) {
           console.error("[VerifyEmail] unexpected code exchange error", error);
         }
         if (!cancelled) {
-          setVerificationLinkError("Could not complete verification automatically. Please try again.");
+          setVerificationLinkError(
+            "Could not complete verification automatically. Please try again."
+          );
         }
       } finally {
         if (!cancelled) {
@@ -565,7 +591,9 @@ export default function VerifyEmailPage() {
   // /verify-email tab auto-redirects when verification completes in another tab/browser.
   useEffect(() => {
     const supabase = getBrowserSupabase();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event) => {
       debugLog("auth event received", { event });
       if (event !== "SIGNED_IN" && event !== "USER_UPDATED") return;
       if (redirectingRef.current) {

@@ -57,24 +57,45 @@ export type StandardFeedOptions = {
 
 export async function handleStandardFeed(options: StandardFeedOptions): Promise<NextResponse> {
   const {
-    supabase, limit, cursorId, cursorCreatedAt, cursorOffset,
-    category, badge, verified, priceRange, location, minRating,
-    requireCoordinates, interestIds, subInterestIds, subcategoriesToFilter,
-    q, search, lat, lng, radiusKm, radius,
-    sortBy, sortOrder, sortParam, userId, feedStrategy,
+    supabase,
+    limit,
+    cursorId,
+    cursorCreatedAt,
+    cursorOffset,
+    category,
+    badge,
+    verified,
+    priceRange,
+    location,
+    minRating,
+    requireCoordinates,
+    interestIds,
+    subInterestIds,
+    subcategoriesToFilter,
+    q,
+    search,
+    lat,
+    lng,
+    radiusKm,
+    radius,
+    sortBy,
+    sortOrder,
+    sortParam,
+    userId,
+    feedStrategy,
   } = options;
 
   // ── RLS visible count check ──────────────────────────────────────────────
   const countStart = Date.now();
   const { count: visibleCount, error: countError } = await supabase
-    .from('businesses')
-    .select('id', { head: true, count: 'exact' })
-    .eq('status', 'active')
-    .or('is_system.is.null,is_system.eq.false');
-  console.log('[BUSINESSES API] Visible count duration ms:', Date.now() - countStart);
+    .from("businesses")
+    .select("id", { head: true, count: "exact" })
+    .eq("status", "active")
+    .or("is_system.is.null,is_system.eq.false");
+  console.log("[BUSINESSES API] Visible count duration ms:", Date.now() - countStart);
 
   if (visibleCount === 0 && !countError) {
-    console.warn('[BUSINESSES API] RLS returned 0 businesses — check policies');
+    console.warn("[BUSINESSES API] RLS returned 0 businesses — check policies");
   }
 
   let businesses: BusinessRPCResult[] | null = null;
@@ -100,45 +121,63 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
       p_sort_order: sortOrder,
     };
 
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('🔍 [BUSINESSES API] Calling RPC with params:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('[BUSINESSES API] RPC params:', JSON.stringify(rpcParams, null, 2));
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("🔍 [BUSINESSES API] Calling RPC with params:");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("[BUSINESSES API] RPC params:", JSON.stringify(rpcParams, null, 2));
 
-    const { data, error: rpcError } = await supabase.rpc('list_businesses_optimized', rpcParams);
+    const { data, error: rpcError } = await supabase.rpc("list_businesses_optimized", rpcParams);
 
     if (rpcError) {
-      console.error('[BUSINESSES API] RPC error:', {
+      console.error("[BUSINESSES API] RPC error:", {
         code: rpcError.code,
         message: rpcError.message,
         details: rpcError.details,
         hint: rpcError.hint,
       });
 
-      if (rpcError.code === '42883' || rpcError.code === 'PGRST301' ||
-          rpcError.code === '42703' ||
-          rpcError.message?.includes('uploaded_image') ||
-          rpcError.message?.includes('column') && rpcError.message?.includes('does not exist')) {
-        console.log('[BUSINESSES API] RPC function error detected, using fallback query');
-        throw new Error('RPC not found or schema error');
+      if (
+        rpcError.code === "42883" ||
+        rpcError.code === "PGRST301" ||
+        rpcError.code === "42703" ||
+        rpcError.message?.includes("uploaded_image") ||
+        (rpcError.message?.includes("column") && rpcError.message?.includes("does not exist"))
+      ) {
+        console.log("[BUSINESSES API] RPC function error detected, using fallback query");
+        throw new Error("RPC not found or schema error");
       }
 
-      console.log('[BUSINESSES API] RPC returned error, trying fallback query');
-      throw new Error('RPC error');
+      console.log("[BUSINESSES API] RPC returned error, trying fallback query");
+      throw new Error("RPC error");
     }
 
     if (data && Array.isArray(data)) {
       if (data.length > 0) {
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('✅ [BUSINESSES API] RPC returned', data.length, 'businesses');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('[BUSINESSES API] Sample businesses:', data.slice(0, 3).map((b: { id: string; name: string; category: string; location: string; uploaded_images?: string[] }) => ({
-          id: b.id,
-          name: b.name,
-          category: b.category,
-          location: b.location,
-          uploaded_images_count: Array.isArray(b.uploaded_images) ? b.uploaded_images.length : 0,
-        })));
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("✅ [BUSINESSES API] RPC returned", data.length, "businesses");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log(
+          "[BUSINESSES API] Sample businesses:",
+          data
+            .slice(0, 3)
+            .map(
+              (b: {
+                id: string;
+                name: string;
+                category: string;
+                location: string;
+                uploaded_images?: string[];
+              }) => ({
+                id: b.id,
+                name: b.name,
+                category: b.category,
+                location: b.location,
+                uploaded_images_count: Array.isArray(b.uploaded_images)
+                  ? b.uploaded_images.length
+                  : 0,
+              })
+            )
+        );
 
         const normalized = (data as Array<Record<string, unknown>>).map((row) => {
           const b = { ...row } as unknown as BusinessRPCResult;
@@ -147,7 +186,8 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
           if (row.primary_subcategory_slug != null) {
             b.category = (row.primary_subcategory_slug as string) ?? b.category;
             b.sub_interest_id = (row.primary_subcategory_slug as string) ?? b.sub_interest_id;
-            b.category_label = (row.primary_subcategory_label as string | null) ?? b.category_label ?? null;
+            b.category_label =
+              (row.primary_subcategory_label as string | null) ?? b.category_label ?? null;
           }
           if (row.primary_category_slug != null) {
             b.interest_id = (row.primary_category_slug as string) ?? b.interest_id;
@@ -172,18 +212,29 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
           businesses = normalized;
         }
       } else {
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('⚠️  [BUSINESSES API] RPC returned 0 businesses (empty result)');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('[BUSINESSES API] Query filters:', {
-          category, location, sortBy, sortOrder, limit, verified,
-          priceRange, badge, minRating, search, lat, lng, radius,
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("⚠️  [BUSINESSES API] RPC returned 0 businesses (empty result)");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("[BUSINESSES API] Query filters:", {
+          category,
+          location,
+          sortBy,
+          sortOrder,
+          limit,
+          verified,
+          priceRange,
+          badge,
+          minRating,
+          search,
+          lat,
+          lng,
+          radius,
         });
         businesses = [];
       }
     } else {
-      console.log('[BUSINESSES API] RPC returned null/undefined data, trying fallback');
-      throw new Error('RPC returned null');
+      console.log("[BUSINESSES API] RPC returned null/undefined data, trying fallback");
+      throw new Error("RPC returned null");
     }
     error = null;
   } catch (rpcError: any) {
@@ -193,15 +244,17 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
   }
 
   if (error) {
-    console.error('[BUSINESSES API] Error fetching businesses:', error);
+    console.error("[BUSINESSES API] Error fetching businesses:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch businesses', details: error.message },
+      { error: "Failed to fetch businesses", details: error.message },
       { status: 500 }
     );
   }
 
   // ── Personalization ──────────────────────────────────────────────────────
-  const typedBusinesses = excludeSystemBusinesses((businesses || []) as (BusinessRPCResult & { is_system?: boolean | null })[]);
+  const typedBusinesses = excludeSystemBusinesses(
+    (businesses || []) as (BusinessRPCResult & { is_system?: boolean | null })[]
+  );
 
   const userPreferences = await fetchUserPreferences(supabase, userId);
   if (userPreferences.latitude === undefined && lat !== null && lng !== null) {
@@ -252,15 +305,21 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
         verified: business.verified,
       };
 
-      const filtered = filterBusinessesByDealbreakers([businessForScoring], userPreferences.dealbreakerIds);
+      const filtered = filterBusinessesByDealbreakers(
+        [businessForScoring],
+        userPreferences.dealbreakerIds
+      );
       return filtered.length > 0;
     });
 
     if (personalizedBusinesses.length === 0) {
-      console.warn('[BUSINESSES API] Dealbreakers removed all results; relaxing filter for standard feed.', {
-        beforeCount,
-        dealbreakers: userPreferences.dealbreakerIds.length,
-      });
+      console.warn(
+        "[BUSINESSES API] Dealbreakers removed all results; relaxing filter for standard feed.",
+        {
+          beforeCount,
+          dealbreakers: userPreferences.dealbreakerIds.length,
+        }
+      );
       personalizedBusinesses = preDealbreakerBusinesses;
       dealbreakersRelaxed = true;
     }
@@ -282,9 +341,22 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
   }
 
   console.log(`[BUSINESSES API] Successfully fetched ${personalizedBusinesses.length} businesses`);
-  console.log('[BUSINESSES API] Query params:', {
-    category, badge, verified, priceRange, location, q, search,
-    sortBy, sortOrder, sort: sortParam, limit, cursorId, lat, lng, radiusKm
+  console.log("[BUSINESSES API] Query params:", {
+    category,
+    badge,
+    verified,
+    priceRange,
+    location,
+    q,
+    search,
+    sortBy,
+    sortOrder,
+    sort: sortParam,
+    limit,
+    cursorId,
+    lat,
+    lng,
+    radiusKm,
   });
 
   // ── Transform + respond ──────────────────────────────────────────────────
@@ -312,22 +384,24 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
     return transformed;
   });
 
-  const nextCursorData = typedBusinesses.length > 0
-    ? {
-        cursor_id: typedBusinesses[typedBusinesses.length - 1].cursor_id,
-        cursor_created_at: typedBusinesses[typedBusinesses.length - 1].cursor_created_at,
-      }
-    : null;
+  const nextCursorData =
+    typedBusinesses.length > 0
+      ? {
+          cursor_id: typedBusinesses[typedBusinesses.length - 1].cursor_id,
+          cursor_created_at: typedBusinesses[typedBusinesses.length - 1].cursor_created_at,
+        }
+      : null;
 
   const hasMore = typedBusinesses.length === limit;
   const nextCursorId = nextCursorData?.cursor_id ?? null;
-  const encodedNextCursor = hasMore && nextCursorData
-    ? encodeFeedCursor({
-        kind: 'business-keyset',
-        cursor_id: nextCursorData.cursor_id,
-        cursor_created_at: nextCursorData.cursor_created_at,
-      })
-    : null;
+  const encodedNextCursor =
+    hasMore && nextCursorData
+      ? encodeFeedCursor({
+          kind: "business-keyset",
+          cursor_id: nextCursorData.cursor_id,
+          cursor_created_at: nextCursorData.cursor_created_at,
+        })
+      : null;
 
   const response = NextResponse.json({
     items: transformedBusinesses,
@@ -336,11 +410,10 @@ export async function handleStandardFeed(options: StandardFeedOptions): Promise<
     cursorId: nextCursorId,
     meta: dealbreakersRelaxed ? { dealbreakersRelaxed: true } : undefined,
   });
-  response.headers.set('X-Feed-Path', 'standard');
+  response.headers.set("X-Feed-Path", "standard");
   let res = applySharedResponseHeaders(response);
-  if (feedStrategy === 'standard' && !q) {
-    res.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  if (feedStrategy === "standard" && !q) {
+    res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
   }
   return res;
 }
-

@@ -3,8 +3,8 @@
  * Run this after applying the SQL fix to verify badges are working
  */
 
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -14,16 +14,16 @@ const supabase = createClient(
 );
 
 async function testBadgeFix() {
-  console.log('🔍 Testing Badge System Fix...\n');
+  console.log("🔍 Testing Badge System Fix...\n");
 
   try {
     // Check badge distribution
     const { data: userBadges, error } = await supabase
-      .from('user_badges')
-      .select('badge_id, badges(name)');
+      .from("user_badges")
+      .select("badge_id, badges(name)");
 
     if (error) {
-      console.error('❌ Error:', error);
+      console.error("❌ Error:", error);
       return;
     }
 
@@ -33,25 +33,26 @@ async function testBadgeFix() {
       badgeCounts[badgeName] = (badgeCounts[badgeName] || 0) + 1;
     }
 
-    console.log('📊 Current Badge Distribution:');
+    console.log("📊 Current Badge Distribution:");
     Object.entries(badgeCounts).forEach(([name, count]) => {
       console.log(`  ${name}: ${count} users`);
     });
 
     // Check specifically for New Voice badge
-    const newVoiceCount = badgeCounts['New Voice'] || 0;
+    const newVoiceCount = badgeCounts["New Voice"] || 0;
     if (newVoiceCount > 0) {
       console.log(`\n✅ SUCCESS: ${newVoiceCount} users now have the "New Voice" badge!`);
     } else {
       console.log('\n❌ No "New Voice" badges found. The fix may not have worked.');
     }
-
   } catch (error) {
-    console.error('❌ Test failed:', error);
+    console.error("❌ Test failed:", error);
   }
 }
 
-testBadgeFix().then(() => {
-  console.log('\n🏁 Badge test complete!');
-  process.exit(0);
-}).catch(console.error);
+testBadgeFix()
+  .then(() => {
+    console.log("\n🏁 Badge test complete!");
+    process.exit(0);
+  })
+  .catch(console.error);

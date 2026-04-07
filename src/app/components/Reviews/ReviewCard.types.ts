@@ -1,4 +1,4 @@
-import type { ReviewWithUser } from '../../lib/types/database';
+import type { ReviewWithUser } from "../../lib/types/database";
 
 export interface ReviewCardProps {
   review: ReviewWithUser;

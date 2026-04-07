@@ -2,16 +2,16 @@
 
 @theme reference {
   /* sayso Color Palette */
-  --color-page-bg: #E5E0E5;
-  --color-card-bg: #9DAB9B;
-  --color-navbar-bg: #722F37; /* canonical burgundy-red */
+  --color-page-bg: #e5e0e5;
+  --color-card-bg: #9dab9b;
+  --color-navbar-bg: #722f37; /* canonical burgundy-red */
 
   /* Primary colors */
-  --color-sage: #9DAB9B;
-  --color-coral: #722F37; /* alias of navbar-bg */
-  --color-burgundy: #722F37; /* alias of navbar-bg */
+  --color-sage: #9dab9b;
+  --color-coral: #722f37; /* alias of navbar-bg */
+  --color-burgundy: #722f37; /* alias of navbar-bg */
   --color-charcoal: hsl(0, 0%, 25%);
-  --color-off-white: #E5E0E5;
+  --color-off-white: #e5e0e5;
 
   /* Utility colors */
   --color-white-30: hsl(0, 0%, 100%, 0.3);
@@ -23,7 +23,7 @@
   --color-black: hsl(0, 0%, 0%);
   --color-white: hsl(0, 0%, 100%);
 
-  --font-family-sf: 'sf', sans-serif;
+  --font-family-sf: "sf", sans-serif;
 
   /* Mobile-first font sizes - better readability on small screens */
   --font-size-1: 2.5rem;
@@ -90,7 +90,6 @@
 }
 
 @layer base {
-
   /* Reset browser defaults */
   *,
   *::before,
@@ -102,7 +101,7 @@
   /* ============================================
      LIGHT MODE LOCK - Brand controls color, not OS
      ============================================ */
-  
+
   :root {
     color-scheme: light;
     --header-height: 96px;
@@ -111,13 +110,18 @@
     /* Prevents Safari/Chrome auto-darkening inputs */
     /* Keeps scrollbars light */
     /* Stops weird autofill colors */
-    
+
     /* Display font CSS variables - set by next/font in layout.tsx */
     /* Use these as: font-family: var(--font-dancing-script), cursive; */
   }
 
   html {
-    font-family: var(--font-urbanist), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      var(--font-urbanist),
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
     font-size: 100%;
     /* Standard 16px base for accessibility */
     margin: 0;
@@ -140,9 +144,15 @@
   body {
     @apply text-base bg-off-white;
     /* Use token system: 16px with 1.6 line-height */
-    font-family: var(--font-urbanist), 'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      var(--font-urbanist),
+      "Urbanist",
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
     color: hsl(0, 0%, 0%);
-    background-image: url('/bg.svg');
+    background-image: url("/bg.svg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -187,8 +197,8 @@
   input:-webkit-autofill,
   textarea:-webkit-autofill,
   select:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
-    -webkit-text-fill-color: #2D2D2D;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    -webkit-text-fill-color: #2d2d2d;
     color-scheme: light;
   }
 
@@ -198,11 +208,11 @@
   textarea:-webkit-autofill:focus,
   select:-webkit-autofill:hover,
   select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
-    -webkit-text-fill-color: #2D2D2D;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    -webkit-text-fill-color: #2d2d2d;
     color-scheme: light;
   }
-  
+
   /* Body text and card text use Urbanist - headers (h1-h6) keep their own font-family styles */
   p,
   span,
@@ -213,9 +223,14 @@
   input:not([type="button"]):not([type="submit"]):not([type="reset"]),
   textarea,
   select {
-    font-family: var(--font-urbanist), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      var(--font-urbanist),
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
   }
-  
+
   /* Card content text uses Urbanist */
   [class*="card"] p,
   [class*="card"] span,
@@ -229,7 +244,12 @@
   .card span,
   .card li,
   .card label {
-    font-family: var(--font-urbanist), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      var(--font-urbanist),
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
   }
 
   /* Reset default margins and paddings */
@@ -396,7 +416,7 @@
   /* Background styling - using Tailwind bg-off-white class */
   body {
     @apply bg-off-white;
-    background-image: url('/bg.svg');
+    background-image: url("/bg.svg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -405,7 +425,7 @@
 
   html {
     @apply bg-off-white;
-    background-image: url('/bg.svg');
+    background-image: url("/bg.svg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -435,8 +455,6 @@
     overscroll-behavior-y: contain;
   }
 
-
-
   /* Fix iOS safari viewport height issues */
   @supports (-webkit-touch-callout: none) {
     .min-h-dvh {
@@ -452,7 +470,6 @@
 
   /* Prevent zoom on input focus for iOS */
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
-
     select:focus,
     textarea:focus,
     input:focus {
@@ -504,7 +521,10 @@
   /* Card hover effects — only on devices with a real pointer/hover capability.
      Touch devices stay perfectly still (no lift, zoom, or overlay fade). */
   .card-hover-lift {
-    transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+    transition:
+      transform 300ms ease,
+      box-shadow 300ms ease,
+      border-color 300ms ease;
   }
 
   .card-img-zoom {
@@ -522,7 +542,9 @@
   @media (hover: hover) and (pointer: fine) {
     .card-hover-lift:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
       border-color: rgba(255, 255, 255, 0.8);
     }
 
@@ -571,7 +593,6 @@
 }
 
 @layer components {
-
   /* Skip link for accessibility */
   .skip-link {
     @apply absolute bg-card-bg text-white p-2 z-50 no-underline rounded-3;
@@ -590,7 +611,6 @@
 }
 
 @layer utilities {
-
   /* Hide scrollbar while maintaining scroll functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -616,7 +636,6 @@
 
   /* Cursor blink animation */
   @keyframes blink {
-
     0%,
     50% {
       opacity: 1;
@@ -668,7 +687,6 @@
 
   /* Enhanced mobile viewport utilities with dynamic height */
   @media only screen and (max-width: 768px) {
-
     .min-h-dvh-safe,
     .min-h-dvh {
       min-height: 100vh;
@@ -722,10 +740,8 @@
     }
   }
 
-
   /* Premium CSS Animations */
   @keyframes bounceRight {
-
     0%,
     100% {
       transform: translateX(0);
@@ -737,7 +753,6 @@
   }
 
   @keyframes shake {
-
     0%,
     100% {
       transform: translateX(0);
@@ -790,7 +805,6 @@
   }
 
   @keyframes micro-bounce {
-
     0%,
     100% {
       transform: scale(1);
@@ -872,7 +886,6 @@
   }
 
   @keyframes gentleFloat {
-
     0%,
     100% {
       transform: translateY(0px);
@@ -982,7 +995,6 @@
 
   /* Prevent iOS zoom on input focus */
   @supports (-webkit-touch-callout: none) {
-
     input,
     textarea,
     select {
@@ -1009,7 +1021,13 @@
   }
 
   .sayso-wordmark {
-    font-family: var(--font-monarch-paradox), var(--font-urbanist), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family:
+      var(--font-monarch-paradox),
+      var(--font-urbanist),
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
     letter-spacing: 0.05em;
     line-height: 1;
     font-synthesis: none;
@@ -1095,13 +1113,14 @@
     transform: translateX(0);
   }
 
-
   /* Scroll reveal styles - runs once per page load */
   /* Section-based reveal (for backward compatibility) */
   [data-section] > * {
     transform: translateY(30px);
     opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96), opacity 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96);
+    transition:
+      transform 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96),
+      opacity 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96);
   }
 
   [data-section].active > * {
@@ -1113,7 +1132,9 @@
   [data-reveal] {
     transform: translateY(30px);
     opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96), opacity 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96);
+    transition:
+      transform 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96),
+      opacity 0.6s cubic-bezier(0.33, 0.85, 0.4, 0.96);
   }
 
   [data-reveal].active {
@@ -1292,15 +1313,27 @@
 
   /* Gradient shift animation */
   @keyframes gradient-shift {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
 
   /* Float animation for gradient blobs */
   @keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(10px, -10px) scale(1.05); }
-    66% { transform: translate(-10px, 10px) scale(0.95); }
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(10px, -10px) scale(1.05);
+    }
+    66% {
+      transform: translate(-10px, 10px) scale(0.95);
+    }
   }
 
   .animate-gradient {
@@ -1324,7 +1357,8 @@
      ============================================ */
 
   @keyframes soft-float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(0, 0) scale(1);
       opacity: 1;
     }
@@ -1339,7 +1373,8 @@
   }
 
   @keyframes soft-float-delayed {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(0, 0) scale(1);
       opacity: 1;
     }
@@ -1358,7 +1393,8 @@
   }
 
   @keyframes soft-float-slow {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(0, 0) scale(1);
       opacity: 1;
     }
@@ -1418,7 +1454,8 @@
 
   /* Gradient animation for backgrounds */
   @keyframes gradientShift {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% 50%;
     }
     50% {
@@ -1469,7 +1506,8 @@
 
   /* Gentle pulse for attention */
   @keyframes gentlePulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
       transform: scale(1);
     }
@@ -1601,7 +1639,6 @@ nav[aria-label="Breadcrumb"] li span {
     max-width: min(36vw, 22rem);
   }
 }
-
 
 /* Prefer native View Transitions when available (used by `OptimizedLink`). */
 @supports (view-transition-name: root) {

@@ -8,7 +8,11 @@ interface Props {
   profile: UserProfile;
   isEditOpen: boolean;
   onCloseEdit: () => void;
-  handleSaveProfile: (data: { username: string; displayName: string; avatarFile: File | null }) => Promise<void>;
+  handleSaveProfile: (data: {
+    username: string;
+    displayName: string;
+    avatarFile: File | null;
+  }) => Promise<void>;
   saving: boolean;
   error: string | null;
   isDeleteDialogOpen: boolean;
@@ -46,7 +50,9 @@ export function ProfileDialogs({
       <EditProfileModal
         isOpen={isEditOpen}
         onClose={onCloseEdit}
-        onSave={async (data) => { await handleSaveProfile(data); }}
+        onSave={async (data) => {
+          await handleSaveProfile(data);
+        }}
         currentUsername={profile.username || ""}
         currentDisplayName={profile.display_name || null}
         currentAvatarUrl={profile.avatar_url || null}

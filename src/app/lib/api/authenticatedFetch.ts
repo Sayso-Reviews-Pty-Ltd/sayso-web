@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  AuthLifecycleEventType,
-  emitAuthLifecycleEvent,
-} from "@/app/lib/authLifecycle";
+import { AuthLifecycleEventType, emitAuthLifecycleEvent } from "@/app/lib/authLifecycle";
 
 type AuthenticatedFetchOptions = RequestInit & {
   retryOnAuthFailure?: boolean;
@@ -34,7 +31,7 @@ async function refreshSession(): Promise<boolean> {
 
 export async function authenticatedFetch(
   input: RequestInfo | URL,
-  init: AuthenticatedFetchOptions = {},
+  init: AuthenticatedFetchOptions = {}
 ): Promise<Response> {
   const { retryOnAuthFailure = true, ...requestInit } = init;
   const response = await fetch(input, {
@@ -48,32 +45,22 @@ export async function authenticatedFetch(
   if (response.status !== 401) return response;
 
   const target =
-    typeof input === "string"
-      ? input
-      : input instanceof URL
-        ? input.pathname
-        : input.url;
+    typeof input === "string" ? input : input instanceof URL ? input.pathname : input.url;
   if (target.includes("/api/auth/refresh-session")) {
     emitAuthLifecycleEvent(
       AuthLifecycleEventType.SESSION_INVALIDATED,
-      "refresh_endpoint_unauthorized",
+      "refresh_endpoint_unauthorized"
     );
     return response;
   }
 
   const refreshed = await refreshSession();
   if (!refreshed) {
-    emitAuthLifecycleEvent(
-      AuthLifecycleEventType.SESSION_INVALIDATED,
-      "refresh_failed",
-    );
+    emitAuthLifecycleEvent(AuthLifecycleEventType.SESSION_INVALIDATED, "refresh_failed");
     return response;
   }
 
-  emitAuthLifecycleEvent(
-    AuthLifecycleEventType.SESSION_REFRESHED,
-    "refresh_success",
-  );
+  emitAuthLifecycleEvent(AuthLifecycleEventType.SESSION_REFRESHED, "refresh_success");
 
   const retryResponse = await fetch(input, {
     credentials: "include",
@@ -81,10 +68,7 @@ export async function authenticatedFetch(
   });
 
   if (retryResponse.status === 401) {
-    emitAuthLifecycleEvent(
-      AuthLifecycleEventType.SESSION_INVALIDATED,
-      "retry_unauthorized",
-    );
+    emitAuthLifecycleEvent(AuthLifecycleEventType.SESSION_INVALIDATED, "retry_unauthorized");
   }
 
   return retryResponse;

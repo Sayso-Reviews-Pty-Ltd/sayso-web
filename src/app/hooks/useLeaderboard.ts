@@ -3,12 +3,12 @@
  * Uses SWR for caching, with Supabase Realtime for live updates (10s throttle).
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { getBrowserSupabase } from '../lib/supabase/client';
+import { useState, useEffect, useRef } from "react";
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { getBrowserSupabase } from "../lib/supabase/client";
 
 export interface LeaderboardUser {
   rank: number;
@@ -20,12 +20,12 @@ export interface LeaderboardUser {
   id?: string;
 }
 
-const LEADERBOARD_URL = '/api/leaderboard?limit=50&sortBy=reviews';
+const LEADERBOARD_URL = "/api/leaderboard?limit=50&sortBy=reviews";
 const THROTTLE_MS = 10_000;
 
 async function fetchLeaderboard(): Promise<LeaderboardUser[]> {
   const res = await fetch(LEADERBOARD_URL);
-  if (!res.ok) throw new Error('Failed to fetch leaderboard');
+  if (!res.ok) throw new Error("Failed to fetch leaderboard");
   const data = await res.json();
   return data.leaderboard ?? [];
 }
@@ -54,16 +54,24 @@ export function useLeaderboard(enabled = true) {
     };
 
     const reviewsChannel = supabase
-      .channel('leaderboard-reviews')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reviews' }, throttledRefetch)
+      .channel("leaderboard-reviews")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "reviews" },
+        throttledRefetch
+      )
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') setIsRealtimeConnected(true);
-        else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') setIsRealtimeConnected(false);
+        if (status === "SUBSCRIBED") setIsRealtimeConnected(true);
+        else if (status === "CLOSED" || status === "CHANNEL_ERROR") setIsRealtimeConnected(false);
       });
 
     const badgesChannel = supabase
-      .channel('leaderboard-badges')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_badges' }, throttledRefetch)
+      .channel("leaderboard-badges")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "user_badges" },
+        throttledRefetch
+      )
       .subscribe();
 
     return () => {

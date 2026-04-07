@@ -1,7 +1,7 @@
 const HTML_ENTITY_MAP: Record<string, string> = {
   nbsp: " ",
   amp: "&",
-  quot: "\"",
+  quot: '"',
   apos: "'",
   lt: "<",
   gt: ">",

@@ -8,7 +8,7 @@ import { IoArrowBack } from "react-icons/io5";
 function AuthCodeErrorPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const errorParam = searchParams.get('error') || 'Authentication failed';
+  const errorParam = searchParams.get("error") || "Authentication failed";
 
   return (
     <ErrorPage
@@ -26,7 +26,15 @@ function AuthCodeErrorPageContent() {
 
 export default function AuthCodeErrorPage() {
   return (
-    <Suspense fallback={<ErrorPage errorType="401" title="Authentication Error" description="Authentication failed" />}>
+    <Suspense
+      fallback={
+        <ErrorPage
+          errorType="401"
+          title="Authentication Error"
+          description="Authentication failed"
+        />
+      }
+    >
       <AuthCodeErrorPageContent />
     </Suspense>
   );

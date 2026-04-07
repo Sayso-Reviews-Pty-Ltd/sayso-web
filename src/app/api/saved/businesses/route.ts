@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
-import { normalizeBusinessImages } from '../../../lib/utils/businessImages';
-import { getCategoryLabelFromBusiness } from '../../../utils/subcategoryPlaceholders';
-import { getInterestIdForSubcategory } from '../../../lib/onboarding/subcategoryMapping';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
+import { normalizeBusinessImages } from "../../../lib/utils/businessImages";
+import { getCategoryLabelFromBusiness } from "../../../utils/subcategoryPlaceholders";
+import { getInterestIdForSubcategory } from "../../../lib/onboarding/subcategoryMapping";
 
 /**
  * GET /api/saved/businesses
@@ -11,15 +11,16 @@ import { getInterestIdForSubcategory } from '../../../lib/onboarding/subcategory
 export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
   try {
     const { searchParams } = new URL(req.url);
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.min(20, Math.max(1, parseInt(searchParams.get('limit') || '20')));
-    const sortBy = searchParams.get('sort_by') || 'created_at'; // 'created_at' or 'name'
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(20, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+    const sortBy = searchParams.get("sort_by") || "created_at"; // 'created_at' or 'name'
     const offset = (page - 1) * limit;
 
     // Build query
     let query = supabase
-      .from('saved_businesses')
-      .select(`
+      .from("saved_businesses")
+      .select(
+        `
         id,
         user_id,
         business_id,
@@ -52,14 +53,16 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
             is_primary
           )
         )
-      `, { count: 'exact' })
-      .eq('user_id', user.id);
+      `,
+        { count: "exact" }
+      )
+      .eq("user_id", user.id);
 
     // Apply sorting
-    if (sortBy === 'name') {
-      query = query.order('created_at', { ascending: false }); // We'll sort by business name in the response
+    if (sortBy === "name") {
+      query = query.order("created_at", { ascending: false }); // We'll sort by business name in the response
     } else {
-      query = query.order('created_at', { ascending: false });
+      query = query.order("created_at", { ascending: false });
     }
 
     // Apply pagination
@@ -68,37 +71,41 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     const { data: savedRecords, error: savedError, count } = await query;
 
     if (savedError) {
-      console.error('Error fetching saved businesses:', {
+      console.error("Error fetching saved businesses:", {
         message: savedError.message,
         code: savedError.code,
         details: savedError.details,
         hint: savedError.hint,
       });
-      
+
       // Check if table doesn't exist (42P01) or column doesn't exist (42703)
-      if (savedError.code === '42P01' || savedError.code === '42703' || 
-          savedError.message?.includes('relation') || 
-          savedError.message?.includes('does not exist') ||
-          savedError.message?.includes('column') ||
-          savedError.message?.includes('undefined_column')) {
+      if (
+        savedError.code === "42P01" ||
+        savedError.code === "42703" ||
+        savedError.message?.includes("relation") ||
+        savedError.message?.includes("does not exist") ||
+        savedError.message?.includes("column") ||
+        savedError.message?.includes("undefined_column")
+      ) {
         return NextResponse.json(
-          { 
-            error: 'Database schema error',
-            details: savedError.code === '42703' 
-              ? 'A required column is missing. Please run database migrations.'
-              : 'The saved_businesses table or a related table does not exist. Please run the database migration.',
+          {
+            error: "Database schema error",
+            details:
+              savedError.code === "42703"
+                ? "A required column is missing. Please run database migrations."
+                : "The saved_businesses table or a related table does not exist. Please run the database migration.",
             code: savedError.code,
-            message: savedError.message
+            message: savedError.message,
           },
           { status: 503 }
         );
       }
-      
+
       return NextResponse.json(
-        { 
-          error: 'Failed to fetch saved businesses', 
+        {
+          error: "Failed to fetch saved businesses",
           details: savedError.message,
-          code: savedError.code
+          code: savedError.code,
         },
         { status: 500 }
       );
@@ -125,10 +132,10 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     let businessStatsMap = new Map();
     if (businessIds.length > 0) {
       const { data: statsData } = await supabase
-        .from('business_stats')
-        .select('business_id, total_reviews, average_rating, percentiles')
-        .in('business_id', businessIds);
-      
+        .from("business_stats")
+        .select("business_id, total_reviews, average_rating, percentiles")
+        .in("business_id", businessIds);
+
       if (statsData) {
         statsData.forEach((stat: any) => {
           businessStatsMap.set(stat.business_id, stat);
@@ -140,16 +147,16 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     let businesses = savedRecords
       .map((savedRecord: any) => {
         const business = savedRecord.businesses;
-        
+
         // Filter out null businesses (orphaned saved_businesses records)
         if (!business || !business.id) {
-          console.warn('Saved business record has no associated business:', savedRecord.id);
+          console.warn("Saved business record has no associated business:", savedRecord.id);
           return null;
         }
-        
+
         // Filter out businesses with missing critical data
-        if (!business.name || business.name.trim() === '') {
-          console.warn('Saved business has no name:', business.id);
+        if (!business.name || business.name.trim() === "") {
+          console.warn("Saved business has no name:", business.id);
           return null;
         }
 
@@ -160,11 +167,22 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
 
         // Normalize business_images to uploaded_images format
         const { uploaded_images, cover_image, logo_url } = normalizeBusinessImages(business);
-        const primaryCategorySlug = business.primary_category_slug ?? (business.primary_subcategory_slug ? getInterestIdForSubcategory(business.primary_subcategory_slug) : undefined);
+        const primaryCategorySlug =
+          business.primary_category_slug ??
+          (business.primary_subcategory_slug
+            ? getInterestIdForSubcategory(business.primary_subcategory_slug)
+            : undefined);
         const displayCategory = (() => {
-          const hasSlug = !!(business.primary_subcategory_slug || primaryCategorySlug || business.primary_category_slug);
-          const rawCategory = typeof business.primary_subcategory_slug === 'string' ? business.primary_subcategory_slug.trim() : '';
-          if (!hasSlug && !rawCategory) return 'Uncategorized';
+          const hasSlug = !!(
+            business.primary_subcategory_slug ||
+            primaryCategorySlug ||
+            business.primary_category_slug
+          );
+          const rawCategory =
+            typeof business.primary_subcategory_slug === "string"
+              ? business.primary_subcategory_slug.trim()
+              : "";
+          if (!hasSlug && !rawCategory) return "Uncategorized";
           return getCategoryLabelFromBusiness({
             primary_subcategory_slug: business.primary_subcategory_slug,
             primary_subcategory_label: business.primary_subcategory_label,
@@ -185,7 +203,7 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
           interestId: primaryCategorySlug ?? business.primary_category_slug ?? undefined,
           sub_interest_id: business.primary_subcategory_slug ?? undefined,
           subInterestId: business.primary_subcategory_slug ?? undefined,
-          location: business.location || business.address || 'Location not available',
+          location: business.location || business.address || "Location not available",
           address: business.address || null,
           phone: business.phone || null,
           email: business.email || null,
@@ -195,7 +213,7 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
           cover_image: cover_image || null,
           logo_url: logo_url || null,
           verified: business.verified || false,
-          price_range: business.price_range || '$$',
+          price_range: business.price_range || "$$",
           badge: business.badge || null,
           slug: business.slug || null,
           created_at: business.created_at,
@@ -212,7 +230,7 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       .filter(Boolean);
 
     // Sort by name if requested
-    if (sortBy === 'name') {
+    if (sortBy === "name") {
       businesses.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }
 
@@ -228,9 +246,12 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       totalPages,
     });
   } catch (error) {
-    console.error('Error in GET /api/saved/businesses:', error);
+    console.error("Error in GET /api/saved/businesses:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error", details: errorMessage },
+      { status: 500 }
+    );
   }
 });
 
@@ -243,40 +264,34 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
     const { business_id } = await req.json();
 
     if (!business_id) {
-      return NextResponse.json(
-        { error: 'Business ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Business ID is required" }, { status: 400 });
     }
 
     // Check if business exists
     const { data: business, error: businessError } = await supabase
-      .from('businesses')
-      .select('id, name')
-      .eq('id', business_id)
+      .from("businesses")
+      .select("id, name")
+      .eq("id", business_id)
       .single();
 
     if (businessError || !business) {
-      return NextResponse.json(
-        { error: 'Business not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
     // Check if already saved
     const { data: existing } = await supabase
-      .from('saved_businesses')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('business_id', business_id)
+      .from("saved_businesses")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("business_id", business_id)
       .maybeSingle();
 
     if (existing) {
       return NextResponse.json(
-        { 
+        {
           success: true,
-          message: 'Business already saved',
-          isSaved: true
+          message: "Business already saved",
+          isSaved: true,
         },
         { status: 200 }
       );
@@ -284,7 +299,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
 
     // Save the business
     const { data: saved, error: saveError } = await supabase
-      .from('saved_businesses')
+      .from("saved_businesses")
       .insert({
         user_id: user.id,
         business_id: business_id,
@@ -294,33 +309,35 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
 
     if (saveError) {
       // Handle unique constraint violation (already saved)
-      if (saveError.code === '23505') {
+      if (saveError.code === "23505") {
         return NextResponse.json(
-          { 
+          {
             success: true,
-            message: 'Business already saved',
-            isSaved: true
+            message: "Business already saved",
+            isSaved: true,
           },
           { status: 200 }
         );
       }
 
-      console.error('Error saving business:', saveError);
+      console.error("Error saving business:", saveError);
       return NextResponse.json(
-        { error: 'Failed to save business', details: saveError.message },
+        { error: "Failed to save business", details: saveError.message },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Business saved successfully',
-      saved,
-      isSaved: true,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Business saved successfully",
+        saved,
+        isSaved: true,
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('Error in POST /api/saved/businesses:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in POST /api/saved/businesses:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });
-

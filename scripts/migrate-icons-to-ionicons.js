@@ -9,19 +9,19 @@
  * Usage: node scripts/migrate-icons-to-ionicons.js
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const SRC_DIR = path.join(__dirname, '..', 'src');
-const SKIP_DIRS = new Set(['node_modules', '.next', 'out', 'dist', '.git']);
+const SRC_DIR = path.join(__dirname, "..", "src");
+const SKIP_DIRS = new Set(["node_modules", ".next", "out", "dist", ".git"]);
 
 // Files already handled manually — skip to avoid double-processing
 const SKIP_FILES = new Set([
-  path.join(__dirname, '..', 'src', 'app', 'lib', 'icons.ts'),
-  path.join(__dirname, '..', 'src', 'app', 'lib', 'badgeMappings.ts'),
-  path.join(__dirname, '..', 'src', 'app', 'components', 'atoms', 'Icon', 'Icon.tsx'),
-  path.join(__dirname, '..', 'src', 'app', 'components', 'Performance', 'OptimizedIcons.tsx'),
-  path.join(__dirname, '..', 'src', 'app', 'components', 'EventCard', 'EventIcon.tsx'),
+  path.join(__dirname, "..", "src", "app", "lib", "icons.ts"),
+  path.join(__dirname, "..", "src", "app", "lib", "badgeMappings.ts"),
+  path.join(__dirname, "..", "src", "app", "components", "atoms", "Icon", "Icon.tsx"),
+  path.join(__dirname, "..", "src", "app", "components", "Performance", "OptimizedIcons.tsx"),
+  path.join(__dirname, "..", "src", "app", "components", "EventCard", "EventIcon.tsx"),
 ]);
 
 let filesChanged = 0;
@@ -44,10 +44,10 @@ function processFile(filePath) {
   if (SKIP_FILES.has(filePath)) return;
 
   filesScanned++;
-  let src = fs.readFileSync(filePath, 'utf8');
+  let src = fs.readFileSync(filePath, "utf8");
 
   // Skip files that don't import from lucide-react
-  if (!src.includes('lucide-react')) return;
+  if (!src.includes("lucide-react")) return;
 
   let changed = src;
 
@@ -55,22 +55,19 @@ function processFile(filePath) {
   // Handles: import { Foo, Bar } from "lucide-react"
   // Handles: import { type LucideIcon } from 'lucide-react'
   // Handles: import type { LucideIcon } from "lucide-react"
-  changed = changed.replace(
-    /from\s+["']lucide-react["']/g,
-    'from "@/app/lib/icons"'
-  );
+  changed = changed.replace(/from\s+["']lucide-react["']/g, 'from "@/app/lib/icons"');
 
   // Replace LucideIcon type references
-  changed = changed.replace(/\bLucideIcon\b/g, 'IconType');
+  changed = changed.replace(/\bLucideIcon\b/g, "IconType");
 
   if (changed !== src) {
-    fs.writeFileSync(filePath, changed, 'utf8');
+    fs.writeFileSync(filePath, changed, "utf8");
     filesChanged++;
-    const rel = path.relative(path.join(__dirname, '..'), filePath);
-    console.log('  updated:', rel);
+    const rel = path.relative(path.join(__dirname, ".."), filePath);
+    console.log("  updated:", rel);
   }
 }
 
-console.log('Scanning', SRC_DIR, '...\n');
+console.log("Scanning", SRC_DIR, "...\n");
 walk(SRC_DIR);
 console.log(`\nDone. ${filesChanged} files updated out of ${filesScanned} scanned.`);

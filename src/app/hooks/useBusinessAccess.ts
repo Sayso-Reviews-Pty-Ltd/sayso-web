@@ -66,7 +66,10 @@ export function useRequireBusinessOwner(options: BusinessGuardOptions = {}) {
       try {
         if (requiresSpecificBusiness) {
           const targetBusinessId = businessId as string;
-          const ownsBusiness = await BusinessOwnershipService.isBusinessOwner(user.id, targetBusinessId);
+          const ownsBusiness = await BusinessOwnershipService.isBusinessOwner(
+            user.id,
+            targetBusinessId
+          );
 
           if (!cancelled) {
             setState({ isChecking: false, hasAccess: ownsBusiness, businesses: [] });
@@ -91,9 +94,9 @@ export function useRequireBusinessOwner(options: BusinessGuardOptions = {}) {
         }
       } catch (error) {
         console.error("Error verifying business ownership access:", error);
-        
+
         // Handle network errors gracefully
-        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
           console.warn("Network error: Unable to connect to server. Please check your connection.");
         }
 
@@ -112,15 +115,24 @@ export function useRequireBusinessOwner(options: BusinessGuardOptions = {}) {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user?.id, businessId, redirectTo, skipRedirect, router, requiresSpecificBusiness]);
+  }, [
+    authLoading,
+    user?.id,
+    businessId,
+    redirectTo,
+    skipRedirect,
+    router,
+    requiresSpecificBusiness,
+  ]);
 
-  const value = useMemo(() => ({
-    isChecking: authLoading || state.isChecking,
-    hasAccess: state.hasAccess,
-    businesses: state.businesses,
-  }), [authLoading, state.isChecking, state.hasAccess, state.businesses]);
+  const value = useMemo(
+    () => ({
+      isChecking: authLoading || state.isChecking,
+      hasAccess: state.hasAccess,
+      businesses: state.businesses,
+    }),
+    [authLoading, state.isChecking, state.hasAccess, state.businesses]
+  );
 
   return value;
 }
-
-

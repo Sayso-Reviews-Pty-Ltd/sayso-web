@@ -1,3 +1,2 @@
-export { NotificationToggleItem } from './NotificationToggleItem';
-export type { NotificationToggleItemProps } from './NotificationToggleItem';
-
+export { NotificationToggleItem } from "./NotificationToggleItem";
+export type { NotificationToggleItemProps } from "./NotificationToggleItem";

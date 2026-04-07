@@ -5,8 +5,9 @@
 **"no interests = no subcategories = no deal-breakers = no complete"**
 
 This means:
+
 - **No interests** → Cannot have subcategories
-- **No subcategories** → Cannot have deal-breakers  
+- **No subcategories** → Cannot have deal-breakers
 - **No deal-breakers** → Cannot complete onboarding
 
 ## Enforcement
@@ -30,6 +31,7 @@ All onboarding test files now enforce this rule:
 ## Test File Updates
 
 ### OnboardingContext.test.tsx
+
 - ✅ Added tests that verify `completeOnboarding` fails if:
   - No interests are selected
   - No subcategories are selected (even with interests)
@@ -37,23 +39,28 @@ All onboarding test files now enforce this rule:
 - ✅ Updated existing tests to set prerequisites before testing dependent operations
 
 ### DealBreakersPage.test.tsx
+
 - ✅ Added "Prerequisites Enforcement" test suite
 - ✅ Tests verify that interests AND subcategories are required
 - ✅ All existing tests now explicitly set both prerequisites
 
 ### SubcategoriesPage.test.tsx
+
 - ✅ Added header documentation explaining prerequisite rule
 - ✅ All tests explicitly set interests (prerequisite)
 - ✅ Tests verify defensive behavior when prerequisites are missing
 
 ### InterestsPage.test.tsx
+
 - ✅ Added header documentation (no prerequisites - this is the first step)
 
 ### OnboardingGuard.test.tsx
+
 - ✅ Enhanced header documentation explaining the prerequisite chain
 - ✅ Tests already verify prerequisite enforcement
 
 ### regression-guardrails.test.tsx
+
 - ✅ Added header documentation explaining prerequisite rule
 
 ## Test Pattern
@@ -61,19 +68,19 @@ All onboarding test files now enforce this rule:
 When writing new onboarding tests, follow this pattern:
 
 ```typescript
-describe('Some Onboarding Feature', () => {
+describe("Some Onboarding Feature", () => {
   // Prerequisite rule: no interests = no subcategories = no deal-breakers = no complete
-  
-  it('should work when prerequisites are met', () => {
+
+  it("should work when prerequisites are met", () => {
     // Always set prerequisites first
-    mockSearchParams.set('interests', 'food-drink');
-    mockSearchParams.set('subcategories', 'sushi'); // if needed
-    
+    mockSearchParams.set("interests", "food-drink");
+    mockSearchParams.set("subcategories", "sushi"); // if needed
+
     // Then test the feature
     // ...
   });
-  
-  it('should fail when prerequisites are missing', () => {
+
+  it("should fail when prerequisites are missing", () => {
     // Intentionally omit prerequisites
     // Verify that operation fails or is blocked
     // ...
@@ -95,4 +102,3 @@ All tests should pass with the prerequisite rule enforced:
 ```bash
 npm run test -- __tests__/onboarding
 ```
-

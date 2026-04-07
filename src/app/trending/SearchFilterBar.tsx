@@ -14,8 +14,8 @@ interface SearchFilterBarProps {
   onSubmitQuery: (query: string) => void;
   onDistanceChange: (distance: string) => void;
   onRatingChange: (rating: number) => void;
-  onRemoveFilter: (filterType: 'minRating' | 'distance') => void;
-  onUpdateFilter: (filterType: 'minRating' | 'distance', value: number | string | null) => void;
+  onRemoveFilter: (filterType: "minRating" | "distance") => void;
+  onUpdateFilter: (filterType: "minRating" | "distance", value: number | string | null) => void;
   onClearAll: () => void;
 }
 

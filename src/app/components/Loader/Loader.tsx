@@ -30,13 +30,19 @@ export interface LoaderProps {
 // SIZE CONFIGURATIONS
 // =============================================================================
 
-const sizeConfig: Record<LoaderSize, { spinner: string; dot: string; bar: string; text: string }> = {
-  xs: { spinner: "w-3 h-3 border-2", dot: "w-1.5 h-1.5", bar: "w-1 h-3", text: "text-sm sm:text-xs" },
-  sm: { spinner: "w-4 h-4 border-2", dot: "w-2 h-2", bar: "w-1 h-4", text: "text-sm" },
-  md: { spinner: "w-6 h-6 border-2", dot: "w-2.5 h-2.5", bar: "w-1.5 h-5", text: "text-sm" },
-  lg: { spinner: "w-8 h-8 border-[3px]", dot: "w-3 h-3", bar: "w-2 h-6", text: "text-base" },
-  xl: { spinner: "w-12 h-12 border-[3px]", dot: "w-4 h-4", bar: "w-2.5 h-8", text: "text-lg" },
-};
+const sizeConfig: Record<LoaderSize, { spinner: string; dot: string; bar: string; text: string }> =
+  {
+    xs: {
+      spinner: "w-3 h-3 border-2",
+      dot: "w-1.5 h-1.5",
+      bar: "w-1 h-3",
+      text: "text-sm sm:text-xs",
+    },
+    sm: { spinner: "w-4 h-4 border-2", dot: "w-2 h-2", bar: "w-1 h-4", text: "text-sm" },
+    md: { spinner: "w-6 h-6 border-2", dot: "w-2.5 h-2.5", bar: "w-1.5 h-5", text: "text-sm" },
+    lg: { spinner: "w-8 h-8 border-[3px]", dot: "w-3 h-3", bar: "w-2 h-6", text: "text-base" },
+    xl: { spinner: "w-12 h-12 border-[3px]", dot: "w-4 h-4", bar: "w-2.5 h-8", text: "text-lg" },
+  };
 
 const colorConfig: Record<LoaderColor, { border: string; bg: string; text: string }> = {
   sage: { border: "border-sage", bg: "bg-card-bg", text: "text-sage" },
@@ -69,23 +75,27 @@ const WavyDotsLoader: React.FC<{ size: LoaderSize; color: LoaderColor }> = ({ si
 
   return (
     <div className="flex items-center gap-1.5" role="status" aria-label="Loading">
-      {[0, 1, 2, 3].map((i) => ( // 4 dots
-        <m.div
-          key={i}
-          className={`${dotClass} ${bgClass} rounded-full`}
-          animate={{
-            y: [0, -5, 0], // Wavy animation on y-axis
-            scale: [1, 1.1, 1],
-            opacity: [0.7, 1, 0.7],
-          }}
-          transition={{
-            duration: 0.6,
-            repeat: Infinity,
-            delay: i * 0.1, // Staggered delay
-            ease: "easeInOut",
-          }}
-        />
-      ))}
+      {[0, 1, 2, 3].map(
+        (
+          i // 4 dots
+        ) => (
+          <m.div
+            key={i}
+            className={`${dotClass} ${bgClass} rounded-full`}
+            animate={{
+              y: [0, -5, 0], // Wavy animation on y-axis
+              scale: [1, 1.1, 1],
+              opacity: [0.7, 1, 0.7],
+            }}
+            transition={{
+              duration: 0.6,
+              repeat: Infinity,
+              delay: i * 0.1, // Staggered delay
+              ease: "easeInOut",
+            }}
+          />
+        )
+      )}
     </div>
   );
 };
@@ -138,11 +148,9 @@ export const Loader: React.FC<LoaderProps> = ({
       {variant === "pulse" && <PulseLoader size={size} color={color} />}
       {variant === "bars" && <BarsLoader size={size} color={color} />}
       {variant === "wavy" && <WavyDotsLoader size={size} color={color} />}
-      
+
       {text && (
-        <p className={`${textClass} ${textColorClass} opacity-70 font-urbanist font-500`}>
-          {text}
-        </p>
+        <p className={`${textClass} ${textColorClass} opacity-70 font-urbanist font-500`}>{text}</p>
       )}
     </div>
   );
@@ -178,4 +186,3 @@ export const ContentLoader: React.FC<Omit<LoaderProps, "fullPage">> = (props) =>
 );
 
 export default Loader;
-

@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { AlertCircle, Loader2 } from "@/app/lib/icons";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 
 const FLAG_REASONS = [
-  { value: 'spam', label: 'Spam', desc: 'Promotional or repetitive content' },
-  { value: 'inappropriate', label: 'Inappropriate', desc: 'Offensive or adult content' },
-  { value: 'harassment', label: 'Harassment', desc: 'Targets or bullies someone' },
-  { value: 'off_topic', label: 'Off-topic', desc: 'Not related to this business' },
-  { value: 'other', label: 'Other', desc: 'Something else' },
+  { value: "spam", label: "Spam", desc: "Promotional or repetitive content" },
+  { value: "inappropriate", label: "Inappropriate", desc: "Offensive or adult content" },
+  { value: "harassment", label: "Harassment", desc: "Targets or bullies someone" },
+  { value: "off_topic", label: "Off-topic", desc: "Not related to this business" },
+  { value: "other", label: "Other", desc: "Something else" },
 ] as const;
 
-export type FlagReason = (typeof FLAG_REASONS)[number]['value'];
+export type FlagReason = (typeof FLAG_REASONS)[number]["value"];
 
 interface ReviewFlagModalProps {
   onClose: () => void;
@@ -22,17 +22,28 @@ interface ReviewFlagModalProps {
 
 export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagModalProps) {
   const [reason, setReason] = useState<FlagReason | null>(null);
-  const [details, setDetails] = useState('');
+  const [details, setDetails] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    if (!reason) { setLocalError('Please select a reason.'); return; }
-    if (reason === 'other' && !details.trim()) { setLocalError("Please add details for 'Other'."); return; }
+    if (!reason) {
+      setLocalError("Please select a reason.");
+      return;
+    }
+    if (reason === "other" && !details.trim()) {
+      setLocalError("Please add details for 'Other'.");
+      return;
+    }
     await onSubmit(reason, details);
   };
 
   return (
-    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="p-0 gap-0 w-full max-w-none translate-x-0 translate-y-0 left-0 right-0 bottom-0 top-auto rounded-t-3xl sm:rounded-2xl sm:max-w-md sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:bottom-auto flex flex-col max-h-[90dvh]">
         <DialogTitle className="sr-only">Report Review</DialogTitle>
         <DialogDescription className="sr-only">Help us keep sayso trustworthy</DialogDescription>
@@ -45,7 +56,9 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="font-urbanist text-lg font-bold text-charcoal">Report Review</h2>
-              <p className="font-urbanist text-sm text-charcoal/50">Help us keep sayso trustworthy</p>
+              <p className="font-urbanist text-sm text-charcoal/50">
+                Help us keep sayso trustworthy
+              </p>
             </div>
           </div>
 
@@ -54,9 +67,14 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
               <button
                 key={value}
                 type="button"
-                onClick={() => { setReason(value); setLocalError(null); }}
+                onClick={() => {
+                  setReason(value);
+                  setLocalError(null);
+                }}
                 className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
-                  reason === value ? 'border-navbar-bg bg-navbar-bg/5' : 'border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/[0.025]'
+                  reason === value
+                    ? "border-navbar-bg bg-navbar-bg/5"
+                    : "border-charcoal/10 hover:border-charcoal/20 hover:bg-charcoal/[0.025]"
                 }`}
               >
                 <div className="flex-1">
@@ -65,7 +83,10 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
                 </div>
                 {reason === value && (
                   <div className="w-4 h-4 rounded-full bg-navbar-bg flex items-center justify-center flex-shrink-0">
-                    <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 fill-none stroke-white stroke-[1.5]">
+                    <svg
+                      viewBox="0 0 10 10"
+                      className="w-2.5 h-2.5 fill-none stroke-white stroke-[1.5]"
+                    >
                       <polyline points="1.5,5 4,7.5 8.5,2.5" />
                     </svg>
                   </div>
@@ -77,11 +98,14 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
           {reason && (
             <label className="block mb-4">
               <span className="font-urbanist text-xs font-semibold text-charcoal/60 uppercase tracking-wider mb-1.5 block">
-                Additional details {reason === 'other' ? '(required)' : '(optional)'}
+                Additional details {reason === "other" ? "(required)" : "(optional)"}
               </span>
               <textarea
                 value={details}
-                onChange={(e) => { setDetails(e.target.value); setLocalError(null); }}
+                onChange={(e) => {
+                  setDetails(e.target.value);
+                  setLocalError(null);
+                }}
                 rows={3}
                 placeholder="Describe the issue..."
                 className="w-full rounded-2xl border border-charcoal/15 bg-charcoal/[0.025] px-4 py-3 font-urbanist text-sm text-charcoal placeholder-charcoal/35 focus:outline-none focus:ring-2 focus:ring-navbar-bg/25 focus:border-navbar-bg/40 resize-none"
@@ -97,12 +121,20 @@ export function ReviewFlagModal({ onClose, onSubmit, submitting }: ReviewFlagMod
           )}
 
           <div className="flex gap-3">
-            <button type="button" onClick={onClose} disabled={submitting}
-              className="flex-1 py-3 rounded-2xl border border-charcoal/15 font-urbanist text-sm font-semibold text-charcoal/70 hover:bg-charcoal/5 transition-colors disabled:opacity-40">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={submitting}
+              className="flex-1 py-3 rounded-2xl border border-charcoal/15 font-urbanist text-sm font-semibold text-charcoal/70 hover:bg-charcoal/5 transition-colors disabled:opacity-40"
+            >
               Cancel
             </button>
-            <button type="button" onClick={handleSubmit} disabled={!reason || submitting}
-              className="flex-1 py-3 rounded-2xl bg-navbar-bg font-urbanist text-sm font-semibold text-white hover:bg-navbar-bg/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!reason || submitting}
+              className="flex-1 py-3 rounded-2xl bg-navbar-bg font-urbanist text-sm font-semibold text-white hover:bg-navbar-bg/90 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+            >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Submit Report
             </button>

@@ -6,11 +6,7 @@ interface WordmarkProps {
   hoverLabel?: string;
 }
 
-export default function Wordmark({
-  className = "",
-  size = "text-xl",
-  hoverLabel,
-}: WordmarkProps) {
+export default function Wordmark({ className = "", size = "text-xl", hoverLabel }: WordmarkProps) {
   const baseWordmarkClass = `sayso-wordmark inline-flex items-center whitespace-nowrap ${size} font-normal leading-[1.08] select-none text-white py-[0.08em] ${className}`;
 
   const renderBrandText = () => (
@@ -21,18 +17,11 @@ export default function Wordmark({
   );
 
   if (!hoverLabel) {
-    return (
-      <span className={baseWordmarkClass}>
-        {renderBrandText()}
-      </span>
-    );
+    return <span className={baseWordmarkClass}>{renderBrandText()}</span>;
   }
 
   return (
-    <span
-      data-home-swap="true"
-      className={baseWordmarkClass}
-    >
+    <span data-home-swap="true" className={baseWordmarkClass}>
       <span className="sr-only">sayso</span>
       <span
         aria-hidden="true"

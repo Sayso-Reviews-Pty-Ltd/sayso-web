@@ -27,20 +27,15 @@ const actionsVariants = {
   },
 };
 
-export default function InterestActions({ 
-  canProceed, 
-  isNavigating, 
-  selectedCount, 
-  minSelections, 
-  onContinue
+export default function InterestActions({
+  canProceed,
+  isNavigating,
+  selectedCount,
+  minSelections,
+  onContinue,
 }: InterestActionsProps) {
   return (
-    <m.div
-      className="pt-4 space-y-4"
-      variants={actionsVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <m.div className="pt-4 space-y-4" variants={actionsVariants} initial="hidden" animate="visible">
       <OnboardingButton
         canProceed={canProceed}
         isNavigating={isNavigating}

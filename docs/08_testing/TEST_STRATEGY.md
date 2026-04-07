@@ -17,6 +17,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ```
 
 ### Distribution Target
+
 - **Unit Tests**: 60% (Fast, isolated, high coverage)
 - **Integration Tests**: 30% (API routes, hooks, component interactions)
 - **E2E Tests**: 10% (Critical user flows)
@@ -26,6 +27,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ### 1. Unit Tests
 
 #### API Layer
+
 - **Location**: `__tests__/api/`
 - **Coverage**:
   - Business CRUD operations
@@ -36,6 +38,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
   - Search and filtering logic
 
 #### Services
+
 - **Location**: `__tests__/services/`
 - **Coverage**:
   - Personalization scoring algorithm
@@ -44,6 +47,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
   - Distance calculations
 
 #### Hooks
+
 - **Location**: `__tests__/hooks/`
 - **Coverage**:
   - `useBusinesses` (pagination, sorting, fallback)
@@ -53,6 +57,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
   - `useReviewForm`
 
 #### Components
+
 - **Location**: `__tests__/components/`
 - **Coverage**:
   - BusinessProfilePage
@@ -67,6 +72,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 #### Location: `__tests__/integration/`
 
 **Core Flows**:
+
 1. **User Authentication Flow**
    - Sign in → Homepage personalized rows load correctly
    - Protected routes redirect correctly
@@ -97,6 +103,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 #### Location: `e2e/`
 
 **Critical User Journeys** (Playwright):
+
 1. Reviewing a business end-to-end
 2. Editing a review
 3. Business owner replying to a review
@@ -109,28 +116,33 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ## Testing Tools
 
 ### Unit & Integration
+
 - **Jest**: Primary test runner
 - **Vitest**: Alternative for faster unit tests
 - **React Testing Library**: Component testing
 - **MSW (Mock Service Worker)**: API mocking
 
 ### E2E
+
 - **Playwright**: Browser automation
 - **Test Containers**: Database isolation (optional)
 
 ## Mocking Strategy
 
 ### Supabase Client
+
 - Mock Supabase client methods
 - Factory functions for test data
 - Isolated database operations
 
 ### Next.js API Routes
+
 - Mock `getServerSupabase` for server-side tests
 - Mock `fetch` for client-side tests
 - Use MSW for API route testing
 
 ### Authentication
+
 - Mock `useAuth` context
 - Mock Supabase auth methods
 - Test both authenticated and unauthenticated states
@@ -138,12 +150,14 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ## Test Data Management
 
 ### Factories
+
 - `businessFactory`: Generate test businesses
 - `userFactory`: Generate test users
 - `reviewFactory`: Generate test reviews
 - `eventFactory`: Generate test events
 
 ### Fixtures
+
 - Pre-defined test data sets
 - Edge cases and error scenarios
 - Performance test data
@@ -151,12 +165,14 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ## Coverage Goals
 
 ### Minimum Coverage Thresholds
+
 - **Statements**: 70%
 - **Branches**: 70%
 - **Functions**: 70%
 - **Lines**: 70%
 
 ### Critical Paths (100% Coverage)
+
 - Authentication flows
 - Payment processing (if applicable)
 - Data validation
@@ -165,12 +181,14 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ## CI/CD Integration
 
 ### GitHub Actions
+
 - Run tests on every PR
 - Run E2E tests on main branch
 - Generate coverage reports
 - Block merges if coverage drops
 
 ### Pre-commit Hooks
+
 - Run unit tests
 - Run linter
 - Type checking
@@ -178,6 +196,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 ## Test Maintenance
 
 ### Best Practices
+
 1. **Keep tests fast**: Unit tests < 1s, Integration < 5s, E2E < 30s
 2. **Isolate tests**: No shared state between tests
 3. **Use descriptive names**: `it('should exclude current business from similar businesses')`
@@ -186,6 +205,7 @@ This document outlines the comprehensive test strategy for Sayso, a full-stack l
 6. **Review test failures**: Fix flaky tests immediately
 
 ### When to Write Tests
+
 - ✅ New features
 - ✅ Bug fixes (regression tests)
 - ✅ Refactoring (ensure behavior unchanged)
@@ -262,4 +282,3 @@ __test-utils__/
     ├── render.tsx
     └── test-helpers.ts
 ```
-

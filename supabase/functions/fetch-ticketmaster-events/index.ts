@@ -92,8 +92,7 @@ const PAGE_CAP = 5;
 const BATCH_SIZE = 200;
 const CLEANUP_DAYS = 14;
 const FETCH_WINDOW_DAYS = 120;
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // ==========================================================================
 // Utilities
@@ -110,10 +109,10 @@ function buildDedupeKey(title: string, startDateIso: string, location: string | 
 function buildLocationString(
   venueName: string | null | undefined,
   city: string | null | undefined,
-  country: string | null | undefined,
+  country: string | null | undefined
 ): string | null {
   const parts = [venueName, city, country].filter(
-    (p): p is string => typeof p === "string" && p.trim().length > 0,
+    (p): p is string => typeof p === "string" && p.trim().length > 0
   );
   return parts.length > 0 ? parts.join(" \u2022 ") : null;
 }
@@ -165,7 +164,10 @@ async function userExists(supabase: SupabaseClient, userId: string): Promise<boo
       .maybeSingle();
     if (!error && data?.id) return true;
   } catch (error) {
-    console.warn("[Ingest] Could not validate user via auth.users; falling back to profiles:", error);
+    console.warn(
+      "[Ingest] Could not validate user via auth.users; falling back to profiles:",
+      error
+    );
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -243,7 +245,7 @@ async function fetchPage(
   startDateTime: string,
   endDateTime: string,
   size: number,
-  page: number,
+  page: number
 ): Promise<TmResponse> {
   const url = new URL(TM_BASE_URL);
   url.searchParams.set("apikey", apiKey);
@@ -282,7 +284,7 @@ async function fetchPage(
       if (attempt < MAX_RETRIES - 1) {
         const delay = RETRY_DELAYS_MS[attempt] ?? 10_000;
         console.warn(
-          `[TM] Attempt ${attempt + 1} failed (${city} p${page}): ${lastError.message}. Retrying in ${delay}ms...`,
+          `[TM] Attempt ${attempt + 1} failed (${city} p${page}): ${lastError.message}. Retrying in ${delay}ms...`
         );
         await sleep(delay);
       }
@@ -301,7 +303,7 @@ async function fetchEventsForCity(
   city: string,
   startDateTime: string,
   endDateTime: string,
-  pageSize: number,
+  pageSize: number
 ): Promise<TmEvent[]> {
   const all: TmEvent[] = [];
   let currentPage = 0;
@@ -387,7 +389,10 @@ function consolidateEvents(rows: EventRow[]): EventRow[] {
       existing.end_date = row.end_date;
     }
     // Richest description
-    if (row.description && (!existing.description || row.description.length > existing.description.length))
+    if (
+      row.description &&
+      (!existing.description || row.description.length > existing.description.length)
+    )
       existing.description = row.description;
     // Best image (prefer non-null)
     if (row.image && !existing.image) existing.image = row.image;
@@ -407,7 +412,7 @@ async function fetchAllCities(
   cities: string[],
   businessId: string,
   userId: string,
-  pageSize: number,
+  pageSize: number
 ): Promise<{ fetchedCount: number; mappedCount: number; rows: EventRow[] }> {
   const now = new Date();
   const end = new Date(now.getTime() + FETCH_WINDOW_DAYS * 86_400_000);
@@ -476,7 +481,7 @@ async function cleanupOldEvents(supabase: SupabaseClient): Promise<number> {
 
 async function upsertEvents(
   supabase: SupabaseClient,
-  rows: EventRow[],
+  rows: EventRow[]
 ): Promise<{ inserted: number; updated: number; failed: number; batchFailures: BatchFailure[] }> {
   let totalInserted = 0;
   let totalUpdated = 0;
@@ -527,7 +532,9 @@ Deno.serve(async (req: Request) => {
 
   try {
     if (!isTicketmasterIngestEnabled()) {
-      console.warn("[Ingest] Ticketmaster ingest skipped: ENABLE_TICKETMASTER_INGEST is not enabled.");
+      console.warn(
+        "[Ingest] Ticketmaster ingest skipped: ENABLE_TICKETMASTER_INGEST is not enabled."
+      );
       return jsonOk({
         success: true,
         source: "ticketmaster",
@@ -558,7 +565,8 @@ Deno.serve(async (req: Request) => {
     const citiesEnv = Deno.env.get("CITIES") || "Cape Town,Johannesburg,Durban";
 
     if (!apiKey) return jsonError("TICKETMASTER_API_KEY not configured");
-    if (!supabaseUrl || !supabaseServiceKey) return jsonError("Supabase credentials not configured");
+    if (!supabaseUrl || !supabaseServiceKey)
+      return jsonError("Supabase credentials not configured");
     if (!systemBusinessId) return jsonError("SYSTEM_BUSINESS_ID not configured");
     if (!configuredSystemUserId) return jsonError("SYSTEM_USER_ID not configured");
 
@@ -577,10 +585,7 @@ Deno.serve(async (req: Request) => {
 
     // ---- Supabase client (service_role) ----
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const createdByUserId = await resolveCreatedByUserId(
-      supabase,
-      configuredSystemUserId
-    );
+    const createdByUserId = await resolveCreatedByUserId(supabase, configuredSystemUserId);
     console.log(`[Ingest] Using created_by user id: ${createdByUserId}`);
 
     // ---- 1. Cleanup old events ----
@@ -592,7 +597,7 @@ Deno.serve(async (req: Request) => {
       cities,
       systemBusinessId,
       createdByUserId,
-      pageSize,
+      pageSize
     );
 
     if (rows.length === 0) {

@@ -7,6 +7,7 @@
 **Location:** `src/app/auth/callback/route.ts` lines 140-160
 
 **Root Cause:**
+
 - The callback uses **count-based logic** (lines 141-154) instead of `onboarding_step`
 - It checks `interests_count`, `subcategories_count`, `dealbreakers_count` to determine next step
 - If a new user's profile is created with default counts > 0 (from triggers or migrations), they get redirected to wrong step
@@ -21,6 +22,7 @@
 **Location:** `src/middleware.ts` lines 169-260
 
 **Root Cause:**
+
 - Middleware uses **BOTH** `onboarding_step` AND count-based logic (lines 186-210)
 - Lines 199-210: It checks `onboarding_step` but then has a `stepMap` that maps CURRENT step to NEXT route
 - Example: If `onboarding_step = 'deal-breakers'`, stepMap maps it to `/complete` (line 204)
@@ -34,6 +36,7 @@
 ### Bug 3: Inconsistent state between step and counts
 
 **Root Cause:**
+
 - API routes correctly update `onboarding_step` (interests → subcategories → deal-breakers → complete)
 - But middleware and callback use counts as fallback/primary logic
 - Counts can be out of sync with step (race conditions, partial saves, etc.)
@@ -50,7 +53,7 @@
 ```
 States:
 - 'interests' → user must complete interests step
-- 'subcategories' → user must complete subcategories step  
+- 'subcategories' → user must complete subcategories step
 - 'deal-breakers' → user must complete deal-breakers step
 - 'complete' → user can access /complete page
 
@@ -102,4 +105,3 @@ Transitions (only in API routes after successful DB write):
 7. ✅ Complete deal-breakers → step becomes `complete`
 8. ✅ Complete screen → `onboarding_complete=true` → `/home`
 9. ✅ Completed users can't access onboarding pages again
-

@@ -14,9 +14,7 @@ export default function BusinessInfo({ businessName, businessRating }: BusinessI
       <div className="flex items-center justify-center space-x-2">
         <div className="flex items-center space-x-1 bg-gradient-to-br from-amber-400 to-amber-600 px-3 py-1.5 rounded-full">
           <GoldStar size={16} />
-          <span className="text-sm font-600 text-white">
-            {businessRating.toFixed(1)}
-          </span>
+          <span className="text-sm font-600 text-white">{businessRating.toFixed(1)}</span>
         </div>
       </div>
     </div>

@@ -5,11 +5,13 @@ This directory contains utilities for optimizing server-side data fetching with 
 ## Features
 
 ### 1. Connection Pooling (`supabase/pool.ts`)
+
 - **Request-scoped client caching**: Reuses Supabase clients within the same request lifecycle
 - **Global singleton**: Shared client for non-request-scoped operations
 - **Parallel client creation**: Create multiple clients for independent parallel queries
 
 ### 2. Async Query Execution (`utils/asyncQueries.ts`)
+
 - **Parallel execution**: Run multiple queries simultaneously
 - **Batch processing**: Execute queries with concurrency limits
 - **Timeout protection**: Prevent queries from hanging indefinitely
@@ -17,12 +19,14 @@ This directory contains utilities for optimizing server-side data fetching with 
 - **Batch fetching**: Efficiently fetch multiple records by ID
 
 ### 3. Query Caching (`cache/queryCache.ts`)
+
 - **In-memory caching**: Fast access to frequently queried data
 - **TTL support**: Automatic cache expiration
 - **Prefix-based invalidation**: Clear related cache entries
 - **Cache statistics**: Monitor cache performance
 
 ### 4. Optimized Query Utilities (`utils/optimizedQueries.ts`)
+
 - **High-level abstractions**: Combine caching, parallel execution, and pooling
 - **Business data fetching**: Optimized for common use cases
 - **Automatic cache management**: Handles cache invalidation
@@ -32,7 +36,7 @@ This directory contains utilities for optimizing server-side data fetching with 
 ### Basic Connection Pooling
 
 ```typescript
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
 // In API route - pass request for connection pooling
 export async function GET(req: NextRequest) {
@@ -44,8 +48,8 @@ export async function GET(req: NextRequest) {
 ### Parallel Queries
 
 ```typescript
-import { createParallelClients } from '@/app/lib/supabase/pool';
-import { executeParallelQueries } from '@/app/lib/utils/asyncQueries';
+import { createParallelClients } from "@/app/lib/supabase/pool";
+import { executeParallelQueries } from "@/app/lib/utils/asyncQueries";
 
 // Create multiple clients for parallel operations
 const [client1, client2] = await createParallelClients(2);
@@ -53,11 +57,11 @@ const [client1, client2] = await createParallelClients(2);
 // Execute queries in parallel
 const [result1, result2] = await executeParallelQueries([
   async () => {
-    const { data, error } = await client1.from('table1').select('*');
+    const { data, error } = await client1.from("table1").select("*");
     return { data, error };
   },
   async () => {
-    const { data, error } = await client2.from('table2').select('*');
+    const { data, error } = await client2.from("table2").select("*");
     return { data, error };
   },
 ]);
@@ -66,10 +70,10 @@ const [result1, result2] = await executeParallelQueries([
 ### Using Caching
 
 ```typescript
-import { queryCache } from '@/app/lib/cache/queryCache';
+import { queryCache } from "@/app/lib/cache/queryCache";
 
 // Check cache
-const cacheKey = queryCache.key('business', { id: '123' });
+const cacheKey = queryCache.key("business", { id: "123" });
 const cached = queryCache.get(cacheKey);
 
 if (!cached) {
@@ -83,7 +87,7 @@ if (!cached) {
 ### Optimized Business Fetching
 
 ```typescript
-import { fetchBusinessOptimized } from '@/app/lib/utils/optimizedQueries';
+import { fetchBusinessOptimized } from "@/app/lib/utils/optimizedQueries";
 
 // Automatically uses caching, parallel queries, and connection pooling
 const business = await fetchBusinessOptimized(businessId, request, true);
@@ -107,11 +111,11 @@ const result = await batchFetchByIds(
 ### Retry with Exponential Backoff
 
 ```typescript
-import { executeWithRetry } from '@/app/lib/utils/asyncQueries';
+import { executeWithRetry } from "@/app/lib/utils/asyncQueries";
 
 const result = await executeWithRetry(
   async () => {
-    const { data, error } = await supabase.from('table').select('*');
+    const { data, error } = await supabase.from("table").select("*");
     return { data, error };
   },
   3, // max retries
@@ -138,10 +142,10 @@ const result = await executeWithRetry(
 ## Cache Invalidation
 
 ```typescript
-import { invalidateBusinessCache } from '@/app/lib/utils/optimizedQueries';
+import { invalidateBusinessCache } from "@/app/lib/utils/optimizedQueries";
 
 // Invalidate specific business
-invalidateBusinessCache('business-id');
+invalidateBusinessCache("business-id");
 
 // Invalidate all business caches
 invalidateBusinessCache();
@@ -150,10 +154,9 @@ invalidateBusinessCache();
 ## Monitoring
 
 ```typescript
-import { queryCache } from '@/app/lib/cache/queryCache';
+import { queryCache } from "@/app/lib/cache/queryCache";
 
 // Get cache statistics
 const stats = queryCache.getStats();
-console.log('Cache stats:', stats);
+console.log("Cache stats:", stats);
 ```
-

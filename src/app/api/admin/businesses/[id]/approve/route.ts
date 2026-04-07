@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { withAdmin } from '@/app/api/_lib/withAuth';
-import { invalidateBusinessCache } from '@/app/lib/utils/optimizedQueries';
+import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { withAdmin } from "@/app/api/_lib/withAuth";
+import { invalidateBusinessCache } from "@/app/lib/utils/optimizedQueries";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * POST /api/admin/businesses/[id]/approve
@@ -15,25 +15,27 @@ export const POST = withAdmin(async (req, { user, service, params }) => {
   try {
     const businessId = (await params).id;
     if (!businessId) {
-      return NextResponse.json({ error: 'Business ID is required' }, { status: 400 });
+      return NextResponse.json({ error: "Business ID is required" }, { status: 400 });
     }
 
     const { data: business, error: fetchError } = await (service as any)
-      .from('businesses')
-      .select('id, status, owner_id, name, slug, primary_subcategory_slug, primary_category_slug, location, address, lat, lng')
-      .eq('id', businessId)
+      .from("businesses")
+      .select(
+        "id, status, owner_id, name, slug, primary_subcategory_slug, primary_category_slug, location, address, lat, lng"
+      )
+      .eq("id", businessId)
       .maybeSingle();
 
     if (fetchError) {
-      console.error('[Admin] Error fetching business for approval:', fetchError);
+      console.error("[Admin] Error fetching business for approval:", fetchError);
       return NextResponse.json(
-        { error: 'Failed to fetch business', details: fetchError.message },
+        { error: "Failed to fetch business", details: fetchError.message },
         { status: 500 }
       );
     }
 
     if (!business) {
-      return NextResponse.json({ error: 'Business not found' }, { status: 404 });
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
     const biz = business as {
@@ -47,41 +49,36 @@ export const POST = withAdmin(async (req, { user, service, params }) => {
       lat?: number | null;
       lng?: number | null;
     };
-    if (biz.status !== 'pending_approval') {
-      return NextResponse.json(
-        { error: 'Business is not pending approval' },
-        { status: 400 }
-      );
+    if (biz.status !== "pending_approval") {
+      return NextResponse.json({ error: "Business is not pending approval" }, { status: 400 });
     }
 
     // Final validation: required fields
-    const hasName = typeof biz.name === 'string' && biz.name.trim().length > 0;
+    const hasName = typeof biz.name === "string" && biz.name.trim().length > 0;
     const hasCategory = Boolean(biz.primary_subcategory_slug || biz.primary_category_slug);
     const hasAddress = Boolean(
-      (typeof biz.address === 'string' && biz.address.trim()) ||
-        (typeof biz.location === 'string' && biz.location.trim())
+      (typeof biz.address === "string" && biz.address.trim()) ||
+      (typeof biz.location === "string" && biz.location.trim())
     );
     const hasLat = biz.lat != null && !Number.isNaN(biz.lat);
     const hasLng = biz.lng != null && !Number.isNaN(biz.lng);
     if (!hasName || !hasCategory || !hasAddress || !hasLat || !hasLng) {
       return NextResponse.json(
         {
-          error: 'Validation failed',
-          message: 'Missing required fields. Business must have name, category, address, and coordinates (latitude, longitude).',
+          error: "Validation failed",
+          message:
+            "Missing required fields. Business must have name, category, address, and coordinates (latitude, longitude).",
         },
         { status: 400 }
       );
     }
 
     if (biz.owner_id && biz.owner_id === user.id) {
-      return NextResponse.json(
-        { error: 'You cannot approve your own business' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "You cannot approve your own business" }, { status: 403 });
     }
 
     const updatePayload: Record<string, unknown> = {
-      status: 'active',
+      status: "active",
       is_hidden: false,
       verified: true,
       updated_at: new Date().toISOString(),
@@ -91,72 +88,75 @@ export const POST = withAdmin(async (req, { user, service, params }) => {
     };
 
     const { error: updateError } = await (service as any)
-      .from('businesses')
+      .from("businesses")
       .update(updatePayload)
-      .eq('id', businessId);
+      .eq("id", businessId);
 
     if (updateError) {
-      console.error('[Admin] Error approving business:', updateError);
+      console.error("[Admin] Error approving business:", updateError);
       return NextResponse.json(
-        { error: 'Failed to approve business', details: updateError.message },
+        { error: "Failed to approve business", details: updateError.message },
         { status: 500 }
       );
     }
 
     // Invalidate caches and revalidate home + category pages
     try {
-      invalidateBusinessCache(businessId, (business as { slug?: string | null })?.slug ?? undefined);
+      invalidateBusinessCache(
+        businessId,
+        (business as { slug?: string | null })?.slug ?? undefined
+      );
     } catch (cacheErr) {
-      console.warn('[Admin] Cache invalidation:', cacheErr);
+      console.warn("[Admin] Cache invalidation:", cacheErr);
     }
-    revalidatePath('/');
-    revalidatePath('/home');
-    revalidatePath('/for-you');
+    revalidatePath("/");
+    revalidatePath("/home");
+    revalidatePath("/for-you");
 
     // Create notification for business owner
     if (biz.owner_id) {
       try {
-        console.log('[Admin] Creating business approval notification...', {
+        console.log("[Admin] Creating business approval notification...", {
           owner_id: biz.owner_id,
           business_id: businessId,
-          business_name: biz.name
+          business_name: biz.name,
         });
 
-        const { data: notifData, error: notifError } = await (service as any).rpc('create_business_approved_notification', {
-          p_owner_id: biz.owner_id,
-          p_business_id: businessId,
-          p_business_name: biz.name || 'Your business'
-        });
+        const { data: notifData, error: notifError } = await (service as any).rpc(
+          "create_business_approved_notification",
+          {
+            p_owner_id: biz.owner_id,
+            p_business_id: businessId,
+            p_business_name: biz.name || "Your business",
+          }
+        );
 
         if (notifError) {
-          console.error('[Admin] RPC error creating business approval notification:', {
+          console.error("[Admin] RPC error creating business approval notification:", {
             error: notifError,
             message: notifError.message,
             details: notifError.details,
             hint: notifError.hint,
-            code: notifError.code
+            code: notifError.code,
           });
         } else {
-          console.log('[Admin] Business approval notification created successfully:', notifData);
+          console.log("[Admin] Business approval notification created successfully:", notifData);
         }
       } catch (notifError) {
         // Log error but don't fail the approval
-        console.error('[Admin] Exception creating business approval notification:', notifError);
+        console.error("[Admin] Exception creating business approval notification:", notifError);
       }
     } else {
-      console.warn('[Admin] No owner_id found for business, skipping notification');
+      console.warn("[Admin] No owner_id found for business, skipping notification");
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Business approved and now visible publicly',
+      message: "Business approved and now visible publicly",
       business_id: businessId,
     });
   } catch (error) {
-    console.error('[Admin] Error in approve business:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("[Admin] Error in approve business:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

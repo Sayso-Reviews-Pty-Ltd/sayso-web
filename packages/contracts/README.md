@@ -17,7 +17,7 @@ import type {
   NotificationsResponseDto,
   SavedBusinessesResponseDto,
   RegisterPushTokenRequestDto,
-} from '@sayso/contracts';
+} from "@sayso/contracts";
 ```
 
 ## Publishing

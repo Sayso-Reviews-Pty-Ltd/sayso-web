@@ -1,11 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { BadgeNotification } from '../components/Realtime/RealtimeIndicators';
-import { useRealtimeBadges } from '../hooks/useRealtime';
-import { useAuth } from './AuthContext';
-import { AuthLifecycleEventType, subscribeAuthLifecycleEvent } from '../lib/authLifecycle';
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import { BadgeNotification } from "../components/Realtime/RealtimeIndicators";
+import { useRealtimeBadges } from "../hooks/useRealtime";
+import { useAuth } from "./AuthContext";
+import { AuthLifecycleEventType, subscribeAuthLifecycleEvent } from "../lib/authLifecycle";
 
 interface RealtimeContextType {
   showBadgeNotification: (badge: BadgeData) => void;
@@ -84,9 +84,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
       <AnimatePresence>
-        {currentBadge && (
-          <BadgeNotification badge={currentBadge} onClose={handleClose} />
-        )}
+        {currentBadge && <BadgeNotification badge={currentBadge} onClose={handleClose} />}
       </AnimatePresence>
     </RealtimeContext.Provider>
   );
@@ -95,7 +93,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
 export function useRealtime() {
   const context = useContext(RealtimeContext);
   if (context === undefined) {
-    throw new Error('useRealtime must be used within a RealtimeProvider');
+    throw new Error("useRealtime must be used within a RealtimeProvider");
   }
   return context;
 }

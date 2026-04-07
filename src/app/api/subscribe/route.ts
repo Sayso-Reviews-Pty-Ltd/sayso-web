@@ -9,9 +9,7 @@ function isValidEmail(email: string) {
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json().catch(() => null)) as
-      | { email?: string; source?: string }
-      | null;
+    const body = (await req.json().catch(() => null)) as { email?: string; source?: string } | null;
 
     const email = (body?.email ?? "").trim().toLowerCase();
     const source = (body?.source ?? "unknown").toString().slice(0, 48);
@@ -19,7 +17,7 @@ export async function POST(req: Request) {
     if (!isValidEmail(email)) {
       return NextResponse.json(
         { ok: false, message: "Enter a valid email address." },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -34,7 +32,7 @@ export async function POST(req: Request) {
       console.error("[subscribe] insert error:", error);
       return NextResponse.json(
         { ok: false, message: "Couldn’t sign you up. Try again." },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -43,7 +41,7 @@ export async function POST(req: Request) {
     console.error("[subscribe] error:", err);
     return NextResponse.json(
       { ok: false, message: "Couldn’t sign you up. Try again." },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

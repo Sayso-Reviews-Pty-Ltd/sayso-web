@@ -16,12 +16,12 @@ export interface LevelState {
 }
 
 export const LEVEL_PERKS: Record<number, string> = {
-  5:  'Streak shield unlocked',
-  10: 'Gold profile border',
-  15: 'Access to monthly leaderboard',
-  20: 'Early access badge eligibility',
-  30: 'Featured reviewer candidacy',
-  50: 'Legend profile frame',
+  5: "Streak shield unlocked",
+  10: "Gold profile border",
+  15: "Access to monthly leaderboard",
+  20: "Early access badge eligibility",
+  30: "Featured reviewer candidacy",
+  50: "Legend profile frame",
 };
 
 export function xpRequiredForLevel(level: number): number {
@@ -41,16 +41,17 @@ export function currentLevelFromXP(totalXP: number): LevelState {
 
   const xpToNextLevel = xpRequiredForLevel(level);
   const xpIntoCurrentLevel = totalXP - accumulated;
-  const percentToNext = xpToNextLevel > 0
-    ? Math.min(100, Math.round((xpIntoCurrentLevel / xpToNextLevel) * 100))
-    : 100;
+  const percentToNext =
+    xpToNextLevel > 0 ? Math.min(100, Math.round((xpIntoCurrentLevel / xpToNextLevel) * 100)) : 100;
 
   return { level, xpIntoCurrentLevel, xpToNextLevel, percentToNext };
 }
 
 /** Returns the next level perk at or above the given level, if any. */
 export function nextPerkAt(level: number): { level: number; perk: string } | null {
-  const milestones = Object.keys(LEVEL_PERKS).map(Number).sort((a, b) => a - b);
+  const milestones = Object.keys(LEVEL_PERKS)
+    .map(Number)
+    .sort((a, b) => a - b);
   const next = milestones.find((m) => m > level);
   if (!next) return null;
   return { level: next, perk: LEVEL_PERKS[next] };

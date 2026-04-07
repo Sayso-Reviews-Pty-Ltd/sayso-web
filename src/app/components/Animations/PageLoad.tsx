@@ -26,18 +26,12 @@ export default function PageLoad({
   children,
   variant = "default",
   delay,
-  className = ""
+  className = "",
 }: PageLoadProps) {
   const animationClass =
-    variant === "fade" ? "page-load-fade" :
-    variant === "slide" ? "page-load-slide" :
-    "page-load";
+    variant === "fade" ? "page-load-fade" : variant === "slide" ? "page-load-slide" : "page-load";
 
   const delayClass = delay && delay >= 1 && delay <= 6 ? `page-load-delay-${delay}` : "";
 
-  return (
-    <div className={`${animationClass} ${delayClass} ${className}`.trim()}>
-      {children}
-    </div>
-  );
+  return <div className={`${animationClass} ${delayClass} ${className}`.trim()}>{children}</div>;
 }

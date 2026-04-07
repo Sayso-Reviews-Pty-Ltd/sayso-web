@@ -5,16 +5,19 @@ A smart, user-centric filtering system for the sayso home page that leverages on
 🎯 Features
 
 # Primary Filters (Always Visible)
+
 - **Location/Distance** - Filter by radius (1, 5, 10, 25 miles)
 - **Rating** - Minimum rating filter (3.0+, 3.5+, 4.0+, 4.5+)
 - **Sort By** - Relevance, Distance, Rating, Reviews, Newest, Trending
 
 # Advanced Filters (Modal)
+
 - **Price Range** - $, $$, $$$, $$$$
 - **Open Now** - Toggle to show only currently open places
 - **Must Meet Standards** - Auto-filter by user's deal-breakers from onboarding
 
 # Smart Defaults
+
 - Automatically uses user's interests from onboarding
 - Defaults to "Near me" with 5-mile radius
 - Minimum 4.0 rating
@@ -50,8 +53,8 @@ Visit `/filter-demo` to see the filter system in action.
 // src/app/home/page.tsx
 "use client";
 
-import { FilterProvider, useFilters } from '@/app/contexts/FilterContext';
-import { FilterBar, AdvancedFilters } from '@/app/components/Home';
+import { FilterProvider, useFilters } from "@/app/contexts/FilterContext";
+import { FilterBar, AdvancedFilters } from "@/app/components/Home";
 
 function HomePageContent() {
   const { filters } = useFilters();
@@ -73,9 +76,7 @@ function HomePageContent() {
       <FilterBar />
 
       {/* Your existing content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Business listings, map, etc. */}
-      </div>
+      <div className="max-w-7xl mx-auto px-4 py-6">{/* Business listings, map, etc. */}</div>
 
       {/* Advanced Filters Modal */}
       <AdvancedFilters />
@@ -97,28 +98,28 @@ export default function HomePage() {
 # `useFilters()` Hook
 
 ```tsx
-import { useFilters } from '@/app/contexts/FilterContext';
+import { useFilters } from "@/app/contexts/FilterContext";
 
 const {
   // Current filter state
-  filters,              // FilterState object
-  defaultFilters,       // Default filters based on user onboarding
-  hasActiveFilters,     // Boolean - are non-default filters applied?
+  filters, // FilterState object
+  defaultFilters, // Default filters based on user onboarding
+  hasActiveFilters, // Boolean - are non-default filters applied?
 
   // Setter functions
-  setLocation,          // (location: LocationFilter) => void
-  setCategories,        // (categories: string[]) => void
-  setMinRating,         // (rating: number) => void
-  setSortBy,            // (sort: SortOption) => void
-  setPriceRange,        // (prices: PriceRange[]) => void
-  setOpenNow,           // (open: boolean) => void
+  setLocation, // (location: LocationFilter) => void
+  setCategories, // (categories: string[]) => void
+  setMinRating, // (rating: number) => void
+  setSortBy, // (sort: SortOption) => void
+  setPriceRange, // (prices: PriceRange[]) => void
+  setOpenNow, // (open: boolean) => void
   setMustMeetDealbreakers, // (mustMeet: boolean) => void
-  setSubcategories,     // (subcategories: string[]) => void
-  setFeatures,          // (features: string[]) => void
+  setSubcategories, // (subcategories: string[]) => void
+  setFeatures, // (features: string[]) => void
 
   // Actions
-  resetFilters,         // () => void - Reset to defaults
-  toggleAdvanced,       // () => void - Open/close advanced filters
+  resetFilters, // () => void - Reset to defaults
+  toggleAdvanced, // () => void - Open/close advanced filters
 } = useFilters();
 ```
 
@@ -128,7 +129,7 @@ const {
 interface FilterState {
   // Primary filters
   location: LocationFilter;
-  categories: string[];        // Interest IDs from onboarding
+  categories: string[]; // Interest IDs from onboarding
   minRating: number;
   sortBy: SortOption;
 
@@ -138,8 +139,8 @@ interface FilterState {
   mustMeetDealbreakers: boolean;
 
   // Advanced
-  subcategories?: string[];    // Subcategory IDs from onboarding
-  features?: string[];         // Feature flags (e.g., 'outdoor_seating')
+  subcategories?: string[]; // Subcategory IDs from onboarding
+  features?: string[]; // Feature flags (e.g., 'outdoor_seating')
 
   // UI state
   isAdvancedOpen: boolean;
@@ -151,7 +152,7 @@ interface FilterState {
 
 ```typescript
 interface LocationFilter {
-  type: 'near_me' | 'coordinates' | 'address';
+  type: "near_me" | "coordinates" | "address";
   lat?: number;
   lng?: number;
   address?: string;
@@ -164,6 +165,7 @@ interface LocationFilter {
 # Styling
 
 All components use:
+
 - **Font**: Urbanist (system fallback)
 - **Colors**: Sage (primary), Charcoal (text), Off-white (background)
 - **Border radius**: Rounded-full for buttons, rounded-xl for cards
@@ -171,6 +173,7 @@ All components use:
 # Adding New Filters
 
 1. **Update Types** (`src/app/types/filters.ts`):
+
 ```typescript
 export interface HomeFilters {
   // Add your new filter
@@ -179,9 +182,10 @@ export interface HomeFilters {
 ```
 
 2. **Update Context** (`src/app/contexts/FilterContext.tsx`):
+
 ```typescript
 const setMyNewFilter = useCallback((value: string) => {
-  setFilters(prev => ({ ...prev, myNewFilter: value }));
+  setFilters((prev) => ({ ...prev, myNewFilter: value }));
 }, []);
 
 // Add to context value
@@ -189,10 +193,9 @@ return { ...other, setMyNewFilter };
 ```
 
 3. **Update UI** (FilterBar or AdvancedFilters):
+
 ```tsx
-<button onClick={() => setMyNewFilter('value')}>
-  My Filter
-</button>
+<button onClick={() => setMyNewFilter("value")}>My Filter</button>
 ```
 
 💾 Persistence
@@ -241,6 +244,7 @@ test('displays filter bar', () => {
 # Default Behavior
 
 When user lands on home page:
+
 - Location: Near me, 5 miles
 - Categories: User's interests from onboarding (auto-applied)
 - Rating: 4.0+ minimum
@@ -252,6 +256,7 @@ When user lands on home page:
 # Active Filters
 
 Filters are considered "active" (non-default) when:
+
 - Distance changed from 5 miles
 - Categories manually filtered (different from all interests)
 - Rating changed from 4.0
@@ -271,38 +276,38 @@ const queryBusinesses = async (filters: HomeFilters) => {
   const params = new URLSearchParams();
 
   // Location
-  if (filters.location.type === 'near_me') {
-    params.append('near_me', 'true');
+  if (filters.location.type === "near_me") {
+    params.append("near_me", "true");
   } else if (filters.location.lat && filters.location.lng) {
-    params.append('lat', filters.location.lat.toString());
-    params.append('lng', filters.location.lng.toString());
+    params.append("lat", filters.location.lat.toString());
+    params.append("lng", filters.location.lng.toString());
   }
-  params.append('radius_miles', filters.location.radiusMiles.toString());
+  params.append("radius_miles", filters.location.radiusMiles.toString());
 
   // Categories
   if (filters.categories.length > 0) {
-    params.append('categories', filters.categories.join(','));
+    params.append("categories", filters.categories.join(","));
   }
 
   // Rating
-  params.append('min_rating', filters.minRating.toString());
+  params.append("min_rating", filters.minRating.toString());
 
   // Sort
-  params.append('sort_by', filters.sortBy);
+  params.append("sort_by", filters.sortBy);
 
   // Price
   if (filters.priceRange.length < 4) {
-    params.append('price_range', filters.priceRange.join(','));
+    params.append("price_range", filters.priceRange.join(","));
   }
 
   // Open now
   if (filters.openNow) {
-    params.append('open_now', 'true');
+    params.append("open_now", "true");
   }
 
   // Deal-breakers
   if (filters.mustMeetDealbreakers) {
-    params.append('meets_standards', 'true');
+    params.append("meets_standards", "true");
   }
 
   const response = await fetch(`/api/businesses?${params}`);
@@ -340,14 +345,17 @@ const queryBusinesses = async (filters: HomeFilters) => {
 🐛 Troubleshooting
 
 # Filters not persisting
+
 - Check localStorage is enabled
 - Clear localStorage: `localStorage.removeItem('home_filters')`
 
 # Default filters not loading
+
 - Verify user onboarding is complete
 - Check `user_interests` table in database
 
 # Modal not opening
+
 - Ensure `FilterProvider` wraps your components
 - Check `AdvancedFilters` is rendered
 
@@ -363,6 +371,7 @@ const queryBusinesses = async (filters: HomeFilters) => {
 🤝 Contributing
 
 When adding new filters:
+
 1. Update types in `filters.ts`
 2. Add context methods in `FilterContext.tsx`
 3. Update UI in `FilterBar.tsx` or `AdvancedFilters.tsx`

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export function useEventPrefetch(href: string, index: number) {
   const router = useRouter();

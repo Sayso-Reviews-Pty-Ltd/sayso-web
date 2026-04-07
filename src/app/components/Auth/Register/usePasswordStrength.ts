@@ -55,4 +55,3 @@ export function validatePassword(password: string): string | null {
   if (password.length < 6) return "Use at least 6 characters for your password.";
   return null;
 }
-

@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { getImageCacheKey, isFallbackEventArtwork, loadedEventImageKeys } from '../EventCard.utils';
+import { useEffect, useMemo, useState } from "react";
+import { getImageCacheKey, isFallbackEventArtwork, loadedEventImageKeys } from "../EventCard.utils";
 
 export function useEventImageLoading(mediaImage: string, hasRealImage: boolean) {
   const mediaImageCacheKey = useMemo(() => getImageCacheKey(mediaImage), [mediaImage]);
   const [imageLoaded, setImageLoaded] = useState(
-    () => !hasRealImage || (mediaImageCacheKey ? loadedEventImageKeys.has(mediaImageCacheKey) : true)
+    () =>
+      !hasRealImage || (mediaImageCacheKey ? loadedEventImageKeys.has(mediaImageCacheKey) : true)
   );
   const showLoadingOverlay = hasRealImage && !imageLoaded;
 

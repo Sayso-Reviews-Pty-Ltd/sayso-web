@@ -22,24 +22,14 @@ export default function OnboardingStepHeader({
       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-4">
         {title}
       </h1>
-      
-      {subtitle && (
-        <p className="text-base sm:text-lg text-slate-600 mb-4">
-          {subtitle}
-        </p>
-      )}
-      
+
+      {subtitle && <p className="text-base sm:text-lg text-slate-600 mb-4">{subtitle}</p>}
+
       {description && (
-        <p className="text-slate-600 text-lg sm:text-xl leading-relaxed">
-          {description}
-        </p>
+        <p className="text-slate-600 text-lg sm:text-xl leading-relaxed">{description}</p>
       )}
-      
-      {children && (
-        <div className="mt-6">
-          {children}
-        </div>
-      )}
+
+      {children && <div className="mt-6">{children}</div>}
     </div>
   );
 }

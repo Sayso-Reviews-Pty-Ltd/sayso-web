@@ -1,10 +1,14 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { DEFAULT_SITE_DESCRIPTION, generateSEOMetadata, SITE_URL } from '../../lib/utils/seoMetadata';
-import { getServerSupabase } from '../../lib/supabase/server';
-import { getServiceSupabase } from '../../lib/admin';
-import SchemaMarkup from '../../components/SEO/SchemaMarkup';
-import { generateBreadcrumbSchema, generateEventSchema } from '../../lib/utils/schemaMarkup';
+import { Metadata } from "next";
+import Link from "next/link";
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  generateSEOMetadata,
+  SITE_URL,
+} from "../../lib/utils/seoMetadata";
+import { getServerSupabase } from "../../lib/supabase/server";
+import { getServiceSupabase } from "../../lib/admin";
+import SchemaMarkup from "../../components/SEO/SchemaMarkup";
+import { generateBreadcrumbSchema, generateEventSchema } from "../../lib/utils/schemaMarkup";
 
 interface EventLayoutProps {
   children: React.ReactNode;
@@ -23,16 +27,15 @@ interface EventData {
   type: string | null;
 }
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function toSlug(value: string): string {
   return value
     .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, '-');
+    .replace(/\s+/g, "-");
 }
 
 async function getEventData(id: string): Promise<EventData | null> {
@@ -48,10 +51,10 @@ async function getEventData(id: string): Promise<EventData | null> {
 
   // Source of truth for event detail pages.
   const { data: consolidatedEvent } = await dbClient
-    .from('events_and_specials')
-    .select('id, title, description, image, location, start_date, end_date, type')
-    .eq('id', id)
-    .in('type', ['event', 'special'])
+    .from("events_and_specials")
+    .select("id, title, description, image, location, start_date, end_date, type")
+    .eq("id", id)
+    .in("type", ["event", "special"])
     .maybeSingle();
 
   if (consolidatedEvent) {
@@ -71,9 +74,9 @@ async function getEventData(id: string): Promise<EventData | null> {
   // DEPRECATED: fallback for legacy ticketmaster_id slugs in bookmarked/shared URLs.
   // New events are in events_and_specials and resolved by the block above.
   const { data: ticketmasterByExternalId } = await dbClient
-    .from('ticketmaster_events')
-    .select('id, title, description, image_url, location, start_date')
-    .eq('ticketmaster_id', id)
+    .from("ticketmaster_events")
+    .select("id, title, description, image_url, location, start_date")
+    .eq("ticketmaster_id", id)
     .maybeSingle();
 
   if (ticketmasterByExternalId) {
@@ -86,7 +89,7 @@ async function getEventData(id: string): Promise<EventData | null> {
       location: ticketmasterByExternalId.location,
       start_date: ticketmasterByExternalId.start_date,
       end_date: null,
-      type: 'event',
+      type: "event",
     };
   }
 
@@ -94,9 +97,9 @@ async function getEventData(id: string): Promise<EventData | null> {
   // New events with UUID ids are resolved via events_and_specials above.
   if (UUID_RE.test(id)) {
     const { data: ticketmasterByUuid } = await dbClient
-      .from('ticketmaster_events')
-      .select('id, title, description, image_url, location, start_date')
-      .eq('id', id)
+      .from("ticketmaster_events")
+      .select("id, title, description, image_url, location, start_date")
+      .eq("id", id)
       .maybeSingle();
 
     if (ticketmasterByUuid) {
@@ -109,7 +112,7 @@ async function getEventData(id: string): Promise<EventData | null> {
         location: ticketmasterByUuid.location,
         start_date: ticketmasterByUuid.start_date,
         end_date: null,
-        type: 'event',
+        type: "event",
       };
     }
   }
@@ -120,13 +123,17 @@ async function getEventData(id: string): Promise<EventData | null> {
 /**
  * Generate dynamic metadata for event pages
  */
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const event = await getEventData(id);
 
   if (!event) {
     return generateSEOMetadata({
-      title: 'Event details | Sayso',
+      title: "Event details | Sayso",
       description: DEFAULT_SITE_DESCRIPTION,
       url: `/event/${id}`,
       noindex: true,
@@ -136,18 +143,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   return generateSEOMetadata({
     title: `${event.title} in Cape Town | Sayso`,
-    description: event.description || `Discover ${event.title} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
-    keywords: [event.title, 'cape town events', 'sayso events'],
+    description:
+      event.description ||
+      `Discover ${event.title} on Sayso, Cape Town's hyper-local reviews and discovery app.`,
+    keywords: [event.title, "cape town events", "sayso events"],
     image: event.image_url || event.image,
     url: `/event/${id}`,
-    type: 'article',
+    type: "article",
   });
 }
 
-export default async function EventLayout({
-  children,
-  params,
-}: EventLayoutProps) {
+export default async function EventLayout({ children, params }: EventLayoutProps) {
   const { id } = await params;
   const event = await getEventData(id);
 
@@ -157,8 +163,8 @@ export default async function EventLayout({
 
   if (event) {
     const eventUrl = `${SITE_URL}/event/${id}`;
-    const location = event.location || '';
-    const citySlug = location ? toSlug(String(location).split(',')[0]) : '';
+    const location = event.location || "";
+    const citySlug = location ? toSlug(String(location).split(",")[0]) : "";
     const startDate = event.start_date || undefined;
 
     const eventSchema = generateEventSchema({
@@ -171,8 +177,8 @@ export default async function EventLayout({
     });
 
     const breadcrumbSchema = generateBreadcrumbSchema([
-      { name: 'Home', url: `${SITE_URL}/` },
-      { name: 'Events & Specials', url: `${SITE_URL}/events-specials` },
+      { name: "Home", url: `${SITE_URL}/` },
+      { name: "Events & Specials", url: `${SITE_URL}/events-specials` },
       { name: event.title, url: eventUrl },
     ]);
 
@@ -180,10 +186,10 @@ export default async function EventLayout({
     eventSummary = {
       title: event.title,
       description: event.description || `Discover ${event.title} on Sayso.`,
-      location: location || 'Cape Town',
+      location: location || "Cape Town",
     };
     relatedLinks = [
-      { href: '/events-specials', label: 'More events and specials' },
+      { href: "/events-specials", label: "More events and specials" },
       ...(citySlug ? [{ href: `/${citySlug}`, label: `More events in ${location}` }] : []),
     ];
   }

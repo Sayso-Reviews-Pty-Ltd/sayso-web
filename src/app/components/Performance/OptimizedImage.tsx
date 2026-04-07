@@ -40,9 +40,9 @@ function OptimizedImage({
   const [hasError, setHasError] = useState(false);
 
   // Determine optimal quality based on use case
-  const quality = customQuality || getOptimalQuality(
-    priority ? 'hero' : width && width < 200 ? 'thumbnail' : 'gallery'
-  );
+  const quality =
+    customQuality ||
+    getOptimalQuality(priority ? "hero" : width && width < 200 ? "thumbnail" : "gallery");
 
   // Generate responsive sizes if not provided
   const sizes = customSizes || getResponsiveSizes();
@@ -76,7 +76,7 @@ function OptimizedImage({
           <div className="w-8 h-8 border-2 border-sage/30 border-t-sage rounded-full animate-spin" />
         </div>
       )}
-      
+
       <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isLoading ? 0 : 1 }}

@@ -67,7 +67,7 @@ export interface UserStats {
   distinctCategories?: number;
 }
 
-export type ActivityType = 'REVIEW' | 'SAVE' | 'UNSAVE' | 'HELPFUL_VOTE';
+export type ActivityType = "REVIEW" | "SAVE" | "UNSAVE" | "HELPFUL_VOTE";
 
 export interface UserActivityItem {
   id: string;
@@ -126,4 +126,3 @@ export interface ApiResponse<T> {
     code?: string;
   } | null;
 }
-

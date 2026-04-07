@@ -1,58 +1,58 @@
 // Types and interfaces for AddBusiness components
 
 export interface Subcategory {
-    id: string;
-    label: string;
-    interest_id: string;
+  id: string;
+  label: string;
+  interest_id: string;
 }
 
 export interface BusinessFormData {
-    name: string;
-    description: string;
-    mainCategory: string;
-    category: string;
-    businessType: "physical" | "service-area" | "online-only" | "";
-    isChain: boolean;
-    location: string;
-    address: string;
-    phone: string;
-    email: string;
-    website: string;
-    priceRange: string;
-    lat: string;
-    lng: string;
-    hours: {
-        monday: string;
-        tuesday: string;
-        wednesday: string;
-        thursday: string;
-        friday: string;
-        saturday: string;
-        sunday: string;
-    };
+  name: string;
+  description: string;
+  mainCategory: string;
+  category: string;
+  businessType: "physical" | "service-area" | "online-only" | "";
+  isChain: boolean;
+  location: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+  priceRange: string;
+  lat: string;
+  lng: string;
+  hours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
 }
 
 export interface PriceRangeOption {
-    value: string;
-    label: string;
+  value: string;
+  label: string;
 }
 
 // Helper function to get user-friendly field labels
 export const getFieldLabel = (fieldName: string): string => {
-    const labels: Record<string, string> = {
-        name: 'business name',
-        mainCategory: 'main category',
-        category: 'subcategory',
-        location: 'location',
-        email: 'email address',
-        website: 'website URL',
-        phone: 'phone number',
-        address: 'address',
-        description: 'description',
-        lat: 'latitude',
-        lng: 'longitude',
-    };
-    return labels[fieldName] || fieldName;
+  const labels: Record<string, string> = {
+    name: "business name",
+    mainCategory: "main category",
+    category: "subcategory",
+    location: "location",
+    email: "email address",
+    website: "website URL",
+    phone: "phone number",
+    address: "address",
+    description: "description",
+    lat: "latitude",
+    lng: "longitude",
+  };
+  return labels[fieldName] || fieldName;
 };
 
 // CSS animations for form sections
@@ -87,19 +87,19 @@ export const animations = `
 
 // Price range options
 export const priceRanges: PriceRangeOption[] = [
-    { value: "$", label: "Budget Friendly" },
-    { value: "$$", label: "Moderate" },
-    { value: "$$$", label: "Upscale" },
-    { value: "$$$$", label: "Luxury" },
+  { value: "$", label: "Budget Friendly" },
+  { value: "$$", label: "Moderate" },
+  { value: "$$$", label: "Upscale" },
+  { value: "$$$$", label: "Luxury" },
 ];
 
 // Days configuration for business hours
 export const daysOfWeek = [
-    { key: "monday", label: "Mon" },
-    { key: "tuesday", label: "Tue" },
-    { key: "wednesday", label: "Wed" },
-    { key: "thursday", label: "Thu" },
-    { key: "friday", label: "Fri" },
-    { key: "saturday", label: "Sat" },
-    { key: "sunday", label: "Sun" },
+  { key: "monday", label: "Mon" },
+  { key: "tuesday", label: "Tue" },
+  { key: "wednesday", label: "Wed" },
+  { key: "thursday", label: "Thu" },
+  { key: "friday", label: "Fri" },
+  { key: "saturday", label: "Sat" },
+  { key: "sunday", label: "Sun" },
 ] as const;

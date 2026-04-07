@@ -53,11 +53,17 @@ export function OtpInputGrid({
 
       {autoModeEnabled ? (
         <div className="mt-2 flex items-center justify-between text-sm">
-          <span className="inline-flex items-center gap-1 text-charcoal/65" style={{ fontFamily: FONT }}>
+          <span
+            className="inline-flex items-center gap-1 text-charcoal/65"
+            style={{ fontFamily: FONT }}
+          >
             <Clock3 className="w-3.5 h-3.5" />
             Auto-verifying now...
           </span>
-          <span className="inline-flex items-center gap-1 text-sage/90" style={{ fontFamily: FONT }}>
+          <span
+            className="inline-flex items-center gap-1 text-sage/90"
+            style={{ fontFamily: FONT }}
+          >
             <ShieldCheck className="w-3.5 h-3.5" />
             Secure verify
           </span>

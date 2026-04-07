@@ -3,14 +3,14 @@
  * Uses SWR for caching and deduplication.
  */
 
-import { useEffect } from 'react';
-import useSWR from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { swrConfig } from '../lib/swrConfig';
-import type { UserStats } from '../lib/types/user';
+import { useEffect } from "react";
+import useSWR from "swr";
+import { useAuth } from "../contexts/AuthContext";
+import { swrConfig } from "../lib/swrConfig";
+import type { UserStats } from "../lib/types/user";
 
 async function fetchUserStats([,]: [string, string]): Promise<UserStats | null> {
-  const response = await fetch('/api/user/stats', { credentials: 'include' });
+  const response = await fetch("/api/user/stats", { credentials: "include" });
 
   if (response.status === 401) {
     return null;
@@ -30,19 +30,18 @@ async function fetchUserStats([,]: [string, string]): Promise<UserStats | null> 
 export function useUserStats() {
   const { user, isLoading: authLoading } = useAuth();
 
-  const swrKey = (!authLoading && user?.id)
-    ? (['/api/user/stats', user.id] as [string, string])
-    : null;
+  const swrKey =
+    !authLoading && user?.id ? (["/api/user/stats", user.id] as [string, string]) : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchUserStats, swrConfig);
 
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   return {

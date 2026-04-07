@@ -11,8 +11,8 @@ export interface ApiEnvelope<T> {
 
 export interface MobileSessionProfileDto {
   id: string;
-  role?: 'user' | 'business_owner' | 'admin' | 'both';
-  account_role?: 'user' | 'business_owner' | 'admin';
+  role?: "user" | "business_owner" | "admin" | "both";
+  account_role?: "user" | "business_owner" | "admin";
   username?: string;
   display_name?: string;
   avatar_url?: string;
@@ -31,7 +31,7 @@ export interface MobileSessionUserDto {
 
 export interface BusinessPercentilesDto {
   punctuality?: number;
-  'cost-effectiveness'?: number;
+  "cost-effectiveness"?: number;
   friendliness?: number;
   trustworthiness?: number;
 }
@@ -101,12 +101,12 @@ export interface FeaturedBusinessDto extends BusinessListItemDto {
   description: string;
   reviewCount: number;
   totalRating?: number;
-  badge: 'featured';
+  badge: "featured";
   rank: number;
   monthAchievement: string;
   verified: boolean;
   ui_hints?: {
-    badge?: 'featured';
+    badge?: "featured";
     rank?: number;
     period?: string;
     reason?: {
@@ -135,7 +135,7 @@ export interface FeaturedBusinessesResponseDto {
     period?: string;
     generated_at?: string;
     seed?: string;
-    source?: 'cold_start' | 'rpc' | 'fallback';
+    source?: "cold_start" | "rpc" | "fallback";
     count?: number;
   } | null;
 }
@@ -149,15 +149,15 @@ export interface TopReviewerDto {
   rating: number;
   avgRatingGiven?: number | null;
   helpfulVotes?: number;
-  badge?: 'top' | 'verified' | 'local';
-  trophyBadge?: 'gold' | 'silver' | 'bronze' | 'rising-star' | 'community-favorite';
+  badge?: "top" | "verified" | "local";
+  trophyBadge?: "gold" | "silver" | "bronze" | "rising-star" | "community-favorite";
   badgesCount?: number;
   location: string;
 }
 
 export interface TopReviewersResponseDto {
   reviewers: TopReviewerDto[];
-  mode: 'stage1' | 'normal';
+  mode: "stage1" | "normal";
 }
 
 export interface RecentReviewDto {
@@ -181,7 +181,7 @@ export interface RecentReviewsResponseDto {
 export interface EventSpecialListItemDto {
   id: string;
   title: string;
-  type: 'event' | 'special';
+  type: "event" | "special";
   image?: string | null;
   image_url?: string | null;
   uploaded_images?: string[];
@@ -205,7 +205,7 @@ export interface EventSpecialListItemDto {
   description?: string;
   bookingUrl?: string;
   bookingContact?: string;
-  ctaSource?: 'website' | 'whatsapp' | 'quicket' | 'webtickets' | 'other' | null;
+  ctaSource?: "website" | "whatsapp" | "quicket" | "webtickets" | "other" | null;
   whatsappNumber?: string;
   whatsappPrefillTemplate?: string;
   href?: string;
@@ -217,7 +217,7 @@ export interface EventSpecialListItemDto {
   source?: string;
   isCommunityEvent?: boolean;
   isExternalEvent?: boolean;
-  availabilityStatus?: 'sold_out' | 'limited' | null;
+  availabilityStatus?: "sold_out" | "limited" | null;
 }
 
 export interface EventOccurrenceDto {
@@ -267,7 +267,7 @@ export interface NotificationsResponseDto {
 
 export interface RegisterPushTokenRequestDto {
   expoPushToken: string;
-  platform: 'ios' | 'android';
+  platform: "ios" | "android";
   deviceId?: string;
   appVersion?: string;
 }
@@ -281,7 +281,7 @@ export interface PushTokenDto {
   id: string;
   user_id: string;
   expo_push_token: string;
-  platform: 'ios' | 'android';
+  platform: "ios" | "android";
   device_id?: string | null;
   app_version?: string | null;
   last_seen_at: string;

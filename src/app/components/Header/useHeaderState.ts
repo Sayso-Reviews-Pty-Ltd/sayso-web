@@ -89,8 +89,7 @@ export const useHeaderState = ({
   // USER ROLE & AUTH STATE
   // ============================================================================
 
-  const userCurrentRole =
-    user?.profile?.account_role || user?.profile?.role || "user";
+  const userCurrentRole = user?.profile?.account_role || user?.profile?.role || "user";
   const isAdminUser = !forcePersonalMode && userCurrentRole === "admin";
   const isBusinessAccountUser =
     !forcePersonalMode && !isAdminUser && userCurrentRole === "business_owner";
@@ -152,11 +151,11 @@ export const useHeaderState = ({
     const el = headerRef.current;
     if (!el) return;
     const observer = new ResizeObserver(() => {
-      document.documentElement.style.setProperty('--header-height', `${el.offsetHeight}px`);
+      document.documentElement.style.setProperty("--header-height", `${el.offsetHeight}px`);
     });
     observer.observe(el);
     // Set immediately on mount
-    document.documentElement.style.setProperty('--header-height', `${el.offsetHeight}px`);
+    document.documentElement.style.setProperty("--header-height", `${el.offsetHeight}px`);
     return () => observer.disconnect();
   }, []);
 
@@ -174,16 +173,17 @@ export const useHeaderState = ({
     isDiscoverActive: DISCOVER_LINKS.some(
       ({ href }) => pathname === href || pathname?.startsWith(href)
     ),
-    isNotificationsActive:
-      pathname === "/notifications" || pathname?.startsWith("/notifications"),
+    isNotificationsActive: pathname === "/notifications" || pathname?.startsWith("/notifications"),
     isSavedActive: pathname === "/saved" || pathname?.startsWith("/saved"),
     isProfileActive: pathname === "/profile" || pathname?.startsWith("/profile"),
-    isSettingsActive:
-      pathname === "/settings" || pathname?.startsWith("/settings"),
-    isMessagesActive: pathname === "/dm" || pathname?.startsWith("/dm") || pathname === "/my-businesses/messages" || pathname?.startsWith("/my-businesses/messages"),
+    isSettingsActive: pathname === "/settings" || pathname?.startsWith("/settings"),
+    isMessagesActive:
+      pathname === "/dm" ||
+      pathname?.startsWith("/dm") ||
+      pathname === "/my-businesses/messages" ||
+      pathname?.startsWith("/my-businesses/messages"),
     isClaimBusinessActive:
-      pathname === "/claim-business" ||
-      pathname?.startsWith("/claim-business"),
+      pathname === "/claim-business" || pathname?.startsWith("/claim-business"),
   };
 
   // ============================================================================

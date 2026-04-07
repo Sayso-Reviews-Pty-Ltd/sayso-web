@@ -5,6 +5,7 @@ This document provides practical code examples for implementing the unified erro
 ## Standard Error Implementations
 
 ### 404 - Page Not Found
+
 ```typescript
 "use client";
 
@@ -26,6 +27,7 @@ export default function NotFound() {
 ```
 
 ### 401 - Authentication Required
+
 ```typescript
 "use client";
 
@@ -53,6 +55,7 @@ export default function AuthErrorPage() {
 ```
 
 ### 403 - Access Denied
+
 ```typescript
 "use client";
 
@@ -74,6 +77,7 @@ export default function AccessDeniedPage() {
 ```
 
 ### 500 - Server Error
+
 ```typescript
 "use client";
 
@@ -96,6 +100,7 @@ export default function ServerErrorPage() {
 ## Error Boundary Usage
 
 ### Basic Setup
+
 ```typescript
 "use client";
 
@@ -112,6 +117,7 @@ export default function Page() {
 ```
 
 ### With Error Logging
+
 ```typescript
 "use client";
 

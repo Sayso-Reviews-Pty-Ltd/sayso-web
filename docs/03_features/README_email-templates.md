@@ -16,6 +16,7 @@ This directory contains email templates for Supabase authentication emails. Thes
 4. For each template:
 
 ### Signup Confirmation Email
+
 - Template: **Confirm signup**
 - Copy the contents of `confirm-signup.html`
 - Paste into the template editor
@@ -23,6 +24,7 @@ This directory contains email templates for Supabase authentication emails. Thes
   - `{{ .ConfirmationURL }}` - The confirmation link
 
 ### Email Change Confirmation
+
 - Template: **Change email address**
 - Copy the contents of `confirm-email-change.html`
 - Paste into the template editor
@@ -32,6 +34,7 @@ This directory contains email templates for Supabase authentication emails. Thes
   - `{{ .ConfirmationURL }}` - The confirmation link
 
 ### Password Reset
+
 - Template: **Reset password**
 - Copy the contents of `reset-password.html`
 - Paste into the template editor
@@ -50,7 +53,7 @@ This directory contains email templates for Supabase authentication emails. Thes
 ## Testing
 
 After configuring the templates in Supabase:
+
 1. Test signup confirmation by creating a new account
 2. Test email change by using `AuthService.changeEmail()` method
 3. Verify that users are redirected correctly after clicking confirmation links
-

@@ -4,10 +4,10 @@
  * - useUserBadgesById(userId) — fetches for any user ID (public, used in cards/lists).
  */
 
-import { useEffect } from 'react';
-import useSWR from 'swr';
-import { useAuth } from '../contexts/AuthContext';
-import { swrConfig } from '../lib/swrConfig';
+import { useEffect } from "react";
+import useSWR from "swr";
+import { useAuth } from "../contexts/AuthContext";
+import { swrConfig } from "../lib/swrConfig";
 
 interface Achievement {
   id: string;
@@ -24,7 +24,7 @@ export interface UserAchievement {
 }
 
 async function fetchUserBadges([, userId]: [string, string]): Promise<UserAchievement[]> {
-  const response = await fetch(`/api/badges/user?user_id=${userId}`, { credentials: 'include' });
+  const response = await fetch(`/api/badges/user?user_id=${userId}`, { credentials: "include" });
 
   if (response.status === 401) {
     return [];
@@ -50,7 +50,7 @@ async function fetchUserBadges([, userId]: [string, string]): Promise<UserAchiev
         name: badge.name,
         description: badge.description,
         icon: badge.icon_path,
-        category: badge.badge_group || 'general',
+        category: badge.badge_group || "general",
       },
     }));
 }
@@ -58,9 +58,10 @@ async function fetchUserBadges([, userId]: [string, string]): Promise<UserAchiev
 export function useUserBadges() {
   const { user, isLoading: authLoading } = useAuth();
 
-  const swrKey = (!authLoading && user?.id)
-    ? (['/api/badges/user:achievements', user.id] as [string, string])
-    : null;
+  const swrKey =
+    !authLoading && user?.id
+      ? (["/api/badges/user:achievements", user.id] as [string, string])
+      : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchUserBadges, {
     ...swrConfig,
@@ -70,10 +71,10 @@ export function useUserBadges() {
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   return {
@@ -99,14 +100,14 @@ async function fetchPublicUserBadges([, userId]: [string, string]): Promise<Badg
   const result = await response.json();
   if (!result.ok || !Array.isArray(result.badges)) return [];
 
-  const priorityOrder = ['milestone', 'specialist', 'explorer', 'community'];
+  const priorityOrder = ["milestone", "specialist", "explorer", "community"];
   return result.badges
     .filter((b: any) => b.earned)
     .map((b: any) => ({
       id: b.id,
       name: b.name,
       icon_path: b.icon_path,
-      badge_group: b.badge_group || 'general',
+      badge_group: b.badge_group || "general",
     }))
     .sort((a: BadgePillItem, b: BadgePillItem) => {
       const ai = priorityOrder.indexOf(a.badge_group);
@@ -120,7 +121,7 @@ async function fetchPublicUserBadges([, userId]: [string, string]): Promise<Badg
  * Skips when userId is falsy.
  */
 export function useUserBadgesById(userId: string | null | undefined) {
-  const swrKey = userId ? (['/api/badges/user:public', userId] as [string, string]) : null;
+  const swrKey = userId ? (["/api/badges/user:public", userId] as [string, string]) : null;
 
   const { data, isLoading } = useSWR(swrKey, fetchPublicUserBadges, {
     ...swrConfig,

@@ -7,9 +7,9 @@
  * Storage bucket names used throughout the application
  */
 export const STORAGE_BUCKETS = {
-  BUSINESS_IMAGES: 'business_images', // Note: Uses underscore, not hyphen
-  REVIEW_IMAGES: 'review_images',
-  HERO_IMAGES: 'hero_images',
+  BUSINESS_IMAGES: "business_images", // Note: Uses underscore, not hyphen
+  REVIEW_IMAGES: "review_images",
+  HERO_IMAGES: "hero_images",
 } as const;
 
 /**
@@ -22,25 +22,25 @@ export async function verifyBucketExists(
 ): Promise<{ exists: boolean; error?: string }> {
   try {
     const { data: buckets, error } = await supabase.storage.listBuckets();
-    
+
     if (error) {
       return { exists: false, error: error.message };
     }
-    
-    const bucketExists = buckets?.some(bucket => bucket.id === bucketName) ?? false;
-    
+
+    const bucketExists = buckets?.some((bucket) => bucket.id === bucketName) ?? false;
+
     if (!bucketExists) {
       return {
         exists: false,
         error: `Bucket "${bucketName}" does not exist. Please create it in Supabase Dashboard > Storage.`,
       };
     }
-    
+
     return { exists: true };
   } catch (error) {
     return {
       exists: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -59,23 +59,23 @@ export function getBusinessImageUrl(filePath: string): string {
  */
 export function validateBusinessImage(file: File): { valid: boolean; error?: string } {
   const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
   if (!file) {
-    return { valid: false, error: 'No file provided' };
+    return { valid: false, error: "No file provided" };
   }
-  
+
   if (file.size > MAX_SIZE) {
     return { valid: false, error: `File size exceeds ${MAX_SIZE / 1024 / 1024}MB limit` };
   }
-  
+
   if (!ALLOWED_TYPES.includes(file.type)) {
     return {
       valid: false,
-      error: `File type not allowed. Allowed types: ${ALLOWED_TYPES.join(', ')}`,
+      error: `File type not allowed. Allowed types: ${ALLOWED_TYPES.join(", ")}`,
     };
   }
-  
+
   return { valid: true };
 }
 
@@ -91,4 +91,3 @@ export function generateBusinessImagePath(
 ): string {
   return `${businessId}/${businessId}_${index}_${timestamp}.${fileExtension}`;
 }
-

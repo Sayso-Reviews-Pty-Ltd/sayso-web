@@ -203,7 +203,7 @@ export const REVIEWER_INDEX_SETTINGS = {
 // Event hit — source: events_and_specials where type = 'event'
 // ---------------------------------------------------------------------------
 export interface EventHit {
-  objectID: string;            // = events_and_specials.id
+  objectID: string; // = events_and_specials.id
   title: string;
   description: string | null;
   location: string | null;
@@ -211,13 +211,13 @@ export interface EventHit {
   /** Unix seconds — used for customRanking and numeric filter at query time */
   start_date_ts: number;
   end_date_ts: number | null;
-  image_url: string | null;    // mapped from 'image' column
+  image_url: string | null; // mapped from 'image' column
   booking_url: string | null;
   icon: string | null;
   price: number | null;
   availability_status: string | null;
-  category_slug: string | null;   // quicket_category_slug
-  category_label: string | null;  // quicket_category_label
+  category_slug: string | null; // quicket_category_slug
+  category_label: string | null; // quicket_category_label
   /**
    * Canonical key for Algolia `distinct` deduplication of recurring series.
    * Computed by normalising the title (stripping ordinal numbers, date tokens)
@@ -231,7 +231,7 @@ export interface EventHit {
 // Special hit — source: events_and_specials where type = 'special'
 // ---------------------------------------------------------------------------
 export interface SpecialHit {
-  objectID: string;            // = events_and_specials.id
+  objectID: string; // = events_and_specials.id
   title: string;
   description: string | null;
   location: string | null;
@@ -311,16 +311,9 @@ export const EVENT_INDEX_SETTINGS = {
 // Special index settings
 // ---------------------------------------------------------------------------
 export const SPECIAL_INDEX_SETTINGS = {
-  searchableAttributes: [
-    "title",
-    "unordered(description)",
-    "unordered(location)",
-  ],
+  searchableAttributes: ["title", "unordered(description)", "unordered(location)"],
 
-  attributesForFaceting: [
-    "filterOnly(business_id)",
-    "filterOnly(start_date_ts)",
-  ],
+  attributesForFaceting: ["filterOnly(business_id)", "filterOnly(start_date_ts)"],
 
   customRanking: ["asc(start_date_ts)"],
 

@@ -16,11 +16,7 @@ interface UseScrollRevealOptions {
  */
 export function useScrollReveal(options: UseScrollRevealOptions = {}) {
   const isDesktop = useIsDesktop();
-  const {
-    threshold = 0.1,
-    rootMargin = "0px 0px -100px 0px",
-    once = true,
-  } = options;
+  const { threshold = 0.1, rootMargin = "0px 0px -100px 0px", once = true } = options;
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const observedElementsRef = useRef<Set<Element>>(new Set());
@@ -44,7 +40,7 @@ export function useScrollReveal(options: UseScrollRevealOptions = {}) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("active");
-            
+
             // If once is true, stop observing after first reveal
             if (once && observerRef.current) {
               observerRef.current.unobserve(entry.target);

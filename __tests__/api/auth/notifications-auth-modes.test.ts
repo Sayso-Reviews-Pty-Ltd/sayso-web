@@ -1,15 +1,15 @@
 const mockGetServerSupabase = jest.fn();
 const mockCreateClient = jest.fn();
 
-jest.mock('@/app/lib/supabase/server', () => ({
+jest.mock("@/app/lib/supabase/server", () => ({
   getServerSupabase: (...args: any[]) => mockGetServerSupabase(...args),
 }));
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock("@supabase/supabase-js", () => ({
   createClient: (...args: any[]) => mockCreateClient(...args),
 }));
 
-import { GET } from '@/app/api/notifications/user/route';
+import { GET } from "@/app/api/notifications/user/route";
 
 function makeNotificationsBuilder() {
   const builder: any = {
@@ -24,9 +24,7 @@ function makeNotificationsBuilder() {
   builder.order = jest.fn(() => builder);
   builder.range = jest.fn(() => builder);
   builder.then = (resolve: any, reject: any) => {
-    const result = builder.isCountQuery
-      ? { count: 0, error: null }
-      : { data: [], error: null };
+    const result = builder.isCountQuery ? { count: 0, error: null } : { data: [], error: null };
     return Promise.resolve(result).then(resolve, reject);
   };
 
@@ -42,18 +40,18 @@ function buildNotificationsSupabase(userId: string) {
       }),
     },
     from: jest.fn((table: string) => {
-      if (table === 'profiles') {
+      if (table === "profiles") {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
           maybeSingle: jest.fn().mockResolvedValue({
-            data: { role: 'user', account_role: 'user' },
+            data: { role: "user", account_role: "user" },
             error: null,
           }),
         };
       }
 
-      if (table === 'notifications') {
+      if (table === "notifications") {
         return makeNotificationsBuilder();
       }
 
@@ -62,16 +60,16 @@ function buildNotificationsSupabase(userId: string) {
   };
 }
 
-describe('GET /api/notifications/user auth modes', () => {
+describe("GET /api/notifications/user auth modes", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('supports cookie auth', async () => {
-    const cookieSupabase = buildNotificationsSupabase('cookie-user');
+  it("supports cookie auth", async () => {
+    const cookieSupabase = buildNotificationsSupabase("cookie-user");
     mockGetServerSupabase.mockResolvedValue(cookieSupabase);
 
-    const req = new Request('http://localhost/api/notifications/user') as any;
+    const req = new Request("http://localhost/api/notifications/user") as any;
     const res = await GET(req);
     const body = await res.json();
 
@@ -81,12 +79,12 @@ describe('GET /api/notifications/user auth modes', () => {
     expect(body.unreadCount).toBe(0);
   });
 
-  it('supports bearer auth', async () => {
-    const bearerSupabase = buildNotificationsSupabase('bearer-user');
+  it("supports bearer auth", async () => {
+    const bearerSupabase = buildNotificationsSupabase("bearer-user");
     mockCreateClient.mockReturnValue(bearerSupabase);
 
-    const req = new Request('http://localhost/api/notifications/user', {
-      headers: { authorization: 'Bearer token-xyz' },
+    const req = new Request("http://localhost/api/notifications/user", {
+      headers: { authorization: "Bearer token-xyz" },
     }) as any;
     const res = await GET(req);
     const body = await res.json();

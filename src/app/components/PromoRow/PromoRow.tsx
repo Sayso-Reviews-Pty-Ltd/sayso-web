@@ -18,7 +18,8 @@ const PROMO_CARDS: PromoCard[] = [
   {
     title: "Trending Reviews",
     subtitle: "See what's hot right now",
-    imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop&auto=format",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop&auto=format",
     href: "/trending",
     cta: "Read Reviews",
     gradient: "from-coral/10 to-coral/5",
@@ -26,7 +27,8 @@ const PROMO_CARDS: PromoCard[] = [
   {
     title: "New This Week",
     subtitle: "Fresh picks for you",
-    imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop&auto=format",
+    imageUrl:
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop&auto=format",
     href: "/discover/reviews",
     cta: "Discover Now",
     gradient: "from-sage/10 to-sage/5",
@@ -34,7 +36,8 @@ const PROMO_CARDS: PromoCard[] = [
   {
     title: "Top Rated",
     subtitle: "Community favourites",
-    imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop&auto=format",
+    imageUrl:
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop&auto=format",
     href: "/top-rated",
     cta: "View All",
     gradient: "from-charcoal/5 to-charcoal/3",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageMetadata } from '../../lib/utils/seoMetadata';
+import { PageMetadata } from "../../lib/utils/seoMetadata";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = PageMetadata.claimBusiness();

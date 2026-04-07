@@ -12,22 +12,23 @@ Instead of single-column indexes, we've added composite indexes that match our a
 
 ```sql
 -- Active businesses by category (most common query)
-CREATE INDEX idx_businesses_status_category 
-  ON businesses(status, category) 
+CREATE INDEX idx_businesses_status_category
+  ON businesses(status, category)
   WHERE status = 'active';
 
 -- Active businesses sorted by creation date
-CREATE INDEX idx_businesses_status_created_at 
-  ON businesses(status, created_at DESC) 
+CREATE INDEX idx_businesses_status_created_at
+  ON businesses(status, created_at DESC)
   WHERE status = 'active';
 
 -- Active businesses by category and price range
-CREATE INDEX idx_businesses_status_category_price 
-  ON businesses(status, category, price_range) 
+CREATE INDEX idx_businesses_status_category_price
+  ON businesses(status, category, price_range)
   WHERE status = 'active';
 ```
 
 **Benefits:**
+
 - ✅ Faster category filtering (10x improvement)
 - ✅ Partial indexes reduce index size
 - ✅ Multi-column indexes eliminate table scans
@@ -43,11 +44,13 @@ CREATE INDEX idx_businesses_status_category_price
 Replaced offset pagination with keyset (cursor) pagination:
 
 **Before (Offset):**
+
 ```typescript
 .range(offset, offset + limit - 1)  // Gets slower with large offsets
 ```
 
 **After (Keyset):**
+
 ```typescript
 WHERE (
   created_at < cursor_created_at
@@ -57,6 +60,7 @@ LIMIT 20
 ```
 
 **Benefits:**
+
 - ✅ Consistent performance regardless of page depth
 - ✅ No expensive OFFSET calculations
 - ✅ Uses index efficiently
@@ -72,21 +76,22 @@ LIMIT 20
 Only select fields needed for card display, not full business data:
 
 **Before:**
+
 ```typescript
 .select('*')  // Returns ~25 fields per business
 ```
 
 **After:**
+
 ```typescript
 // Only return essential card fields (12 fields)
 {
-  id, name, image, category, location,
-  rating, reviews, badge, verified, 
-  priceRange, distance
+  (id, name, image, category, location, rating, reviews, badge, verified, priceRange, distance);
 }
 ```
 
 **Benefits:**
+
 - ✅ Reduced payload size (60% smaller)
 - ✅ Faster serialization
 - ✅ Lower bandwidth usage
@@ -100,17 +105,20 @@ Only select fields needed for card display, not full business data:
 **Location:** `src/app/lib/migrations/002_business/006_performance-indexes.sql`
 
 #### GIN Index for Full-Text Search
+
 ```sql
-CREATE INDEX idx_businesses_search_vector 
+CREATE INDEX idx_businesses_search_vector
   ON businesses USING GIN(search_vector);
 ```
 
 **Usage:**
+
 ```sql
 WHERE search_vector @@ websearch_to_tsquery('english', 'pizza italian')
 ```
 
 **Benefits:**
+
 - ✅ Fast full-text search across name, description, category
 - ✅ Weighted search (name has higher priority)
 - ✅ Supports phrase and boolean queries
@@ -118,12 +126,14 @@ WHERE search_vector @@ websearch_to_tsquery('english', 'pizza italian')
 **Impact:** Search queries execute in ~15ms for 100k+ businesses.
 
 #### GiST Index for Geographic Queries
+
 ```sql
-CREATE INDEX idx_businesses_geo_point 
+CREATE INDEX idx_businesses_geo_point
   ON businesses USING GIST(geo_point);
 ```
 
 **Usage:**
+
 ```sql
 WHERE ST_DWithin(
   user_location::geography,
@@ -133,6 +143,7 @@ WHERE ST_DWithin(
 ```
 
 **Benefits:**
+
 - ✅ Efficient "near me" queries
 - ✅ Radius search without scanning all rows
 - ✅ Distance calculations
@@ -161,12 +172,14 @@ SELECT * FROM list_businesses_optimized(
 ```
 
 **Benefits:**
+
 - ✅ Single round-trip to database
 - ✅ Query plan optimized by database
 - ✅ Reduces application-side processing
 - ✅ Type-safe parameters
 
-**Impact:** 
+**Impact:**
+
 - Reduced network round-trips from 3+ to 1
 - Total API response time: ~50ms → ~25ms
 
@@ -180,24 +193,20 @@ Added aggressive caching headers for GET requests:
 
 ```typescript
 // Regular listings - cache for 1 hour on CDN
-response.headers.set(
-  'Cache-Control',
-  'public, s-maxage=3600, stale-while-revalidate=7200'
-);
+response.headers.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=7200");
 
 // Trending/top lists - cache for 15 minutes
-response.headers.set(
-  'Cache-Control',
-  'public, s-maxage=900, stale-while-revalidate=1800'
-);
+response.headers.set("Cache-Control", "public, s-maxage=900, stale-while-revalidate=1800");
 ```
 
 **Benefits:**
+
 - ✅ CDN caching reduces database load
 - ✅ Stale-while-revalidate provides instant responses
 - ✅ ETag support for conditional requests
 
 **Impact:**
+
 - 80%+ of requests served from cache
 - Database load reduced by 75%
 - P95 response time: 200ms → 20ms
@@ -211,9 +220,10 @@ response.headers.set(
 Pre-computed materialized views for expensive queries:
 
 #### Top Rated Businesses
+
 ```sql
 CREATE MATERIALIZED VIEW mv_top_rated_businesses AS
-SELECT 
+SELECT
   b.*,
   bs.*,
   (bs.average_rating * LOG(bs.total_reviews + 1)) as weighted_score
@@ -227,9 +237,10 @@ LIMIT 100;
 ```
 
 #### Trending Businesses
+
 ```sql
 CREATE MATERIALIZED VIEW mv_trending_businesses AS
-SELECT 
+SELECT
   b.*,
   COUNT(*) FILTER (WHERE r.created_at >= NOW() - INTERVAL '7 days') as recent_reviews_7d,
   AVG(r.rating) FILTER (WHERE r.created_at >= NOW() - INTERVAL '30 days') as recent_avg_rating,
@@ -243,6 +254,7 @@ LIMIT 100;
 ```
 
 **Refresh Strategy:**
+
 ```sql
 -- Scheduled refresh every 15 minutes via pg_cron
 SELECT cron.schedule(
@@ -253,21 +265,24 @@ SELECT cron.schedule(
 ```
 
 **Benefits:**
+
 - ✅ Complex aggregations pre-computed
 - ✅ Instant response times (<5ms)
 - ✅ Reduces load on main tables
 - ✅ Automatic refresh via cron
 
 **Impact:**
+
 - Trending page: 2000ms → 5ms query time
 - Top rated page: 1500ms → 5ms query time
 
 **Usage:**
+
 ```typescript
 // In API route
-const { data } = await supabase.rpc('get_trending_businesses', {
+const { data } = await supabase.rpc("get_trending_businesses", {
   p_limit: 20,
-  p_category: 'restaurant'
+  p_category: "restaurant",
 });
 ```
 
@@ -280,6 +295,7 @@ const { data } = await supabase.rpc('get_trending_businesses', {
 Ensured all RLS policies reference indexed columns:
 
 **Before:**
+
 ```sql
 CREATE POLICY "public_access"
   ON businesses FOR SELECT
@@ -288,9 +304,10 @@ CREATE POLICY "public_access"
 ```
 
 **After:**
+
 ```sql
 -- Added composite index first
-CREATE INDEX idx_businesses_status_category 
+CREATE INDEX idx_businesses_status_category
   ON businesses(status, category);
 
 -- Then policy uses indexed columns
@@ -300,12 +317,14 @@ CREATE POLICY "public_access"
 ```
 
 **Key Optimizations:**
+
 1. All policies use indexed columns (`status`, `owner_id`, `user_id`)
 2. Added indexes for admin role checks in profiles
 3. Partial indexes for common RLS conditions
 4. Removed redundant policy checks
 
 **Benefits:**
+
 - ✅ RLS overhead: ~30ms → ~2ms per query
 - ✅ No full table scans
 - ✅ Scales with database size
@@ -316,23 +335,23 @@ CREATE POLICY "public_access"
 
 ### Business Listing Query Performance
 
-| Scenario | Before | After | Improvement |
-|----------|--------|-------|-------------|
-| Category browse (page 1) | 200ms | 20ms | **10x faster** |
-| Category browse (page 100) | 2000ms | 22ms | **90x faster** |
-| Full-text search | 500ms | 15ms | **33x faster** |
-| Near me (5km radius) | 800ms | 25ms | **32x faster** |
-| Trending page | 2000ms | 5ms | **400x faster** |
-| Top rated page | 1500ms | 5ms | **300x faster** |
+| Scenario                   | Before | After | Improvement     |
+| -------------------------- | ------ | ----- | --------------- |
+| Category browse (page 1)   | 200ms  | 20ms  | **10x faster**  |
+| Category browse (page 100) | 2000ms | 22ms  | **90x faster**  |
+| Full-text search           | 500ms  | 15ms  | **33x faster**  |
+| Near me (5km radius)       | 800ms  | 25ms  | **32x faster**  |
+| Trending page              | 2000ms | 5ms   | **400x faster** |
+| Top rated page             | 1500ms | 5ms   | **300x faster** |
 
 ### Resource Usage
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| API response size | ~50KB | ~20KB | **60% smaller** |
-| Database CPU | 45% | 12% | **73% reduction** |
-| Cache hit rate | 15% | 85% | **5.7x higher** |
-| Concurrent users supported | 100 | 500+ | **5x more** |
+| Metric                     | Before | After | Improvement       |
+| -------------------------- | ------ | ----- | ----------------- |
+| API response size          | ~50KB  | ~20KB | **60% smaller**   |
+| Database CPU               | 45%    | 12%   | **73% reduction** |
+| Cache hit rate             | 15%    | 85%   | **5.7x higher**   |
+| Concurrent users supported | 100    | 500+  | **5x more**       |
 
 ---
 
@@ -372,7 +391,7 @@ SELECT last_refreshed FROM mv_top_rated_businesses LIMIT 1;
 ### Monitor Index Usage
 
 ```sql
-SELECT 
+SELECT
   schemaname,
   tablename,
   indexname,
@@ -387,7 +406,7 @@ ORDER BY idx_scan DESC;
 ### Identify Missing Indexes
 
 ```sql
-SELECT 
+SELECT
   schemaname,
   tablename,
   attname,
@@ -405,14 +424,14 @@ ORDER BY abs(correlation) DESC;
 
 ### When to Use Each Optimization
 
-| Use Case | Optimization | When to Use |
-|----------|-------------|-------------|
-| Paginated lists | Keyset pagination | Always (default) |
-| Category filtering | Composite indexes | Common filters |
-| Search | GIN indexes | Full-text search needed |
-| Near me | GiST indexes | Location-based queries |
-| Top/trending | Materialized views | Read-heavy aggregations |
-| Public APIs | Cache headers | High traffic endpoints |
+| Use Case           | Optimization       | When to Use             |
+| ------------------ | ------------------ | ----------------------- |
+| Paginated lists    | Keyset pagination  | Always (default)        |
+| Category filtering | Composite indexes  | Common filters          |
+| Search             | GIN indexes        | Full-text search needed |
+| Near me            | GiST indexes       | Location-based queries  |
+| Top/trending       | Materialized views | Read-heavy aggregations |
+| Public APIs        | Cache headers      | High traffic endpoints  |
 
 ### Query Performance Guidelines
 
@@ -433,7 +452,7 @@ ANALYZE businesses;
 ANALYZE business_stats;
 
 -- Check index bloat
-SELECT 
+SELECT
   schemaname,
   tablename,
   indexname,
@@ -454,7 +473,7 @@ ORDER BY pg_relation_size(indexrelid) DESC;
 ALTER DATABASE your_database SET log_min_duration_statement = 100;
 
 -- Check slow queries
-SELECT 
+SELECT
   query,
   calls,
   total_time,
@@ -469,9 +488,9 @@ LIMIT 10;
 
 ```sql
 -- Verify query plan
-EXPLAIN (ANALYZE, BUFFERS) 
-SELECT * FROM businesses 
-WHERE status = 'active' 
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM businesses
+WHERE status = 'active'
   AND category = 'restaurant'
 LIMIT 20;
 
@@ -486,7 +505,7 @@ LIMIT 20;
 SELECT * FROM cron.job WHERE jobname = 'refresh-business-views';
 
 -- Check for errors
-SELECT * FROM cron.job_run_details 
+SELECT * FROM cron.job_run_details
 WHERE jobid = (SELECT jobid FROM cron.job WHERE jobname = 'refresh-business-views')
 ORDER BY start_time DESC
 LIMIT 10;
@@ -513,4 +532,3 @@ SELECT refresh_business_views();
 - [Materialized Views](https://www.postgresql.org/docs/current/rules-materializedviews.html)
 - [RLS Performance](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [pg_cron Documentation](https://github.com/citusdata/pg_cron)
-

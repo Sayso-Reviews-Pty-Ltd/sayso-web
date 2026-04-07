@@ -5,7 +5,7 @@ import { getPooledSupabaseClient } from "./pool";
 /**
  * Get Supabase client for server-side operations
  * Uses connection pooling for better performance
- * 
+ *
  * @param request - Optional request object for request-scoped client caching
  * @returns Supabase client instance
  */

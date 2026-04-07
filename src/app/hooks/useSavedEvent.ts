@@ -3,15 +3,15 @@
  * Uses SWR with optimistic toggle.
  */
 
-'use client';
+"use client";
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { useAuth } from '../contexts/AuthContext';
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { useAuth } from "../contexts/AuthContext";
 
 async function fetchSavedEvent([, eventId]: [string, string]): Promise<boolean> {
   const response = await fetch(`/api/user/saved-events?event_id=${eventId}`, {
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!response.ok) return false;
@@ -23,9 +23,10 @@ async function fetchSavedEvent([, eventId]: [string, string]): Promise<boolean> 
 export function useSavedEvent(eventId: string | null | undefined) {
   const { user, isLoading: authLoading } = useAuth();
 
-  const swrKey = (!authLoading && user?.id && eventId)
-    ? (['/api/user/saved-events', eventId] as [string, string])
-    : null;
+  const swrKey =
+    !authLoading && user?.id && eventId
+      ? (["/api/user/saved-events", eventId] as [string, string])
+      : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchSavedEvent, {
     ...swrConfig,
@@ -43,15 +44,15 @@ export function useSavedEvent(eventId: string | null | undefined) {
 
     try {
       const response = next
-        ? await fetch('/api/user/saved-events', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+        ? await fetch("/api/user/saved-events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ event_id: eventId }),
           })
         : await fetch(`/api/user/saved-events?event_id=${eventId}`, {
-            method: 'DELETE',
-            credentials: 'include',
+            method: "DELETE",
+            credentials: "include",
           });
 
       if (!response.ok) {
@@ -73,5 +74,5 @@ export function useSavedEvent(eventId: string | null | undefined) {
 }
 
 export function invalidateSavedEvent(eventId: string) {
-  globalMutate(['/api/user/saved-events', eventId]);
+  globalMutate(["/api/user/saved-events", eventId]);
 }

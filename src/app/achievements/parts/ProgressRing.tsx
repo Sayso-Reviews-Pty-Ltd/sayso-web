@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useMotionValue, useSpring } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useMotionValue, useSpring } from "framer-motion";
 
 export function ProgressRing({ percentage, size = 180 }: { percentage: number; size?: number }) {
   const radius = (size - 20) / 2;
@@ -13,7 +13,7 @@ export function ProgressRing({ percentage, size = 180 }: { percentage: number; s
 
   useEffect(() => {
     motionPct.set(percentage);
-    const unsub = springPct.on('change', (v) => {
+    const unsub = springPct.on("change", (v) => {
       setDisplayPct(Math.round(v));
       setDashOffset(circumference - (v / 100) * circumference);
     });
@@ -21,7 +21,10 @@ export function ProgressRing({ percentage, size = 180 }: { percentage: number; s
   }, [percentage, motionPct, springPct, circumference]);
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="-rotate-90">
         {/* Track */}
         <circle
@@ -43,7 +46,7 @@ export function ProgressRing({ percentage, size = 180 }: { percentage: number; s
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
-          style={{ transition: 'stroke-dashoffset 0.05s linear' }}
+          style={{ transition: "stroke-dashoffset 0.05s linear" }}
         />
         <defs>
           <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -53,7 +56,9 @@ export function ProgressRing({ percentage, size = 180 }: { percentage: number; s
         </defs>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-urbanist font-800 text-4xl text-white leading-none">{displayPct}%</span>
+        <span className="font-urbanist font-800 text-4xl text-white leading-none">
+          {displayPct}%
+        </span>
         <span className="font-urbanist text-xs text-white/60 mt-1">complete</span>
       </div>
     </div>

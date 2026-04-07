@@ -3,15 +3,15 @@
  * Uses SWR with a stable key derived from the coordinates.
  */
 
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
 
 async function fetchReverseGeocode([, lat, lng]: [string, number, number]): Promise<string | null> {
-  const res = await fetch('/api/geocode/reverse', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const res = await fetch("/api/geocode/reverse", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ latitude: lat, longitude: lng }),
   });
 
@@ -24,7 +24,7 @@ async function fetchReverseGeocode([, lat, lng]: [string, number, number]): Prom
 export function useReverseGeocode(
   latitude: number | null | undefined,
   longitude: number | null | undefined,
-  enabled = true,
+  enabled = true
 ) {
   // Round to 6 decimal places for cache key stability
   const lat = latitude != null ? Math.round(latitude * 1e6) / 1e6 : null;
@@ -32,7 +32,7 @@ export function useReverseGeocode(
 
   const swrKey =
     enabled && lat != null && lng != null
-      ? (['/api/geocode/reverse', lat, lng] as [string, number, number])
+      ? (["/api/geocode/reverse", lat, lng] as [string, number, number])
       : null;
 
   const { data, isLoading } = useSWR(swrKey, fetchReverseGeocode, {

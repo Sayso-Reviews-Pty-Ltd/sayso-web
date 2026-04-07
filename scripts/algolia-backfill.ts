@@ -79,7 +79,9 @@ async function backfillBusinesses() {
     if (!data || data.length === 0) break;
 
     const hits: BusinessHit[] = data.map((b) => {
-      const stats = (b.business_stats as Array<{ average_rating: number; total_reviews: number }> | null)?.[0];
+      const stats = (
+        b.business_stats as Array<{ average_rating: number; total_reviews: number }> | null
+      )?.[0];
       const lat = b.lat as number | null;
       const lng = b.lng as number | null;
 
@@ -135,7 +137,9 @@ async function backfillReviewers() {
   while (true) {
     const { data, error } = await supabase
       .from("profiles")
-      .select("user_id, display_name, username, avatar_url, is_top_reviewer, reviews_count, is_active")
+      .select(
+        "user_id, display_name, username, avatar_url, is_top_reviewer, reviews_count, is_active"
+      )
       .or("is_active.is.null,is_active.eq.true")
       .not("display_name", "is", null)
       .range(offset, offset + BATCH_SIZE - 1);
@@ -183,7 +187,10 @@ function buildSeriesKey(title: string, businessId: string | null, location: stri
   for (const pattern of SERIES_STRIP_PATTERNS) {
     t = t.replace(pattern, "");
   }
-  t = t.replace(/\s+/g, " ").replace(/[-–—:,.\s]+$/, "").trim();
+  t = t
+    .replace(/\s+/g, " ")
+    .replace(/[-–—:,.\s]+$/, "")
+    .trim();
   const b = (businessId ?? "").trim().toLowerCase();
   const l = (location ?? "").trim().toLowerCase();
   return `${t}|${b}|${l}`;
@@ -198,7 +205,10 @@ function toUnixSeconds(dateStr: string | null | undefined): number | null {
 // Strip HTML tags and truncate. Algolia hard limit is 10KB per record.
 function truncateDescription(desc: string | null | undefined, maxChars = 500): string | null {
   if (!desc) return null;
-  const stripped = desc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const stripped = desc
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (!stripped) return null;
   return stripped.length > maxChars ? stripped.slice(0, maxChars).trimEnd() + "…" : stripped;
 }
@@ -251,7 +261,11 @@ async function backfillEventsAndSpecials() {
           availability_status: row.availability_status ?? null,
           category_slug: (row as any).quicket_category_slug ?? null,
           category_label: (row as any).quicket_category_label ?? null,
-          series_key: buildSeriesKey(row.title ?? "", row.business_id ?? null, row.location ?? null),
+          series_key: buildSeriesKey(
+            row.title ?? "",
+            row.business_id ?? null,
+            row.location ?? null
+          ),
           is_community_event: !row.business_id,
         });
       } else {

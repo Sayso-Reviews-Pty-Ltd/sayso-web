@@ -1,9 +1,7 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import ToastNotification, {
-  ToastNotificationData,
-} from "./ToastNotification";
+import ToastNotification, { ToastNotificationData } from "./ToastNotification";
 
 interface ToastContainerProps {
   notifications: ToastNotificationData[];

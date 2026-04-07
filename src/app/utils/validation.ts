@@ -28,7 +28,7 @@ export interface PasswordStrength {
 
 export const checkPasswordStrength = (password: string, email: string = ""): PasswordStrength => {
   const checks = {
-    length: password.length >= 6
+    length: password.length >= 6,
   };
 
   let score = 0;
@@ -64,7 +64,8 @@ export const getUsernameError = (username: string, touched: boolean): string => 
   if (!username) return "Username is required";
   if (username.length < 3) return "Username must be at least 3 characters";
   if (username.length > 20) return "Username must be less than 20 characters";
-  if (!validateUsername(username)) return "Username can only contain letters, numbers, and underscores";
+  if (!validateUsername(username))
+    return "Username can only contain letters, numbers, and underscores";
   return "";
 };
 

@@ -7,7 +7,7 @@
  * Check if a URL is from Supabase storage (which has CDN built-in)
  */
 export function isSupabaseStorageUrl(url: string): boolean {
-  return url.includes('supabase.co/storage');
+  return url.includes("supabase.co/storage");
 }
 
 /**
@@ -20,10 +20,10 @@ export function getOptimizedImageUrl(
     width?: number;
     height?: number;
     quality?: number;
-    format?: 'webp' | 'avif' | 'jpg' | 'png';
+    format?: "webp" | "avif" | "jpg" | "png";
   } = {}
 ): string {
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== "string") {
     return url;
   }
 
@@ -49,7 +49,7 @@ export function getResponsiveSizes(breakpoints?: {
   desktop?: number;
 }): string {
   const { mobile = 640, tablet = 1024, desktop = 1920 } = breakpoints || {};
-  
+
   return `(max-width: ${mobile}px) 100vw, (max-width: ${tablet}px) 50vw, ${desktop}px`;
 }
 
@@ -57,7 +57,7 @@ export function getResponsiveSizes(breakpoints?: {
  * Get optimal image quality based on use case
  */
 export function getOptimalQuality(
-  useCase: 'hero' | 'thumbnail' | 'gallery' | 'avatar' | 'icon'
+  useCase: "hero" | "thumbnail" | "gallery" | "avatar" | "icon"
 ): number {
   const qualityMap: Record<string, number> = {
     hero: 90, // High quality for hero images
@@ -73,14 +73,14 @@ export function getOptimalQuality(
 /**
  * Preload image for faster loading
  */
-export function preloadImage(src: string, as: 'image' = 'image'): void {
-  if (typeof window === 'undefined') return;
+export function preloadImage(src: string, as: "image" = "image"): void {
+  if (typeof window === "undefined") return;
 
-  const link = document.createElement('link');
-  link.rel = 'preload';
+  const link = document.createElement("link");
+  link.rel = "preload";
   link.as = as;
   link.href = src;
-  link.fetchPriority = 'high';
+  link.fetchPriority = "high";
   document.head.appendChild(link);
 }
 
@@ -95,9 +95,9 @@ export function lazyLoadImage(
     threshold?: number;
   } = {}
 ): () => void {
-  if (typeof window === 'undefined') return () => {};
+  if (typeof window === "undefined") return () => {};
 
-  const { rootMargin = '50px', threshold = 0.01 } = options;
+  const { rootMargin = "50px", threshold = 0.01 } = options;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -105,7 +105,7 @@ export function lazyLoadImage(
         if (entry.isIntersecting) {
           const imgElement = entry.target as HTMLImageElement;
           imgElement.src = src;
-          imgElement.classList.add('loaded');
+          imgElement.classList.add("loaded");
           observer.unobserve(imgElement);
         }
       });
@@ -120,4 +120,3 @@ export function lazyLoadImage(
 
   return () => observer.disconnect();
 }
-

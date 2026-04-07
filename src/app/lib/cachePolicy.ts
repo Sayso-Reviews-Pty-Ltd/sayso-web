@@ -5,7 +5,7 @@ function mergeVary(current: string | null, nextValues: string[]): string {
     (current ?? "")
       .split(",")
       .map((part) => part.trim())
-      .filter(Boolean),
+      .filter(Boolean)
   );
   nextValues.forEach((value) => values.add(value));
   return Array.from(values).join(", ");
@@ -13,7 +13,7 @@ function mergeVary(current: string | null, nextValues: string[]): string {
 
 export function applyPrivateCachePolicy(
   response: NextResponse,
-  options: { noStore?: boolean; maxAge?: number } = {},
+  options: { noStore?: boolean; maxAge?: number } = {}
 ): NextResponse {
   const noStore = options.noStore ?? true;
   if (noStore) {
@@ -24,20 +24,20 @@ export function applyPrivateCachePolicy(
   }
   response.headers.set(
     "Vary",
-    mergeVary(response.headers.get("Vary"), ["Cookie", "Authorization"]),
+    mergeVary(response.headers.get("Vary"), ["Cookie", "Authorization"])
   );
   return response;
 }
 
 export function applyPublicCachePolicy(
   response: NextResponse,
-  options: { sMaxAge?: number; swr?: number } = {},
+  options: { sMaxAge?: number; swr?: number } = {}
 ): NextResponse {
   const sMaxAge = Math.max(0, options.sMaxAge ?? 60);
   const swr = Math.max(0, options.swr ?? 30);
   response.headers.set(
     "Cache-Control",
-    `public, s-maxage=${sMaxAge}, stale-while-revalidate=${swr}`,
+    `public, s-maxage=${sMaxAge}, stale-while-revalidate=${swr}`
   );
   return response;
 }

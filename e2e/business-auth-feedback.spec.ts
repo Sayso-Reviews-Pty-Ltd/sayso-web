@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Business auth feedback", () => {
-  test("shows clear inline feedback when business login token request returns 400", async ({ page }) => {
+  test("shows clear inline feedback when business login token request returns 400", async ({
+    page,
+  }) => {
     await page.route("**/auth/v1/token**", async (route) => {
       if (route.request().method() !== "POST") {
         await route.continue();

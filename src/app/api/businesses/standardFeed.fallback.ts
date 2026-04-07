@@ -23,22 +23,43 @@ export async function executeFallbackQuery(
   options: StandardFeedOptions
 ): Promise<NextResponse | BusinessRPCResult[]> {
   const {
-    supabase, limit, cursorId, cursorCreatedAt,
-    category, badge, verified, priceRange, location, minRating,
-    interestIds, subInterestIds, subcategoriesToFilter,
-    q, lat, lng, radiusKm, sortBy, sortOrder,
+    supabase,
+    limit,
+    cursorId,
+    cursorCreatedAt,
+    category,
+    badge,
+    verified,
+    priceRange,
+    location,
+    minRating,
+    interestIds,
+    subInterestIds,
+    subcategoriesToFilter,
+    q,
+    lat,
+    lng,
+    radiusKm,
+    sortBy,
+    sortOrder,
   } = options;
 
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🔄 [BUSINESSES API] Using fallback query method');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('[BUSINESSES API] Fallback query filters:', {
-    category, location, verified, priceRange, badge, minRating, sortBy, sortOrder, limit,
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("🔄 [BUSINESSES API] Using fallback query method");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("[BUSINESSES API] Fallback query filters:", {
+    category,
+    location,
+    verified,
+    priceRange,
+    badge,
+    minRating,
+    sortBy,
+    sortOrder,
+    limit,
   });
 
-  let query = supabase
-    .from('businesses')
-    .select(`
+  let query = supabase.from("businesses").select(`
       id, name, description, primary_subcategory_slug, primary_subcategory_label, primary_category_slug, location, address,
       phone, email, website, image_url,
       verified, price_range, badge, slug, created_at, updated_at,
@@ -54,87 +75,94 @@ export async function executeFallbackQuery(
       )
     `);
 
-  if (typeof (query as any).eq === 'function') {
-    query = (query as any).eq('status', 'active');
+  if (typeof (query as any).eq === "function") {
+    query = (query as any).eq("status", "active");
   }
-  if (typeof (query as any).or === 'function') {
-    query = (query as any).or('is_hidden.is.null,is_hidden.eq.false');
-    query = (query as any).or('is_system.is.null,is_system.eq.false');
+  if (typeof (query as any).or === "function") {
+    query = (query as any).or("is_hidden.is.null,is_hidden.eq.false");
+    query = (query as any).or("is_system.is.null,is_system.eq.false");
   }
 
-  if (typeof (query as any).eq === 'function') {
+  if (typeof (query as any).eq === "function") {
     if (category) {
-      console.log('[BUSINESSES API] Fallback: Applying category filter:', category);
-      query = (query as any).eq('primary_subcategory_slug', category);
+      console.log("[BUSINESSES API] Fallback: Applying category filter:", category);
+      query = (query as any).eq("primary_subcategory_slug", category);
     }
     if (badge) {
-      console.log('[BUSINESSES API] Fallback: Applying badge filter:', badge);
-      query = (query as any).eq('badge', badge);
+      console.log("[BUSINESSES API] Fallback: Applying badge filter:", badge);
+      query = (query as any).eq("badge", badge);
     }
     if (verified !== null) {
-      console.log('[BUSINESSES API] Fallback: Applying verified filter:', verified);
-      query = (query as any).eq('verified', verified);
+      console.log("[BUSINESSES API] Fallback: Applying verified filter:", verified);
+      query = (query as any).eq("verified", verified);
     }
     if (priceRange) {
-      console.log('[BUSINESSES API] Fallback: Applying priceRange filter:', priceRange);
-      query = (query as any).eq('price_range', priceRange);
+      console.log("[BUSINESSES API] Fallback: Applying priceRange filter:", priceRange);
+      query = (query as any).eq("price_range", priceRange);
     }
   }
 
-  if (typeof (query as any).in === 'function') {
+  if (typeof (query as any).in === "function") {
     if (interestIds.length > 0) {
-      console.log('[BUSINESSES API] Filtering by interest_id:', interestIds);
-      query = (query as any).in('primary_category_slug', interestIds);
+      console.log("[BUSINESSES API] Filtering by interest_id:", interestIds);
+      query = (query as any).in("primary_category_slug", interestIds);
     }
     if (subInterestIds.length > 0) {
-      console.log('[BUSINESSES API] Fallback: Filtering by sub_interest_id (primary_subcategory_slug):', subInterestIds);
-      query = (query as any).in('primary_subcategory_slug', subInterestIds);
+      console.log(
+        "[BUSINESSES API] Fallback: Filtering by sub_interest_id (primary_subcategory_slug):",
+        subInterestIds
+      );
+      query = (query as any).in("primary_subcategory_slug", subInterestIds);
     } else if (subcategoriesToFilter && subcategoriesToFilter.length > 0) {
-      console.log('[BUSINESSES API] Fallback: Filtering by mapped subcategories:', subcategoriesToFilter);
-      query = (query as any).in('primary_subcategory_slug', subcategoriesToFilter);
+      console.log(
+        "[BUSINESSES API] Fallback: Filtering by mapped subcategories:",
+        subcategoriesToFilter
+      );
+      query = (query as any).in("primary_subcategory_slug", subcategoriesToFilter);
     }
   }
 
-  if (typeof (query as any).ilike === 'function' && location) {
-    console.log('[BUSINESSES API] Fallback: Applying location filter (ILIKE):', location);
-    query = (query as any).ilike('location', `%${location}%`);
+  if (typeof (query as any).ilike === "function" && location) {
+    console.log("[BUSINESSES API] Fallback: Applying location filter (ILIKE):", location);
+    query = (query as any).ilike("location", `%${location}%`);
   }
 
-  if (typeof (query as any).or === 'function' && q) {
+  if (typeof (query as any).or === "function" && q) {
     const escapeLike = (s: string) =>
-      s.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+      s.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
     const safeQ = escapeLike(q);
     query = (query as any).or(
       `name.ilike.%${safeQ}%,description.ilike.%${safeQ}%,primary_subcategory_slug.ilike.%${safeQ}%,location.ilike.%${safeQ}%`
     );
   }
 
-  if (typeof (query as any).lt === 'function' && typeof (query as any).gt === 'function') {
+  if (typeof (query as any).lt === "function" && typeof (query as any).gt === "function") {
     if (cursorId && cursorCreatedAt) {
-      if (sortOrder === 'desc') {
-        query = (query as any).lt('created_at', cursorCreatedAt);
+      if (sortOrder === "desc") {
+        query = (query as any).lt("created_at", cursorCreatedAt);
       } else {
-        query = (query as any).gt('created_at', cursorCreatedAt);
+        query = (query as any).gt("created_at", cursorCreatedAt);
       }
     }
   }
 
-  const fetchLimit = (lat !== null && lng !== null) || sortBy === 'combo' || sortBy === 'relevance'
-    ? limit * 3
-    : limit;
+  const fetchLimit =
+    (lat !== null && lng !== null) || sortBy === "combo" || sortBy === "relevance"
+      ? limit * 3
+      : limit;
 
-  if (typeof (query as any).limit === 'function') {
+  if (typeof (query as any).limit === "function") {
     if (interestIds.length > 0) {
-      console.log('[BUSINESSES API] Using random sort for interest-filtered results');
+      console.log("[BUSINESSES API] Using random sort for interest-filtered results");
       query = (query as any).limit(fetchLimit);
     } else {
-      if (typeof (query as any).order === 'function') {
-        if (sortBy === 'rating' || sortBy === 'total_rating') {
-          query = (query as any).order('created_at', { ascending: sortOrder === 'asc' });
-        } else if (sortBy === 'price') {
-          query = (query as any).order('price_range', { ascending: sortOrder === 'asc' });
+      if (typeof (query as any).order === "function") {
+        if (sortBy === "rating" || sortBy === "total_rating") {
+          query = (query as any).order("created_at", { ascending: sortOrder === "asc" });
+        } else if (sortBy === "price") {
+          query = (query as any).order("price_range", { ascending: sortOrder === "asc" });
         } else {
-          query = (query as any).order('created_at', { ascending: sortOrder === 'asc' });
+          query = (query as any).order("created_at", { ascending: sortOrder === "asc" });
         }
       }
       query = (query as any).limit(fetchLimit);
@@ -143,14 +171,16 @@ export async function executeFallbackQuery(
 
   const { data: fallbackData, error: fallbackError } = await query;
 
-  console.log('[BUSINESSES API] Fallback query result:', {
+  console.log("[BUSINESSES API] Fallback query result:", {
     dataLength: fallbackData?.length || 0,
     hasError: !!fallbackError,
-    error: fallbackError ? { message: fallbackError.message, code: fallbackError.code, details: fallbackError.details } : null,
+    error: fallbackError
+      ? { message: fallbackError.message, code: fallbackError.code, details: fallbackError.details }
+      : null,
   });
 
   if (fallbackError) {
-    console.error('[BUSINESSES API] Fallback query error:', fallbackError);
+    console.error("[BUSINESSES API] Fallback query error:", fallbackError);
     return NextResponse.json(
       { items: [], businesses: [], nextCursor: null, cursorId: null },
       { status: 200 }
@@ -169,7 +199,7 @@ export async function executeFallbackQuery(
     const { uploaded_images: fallbackUploadedImages } = normalizeBusinessImages(row);
     return {
       ...row,
-      category: row.primary_subcategory_slug ?? (row as any).category ?? '',
+      category: row.primary_subcategory_slug ?? (row as any).category ?? "",
       category_label: row.primary_subcategory_label ?? (row as any).category_label ?? null,
       interest_id: row.primary_category_slug ?? (row as any).interest_id ?? null,
       sub_interest_id: row.primary_subcategory_slug ?? (row as any).sub_interest_id ?? null,
@@ -191,7 +221,7 @@ export async function executeFallbackQuery(
     );
   }
 
-  if (sortBy === 'distance' && lat !== null && lng !== null) {
+  if (sortBy === "distance" && lat !== null && lng !== null) {
     transformedFallbackData.sort((a, b) => {
       const distA = a.distance_km ?? Infinity;
       const distB = b.distance_km ?? Infinity;
@@ -204,7 +234,7 @@ export async function executeFallbackQuery(
       if (contactDiff !== 0) return contactDiff;
       return a.id.localeCompare(b.id);
     });
-  } else if (sortBy === 'rating' || sortBy === 'rating_desc') {
+  } else if (sortBy === "rating" || sortBy === "rating_desc") {
     transformedFallbackData.sort((a, b) => {
       const ratingA = a.average_rating || 0;
       const ratingB = b.average_rating || 0;
@@ -215,7 +245,7 @@ export async function executeFallbackQuery(
       if (contactDiff !== 0) return contactDiff;
       return a.id.localeCompare(b.id);
     });
-  } else if (sortBy === 'price' || sortBy === 'price_asc') {
+  } else if (sortBy === "price" || sortBy === "price_asc") {
     transformedFallbackData.sort((a, b) => {
       const priceA = priceRangeToLevel(a.price_range) ?? 999;
       const priceB = priceRangeToLevel(b.price_range) ?? 999;
@@ -226,13 +256,11 @@ export async function executeFallbackQuery(
       if (contactDiff !== 0) return contactDiff;
       return a.id.localeCompare(b.id);
     });
-  } else if (sortBy === 'combo' && lat !== null && lng !== null) {
+  } else if (sortBy === "combo" && lat !== null && lng !== null) {
     transformedFallbackData.forEach((b) => {
-      (b as any).combo_score = calculateComboScore(
-        b.distance_km,
-        b.average_rating,
-        priceRangeToLevel(b.price_range)
-      ) + calculateContactRankingBoost(b, 0.15);
+      (b as any).combo_score =
+        calculateComboScore(b.distance_km, b.average_rating, priceRangeToLevel(b.price_range)) +
+        calculateContactRankingBoost(b, 0.15);
     });
     transformedFallbackData.sort((a, b) => {
       const scoreA = (a as any).combo_score ?? 0;
@@ -242,7 +270,7 @@ export async function executeFallbackQuery(
       if (contactDiff !== 0) return contactDiff;
       return a.id.localeCompare(b.id);
     });
-  } else if (sortBy === 'relevance' && q) {
+  } else if (sortBy === "relevance" && q) {
     transformedFallbackData.sort((a, b) => {
       const ratingA = a.average_rating || 0;
       const ratingB = b.average_rating || 0;
@@ -258,10 +286,13 @@ export async function executeFallbackQuery(
   }
 
   if (interestIds && interestIds.length > 0 && transformedFallbackData.length > 0) {
-    console.log('[BUSINESSES API] Randomizing results for interest filter');
+    console.log("[BUSINESSES API] Randomizing results for interest filter");
     for (let i = transformedFallbackData.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [transformedFallbackData[i], transformedFallbackData[j]] = [transformedFallbackData[j], transformedFallbackData[i]];
+      [transformedFallbackData[i], transformedFallbackData[j]] = [
+        transformedFallbackData[j],
+        transformedFallbackData[i],
+      ];
     }
   }
 

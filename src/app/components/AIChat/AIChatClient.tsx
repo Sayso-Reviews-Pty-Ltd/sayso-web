@@ -9,4 +9,3 @@ const AIChat = dynamic(() => import("./AIChat"), {
 export default function AIChatClient() {
   return <AIChat />;
 }
-

@@ -46,7 +46,7 @@ function hashString(s: string): number {
  */
 export function selectColdStartTrending(
   candidates: ColdStartCandidate[],
-  options: ColdStartSelectionOptions,
+  options: ColdStartSelectionOptions
 ): ColdStartCandidate[] {
   const limit = Math.max(0, options.limit | 0);
   const maxPerCategory = options.maxPerCategory ?? DEFAULT_MAX_PER_CATEGORY;
@@ -56,9 +56,9 @@ export function selectColdStartTrending(
   if (limit === 0 || candidates.length === 0) return [];
 
   const S = (c: ColdStartCandidate) =>
-    (c.primary_subcategory_slug ?? '').trim().toLowerCase() || 'miscellaneous';
+    (c.primary_subcategory_slug ?? "").trim().toLowerCase() || "miscellaneous";
   const C = (c: ColdStartCandidate) =>
-    (c.primary_category_slug ?? '').trim().toLowerCase() || 'miscellaneous';
+    (c.primary_category_slug ?? "").trim().toLowerCase() || "miscellaneous";
 
   // Group by subcategory (S), each group sorted by score desc
   const bySubcategory = new Map<string, ColdStartCandidate[]>();
@@ -95,10 +95,7 @@ export function selectColdStartTrending(
   for (const arr of bySubcategory.values()) {
     if (arr.length > 0) winners.push(arr[0]);
   }
-  winners.sort(
-    (a, b) =>
-      b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed),
-  );
+  winners.sort((a, b) => b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed));
 
   for (const c of winners) {
     if (result.length >= limit) break;
@@ -111,10 +108,7 @@ export function selectColdStartTrending(
   for (const arr of bySubcategory.values()) {
     if (arr.length >= 2) seconds.push(arr[1]);
   }
-  seconds.sort(
-    (a, b) =>
-      b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed),
-  );
+  seconds.sort((a, b) => b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed));
   for (const c of seconds) {
     if (result.length >= limit) break;
     if (!usedIds.has(c.id)) addOne(c, false);
@@ -126,11 +120,8 @@ export function selectColdStartTrending(
   for (const arr of bySubcategory.values()) {
     for (let j = 2; j < arr.length; j++) rest.push(arr[j]);
   }
-  rest.sort(
-    (a, b) =>
-      b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed),
-  );
-  let lastSub = '';
+  rest.sort((a, b) => b.cold_start_score - a.cold_start_score || tieBreakOrder(a, b, seed));
+  let lastSub = "";
   for (let i = 0; i < rest.length && result.length < limit; i++) {
     const c = rest[i];
     if (!c || usedIds.has(c.id)) continue;
@@ -138,7 +129,9 @@ export function selectColdStartTrending(
     if (!canAddCategory(cat, true)) continue;
     const sub = S(c);
     if (sub === lastSub && result.length < limit) {
-      const other = rest.find((x) => !usedIds.has(x.id) && S(x) !== sub && canAddCategory(C(x), true));
+      const other = rest.find(
+        (x) => !usedIds.has(x.id) && S(x) !== sub && canAddCategory(C(x), true)
+      );
       if (other) {
         addOne(other, true);
         lastSub = S(other);
@@ -170,7 +163,7 @@ export function getTrendingSeed(timeBucketMinutes = 15, location?: string | null
   const bucketMs = timeBucketMinutes * 60 * 1000;
   const bucket = Math.floor(now / bucketMs);
   let h = 0;
-  const loc = (location ?? '').toString().trim().toLowerCase();
+  const loc = (location ?? "").toString().trim().toLowerCase();
   for (let i = 0; i < loc.length; i++) h = (h * 31 + loc.charCodeAt(i)) >>> 0;
   return (bucket * 1000003 + h) >>> 0;
 }

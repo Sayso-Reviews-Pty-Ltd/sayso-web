@@ -18,11 +18,13 @@ migrations/
 Run migrations in the following order:
 
 ### 1. Core Setup (`001_core/`)
+
 1. `001_setup-database.sql` - Initial database setup with profiles, interests, and RLS policies
 2. `002_add-profile-fields.sql` - Add additional profile fields
 3. `003_add-role-to-profiles.sql` - Add user roles to profiles table
 
 ### 2. Business Schema (`002_business/`)
+
 1. `001_businesses-schema.sql` - Create businesses and business_stats tables
 2. `002_businesses-osm-columns.sql` - Add OSM-related columns (source, source_id, lat, lng)
 3. `003_business-ownership.sql` - Add business ownership verification system
@@ -33,13 +35,16 @@ Run migrations in the following order:
 8. `008_optimize-rls-policies.sql` - Optimize RLS policies to use indexed columns
 
 ### 3. Reviews System (`003_reviews/`)
+
 1. `001_reviews-schema.sql` - Create reviews and review_images tables
 2. `002_review-images-storage.sql` - Setup storage bucket for review images
 
 ### 4. Storage (`004_storage/`)
+
 1. `001_setup-storage.sql` - Setup Supabase storage buckets and policies
 
 ### 5. Database Functions (`005_functions/`)
+
 1. `001_database-functions.sql` - General database helper functions
 2. `002_delete-user-account.sql` - User account deletion function
 3. `003_list-businesses-rpc.sql` - Optimized RPC function for business listings with filtering and pagination
@@ -47,12 +52,14 @@ Run migrations in the following order:
 ## How to Run Migrations
 
 ### Using Supabase Dashboard
+
 1. Go to your Supabase project dashboard
 2. Navigate to SQL Editor
 3. Copy the contents of each migration file
 4. Run them in order (starting with 001_core)
 
 ### Using Supabase CLI
+
 ```bash
 # Connect to your database
 supabase db reset
@@ -72,9 +79,9 @@ psql $DATABASE_URL < src/app/lib/migrations/001_core/001_setup-database.sql
 ## Adding New Migrations
 
 When adding new migrations:
+
 1. Choose the appropriate category folder
 2. Use the next sequential number (e.g., `006_new-feature.sql`)
 3. Include comments explaining what the migration does
 4. Test the migration in a development environment first
 5. Update this README with the new migration details
-

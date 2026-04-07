@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import { NextResponse } from 'next/server';
+import crypto from "crypto";
+import { NextResponse } from "next/server";
 
 export type FeedSeedWindow = {
   seed: string;
@@ -13,10 +13,7 @@ export function createRequestId(): string {
 }
 
 function sha1Base64Url(value: string): string {
-  return crypto
-    .createHash('sha1')
-    .update(value)
-    .digest('base64url');
+  return crypto.createHash("sha1").update(value).digest("base64url");
 }
 
 export function createFeedSeedWindow(options: {
@@ -58,15 +55,15 @@ export function applyFeedCachingHeaders(
   const cacheDirectives = [`private`, `max-age=${ttlSeconds}`, `must-revalidate`];
   if (swrSeconds > 0) cacheDirectives.push(`stale-while-revalidate=${swrSeconds}`);
 
-  response.headers.set('Cache-Control', cacheDirectives.join(', '));
-  response.headers.set('ETag', options.etag);
-  response.headers.set('Vary', 'Cookie, Authorization');
+  response.headers.set("Cache-Control", cacheDirectives.join(", "));
+  response.headers.set("ETag", options.etag);
+  response.headers.set("Vary", "Cookie, Authorization");
 
-  if (options.requestId) response.headers.set('X-Request-Id', options.requestId);
-  if (options.feedPath) response.headers.set('X-Feed-Path', options.feedPath);
-  if (options.seed) response.headers.set('X-Feed-Seed', options.seed);
+  if (options.requestId) response.headers.set("X-Request-Id", options.requestId);
+  if (options.feedPath) response.headers.set("X-Feed-Path", options.feedPath);
+  if (options.seed) response.headers.set("X-Feed-Seed", options.seed);
   if (options.seedExpiresAtMs) {
-    response.headers.set('X-Feed-Seed-Expires-At', new Date(options.seedExpiresAtMs).toISOString());
+    response.headers.set("X-Feed-Seed-Expires-At", new Date(options.seedExpiresAtMs).toISOString());
   }
 
   return response;
@@ -84,11 +81,10 @@ export function maybeNotModified(
     feedPath?: string;
   }
 ): NextResponse | null {
-  const ifNoneMatch = request.headers.get('if-none-match');
+  const ifNoneMatch = request.headers.get("if-none-match");
   if (!ifNoneMatch) return null;
   if (ifNoneMatch !== options.etag) return null;
 
   const response = new NextResponse(null, { status: 304 });
   return applyFeedCachingHeaders(response, options);
 }
-

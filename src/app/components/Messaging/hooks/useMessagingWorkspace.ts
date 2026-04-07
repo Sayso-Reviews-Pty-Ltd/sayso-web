@@ -1,17 +1,21 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useReducedMotion } from 'framer-motion';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { useAuth } from "@/app/contexts/AuthContext";
 import {
   useConversationMessages,
   useConversations,
   type ConversationListItem,
   type MessagingRole,
-} from '@/app/hooks/messaging';
-import { useUserReviews } from '@/app/hooks/useUserReviews';
-import type { BusinessOption, MessageVisualIdentity, MessagingWorkspaceProps } from '../messagingWorkspace.utils';
-import { getConversationTitle, getConversationSubtitle } from '../messagingWorkspace.utils';
+} from "@/app/hooks/messaging";
+import { useUserReviews } from "@/app/hooks/useUserReviews";
+import type {
+  BusinessOption,
+  MessageVisualIdentity,
+  MessagingWorkspaceProps,
+} from "../messagingWorkspace.utils";
+import { getConversationTitle, getConversationSubtitle } from "../messagingWorkspace.utils";
 
 export function useMessagingWorkspace({
   role,
@@ -20,15 +24,27 @@ export function useMessagingWorkspace({
   initialConversationId,
   startBusinessId,
   startUserId,
-}: Pick<MessagingWorkspaceProps, 'role' | 'businessOptions' | 'initialBusinessId' | 'initialConversationId' | 'startBusinessId' | 'startUserId'>) {
+}: Pick<
+  MessagingWorkspaceProps,
+  | "role"
+  | "businessOptions"
+  | "initialBusinessId"
+  | "initialConversationId"
+  | "startBusinessId"
+  | "startUserId"
+>) {
   const { user } = useAuth();
   const prefersReducedMotion = useReducedMotion();
   const { reviews } = useUserReviews();
 
-  const [activeBusinessId, setActiveBusinessId] = useState<string | null>(initialBusinessId || null);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(initialConversationId || null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [composerValue, setComposerValue] = useState('');
+  const [activeBusinessId, setActiveBusinessId] = useState<string | null>(
+    initialBusinessId || null
+  );
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(
+    initialConversationId || null
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [composerValue, setComposerValue] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isResolvingStartConversation, setIsResolvingStartConversation] = useState(false);
   const [startConversationError, setStartConversationError] = useState<string | null>(null);
@@ -39,14 +55,23 @@ export function useMessagingWorkspace({
   const animationTimeoutsRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
-    if (role !== 'business') return;
-    if (startBusinessId) { setActiveBusinessId(startBusinessId); return; }
-    if (!activeBusinessId && businessOptions && businessOptions.length > 0) setActiveBusinessId(null);
+    if (role !== "business") return;
+    if (startBusinessId) {
+      setActiveBusinessId(startBusinessId);
+      return;
+    }
+    if (!activeBusinessId && businessOptions && businessOptions.length > 0)
+      setActiveBusinessId(null);
   }, [activeBusinessId, businessOptions, role, startBusinessId]);
 
-  const { conversations, unreadTotal, isLoading: conversationsLoading, mutate: mutateConversations } = useConversations({
+  const {
+    conversations,
+    unreadTotal,
+    isLoading: conversationsLoading,
+    mutate: mutateConversations,
+  } = useConversations({
     role,
-    businessId: role === 'business' ? activeBusinessId : undefined,
+    businessId: role === "business" ? activeBusinessId : undefined,
     enabled: Boolean(user),
   });
 
@@ -58,10 +83,22 @@ export function useMessagingWorkspace({
   useEffect(() => {
     if (!selectedConversationId || conversationsLoading) return;
     const stillExists = conversations.some((c) => c.id === selectedConversationId);
-    if (!stillExists) { setSelectedConversationId(null); setMobileThreadOpen(false); }
+    if (!stillExists) {
+      setSelectedConversationId(null);
+      setMobileThreadOpen(false);
+    }
   }, [conversations, conversationsLoading, selectedConversationId]);
 
-  const { messages, hasMore, isLoading: messagesLoading, isLoadingOlder, loadOlder, sendMessage, retryMessage, markAsRead } = useConversationMessages({
+  const {
+    messages,
+    hasMore,
+    isLoading: messagesLoading,
+    isLoadingOlder,
+    loadOlder,
+    sendMessage,
+    retryMessage,
+    markAsRead,
+  } = useConversationMessages({
     conversationId: selectedConversationId,
     role,
     conversationBusinessId: selectedConversation?.business_id || activeBusinessId,
@@ -73,7 +110,11 @@ export function useMessagingWorkspace({
     return conversations.filter((conversation) => {
       const titleValue = getConversationTitle(conversation, role).toLowerCase();
       const subtitleValue = getConversationSubtitle(conversation, role).toLowerCase();
-      return titleValue.includes(query) || subtitleValue.includes(query) || conversation.last_message_preview.toLowerCase().includes(query);
+      return (
+        titleValue.includes(query) ||
+        subtitleValue.includes(query) ||
+        conversation.last_message_preview.toLowerCase().includes(query)
+      );
     });
   }, [conversations, role, searchQuery]);
 
@@ -84,7 +125,14 @@ export function useMessagingWorkspace({
     if (conversationsLoading || isResolvingStartConversation) return;
     if (selectedConversationId) return;
     if (conversations.length > 0) setSelectedConversationId(conversations[0].id);
-  }, [conversations, conversationsLoading, initialConversationId, isResolvingStartConversation, selectedConversationId, startBusinessId]);
+  }, [
+    conversations,
+    conversationsLoading,
+    initialConversationId,
+    isResolvingStartConversation,
+    selectedConversationId,
+    startBusinessId,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -124,15 +172,18 @@ export function useMessagingWorkspace({
         appendedMessageIds.forEach((id) => {
           const existingTimeout = animationTimeoutsRef.current.get(id);
           if (existingTimeout) window.clearTimeout(existingTimeout);
-          const timeoutId = window.setTimeout(() => {
-            setAnimatedMessageIds((prev) => {
-              if (!prev.has(id)) return prev;
-              const next = new Set(prev);
-              next.delete(id);
-              return next;
-            });
-            animationTimeoutsRef.current.delete(id);
-          }, prefersReducedMotion ? 120 : 220);
+          const timeoutId = window.setTimeout(
+            () => {
+              setAnimatedMessageIds((prev) => {
+                if (!prev.has(id)) return prev;
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+              });
+              animationTimeoutsRef.current.delete(id);
+            },
+            prefersReducedMotion ? 120 : 220
+          );
           animationTimeoutsRef.current.set(id, timeoutId);
         });
       }
@@ -155,22 +206,30 @@ export function useMessagingWorkspace({
     setStartConversationError(null);
     const payload: Record<string, string> = { business_id: startBusinessId };
     if (startUserId) payload.user_id = startUserId;
-    void fetch('/api/conversations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    void fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
       .then(async (response) => {
         if (!response.ok) {
           const errorPayload = await response.json().catch(() => ({}));
-          throw new Error(errorPayload?.error || 'Failed to start conversation');
+          throw new Error(errorPayload?.error || "Failed to start conversation");
         }
         const data = await response.json();
         const conversationId = data?.data?.id;
-        if (conversationId) { setSelectedConversationId(conversationId); setMobileThreadOpen(true); void mutateConversations(); }
+        if (conversationId) {
+          setSelectedConversationId(conversationId);
+          setMobileThreadOpen(true);
+          void mutateConversations();
+        }
       })
-      .catch((error: any) => { setStartConversationError(error?.message || 'Failed to start conversation'); })
-      .finally(() => { setIsResolvingStartConversation(false); });
+      .catch((error: any) => {
+        setStartConversationError(error?.message || "Failed to start conversation");
+      })
+      .finally(() => {
+        setIsResolvingStartConversation(false);
+      });
   }, [initialConversationId, mutateConversations, startBusinessId, startUserId, user?.id]);
 
   const handleSelectConversation = useCallback((conversationId: string) => {
@@ -182,7 +241,7 @@ export function useMessagingWorkspace({
     if (!selectedConversationId || !composerValue.trim() || isSending) return;
     setIsSending(true);
     const currentValue = composerValue;
-    setComposerValue('');
+    setComposerValue("");
     const result = await sendMessage(currentValue);
     if (!result.ok) setComposerValue(currentValue);
     setIsSending(false);
@@ -194,22 +253,27 @@ export function useMessagingWorkspace({
   useEffect(() => {
     const node = threadScrollRef.current;
     if (!node) return;
-    const onScroll = () => { nearBottomRef.current = node.scrollHeight - node.scrollTop - node.clientHeight < 120; };
+    const onScroll = () => {
+      nearBottomRef.current = node.scrollHeight - node.scrollTop - node.clientHeight < 120;
+    };
     onScroll();
-    node.addEventListener('scroll', onScroll);
-    return () => node.removeEventListener('scroll', onScroll);
+    node.addEventListener("scroll", onScroll);
+    return () => node.removeEventListener("scroll", onScroll);
   }, [selectedConversationId]);
 
   useEffect(() => {
     const node = threadScrollRef.current;
     if (!node || !selectedConversationId) return;
-    if (nearBottomRef.current) node.scrollTo({ top: node.scrollHeight, behavior: 'smooth' });
+    if (nearBottomRef.current) node.scrollTo({ top: node.scrollHeight, behavior: "smooth" });
   }, [messages.length, selectedConversationId]);
 
   useEffect(() => {
     const node = threadScrollRef.current;
     if (!node || !selectedConversationId) return;
-    requestAnimationFrame(() => { node.scrollTop = node.scrollHeight; nearBottomRef.current = true; });
+    requestAnimationFrame(() => {
+      node.scrollTop = node.scrollHeight;
+      nearBottomRef.current = true;
+    });
   }, [selectedConversationId]);
 
   const isThreadVisible = Boolean(selectedConversationId) && mobileThreadOpen;
@@ -218,21 +282,29 @@ export function useMessagingWorkspace({
   useEffect(() => {
     if (!selectedConversationId || !isThreadVisible || messages.length === 0) return;
     if (!latestMessage || latestMessage.sender_type === role) return;
-    const timer = window.setTimeout(() => { void markAsRead(); }, 250);
+    const timer = window.setTimeout(() => {
+      void markAsRead();
+    }, 250);
     return () => window.clearTimeout(timer);
   }, [isThreadVisible, latestMessage, markAsRead, messages.length, role, selectedConversationId]);
 
-  const listPaneVisibleClass = mobileThreadOpen ? 'hidden lg:flex' : 'flex';
-  const threadPaneVisibleClass = mobileThreadOpen ? 'flex' : 'hidden lg:flex';
-  const businessNameById = useMemo(() => new Map((businessOptions || []).map((b) => [b.id, b.name])), [businessOptions]);
+  const listPaneVisibleClass = mobileThreadOpen ? "hidden lg:flex" : "flex";
+  const threadPaneVisibleClass = mobileThreadOpen ? "flex" : "hidden lg:flex";
+  const businessNameById = useMemo(
+    () => new Map((businessOptions || []).map((b) => [b.id, b.name])),
+    [businessOptions]
+  );
 
   const reviewedBusinessSuggestions = useMemo(() => {
-    if (role !== 'user') return [];
-    return reviews.filter((r) => r.business_id).slice(0, 3).map((r) => ({
-      business_id: r.business_id!,
-      business_name: r.business_name,
-      business_image_url: r.business_image_url || null,
-    }));
+    if (role !== "user") return [];
+    return reviews
+      .filter((r) => r.business_id)
+      .slice(0, 3)
+      .map((r) => ({
+        business_id: r.business_id!,
+        business_name: r.business_name,
+        business_image_url: r.business_image_url || null,
+      }));
   }, [reviews, role]);
 
   const getFallbackBusinessName = useCallback(
@@ -240,51 +312,124 @@ export function useMessagingWorkspace({
       if (!conversation) return undefined;
       const businessId = conversation.business?.id || conversation.business_id || null;
       if (!businessId) return undefined;
-      return businessNameById.get(businessId) || reviewedBusinessSuggestions.find((s) => s.business_id === businessId)?.business_name;
+      return (
+        businessNameById.get(businessId) ||
+        reviewedBusinessSuggestions.find((s) => s.business_id === businessId)?.business_name
+      );
     },
     [businessNameById, reviewedBusinessSuggestions]
   );
 
   const selectedBusinessOption = useMemo(() => {
     if (!businessOptions || businessOptions.length === 0) return null;
-    const targetBusinessId = selectedConversation?.business?.id || selectedConversation?.business_id || activeBusinessId;
+    const targetBusinessId =
+      selectedConversation?.business?.id || selectedConversation?.business_id || activeBusinessId;
     if (!targetBusinessId) return null;
     return businessOptions.find((b) => b.id === targetBusinessId) || null;
-  }, [activeBusinessId, businessOptions, selectedConversation?.business?.id, selectedConversation?.business_id]);
+  }, [
+    activeBusinessId,
+    businessOptions,
+    selectedConversation?.business?.id,
+    selectedConversation?.business_id,
+  ]);
 
-  const businessIdentity = useMemo<MessageVisualIdentity>(() => ({
-    name: selectedConversation?.business?.name || selectedBusinessOption?.name || getFallbackBusinessName(selectedConversation) || 'Unknown',
-    avatarUrl: selectedConversation?.business?.image_url || selectedBusinessOption?.image_url || null,
-  }), [getFallbackBusinessName, selectedBusinessOption?.image_url, selectedBusinessOption?.name, selectedConversation?.business?.image_url, selectedConversation?.business?.name, selectedConversation]);
+  const businessIdentity = useMemo<MessageVisualIdentity>(
+    () => ({
+      name:
+        selectedConversation?.business?.name ||
+        selectedBusinessOption?.name ||
+        getFallbackBusinessName(selectedConversation) ||
+        "Unknown",
+      avatarUrl:
+        selectedConversation?.business?.image_url || selectedBusinessOption?.image_url || null,
+    }),
+    [
+      getFallbackBusinessName,
+      selectedBusinessOption?.image_url,
+      selectedBusinessOption?.name,
+      selectedConversation?.business?.image_url,
+      selectedConversation?.business?.name,
+      selectedConversation,
+    ]
+  );
 
-  const participantIdentity = useMemo<MessageVisualIdentity>(() => ({
-    name: selectedConversation?.participant?.display_name || selectedConversation?.participant?.username || 'Unknown',
-    avatarUrl: selectedConversation?.participant?.avatar_url || null,
-  }), [selectedConversation?.participant?.avatar_url, selectedConversation?.participant?.display_name, selectedConversation?.participant?.username]);
+  const participantIdentity = useMemo<MessageVisualIdentity>(
+    () => ({
+      name:
+        selectedConversation?.participant?.display_name ||
+        selectedConversation?.participant?.username ||
+        "Unknown",
+      avatarUrl: selectedConversation?.participant?.avatar_url || null,
+    }),
+    [
+      selectedConversation?.participant?.avatar_url,
+      selectedConversation?.participant?.display_name,
+      selectedConversation?.participant?.username,
+    ]
+  );
 
-  const userIdentity = useMemo<MessageVisualIdentity>(() => ({
-    name: user?.profile?.display_name || user?.profile?.username || (user?.email ? user.email.split('@')[0] : '') || 'You',
-    avatarUrl: user?.profile?.avatar_url || user?.avatar_url || null,
-  }), [user?.avatar_url, user?.email, user?.profile?.avatar_url, user?.profile?.display_name, user?.profile?.username]);
+  const userIdentity = useMemo<MessageVisualIdentity>(
+    () => ({
+      name:
+        user?.profile?.display_name ||
+        user?.profile?.username ||
+        (user?.email ? user.email.split("@")[0] : "") ||
+        "You",
+      avatarUrl: user?.profile?.avatar_url || user?.avatar_url || null,
+    }),
+    [
+      user?.avatar_url,
+      user?.email,
+      user?.profile?.avatar_url,
+      user?.profile?.display_name,
+      user?.profile?.username,
+    ]
+  );
 
   const resolveMessageIdentity = useCallback(
     (ownMessage: boolean): MessageVisualIdentity => {
-      if (role === 'user') return ownMessage ? userIdentity : businessIdentity;
+      if (role === "user") return ownMessage ? userIdentity : businessIdentity;
       return ownMessage ? businessIdentity : participantIdentity;
     },
     [businessIdentity, participantIdentity, role, userIdentity]
   );
 
   return {
-    user, selectedConversation, selectedConversationId, setSelectedConversationId,
-    conversations, unreadTotal,
-    conversationsLoading, messages, hasMore, messagesLoading, isLoadingOlder,
-    loadOlder, retryMessage, filteredConversations, activeBusinessId, setActiveBusinessId,
-    searchQuery, setSearchQuery, composerValue, setComposerValue, isSending,
-    isResolvingStartConversation, startConversationError, mobileThreadOpen, setMobileThreadOpen,
-    animatedMessageIds, prefersReducedMotion, threadScrollRef,
-    listPaneVisibleClass, threadPaneVisibleClass, reviewedBusinessSuggestions,
-    getFallbackBusinessName, resolveMessageIdentity,
-    handleSelectConversation, handleSend, markAsRead,
+    user,
+    selectedConversation,
+    selectedConversationId,
+    setSelectedConversationId,
+    conversations,
+    unreadTotal,
+    conversationsLoading,
+    messages,
+    hasMore,
+    messagesLoading,
+    isLoadingOlder,
+    loadOlder,
+    retryMessage,
+    filteredConversations,
+    activeBusinessId,
+    setActiveBusinessId,
+    searchQuery,
+    setSearchQuery,
+    composerValue,
+    setComposerValue,
+    isSending,
+    isResolvingStartConversation,
+    startConversationError,
+    mobileThreadOpen,
+    setMobileThreadOpen,
+    animatedMessageIds,
+    prefersReducedMotion,
+    threadScrollRef,
+    listPaneVisibleClass,
+    threadPaneVisibleClass,
+    reviewedBusinessSuggestions,
+    getFallbackBusinessName,
+    resolveMessageIdentity,
+    handleSelectConversation,
+    handleSend,
+    markAsRead,
   };
 }

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  LineChart,
-  BarChart,
-  AreaChart,
-} from "@tremor/react";
+import { LineChart, BarChart, AreaChart } from "@tremor/react";
 import { BarChart3, Eye, Star, MessageSquare, ThumbsUp, Calendar } from "@/app/lib/icons";
 import { useReducedMotion } from "../../../utils/useReducedMotion";
 import { useBusinessAnalytics } from "../../../hooks/useBusinessAnalytics";
@@ -90,17 +86,23 @@ export function BusinessAnalyticsSection({ businessId }: { businessId: string })
     return null;
   }
 
-  const viewsData = data.viewsOverTime.length > 0
-    ? data.viewsOverTime.map((d) => ({ ...d, date: formatShortDate(d.date) }))
-    : EMPTY_VIEWS;
+  const viewsData =
+    data.viewsOverTime.length > 0
+      ? data.viewsOverTime.map((d) => ({ ...d, date: formatShortDate(d.date) }))
+      : EMPTY_VIEWS;
 
-  const reviewsData = data.reviewsOverTime.length > 0
-    ? data.reviewsOverTime.map((d) => ({ ...d, date: formatShortDate(d.date) }))
-    : EMPTY_REVIEWS;
+  const reviewsData =
+    data.reviewsOverTime.length > 0
+      ? data.reviewsOverTime.map((d) => ({ ...d, date: formatShortDate(d.date) }))
+      : EMPTY_REVIEWS;
 
-  const ratingData = data.ratingTrend.length > 0
-    ? data.ratingTrend.map((d) => ({ date: formatShortDate(d.date), avgRating: d.avgRating ?? 0 }))
-    : EMPTY_RATINGS;
+  const ratingData =
+    data.ratingTrend.length > 0
+      ? data.ratingTrend.map((d) => ({
+          date: formatShortDate(d.date),
+          avgRating: d.avgRating ?? 0,
+        }))
+      : EMPTY_RATINGS;
 
   return (
     <section
@@ -224,4 +226,3 @@ export function BusinessAnalyticsSection({ businessId }: { businessId: string })
     </section>
   );
 }
-

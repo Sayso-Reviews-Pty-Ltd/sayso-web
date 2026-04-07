@@ -50,21 +50,21 @@ The "Can't open this page" tab crash on iOS Safari/Chrome was most likely caused
 
 ### Mobile (iOS Safari/Chrome)
 
-1. **Remote debugging (Safari)**  
-   - Mac: Safari → Develop → [your iPhone] → pick the tab.  
+1. **Remote debugging (Safari)**
+   - Mac: Safari → Develop → [your iPhone] → pick the tab.
    - Reproduce the crash and check Console for errors or repeated redirects.
 
-2. **Vercel logs**  
-   - Vercel Dashboard → Project → Logs (or Runtime Logs).  
-   - Filter by "Edge" or "[Edge]".  
+2. **Vercel logs**
+   - Vercel Dashboard → Project → Logs (or Runtime Logs).
+   - Filter by "Edge" or "[Edge]".
    - Reproduce on the device; in the logs you should see:
      - `pathname=... hasUser=... emailOk=...` and either `ALLOW` or `REDIRECT ... to=...`.
    - If you see the same pathname with `REDIRECT` over and over in a few seconds, that was a loop (now prevented by the guard).
 
-3. **Steps on device**  
-   - Clear site data (or use private tab).  
-   - Open `https://sayso-snowy.vercel.app/`.  
-   - If it used to crash: with the fix, the tab should load (possibly after one redirect to `/login` or the first page).  
+3. **Steps on device**
+   - Clear site data (or use private tab).
+   - Open `https://sayso-snowy.vercel.app/`.
+   - If it used to crash: with the fix, the tab should load (possibly after one redirect to `/login` or the first page).
    - Try opening `/home` while logged out: one redirect to `/login`, then stable.
 
 ---

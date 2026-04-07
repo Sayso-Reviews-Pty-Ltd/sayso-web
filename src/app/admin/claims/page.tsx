@@ -21,11 +21,11 @@ type ClaimRow = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  verified:       "bg-sage/10 text-sage",
-  rejected:       "bg-red-50 text-red-700",
-  under_review:   "bg-amber-50 text-amber-700",
-  action_required:"bg-orange-50 text-orange-700",
-  pending:        "bg-charcoal/8 text-charcoal/70",
+  verified: "bg-sage/10 text-sage",
+  rejected: "bg-red-50 text-red-700",
+  under_review: "bg-amber-50 text-amber-700",
+  action_required: "bg-orange-50 text-orange-700",
+  pending: "bg-charcoal/8 text-charcoal/70",
 };
 
 function formatDate(s: string | null) {
@@ -60,11 +60,16 @@ export default function AdminClaimsPage() {
 
     fetch(`/api/admin/claims?${params.toString()}`)
       .then((res) => {
-        if (res.status === 403) { router.replace("/"); return null; }
+        if (res.status === 403) {
+          router.replace("/");
+          return null;
+        }
         if (!res.ok) throw new Error("Failed to load claims");
         return res.json();
       })
-      .then((data) => { if (data?.claims) setClaims(data.claims); })
+      .then((data) => {
+        if (data?.claims) setClaims(data.claims);
+      })
       .catch((err) => setError(err.message || "Something went wrong"))
       .finally(() => setLoading(false));
   }, [router, statusFilter, methodFilter]);
@@ -162,11 +167,21 @@ export default function AdminClaimsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-charcoal/8 bg-charcoal/[0.025]">
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Business</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Claimed by</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Status</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Method</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Submitted</th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Business
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Claimed by
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Method
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Submitted
+                  </th>
                   <th className="px-5 py-3.5 w-24" />
                 </tr>
               </thead>
@@ -193,7 +208,9 @@ export default function AdminClaimsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-urbanist capitalize ${STATUS_STYLES[c.status] ?? "bg-charcoal/8 text-charcoal/70"}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-urbanist capitalize ${STATUS_STYLES[c.status] ?? "bg-charcoal/8 text-charcoal/70"}`}
+                      >
                         {c.status.replace(/_/g, " ")}
                       </span>
                     </td>
@@ -241,10 +258,14 @@ export default function AdminClaimsPage() {
                       {c.business_name ?? "—"}
                     </p>
                     {c.claimant_email && (
-                      <p className="font-urbanist text-xs text-charcoal/45 truncate">{c.claimant_email}</p>
+                      <p className="font-urbanist text-xs text-charcoal/45 truncate">
+                        {c.claimant_email}
+                      </p>
                     )}
                   </div>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold font-urbanist capitalize flex-shrink-0 ${STATUS_STYLES[c.status] ?? "bg-charcoal/8 text-charcoal/70"}`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold font-urbanist capitalize flex-shrink-0 ${STATUS_STYLES[c.status] ?? "bg-charcoal/8 text-charcoal/70"}`}
+                  >
                     {c.status.replace(/_/g, " ")}
                   </span>
                 </div>

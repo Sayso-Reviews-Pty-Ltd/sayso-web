@@ -1,6 +1,7 @@
 # Business Claiming and Image Upload Flow
 
 ## Overview
+
 This document explains what happens when a business owner claims a business and uploads images, including all edge cases and potential failure points.
 
 ---
@@ -10,12 +11,14 @@ This document explains what happens when a business owner claims a business and 
 ### Step-by-Step Process
 
 #### 1. **User Searches for Business**
+
 - **Location**: `/claim-business` or `/for-businesses` page
 - **Action**: User types business name (minimum 2 characters)
 - **API Call**: `GET /api/businesses/search?query={searchQuery}`
 - **Result**: Returns list of businesses with claim status
 
 #### 2. **User Clicks "Claim This Business"**
+
 - **Checks Performed**:
   - ✅ User authenticated? → If not, redirect to `/business/login`
   - ✅ Business already claimed by user? → Redirect to dashboard
@@ -24,6 +27,7 @@ This document explains what happens when a business owner claims a business and 
 - **Action**: Opens `ClaimModal` component
 
 #### 3. **User Submits Claim Request**
+
 - **Form Data Collected**:
   - `role`: 'owner' or 'manager'
   - `phone`: Optional phone number
@@ -42,9 +46,11 @@ This document explains what happens when a business owner claims a business and 
   ```
 
 #### 4. **Server-Side Claim Processing**
+
 **Location**: `src/app/api/business/claim/route.ts`
 
 **Validation Steps**:
+
 1. ✅ Check authentication (401 if not authenticated)
 2. ✅ Validate `business_id` exists (400 if missing)
 3. ✅ Validate `role` is 'owner' or 'manager' (400 if invalid)
@@ -52,6 +58,7 @@ This document explains what happens when a business owner claims a business and 
 5. ✅ Check if pending request exists (400 if duplicate)
 
 **Database Operations**:
+
 ```sql
 -- Creates record in business_ownership_requests table
 INSERT INTO business_ownership_requests (
@@ -64,10 +71,12 @@ INSERT INTO business_ownership_requests (
 ```
 
 **Email Notification** (non-blocking):
+
 - Sends confirmation email to user
 - Email failure does NOT fail the request
 
-**Response**: 
+**Response**:
+
 ```json
 {
   "success": true,
@@ -80,9 +89,11 @@ INSERT INTO business_ownership_requests (
 ```
 
 #### 5. **Admin Approval** (Manual Process)
+
 **Location**: `src/app/api/businesses/claims/[id]/approve/route.ts`
 
 **When Admin Approves**:
+
 1. Updates `business_ownership_requests.status` → 'approved'
 2. Creates record in `business_owners` table:
    ```sql
@@ -118,39 +129,34 @@ INSERT INTO business_ownership_requests (
    - Returns `businessId`
 
 3. **Image Upload Process** (if images selected)
+
    ```typescript
    // For each image:
    for (let i = 0; i < images.length; i++) {
      // 1. Validate image file
-     validateImageFiles(images) // Size, type, format
-     
+     validateImageFiles(images); // Size, type, format
+
      // 2. Generate file path
-     const filePath = `${businessId}/${businessId}_${i}_${timestamp}.${fileExt}`
-     
+     const filePath = `${businessId}/${businessId}_${i}_${timestamp}.${fileExt}`;
+
      // 3. Upload to Supabase Storage
-     await supabase.storage
-       .from('business-images')
-       .upload(filePath, image, {
-         cacheControl: '3600',
-         upsert: false
-       })
-     
+     await supabase.storage.from("business-images").upload(filePath, image, {
+       cacheControl: "3600",
+       upsert: false,
+     });
+
      // 4. Get public URL
-     const publicUrl = supabase.storage
-       .from('business-images')
-       .getPublicUrl(filePath)
-     
-     uploadedUrls.push(publicUrl)
+     const publicUrl = supabase.storage.from("business-images").getPublicUrl(filePath);
+
+     uploadedUrls.push(publicUrl);
    }
    ```
 
 4. **Save URLs to Database**
+
    ```typescript
    // Update businesses.uploaded_images array
-   await supabase
-     .from('businesses')
-     .update({ uploaded_images: uploadedUrls })
-     .eq('id', businessId)
+   await supabase.from("businesses").update({ uploaded_images: uploadedUrls }).eq("id", businessId);
    ```
 
 5. **Rollback on Failure**
@@ -164,6 +170,7 @@ INSERT INTO business_ownership_requests (
 **API Endpoint**: `POST /api/businesses/[id]/images`
 
 #### Process:
+
 1. **Ownership Verification**
    - Checks `business_owners` table OR `businesses.owner_id`
    - Returns 403 if user doesn't own business
@@ -173,18 +180,19 @@ INSERT INTO business_ownership_requests (
    - Get public URLs
 
 3. **Append to Existing Images**
+
    ```typescript
    // Get existing uploaded_images array
-   const existingImages = business.uploaded_images || []
-   
+   const existingImages = business.uploaded_images || [];
+
    // Append new URLs
-   const updatedImages = [...existingImages, ...newUrls]
-   
+   const updatedImages = [...existingImages, ...newUrls];
+
    // Update database
    await supabase
-     .from('businesses')
+     .from("businesses")
      .update({ uploaded_images: updatedImages })
-     .eq('id', businessId)
+     .eq("id", businessId);
    ```
 
 ---
@@ -194,33 +202,37 @@ INSERT INTO business_ownership_requests (
 ### 🔴 Critical Edge Cases
 
 #### 1. **Storage Upload Succeeds, Database Update Fails**
+
 **Problem**: Images uploaded to storage but URLs not saved to database
 **Impact**: Orphaned files in storage, images not visible in UI
 **Current Fix**: ✅ **HANDLED**
+
 ```typescript
 // In add-business/page.tsx (lines 610-625)
 if (imagesError) {
   // Clean up orphaned storage files
-  const storagePaths = extractStoragePaths(uploadedUrls)
-  await supabase.storage
-    .from('business-images')
-    .remove(storagePaths)
+  const storagePaths = extractStoragePaths(uploadedUrls);
+  await supabase.storage.from("business-images").remove(storagePaths);
 }
 ```
 
 **Edge Case**: What if cleanup fails?
+
 - **Risk**: Orphaned files remain in storage
 - **Mitigation**: Log error, admin can manually clean up
 - **Future Fix**: Implement background job to detect orphaned files
 
 #### 2. **Partial Image Upload Failure**
+
 **Problem**: Some images upload successfully, others fail
-**Current Behavior**: 
+**Current Behavior**:
+
 - Successful uploads: URLs saved to database
 - Failed uploads: Error logged, user notified
 - **Issue**: Database may have partial image array
 
 **Example**:
+
 ```typescript
 // User uploads 5 images
 // Images 1-3: ✅ Success
@@ -230,13 +242,16 @@ if (imagesError) {
 ```
 
 **Current Fix**: ✅ **HANDLED** - Each image upload is independent
+
 - Failed uploads are skipped
 - Only successful URLs are added to array
 - User sees error message for failed uploads
 
 #### 3. **Business Deleted During Image Upload**
+
 **Problem**: User starts uploading images, business gets deleted
-**Previous Behavior**: 
+**Previous Behavior**:
+
 - Upload continues (no check for business existence)
 - URLs saved to non-existent business
 - **Issue**: Orphaned URLs in database (business record deleted)
@@ -244,44 +259,48 @@ if (imagesError) {
 **Status**: ✅ **FIXED**
 
 **Solution Implemented**:
+
 - Business existence check before saving URLs
 - Automatic cleanup of storage files if business deleted
 - User-friendly error message
 
 **Implementation**:
+
 ```typescript
 // In add-business/page.tsx (lines 600-625)
 // Verify business still exists before saving URLs
 const { data: businessCheck, error: businessCheckError } = await supabase
-  .from('businesses')
-  .select('id')
-  .eq('id', businessId)
-  .single()
+  .from("businesses")
+  .select("id")
+  .eq("id", businessId)
+  .single();
 
 if (businessCheckError || !businessCheck) {
   // Business deleted - cleanup storage files
-  await supabase.storage
-    .from('business-images')
-    .remove(storagePaths)
-  showToast('Business was deleted during upload...')
+  await supabase.storage.from("business-images").remove(storagePaths);
+  showToast("Business was deleted during upload...");
 }
 ```
 
 #### 4. **Concurrent Image Uploads**
+
 **Problem**: Multiple users/requests uploading images simultaneously
-**Previous Behavior**: 
+**Previous Behavior**:
+
 - Last write wins (race condition)
 - Some images may be lost
 
 **Status**: ✅ **FIXED**
 
 **Solution Implemented**:
+
 - Created `append_business_images()` PostgreSQL function
 - Uses atomic array concatenation operator (`||`)
 - Prevents race conditions with concurrent uploads
 - Function validates image limit before appending
 
 **Implementation**:
+
 ```sql
 -- PostgreSQL function (supabase/migrations/20250114_append_business_images_function.sql)
 CREATE OR REPLACE FUNCTION public.append_business_images(
@@ -294,22 +313,27 @@ CREATE OR REPLACE FUNCTION public.append_business_images(
 **Fallback**: If function doesn't exist, code re-fetches business state before updating to reduce race conditions
 
 #### 5. **Storage Quota Exceeded**
+
 **Problem**: Supabase storage quota reached
-**Current Behavior**: 
+**Current Behavior**:
+
 - Upload fails with error message
 - User sees: "Storage limit reached. Please delete old images or contact support."
 - ✅ **HANDLED** - Error message is user-friendly
 
 **Edge Case**: What if quota exceeded mid-upload?
+
 - Some images uploaded, others fail
 - Partial success scenario (see Edge Case #2)
 
 #### 6. **Invalid Image Files**
+
 **Problem**: User uploads non-image files or corrupted files
 **Current Behavior**: ✅ **HANDLED**
+
 ```typescript
 // Validation before upload (lines 544-554)
-const validationResults = validateImageFiles(images)
+const validationResults = validateImageFiles(images);
 // Checks:
 // - File type (JPG, PNG, WebP, GIF)
 // - File size (< 5MB)
@@ -317,66 +341,83 @@ const validationResults = validateImageFiles(images)
 ```
 
 **Edge Case**: What if validation passes but file is corrupted?
+
 - Upload succeeds
 - Image may not display in browser
 - **Mitigation**: Browser handles gracefully (shows broken image icon)
 
 #### 7. **Network Interruption During Upload**
+
 **Problem**: User's network disconnects mid-upload
 **Current Behavior**:
+
 - Upload fails, error shown to user
 - No partial state saved
 - User must retry
 
 **Edge Case**: What if network reconnects and user retries?
+
 - May create duplicate uploads if not handled
 - **Current Fix**: Uses unique filenames with timestamp → Prevents duplicates
 
 #### 8. **Business Owner Changes During Claim Process**
+
 **Problem**: Business gets claimed by someone else while user's claim is pending
 **Current Behavior**:
+
 - Claim request remains in 'pending' status
 - Admin sees both requests
 - Admin must manually reject duplicate
 
-**Mitigation**: 
+**Mitigation**:
+
 - Check claim status before creating request ✅ (already done)
 - Auto-reject pending requests when business gets claimed
 - **Future Fix**: Add trigger to auto-reject pending requests on approval
 
 #### 9. **Image URL Becomes Invalid**
+
 **Problem**: Storage file deleted but URL still in database
 **Current Behavior**:
+
 - Image shows broken/404 in UI
 - No automatic cleanup
 
 **Edge Case**: What if storage file is deleted externally?
+
 - Database still has URL
 - UI shows broken image
 - **Mitigation**: Implement health check to detect broken URLs
 
 #### 10. **Maximum Image Limit**
+
 **Problem**: User tries to upload too many images
-**Previous Behavior**: 
+**Previous Behavior**:
+
 - No explicit limit enforced
 - May cause performance issues with large arrays
 
 **Status**: ✅ **FIXED**
 
 **Solution Implemented**:
+
 - Maximum 10 images per business enforced
 - Validation in both API endpoint and add-business page
 - User-friendly error messages
 - Automatic truncation with warning
 
 **Implementation**:
+
 ```typescript
 // In POST /api/businesses/[id]/images (lines 145-171)
 const MAX_IMAGES = 10;
 if (currentCount + newCount > MAX_IMAGES) {
-  return NextResponse.json({
-    error: `Maximum image limit reached (${MAX_IMAGES} images)...`
-  }, { status: 400 });
+  return NextResponse.json(
+    {
+      error: `Maximum image limit reached (${MAX_IMAGES} images)...`,
+    },
+    { status: 400 }
+  );
 }
 ```
 
@@ -524,4 +565,3 @@ The business claiming and image upload flow is **well-implemented** with proper 
 4. **Health checks** for broken image URLs
 
 All critical edge cases are either handled or have clear mitigation strategies in place.
-

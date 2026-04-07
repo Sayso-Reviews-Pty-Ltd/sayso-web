@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/app/types/supabase';
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/app/types/supabase";
 
 let serviceClient: ReturnType<typeof createClient<Database>> | null = null;
 
@@ -11,7 +11,7 @@ let serviceClient: ReturnType<typeof createClient<Database>> | null = null;
  */
 export function getServiceSupabase() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Service Supabase not configured');
+    throw new Error("Service Supabase not configured");
   }
   if (!serviceClient) {
     serviceClient = createClient<Database>(
@@ -30,24 +30,24 @@ export function getServiceSupabase() {
 export async function isAdmin(userId: string): Promise<boolean> {
   const supabase = getServiceSupabase();
   const { data, error } = await supabase
-    .from('profiles')
-    .select('role, account_role')
-    .eq('user_id', userId)
+    .from("profiles")
+    .select("role, account_role")
+    .eq("user_id", userId)
     .maybeSingle();
 
   if (error) {
     // Backward-compatible fallback for older schemas without account_role.
     const { data: fallback } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('user_id', userId)
+      .from("profiles")
+      .select("role")
+      .eq("user_id", userId)
       .maybeSingle();
     if (!fallback) return false;
     const profile = fallback as { role: string | null };
-    return profile.role === 'admin';
+    return profile.role === "admin";
   }
 
   if (!data) return false;
   const profile = data as { role: string | null; account_role?: string | null };
-  return profile.role === 'admin' || profile.account_role === 'admin';
+  return profile.role === "admin" || profile.account_role === "admin";
 }

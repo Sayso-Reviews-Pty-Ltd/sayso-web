@@ -1,15 +1,19 @@
-import type { AuthUser } from '../lib/types/database';
-import type { AuthSnapshotStatus } from '../lib/authSnapshot';
+import type { AuthUser } from "../lib/types/database";
+import type { AuthSnapshotStatus } from "../lib/authSnapshot";
 
 export interface AuthContextType {
   user: AuthUser | null;
   snapshotStatus: AuthSnapshotStatus;
-  login: (email: string, password: string, desiredRole?: 'user' | 'business_owner') => Promise<AuthUser | null>;
+  login: (
+    email: string,
+    password: string,
+    desiredRole?: "user" | "business_owner"
+  ) => Promise<AuthUser | null>;
   register: (
     email: string,
     password: string,
     username: string,
-    accountType?: 'user' | 'business_owner',
+    accountType?: "user" | "business_owner",
     displayName?: string,
     consentGiven?: boolean
   ) => Promise<{ success: boolean; errorMessage?: string; errorCode?: string }>;

@@ -95,7 +95,6 @@ export async function submitReviewFlagRequest(params: {
     ok: false,
     error: errorMessage,
     alreadyFlagged:
-      response.status === 400 &&
-      errorMessage.toLowerCase().includes("already flagged"),
+      response.status === 400 && errorMessage.toLowerCase().includes("already flagged"),
   };
 }

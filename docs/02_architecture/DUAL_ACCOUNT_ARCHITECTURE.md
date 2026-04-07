@@ -5,6 +5,7 @@
 This document outlines the system architecture for allowing the same email address to be used for both Personal (User) and Business accounts completely independently.
 
 **Example:**
+
 - Jess can have a Personal account with `jess@gmail.com`
 - The same email `jess@gmail.com` can create a Business account for her nail salon
 - These are completely separate profiles with:
@@ -17,6 +18,7 @@ This document outlines the system architecture for allowing the same email addre
 ## Current Problem
 
 **Current behavior (problematic):**
+
 - Supabase `auth.users` table enforces email uniqueness at the auth layer
 - One email = One `auth.users` record
 - When a user registers, they get ONE user_id in auth.users
@@ -24,6 +26,7 @@ This document outlines the system architecture for allowing the same email addre
 - This means one email can only have one identity in the system
 
 **Why this is limiting:**
+
 - If Jess registers as a Personal user with jess@gmail.com, her auth.users record is created
 - If she later wants a Business account, she can't use the same email (Supabase blocks it)
 - She'd have to use jess.business@gmail.com or a different email
@@ -35,6 +38,7 @@ This document outlines the system architecture for allowing the same email addre
 The simplest, most secure approach is to use **two separate Supabase projects** or utilize Supabase's multi-tenant capability:
 
 **Option A: Separate Supabase Projects**
+
 - Personal Account Project: auth.users with role 'user'
 - Business Account Project: auth.users with role 'business_owner'
 - Same email can exist in both projects independently
@@ -42,6 +46,7 @@ The simplest, most secure approach is to use **two separate Supabase projects** 
 - Clear separation of concerns
 
 **Option B: Single Project with Custom Auth Logic**
+
 - Use email + account_type as composite key
 - Implement custom JWT claims to track account context
 - Manage role switching via profiles table
@@ -60,13 +65,13 @@ CREATE TABLE public.account_identities (
   email TEXT NOT NULL, -- Redundant copy for easier querying
   account_type TEXT NOT NULL CHECK (account_type IN ('personal', 'business')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- One identity per email + account_type combination
   UNIQUE(email, account_type)
 );
 
 -- MODIFIED: profiles table now has account_identities instead of direct user_id
-ALTER TABLE public.profiles 
+ALTER TABLE public.profiles
   DROP CONSTRAINT profiles_pkey,
   ADD COLUMN account_identity_id UUID REFERENCES public.account_identities(id) ON DELETE CASCADE,
   ADD PRIMARY KEY (account_identity_id);
@@ -93,6 +98,7 @@ ALTER TABLE public.profiles
 ### 3. **Authentication Flow**
 
 #### Personal Account Registration:
+
 ```
 1. User enters email + password + username
 2. Check: Does account_identities have this (email, 'personal')?
@@ -105,6 +111,7 @@ ALTER TABLE public.profiles
 ```
 
 #### Business Account Registration (Same Email):
+
 ```
 1. User enters email + password + username
 2. Check: Does account_identities have this (email, 'business')?
@@ -118,6 +125,7 @@ ALTER TABLE public.profiles
 ```
 
 #### Role Switching:
+
 ```
 1. User clicks "Switch to Business Mode"
 2. Query: SELECT * FROM account_identities WHERE email = user.email AND account_type = 'business'
@@ -130,6 +138,7 @@ ALTER TABLE public.profiles
 ### 4. **JWT & Session Management**
 
 Each JWT should include:
+
 ```json
 {
   "sub": "auth_user_id",  // Shared across both accounts
@@ -143,6 +152,7 @@ Each JWT should include:
 ```
 
 This allows:
+
 - Same authentication (auth_user_id) for both accounts
 - Different authorization contexts (account_context.type)
 - Separation in database queries
@@ -186,17 +196,20 @@ CREATE POLICY "Users can manage their saved businesses per account"
 ### 6. **UI/UX Changes**
 
 #### Personal Account View:
+
 - Standard user feed, explore, saved businesses
 - Settings tab shows "Personal Account"
 - Option to "Add Business Account" (if none exists for this email)
 
 #### Business Account View:
+
 - Business dashboard with analytics
 - Claim businesses, manage listings
 - Settings tab shows "Business Account"
 - Option to "Add Personal Account" (if none exists for this email)
 
 #### Context Switcher:
+
 ```
 ┌─────────────────────────┐
 │ Jess (jess@gmail.com)   │
@@ -211,6 +224,7 @@ CREATE POLICY "Users can manage their saved businesses per account"
 ### 7. **Implementation Checklist**
 
 #### Phase 1: Database Changes
+
 - [ ] Create account_identities table
 - [ ] Add account_identity_id to profiles
 - [ ] Add account_type column to profiles
@@ -218,23 +232,27 @@ CREATE POLICY "Users can manage their saved businesses per account"
 - [ ] Update RLS policies
 
 #### Phase 2: Authentication
+
 - [ ] Modify signUp handler to check account_identities
 - [ ] Implement custom auth logic for business account creation
 - [ ] Add JWT claims for account_context
 - [ ] Create switch-role API endpoint
 
 #### Phase 3: Data Layer
+
 - [ ] Add account_identity_id to reviews, saved_businesses, etc.
 - [ ] Update all queries to filter by account_context
 - [ ] Add middleware to extract account_context from JWT
 
 #### Phase 4: UI
+
 - [ ] Create account switcher component
 - [ ] Update dashboard to show correct account type
 - [ ] Add "Add Account" flow
 - [ ] Update settings pages
 
 #### Phase 5: Testing
+
 - [ ] Test dual registration with same email
 - [ ] Test role switching
 - [ ] Test data isolation
@@ -263,13 +281,13 @@ CREATE POLICY "Users can manage their saved businesses per account"
 
 ### 10. **Risks & Mitigations**
 
-| Risk | Mitigation |
-|------|-----------|
+| Risk                                          | Mitigation                                    |
+| --------------------------------------------- | --------------------------------------------- |
 | User confusion about which account they're in | Clear visual indicator (header, color coding) |
-| Data leakage between accounts | Strict RLS policies + account_identity checks |
-| Complex querying | Always include account_context in queries |
-| Migration errors | Thorough testing in staging first |
-| Performance on account_identities table | Add indexes on (email, account_type) |
+| Data leakage between accounts                 | Strict RLS policies + account_identity checks |
+| Complex querying                              | Always include account_context in queries     |
+| Migration errors                              | Thorough testing in staging first             |
+| Performance on account_identities table       | Add indexes on (email, account_type)          |
 
 ## Implementation Order
 
@@ -283,10 +301,12 @@ CREATE POLICY "Users can manage their saved businesses per account"
 ## Files to Modify
 
 ### Database
+
 - [ ] New migration: `20260128_create_account_identities_schema.sql`
 - [ ] New migration: `20260128_migrate_existing_profiles_to_identities.sql`
 
 ### Backend API
+
 - [ ] `src/app/lib/auth.ts` - signUp, signIn, switch-role logic
 - [ ] `src/app/api/user/switch-role/route.ts` - account switching
 - [ ] `src/app/api/user/add-account/route.ts` - new endpoint for adding account
@@ -294,12 +314,13 @@ CREATE POLICY "Users can manage their saved businesses per account"
 - [ ] All data access queries to include account_identity filter
 
 ### Frontend
+
 - [ ] `src/app/components/AccountSwitcher.tsx` - new component
 - [ ] `src/app/contexts/AuthContext.tsx` - track account_context
 - [ ] `src/app/settings/page.tsx` - show both accounts
 - [ ] Navigation to highlight current account
 
 ### API Routes
+
 - [ ] All queries filtered by account_context
 - [ ] Updated RLS policies
-

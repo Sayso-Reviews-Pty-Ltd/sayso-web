@@ -7,6 +7,7 @@ Added premium, simple, and elegant percentile metric chips to business profile p
 ## What Was Added
 
 ### 1. **New Component: PercentileChipsSection**
+
 - **Location**: `src/app/components/BusinessDetail/PercentileChipsSection.tsx`
 - **Purpose**: Display performance metrics in a premium, minimal design
 - **Features**:
@@ -18,6 +19,7 @@ Added premium, simple, and elegant percentile metric chips to business profile p
   - Only displays if there is actual data (gracefully hides if no metrics available)
 
 ### 2. **Integration into Business Profile Page**
+
 - **Location**: `src/app/business/[id]/page.tsx`
 - **Placement**: Below the Business Details Card, above the Location Map
 - **Data Source**: `business.stats?.percentiles` from API response
@@ -26,16 +28,17 @@ Added premium, simple, and elegant percentile metric chips to business profile p
 
 ```typescript
 interface PercentileChipsSectionProps {
-  punctuality?: number;              // 0-100%
-  costEffectiveness?: number;        // 0-100% (Value for Money)
-  friendliness?: number;             // 0-100%
-  trustworthiness?: number;          // 0-100%
+  punctuality?: number; // 0-100%
+  costEffectiveness?: number; // 0-100% (Value for Money)
+  friendliness?: number; // 0-100%
+  trustworthiness?: number; // 0-100%
 }
 ```
 
 ## Visual Design
 
 ### Metrics Grid
+
 - **Layout**: 2 columns on mobile, 4 columns on desktop
 - **Spacing**: 12px gap on mobile, 16px on desktop
 - **Cards**: Individual metric cards with:
@@ -45,6 +48,7 @@ interface PercentileChipsSectionProps {
   - Hover effects for interactivity
 
 ### Color System
+
 - **No Data**: Gray (`charcoal/30`)
 - **Low Score (< 40%)**: Coral
 - **Medium Score (40-60%)**: Amber
@@ -52,6 +56,7 @@ interface PercentileChipsSectionProps {
 - **Excellent Score (80%+)**: Green
 
 ### Premium Features
+
 - Glassmorphism background with backdrop blur
 - Smooth entrance animation
 - Staggered item animations
@@ -62,12 +67,12 @@ interface PercentileChipsSectionProps {
 
 The component maps API percentile data to user-friendly labels:
 
-| API Field | Display Name | Icon | Meaning |
-|-----------|-------------|------|---------|
-| `punctuality` | Punctuality | ⏰ | How well the business keeps appointments |
-| `cost-effectiveness` | Value for Money | 💰 | Fair pricing and value |
-| `friendliness` | Friendliness | 😊 | Welcoming and approachable staff |
-| `trustworthiness` | Trustworthiness | 🛡️ | Reliability and credibility |
+| API Field            | Display Name    | Icon | Meaning                                  |
+| -------------------- | --------------- | ---- | ---------------------------------------- |
+| `punctuality`        | Punctuality     | ⏰   | How well the business keeps appointments |
+| `cost-effectiveness` | Value for Money | 💰   | Fair pricing and value                   |
+| `friendliness`       | Friendliness    | 😊   | Welcoming and approachable staff         |
+| `trustworthiness`    | Trustworthiness | 🛡️   | Reliability and credibility              |
 
 ## Usage Example
 
@@ -80,12 +85,13 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
   costEffectiveness={75}
   friendliness={90}
   trustworthiness={88}
-/>
+/>;
 ```
 
 ## Data Flow
 
 1. **API Response** (`/api/businesses/{id}`)
+
    ```json
    {
      "stats": {
@@ -100,10 +106,11 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
    ```
 
 2. **Profile Page** passes data to component:
+
    ```tsx
    <PercentileChipsSection
      punctuality={business.stats?.percentiles?.punctuality || 0}
-     costEffectiveness={business.stats?.percentiles?.['cost-effectiveness'] || 0}
+     costEffectiveness={business.stats?.percentiles?.["cost-effectiveness"] || 0}
      friendliness={business.stats?.percentiles?.friendliness || 0}
      trustworthiness={business.stats?.percentiles?.trustworthiness || 0}
    />
@@ -114,6 +121,7 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
 ## Styling Details
 
 ### Container
+
 - Rounded corners: `20px`
 - Glassmorphic background
 - Border: `white/60` with backdrop blur
@@ -121,12 +129,14 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
 - Padding: `20px` desktop, `20px` mobile
 
 ### Individual Chips
+
 - Rounded: `16px`
 - Background: `white/40` → `white/60` on hover
 - Smooth color transitions
 - Border indicator: `white/30`
 
 ### Typography
+
 - Header: `font-semibold text-charcoal`
 - Label: `text-xs font-medium text-charcoal/70`
 - Value: `text-lg sm:text-lg font-bold`
@@ -135,12 +145,14 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
 ## Responsive Behavior
 
 ### Mobile (< 640px)
+
 - 2-column grid
 - Smaller icons and text
 - Optimized spacing
 - Full-width layout
 
 ### Desktop (640px+)
+
 - 4-column grid
 - Larger icons
 - More generous spacing
@@ -179,6 +191,7 @@ import { PercentileChipsSection } from "../../components/BusinessDetail";
 ## Same Data as Business Cards
 
 The PercentileChipsSection displays **identical data** to the percentile chips shown on business cards:
+
 - Same metrics (punctuality, cost-effectiveness, friendliness, trustworthiness)
 - Same data source (stats.percentiles from API)
 - Consistent percentile values
@@ -193,6 +206,7 @@ The PercentileChipsSection displays **identical data** to the percentile chips s
 ## Future Enhancements
 
 Potential improvements:
+
 - Add animated progress rings/circles for each metric
 - Show metric trends over time (up/down indicators)
 - Add detailed breakdown modal on click

@@ -1,7 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { AuthUser, Profile } from "./types/database";
-import { buildAuthenticatedSnapshot, buildGuestSnapshot, UNKNOWN_AUTH_SNAPSHOT, type AuthSnapshot } from "./authSnapshot";
+import {
+  buildAuthenticatedSnapshot,
+  buildGuestSnapshot,
+  UNKNOWN_AUTH_SNAPSHOT,
+  type AuthSnapshot,
+} from "./authSnapshot";
 
 const EMPTY_PROFILE: Profile = {
   id: "",
@@ -28,7 +33,7 @@ function profileFromRow(
     dealbreakers_count?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
-  } | null,
+  } | null
 ): Profile {
   if (!row) {
     return {
@@ -64,7 +69,7 @@ function toAuthUser(
     created_at?: string | null;
     updated_at?: string | null;
   },
-  profile: Profile,
+  profile: Profile
 ): AuthUser {
   const nowIso = new Date().toISOString();
   return {
@@ -84,22 +89,18 @@ export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error(
-        'Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set.'
+        "Missing required environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set."
       );
     }
-    const supabase = createServerClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          // Server Components are read-only for cookies.
-          setAll() {},
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
         },
+        // Server Components are read-only for cookies.
+        setAll() {},
       },
-    );
+    });
 
     const {
       data: { user },
@@ -122,7 +123,7 @@ export async function getServerAuthSnapshot(): Promise<AuthSnapshot> {
     const { data: profileRow, error: profileError } = await supabase
       .from("profiles")
       .select(
-        "role, account_role, onboarding_completed_at, onboarding_step, interests_count, subcategories_count, dealbreakers_count, created_at, updated_at",
+        "role, account_role, onboarding_completed_at, onboarding_step, interests_count, subcategories_count, dealbreakers_count, created_at, updated_at"
       )
       .eq("user_id", user.id)
       .maybeSingle();

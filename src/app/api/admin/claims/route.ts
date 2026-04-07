@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAdmin } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withAdmin } from "@/app/api/_lib/withAuth";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 function shouldUseFallbackWithoutJoin(error: unknown): boolean {
-  const message = String((error as { message?: string } | null)?.message ?? '').toLowerCase();
+  const message = String((error as { message?: string } | null)?.message ?? "").toLowerCase();
   return (
-    message.includes('could not find a relationship') ||
-    message.includes('relationship') ||
-    message.includes('schema cache') ||
-    (message.includes('does not exist') && message.includes('businesses'))
+    message.includes("could not find a relationship") ||
+    message.includes("relationship") ||
+    message.includes("schema cache") ||
+    (message.includes("does not exist") && message.includes("businesses"))
   );
 }
 
@@ -43,17 +43,27 @@ function parseFilters(req: NextRequest): {
   offset: number;
 } {
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get('status');
-  const method = searchParams.get('method');
-  const fromDate = searchParams.get('from');
-  const toDate = searchParams.get('to');
-  const rawLimit = Number.parseInt(searchParams.get('limit') ?? '50', 10);
-  const rawOffset = Number.parseInt(searchParams.get('offset') ?? '0', 10);
+  const status = searchParams.get("status");
+  const method = searchParams.get("method");
+  const fromDate = searchParams.get("from");
+  const toDate = searchParams.get("to");
+  const rawLimit = Number.parseInt(searchParams.get("limit") ?? "50", 10);
+  const rawOffset = Number.parseInt(searchParams.get("offset") ?? "0", 10);
 
   return {
     filters: {
-      statuses: status ? status.split(',').map((s) => s.trim()).filter(Boolean) : [],
-      methods: method ? method.split(',').map((m) => m.trim()).filter(Boolean) : [],
+      statuses: status
+        ? status
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      methods: method
+        ? method
+            .split(",")
+            .map((m) => m.trim())
+            .filter(Boolean)
+        : [],
       fromDate,
       toDate,
     },
@@ -70,16 +80,16 @@ function applyFilters<T>(query: T, filters: ClaimsFilter): T {
   };
 
   if (filters.statuses.length) {
-    next = next.in('status', filters.statuses) as typeof next;
+    next = next.in("status", filters.statuses) as typeof next;
   }
   if (filters.methods.length) {
-    next = next.in('method_attempted', filters.methods) as typeof next;
+    next = next.in("method_attempted", filters.methods) as typeof next;
   }
   if (filters.fromDate) {
-    next = next.gte('created_at', filters.fromDate) as typeof next;
+    next = next.gte("created_at", filters.fromDate) as typeof next;
   }
   if (filters.toDate) {
-    next = next.lte('created_at', filters.toDate) as typeof next;
+    next = next.lte("created_at", filters.toDate) as typeof next;
   }
   return next as unknown as T;
 }
@@ -125,7 +135,7 @@ export const GET = withAdmin(async (req, { service }) => {
     const { filters, limit, offset } = parseFilters(req);
 
     let joinedQuery = service
-      .from('business_claims')
+      .from("business_claims")
       .select(
         `
         id,
@@ -139,15 +149,14 @@ export const GET = withAdmin(async (req, { service }) => {
         reviewed_at,
         businesses!inner ( id, name, primary_subcategory_slug, primary_subcategory_label, location, slug )
       `,
-        { count: 'exact' },
+        { count: "exact" }
       )
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     joinedQuery = applyFilters(joinedQuery, filters);
 
-    const { data: joinedRows, error: joinedError, count: joinedCount } =
-      await joinedQuery;
+    const { data: joinedRows, error: joinedError, count: joinedCount } = await joinedQuery;
 
     if (!joinedError) {
       const rows = (joinedRows ?? []) as BusinessClaimRow[];
@@ -155,11 +164,14 @@ export const GET = withAdmin(async (req, { service }) => {
       let claimantEmailMap = new Map<string, string>();
       if (claimantIds.length > 0) {
         const { data: profiles } = await service
-          .from('profiles')
-          .select('user_id, email')
-          .in('user_id', claimantIds);
+          .from("profiles")
+          .select("user_id, email")
+          .in("user_id", claimantIds);
         claimantEmailMap = new Map(
-          (profiles ?? []).map((p: { user_id: string; email: string | null }) => [p.user_id, p.email ?? '—'])
+          (profiles ?? []).map((p: { user_id: string; email: string | null }) => [
+            p.user_id,
+            p.email ?? "—",
+          ])
         );
       }
       const claims = mapClaims(rows, claimantEmailMap);
@@ -172,14 +184,14 @@ export const GET = withAdmin(async (req, { service }) => {
     }
 
     if (!shouldUseFallbackWithoutJoin(joinedError)) {
-      console.error('Admin claims list error:', joinedError);
-      return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
+      console.error("Admin claims list error:", joinedError);
+      return NextResponse.json({ error: "Failed to fetch claims" }, { status: 500 });
     }
 
-    console.warn('Admin claims list join fallback activated:', joinedError);
+    console.warn("Admin claims list join fallback activated:", joinedError);
 
     let fallbackQuery = service
-      .from('business_claims')
+      .from("business_claims")
       .select(
         `
         id,
@@ -192,42 +204,46 @@ export const GET = withAdmin(async (req, { service }) => {
         submitted_at,
         reviewed_at
       `,
-        { count: 'exact' },
+        { count: "exact" }
       )
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     fallbackQuery = applyFilters(fallbackQuery, filters);
 
-    const { data: fallbackRows, error: fallbackError, count: fallbackCount } =
-      await fallbackQuery;
+    const { data: fallbackRows, error: fallbackError, count: fallbackCount } = await fallbackQuery;
 
     if (fallbackError) {
-      console.error('Admin claims list fallback error:', fallbackError);
-      return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
+      console.error("Admin claims list fallback error:", fallbackError);
+      return NextResponse.json({ error: "Failed to fetch claims" }, { status: 500 });
     }
 
     const rows = (fallbackRows ?? []) as BusinessClaimRow[];
-    const businessIds = Array.from(
-      new Set(rows.map((row) => row.business_id).filter(Boolean)),
-    );
+    const businessIds = Array.from(new Set(rows.map((row) => row.business_id).filter(Boolean)));
 
     let businessMap = new Map<string, { id: string; name: string; slug: string | null }>();
     if (businessIds.length > 0) {
       const { data: businesses, error: businessesError } = await service
-        .from('businesses')
-        .select('id, name, slug')
-        .in('id', businessIds);
+        .from("businesses")
+        .select("id, name, slug")
+        .in("id", businessIds);
       if (businessesError) {
-        console.error('Admin claims list fallback businesses error:', businessesError);
+        console.error("Admin claims list fallback businesses error:", businessesError);
       } else {
-        const businessRows =
-          (businesses ?? []) as Array<{ id: string; name: string; slug?: string | null }>;
+        const businessRows = (businesses ?? []) as Array<{
+          id: string;
+          name: string;
+          slug?: string | null;
+        }>;
         businessMap = new Map(
           businessRows.map((biz) => [
             biz.id as string,
-            { id: biz.id as string, name: biz.name as string, slug: (biz.slug as string | null) ?? null },
-          ]),
+            {
+              id: biz.id as string,
+              name: biz.name as string,
+              slug: (biz.slug as string | null) ?? null,
+            },
+          ])
         );
       }
     }
@@ -241,11 +257,14 @@ export const GET = withAdmin(async (req, { service }) => {
     let claimantEmailMap = new Map<string, string>();
     if (claimantIds.length > 0) {
       const { data: profiles } = await service
-        .from('profiles')
-        .select('user_id, email')
-        .in('user_id', claimantIds);
+        .from("profiles")
+        .select("user_id, email")
+        .in("user_id", claimantIds);
       claimantEmailMap = new Map(
-        (profiles ?? []).map((p: { user_id: string; email: string | null }) => [p.user_id, p.email ?? '—'])
+        (profiles ?? []).map((p: { user_id: string; email: string | null }) => [
+          p.user_id,
+          p.email ?? "—",
+        ])
       );
     }
     const claims = mapClaims(enrichedRows, claimantEmailMap);
@@ -257,7 +276,7 @@ export const GET = withAdmin(async (req, { service }) => {
       offset,
     });
   } catch (err) {
-    console.error('Admin claims list error:', err);
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    console.error("Admin claims list error:", err);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 });

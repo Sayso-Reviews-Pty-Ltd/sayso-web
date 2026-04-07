@@ -3,21 +3,26 @@
  * Based on the Badge Notes 26 November specification
  */
 
-export type BadgeGroup = 'milestone' | 'category_explorer' | 'category_specialist' | 'community' | 'personality';
+export type BadgeGroup =
+  | "milestone"
+  | "category_explorer"
+  | "category_specialist"
+  | "community"
+  | "personality";
 
 export type BadgeRuleType =
-  | 'review_count'
-  | 'category_review_count'
-  | 'distinct_category_count'
-  | 'photo_count'
-  | 'helpful_votes_total'
-  | 'helpful_votes_received'
-  | 'first_review_for_business'
-  | 'review_low_review_business_count'
-  | 'distinct_businesses_in_suburb'
-  | 'streak_days'
-  | 'weekly_streak'
-  | 'loyal_reviewer';
+  | "review_count"
+  | "category_review_count"
+  | "distinct_category_count"
+  | "photo_count"
+  | "helpful_votes_total"
+  | "helpful_votes_received"
+  | "first_review_for_business"
+  | "review_low_review_business_count"
+  | "distinct_businesses_in_suburb"
+  | "streak_days"
+  | "weekly_streak"
+  | "loyal_reviewer";
 
 export interface Badge {
   id: string;
@@ -70,4 +75,3 @@ export interface BadgesResponse {
   progress?: BadgeProgress[];
   stats?: BadgeStats;
 }
-

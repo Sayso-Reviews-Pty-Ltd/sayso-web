@@ -1,17 +1,17 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter() {
     return {
       push: jest.fn(),
       replace: jest.fn(),
       prefetch: jest.fn(),
       back: jest.fn(),
-      pathname: '/',
+      pathname: "/",
       query: {},
-      asPath: '/',
+      asPath: "/",
     };
   },
   useParams() {
@@ -21,21 +21,21 @@ jest.mock('next/navigation', () => ({
     return new URLSearchParams();
   },
   usePathname() {
-    return '/';
+    return "/";
   },
 }));
 
 // Mock Next.js Image component
-jest.mock('next/image', () => ({
+jest.mock("next/image", () => ({
   __esModule: true,
   default: (props) => {
-    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+    // eslint-disable-next-line jsx-a11y/alt-text
     return <img {...props} />;
   },
 }));
 
 // Mock Next.js Link component
-jest.mock('next/link', () => {
+jest.mock("next/link", () => {
   return ({ children, href }) => {
     return <a href={href}>{children}</a>;
   };
@@ -46,9 +46,9 @@ const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
     if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Warning: ReactDOM.render') ||
-        args[0].includes('Not implemented: HTMLFormElement.prototype.submit'))
+      typeof args[0] === "string" &&
+      (args[0].includes("Warning: ReactDOM.render") ||
+        args[0].includes("Not implemented: HTMLFormElement.prototype.submit"))
     ) {
       return;
     }
@@ -61,7 +61,7 @@ afterAll(() => {
 });
 
 // IMPORTANT: Do NOT polyfill Request/Response/Headers
-// 
+//
 // In Node.js 20+ (which this project uses), Request/Response/Headers are available natively.
 // Polyfilling with whatwg-fetch causes conflicts with NextRequest's getter-only properties.
 //
@@ -74,12 +74,12 @@ afterAll(() => {
 // - jsdom may need Response/Headers polyfills, but NOT Request
 // - Next.js handles Request internally
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   // We're in jsdom environment (component tests)
   // Only polyfill Response/Headers if missing, but NEVER Request
-  if (typeof global.Response === 'undefined') {
+  if (typeof global.Response === "undefined") {
     try {
-      const { Response, Headers } = require('undici');
+      const { Response, Headers } = require("undici");
       global.Response = Response;
       global.Headers = Headers;
       // Do NOT polyfill Request - Next.js handles it internally
@@ -91,17 +91,16 @@ if (typeof window !== 'undefined') {
   // We're in Node.js environment (API route tests)
   // Node 20+ has native Request/Response/Headers, but Jest might not expose them globally
   // Polyfill from undici if missing (for Jest compatibility)
-  if (typeof global.Request === 'undefined') {
+  if (typeof global.Request === "undefined") {
     try {
-      const { Request, Response, Headers } = require('undici');
+      const { Request, Response, Headers } = require("undici");
       global.Request = Request;
       global.Response = Response;
       global.Headers = Headers;
     } catch (e) {
       console.warn(
-        'Request/Response not available. Ensure Node.js 20+ is being used and undici is installed.'
+        "Request/Response not available. Ensure Node.js 20+ is being used and undici is installed."
       );
     }
   }
 }
-

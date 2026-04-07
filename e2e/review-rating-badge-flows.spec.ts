@@ -118,7 +118,10 @@ async function ensureBasicPreferences(admin: SupabaseClient, userId: string): Pr
 
     await admin
       .from("user_subcategories")
-      .upsert({ user_id: userId, subcategory_id: subcategoryId }, { onConflict: "user_id,subcategory_id" });
+      .upsert(
+        { user_id: userId, subcategory_id: subcategoryId },
+        { onConflict: "user_id,subcategory_id" }
+      );
   } catch {
     // best-effort; missing preferences will keep For You hidden but shouldn't break the spec
   }
@@ -149,28 +152,28 @@ async function getOrCreatePersonalUser(admin: SupabaseClient): Promise<SeededUse
     });
 
     if (error || !data?.user?.id) {
-      throw new Error(`Failed to ensure personal account exists: ${error?.message || "unknown error"}`);
+      throw new Error(
+        `Failed to ensure personal account exists: ${error?.message || "unknown error"}`
+      );
     }
 
     userId = data.user.id;
   }
 
-  await admin
-    .from("profiles")
-    .upsert(
-      {
-        user_id: userId,
-        email: PERSONAL_EMAIL,
-        username,
-        display_name: displayName,
-        role: "user",
-        account_role: "user",
-        onboarding_step: "complete",
-        onboarding_complete: true,
-        onboarding_completed_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" }
-    );
+  await admin.from("profiles").upsert(
+    {
+      user_id: userId,
+      email: PERSONAL_EMAIL,
+      username,
+      display_name: displayName,
+      role: "user",
+      account_role: "user",
+      onboarding_step: "complete",
+      onboarding_complete: true,
+      onboarding_completed_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" }
+  );
 
   await ensureBasicPreferences(admin, userId);
 
@@ -183,7 +186,10 @@ async function getOrCreatePersonalUser(admin: SupabaseClient): Promise<SeededUse
   };
 }
 
-async function getBusinessStats(admin: SupabaseClient, businessId: string): Promise<BusinessStatsRow> {
+async function getBusinessStats(
+  admin: SupabaseClient,
+  businessId: string
+): Promise<BusinessStatsRow> {
   const { data, error } = await admin
     .from("business_stats")
     .select("business_id,total_reviews,average_rating,rating_distribution,percentiles")
@@ -191,7 +197,9 @@ async function getBusinessStats(admin: SupabaseClient, businessId: string): Prom
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error(`Failed to fetch business_stats for ${businessId}: ${error?.message || "not found"}`);
+    throw new Error(
+      `Failed to fetch business_stats for ${businessId}: ${error?.message || "not found"}`
+    );
   }
 
   return data as BusinessStatsRow;
@@ -212,7 +220,9 @@ async function waitForStats(
     await sleep(400);
   }
 
-  throw new Error(`Timed out waiting for stats update for ${businessId}. Last row: ${JSON.stringify(latest)}`);
+  throw new Error(
+    `Timed out waiting for stats update for ${businessId}. Last row: ${JSON.stringify(latest)}`
+  );
 }
 
 async function forceStatsRecalc(admin: SupabaseClient, businessId: string): Promise<void> {
@@ -249,7 +259,9 @@ async function openReviewForm(page: Page, business: SeededBusiness): Promise<voi
   await page.goto(`/business/${business.slug}`);
   await expect(page.getByText(business.name).first()).toBeVisible({ timeout: 20_000 });
   await page.getByRole("link", { name: /Leave a Review/i }).click();
-  await expect(page.getByRole("heading", { name: /Write a Review/i }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: /Write a Review/i }).first()).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
 async function submitReviewViaApi(page: Page, payload: ReviewPayload): Promise<ReviewApiResult> {
@@ -303,7 +315,9 @@ async function waitForEarnedBadge(
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     const badges = await getUserBadges(page, userId);
-    const found = badges.find((badge) => badge?.earned && badgeName.test(String(badge?.name || "")));
+    const found = badges.find(
+      (badge) => badge?.earned && badgeName.test(String(badge?.name || ""))
+    );
     if (found) return found;
     await sleep(500);
   }
@@ -320,7 +334,10 @@ async function setSearchQuery(page: Page, placeholder: RegExp, query: string): P
   await input.press("Enter").catch(() => {});
 }
 
-async function findBusinessCard(page: Page, businessName: string): Promise<{ detailsButton: Locator; card: Locator }> {
+async function findBusinessCard(
+  page: Page,
+  businessName: string
+): Promise<{ detailsButton: Locator; card: Locator }> {
   const detailsButton = page
     .getByRole("button", { name: new RegExp(`View ${escapeRegex(businessName)} details`, "i") })
     .first();
@@ -331,13 +348,17 @@ async function findBusinessCard(page: Page, businessName: string): Promise<{ det
 }
 
 async function readPercentileChipLabels(card: Locator): Promise<string[]> {
-  return card.locator("[aria-label]").evaluateAll((nodes) =>
-    nodes
-      .map((node) => node.getAttribute("aria-label") || "")
-      .filter((label) =>
-        /(Punctuality|Cost Effectiveness|Friendliness|Trustworthiness|insights coming soon)/i.test(label)
-      )
-  );
+  return card
+    .locator("[aria-label]")
+    .evaluateAll((nodes) =>
+      nodes
+        .map((node) => node.getAttribute("aria-label") || "")
+        .filter((label) =>
+          /(Punctuality|Cost Effectiveness|Friendliness|Trustworthiness|insights coming soon)/i.test(
+            label
+          )
+        )
+    );
 }
 
 async function cleanupSeedData(
@@ -412,7 +433,9 @@ const test = base.extend<Fixtures>({
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceRoleKey) {
-      throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for this spec.");
+      throw new Error(
+        "NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for this spec."
+      );
     }
 
     const client = createClient(supabaseUrl, serviceRoleKey, {
@@ -447,7 +470,9 @@ const test = base.extend<Fixtures>({
       });
 
       if (error || !data?.user?.id) {
-        throw new Error(`Failed to create seeded user (${label}): ${error?.message || "unknown error"}`);
+        throw new Error(
+          `Failed to create seeded user (${label}): ${error?.message || "unknown error"}`
+        );
       }
 
       const userId = data.user.id;
@@ -469,7 +494,9 @@ const test = base.extend<Fixtures>({
       );
 
       if (profileError) {
-        throw new Error(`Failed to create profile for seeded user (${label}): ${profileError.message}`);
+        throw new Error(
+          `Failed to create profile for seeded user (${label}): ${profileError.message}`
+        );
       }
 
       return {
@@ -494,7 +521,8 @@ const test = base.extend<Fixtures>({
       const name = overrides.name || `E2E ${label} ${key}`;
       const slug = overrides.slug || `${slugify(label)}-${key}`;
       const primaryCategorySlug = overrides.primaryCategorySlug || DEFAULT_PRIMARY_CATEGORY;
-      const primarySubcategorySlug = overrides.primarySubcategorySlug || DEFAULT_PRIMARY_SUBCATEGORY;
+      const primarySubcategorySlug =
+        overrides.primarySubcategorySlug || DEFAULT_PRIMARY_SUBCATEGORY;
 
       const { data, error } = await admin
         .from("businesses")
@@ -515,7 +543,9 @@ const test = base.extend<Fixtures>({
         .single();
 
       if (error || !data?.id) {
-        throw new Error(`Failed to create seeded business (${label}): ${error?.message || "unknown error"}`);
+        throw new Error(
+          `Failed to create seeded business (${label}): ${error?.message || "unknown error"}`
+        );
       }
 
       createdBusinessIds.push(data.id);
@@ -573,16 +603,21 @@ test.describe("Review submission flow", () => {
     await page.getByPlaceholder("Share your experience with others...").fill(reviewContent);
 
     for (const tag of QUICK_TAGS) {
-      await page.getByRole("button", { name: new RegExp(`\\b${escapeRegex(tag)}\\b`, "i") }).click();
+      await page
+        .getByRole("button", { name: new RegExp(`\\b${escapeRegex(tag)}\\b`, "i") })
+        .click();
     }
 
-    await page.locator('input[type="file"][accept="image/*"]').first().setInputFiles([
-      {
-        name: "review-image-1.png",
-        mimeType: "image/png",
-        buffer: TINY_PNG_BUFFER,
-      },
-    ]);
+    await page
+      .locator('input[type="file"][accept="image/*"]')
+      .first()
+      .setInputFiles([
+        {
+          name: "review-image-1.png",
+          mimeType: "image/png",
+          buffer: TINY_PNG_BUFFER,
+        },
+      ]);
 
     const submitButton = page.getByRole("button", { name: /Submit Review/i });
     await expect(submitButton).toBeEnabled();
@@ -593,9 +628,12 @@ test.describe("Review submission flow", () => {
       .poll(async () => page.locator("canvas").count(), { timeout: 7_000 })
       .toBeGreaterThan(0);
 
-    await page.waitForURL(new RegExp(`/business/${escapeRegex(seededBusiness.slug)}(?:/)?(?:\\?|$)`), {
-      timeout: 20_000,
-    });
+    await page.waitForURL(
+      new RegExp(`/business/${escapeRegex(seededBusiness.slug)}(?:/)?(?:\\?|$)`),
+      {
+        timeout: 20_000,
+      }
+    );
 
     // Critical assertion: newly submitted review is visible without hard-refreshing.
     await expect(page.getByText(reviewTitle)).toBeVisible({ timeout: 20_000 });
@@ -613,7 +651,8 @@ test.describe("Review submission flow", () => {
     );
 
     const expectedAverage =
-      (beforeStats.average_rating * beforeStats.total_reviews + 4) / (beforeStats.total_reviews + 1);
+      (beforeStats.average_rating * beforeStats.total_reviews + 4) /
+      (beforeStats.total_reviews + 1);
 
     expect(afterStats.total_reviews).toBe(beforeStats.total_reviews + 1);
     expect(Math.abs(afterStats.average_rating - expectedAverage)).toBeLessThan(0.01);
@@ -713,9 +752,12 @@ test.describe("Review submission flow", () => {
       await page.getByPlaceholder("Share your experience with others...").fill(anonymousContent);
 
       await page.getByRole("button", { name: /Submit Review/i }).click();
-      await page.waitForURL(new RegExp(`/business/${escapeRegex(seededBusiness.slug)}(?:/)?(?:\\?|$)`), {
-        timeout: 20_000,
-      });
+      await page.waitForURL(
+        new RegExp(`/business/${escapeRegex(seededBusiness.slug)}(?:/)?(?:\\?|$)`),
+        {
+          timeout: 20_000,
+        }
+      );
 
       await expect(page.getByText(anonymousContent.slice(0, 20))).toBeVisible({ timeout: 20_000 });
 
@@ -779,7 +821,12 @@ test.describe("Rating calculation and metrics", () => {
     }
 
     await forceStatsRecalc(admin, seededBusiness.id);
-    const stats = await waitForStats(admin, seededBusiness.id, (row) => row.total_reviews >= 2, 30_000);
+    const stats = await waitForStats(
+      admin,
+      seededBusiness.id,
+      (row) => row.total_reviews >= 2,
+      30_000
+    );
 
     expect(stats.total_reviews).toBeGreaterThanOrEqual(2);
     expect(Math.abs(stats.average_rating - 4)).toBeLessThan(0.1);
@@ -789,7 +836,9 @@ test.describe("Rating calculation and metrics", () => {
     await page.goto("/home");
 
     await page.getByRole("button", { name: /See More: Trending Now/i }).click();
-    await expect(page.getByRole("heading", { name: /Trending Now/i })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("heading", { name: /Trending Now/i })).toBeVisible({
+      timeout: 20_000,
+    });
     await setSearchQuery(page, /Search trending businesses/i, seededBusiness.name);
 
     const { card: trendingCard } = await findBusinessCard(page, seededBusiness.name);
@@ -802,13 +851,17 @@ test.describe("Rating calculation and metrics", () => {
     expect(trendingPercentileLabels.some((label) => /%/.test(label))).toBeTruthy();
 
     await page.reload();
-    await expect(page.getByRole("heading", { name: /Trending Now/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /Trending Now/i })).toBeVisible({
+      timeout: 15_000,
+    });
     await setSearchQuery(page, /Search trending businesses/i, seededBusiness.name);
     await findBusinessCard(page, seededBusiness.name);
 
     await page.goto("/home");
     await page.getByRole("button", { name: /See More: For You/i }).click();
-    await expect(page.getByRole("heading", { name: /Curated Just For You/i })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("heading", { name: /Curated Just For You/i })).toBeVisible({
+      timeout: 20_000,
+    });
     await setSearchQuery(page, /Discover exceptional local hidden gems/i, seededBusiness.name);
 
     const { card: forYouCard } = await findBusinessCard(page, seededBusiness.name);
@@ -816,13 +869,17 @@ test.describe("Rating calculation and metrics", () => {
     await expect(forYouCard).toContainText(/4\.0|3\.[5-9]|4\.[0-5]/);
 
     await page.reload();
-    await expect(page.getByRole("heading", { name: /Curated Just For You/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /Curated Just For You/i })).toBeVisible({
+      timeout: 15_000,
+    });
     await setSearchQuery(page, /Discover exceptional local hidden gems/i, seededBusiness.name);
     await findBusinessCard(page, seededBusiness.name);
 
     await page.goto("/home");
     await page.getByRole("button", { name: /See more: Events & Specials/i }).click();
-    await expect(page.getByRole("heading", { name: /Events & Specials/i })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("heading", { name: /Events & Specials/i })).toBeVisible({
+      timeout: 20_000,
+    });
 
     await page.goto("/trending");
     await setSearchQuery(page, /Search trending businesses/i, noReviewBusiness.name);
@@ -839,7 +896,9 @@ test.describe("Rating calculation and metrics", () => {
     const featuredData = Array.isArray(featuredBody?.data) ? featuredBody.data : [];
     const featuredMatch = featuredData.find((row: any) => row?.id === seededBusiness.id);
     if (featuredMatch) {
-      expect(Math.abs(asNumber(featuredMatch.average_rating) - stats.average_rating)).toBeLessThan(0.2);
+      expect(Math.abs(asNumber(featuredMatch.average_rating) - stats.average_rating)).toBeLessThan(
+        0.2
+      );
     }
   });
 });
@@ -856,7 +915,9 @@ test.describe("Badge earning logic", () => {
     await loginAsPersonal(page, seededUser);
 
     const beforeBadges = await getUserBadges(page, seededUser.id);
-    expect(beforeBadges.some((badge) => badge?.earned && /New Voice/i.test(String(badge?.name || "")))).toBeFalsy();
+    expect(
+      beforeBadges.some((badge) => badge?.earned && /New Voice/i.test(String(badge?.name || "")))
+    ).toBeFalsy();
 
     const reviewContent = `Badge test review ${nowKey()} with enough text to pass validation.`;
     const submission = await submitReviewViaApi(page, {
@@ -877,7 +938,9 @@ test.describe("Badge earning logic", () => {
       .select("badge_id")
       .eq("user_id", seededUser.id);
 
-    const newVoiceCount = (badgeRows || []).filter((row) => /new_voice/i.test(String(row.badge_id))).length;
+    const newVoiceCount = (badgeRows || []).filter((row) =>
+      /new_voice/i.test(String(row.badge_id))
+    ).length;
     expect(newVoiceCount).toBeLessThanOrEqual(1);
 
     await page.goto("/profile");
@@ -912,7 +975,10 @@ test.describe("Badge earning logic", () => {
     const noReviewUser = await seedFactory.createUser("no-review-check");
     const beforeNoReviewBadges = await getUserBadges(page, noReviewUser.id);
     expect(
-      beforeNoReviewBadges.some((badge) => badge?.earned && /New Voice|Rookie Reviewer|Top Reviewer/i.test(String(badge?.name || "")))
+      beforeNoReviewBadges.some(
+        (badge) =>
+          badge?.earned && /New Voice|Rookie Reviewer|Top Reviewer/i.test(String(badge?.name || ""))
+      )
     ).toBeFalsy();
 
     const categoryBusinesses: SeededBusiness[] = [];
@@ -941,12 +1007,16 @@ test.describe("Badge earning logic", () => {
     await triggerBadgeCheck(page);
     await triggerBadgeCheck(page);
 
-    const earnedBadges = (await getUserBadges(page, seededUser.id)).filter((badge) => badge?.earned);
+    const earnedBadges = (await getUserBadges(page, seededUser.id)).filter(
+      (badge) => badge?.earned
+    );
     const earnedNames = earnedBadges.map((badge) => String(badge?.name || ""));
     const earnedGroups = earnedBadges.map((badge) => String(badge?.badge_group || ""));
 
     expect(earnedNames.some((name) => /New Voice/i.test(name))).toBeTruthy();
-    expect(earnedNames.some((name) => /Rookie Reviewer|Level Up|Review Machine|Century Club/i.test(name))).toBeTruthy();
+    expect(
+      earnedNames.some((name) => /Rookie Reviewer|Level Up|Review Machine|Century Club/i.test(name))
+    ).toBeTruthy();
     expect(earnedGroups.some((group) => /specialist/i.test(group))).toBeTruthy();
 
     const topResponse = await page.request.get("/api/reviewers/top?limit=100");
@@ -957,7 +1027,9 @@ test.describe("Badge earning logic", () => {
 
     await page.goto("/profile");
     await expect(page.getByText(/Badges/i)).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText(/New Voice|Rookie Reviewer|Level Up!/i)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/New Voice|Rookie Reviewer|Level Up!/i)).toBeVisible({
+      timeout: 20_000,
+    });
 
     const { data: rowsBeforeDelete } = await admin
       .from("reviews")
@@ -965,7 +1037,11 @@ test.describe("Badge earning logic", () => {
       .eq("user_id", seededUser.id);
 
     const businessIds = Array.from(
-      new Set((rowsBeforeDelete || []).map((row) => row.business_id).filter((value): value is string => !!value))
+      new Set(
+        (rowsBeforeDelete || [])
+          .map((row) => row.business_id)
+          .filter((value): value is string => !!value)
+      )
     );
     await admin.from("reviews").delete().eq("user_id", seededUser.id);
     for (const businessId of businessIds) {
@@ -984,7 +1060,10 @@ test.describe("Badge earning logic", () => {
       )
       .toBeFalsy();
 
-    const { data: dedupeRows } = await admin.from("user_badges").select("badge_id").eq("user_id", seededUser.id);
+    const { data: dedupeRows } = await admin
+      .from("user_badges")
+      .select("badge_id")
+      .eq("user_id", seededUser.id);
     const counts = new Map<string, number>();
     for (const row of dedupeRows || []) {
       const key = String(row.badge_id || "");

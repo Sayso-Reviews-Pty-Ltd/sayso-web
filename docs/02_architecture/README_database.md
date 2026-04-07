@@ -16,8 +16,8 @@ This folder contains documentation related to database schemas, migrations, and 
 ## Adding New Database Documentation
 
 When documenting database changes:
+
 1. Create a descriptive filename using `kebab-case` (e.g., `migration-guide.md`)
 2. Include schema changes, migration scripts, and rollback procedures
 3. Document data validation rules and constraints
 4. Update this README with a brief description
-

@@ -67,7 +67,10 @@ function ReviewSkeleton() {
         <nav className="pb-1" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm">
             <li>
-              <Link href="/admin/pending-businesses" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium">
+              <Link
+                href="/admin/pending-businesses"
+                className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+              >
                 Pending Businesses
               </Link>
             </li>
@@ -200,9 +203,7 @@ export default function AdminBusinessReviewPage() {
             available: d.available ?? true,
           })
         )
-        .catch(() =>
-          setDuplicateCheck({ checking: false, available: true })
-        );
+        .catch(() => setDuplicateCheck({ checking: false, available: true }));
     }, 300);
     return () => clearTimeout(t);
   }, [business?.name, business?.id, business?.is_chain]);
@@ -217,7 +218,7 @@ export default function AdminBusinessReviewPage() {
 
   const hasAddress = Boolean(
     (business?.address && business.address.trim()) ||
-      (business?.location && business.location.trim())
+    (business?.location && business.location.trim())
   );
   const hasCoords =
     business?.lat != null &&
@@ -229,8 +230,7 @@ export default function AdminBusinessReviewPage() {
   );
   const hasImages = Boolean(
     (business?.image_url && business.image_url.trim()) ||
-      (Array.isArray(business?.uploaded_images) &&
-        business.uploaded_images.length > 0)
+    (Array.isArray(business?.uploaded_images) && business.uploaded_images.length > 0)
   );
   const possibleTestEntry = /^(e2e\s*)?test\s*business|^sample\s*business$/i.test(
     (business?.name ?? "").trim()
@@ -258,9 +258,7 @@ export default function AdminBusinessReviewPage() {
       router.push("/admin/pending-businesses");
       router.refresh();
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Failed to approve business"
-      );
+      setActionError(err instanceof Error ? err.message : "Failed to approve business");
     } finally {
       setAction("idle");
     }
@@ -294,9 +292,7 @@ export default function AdminBusinessReviewPage() {
       router.push("/admin/pending-businesses");
       router.refresh();
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Failed to disapprove business"
-      );
+      setActionError(err instanceof Error ? err.message : "Failed to disapprove business");
     } finally {
       setAction("idle");
     }
@@ -315,7 +311,10 @@ export default function AdminBusinessReviewPage() {
           <nav className="pb-1" aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-sm">
               <li>
-                <Link href="/admin/pending-businesses" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium">
+                <Link
+                  href="/admin/pending-businesses"
+                  className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+                >
                   Pending Businesses
                 </Link>
               </li>
@@ -353,7 +352,10 @@ export default function AdminBusinessReviewPage() {
           <nav className="pb-1" aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-sm">
               <li>
-                <Link href="/admin/pending-businesses" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium">
+                <Link
+                  href="/admin/pending-businesses"
+                  className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+                >
                   Pending Businesses
                 </Link>
               </li>
@@ -393,7 +395,11 @@ export default function AdminBusinessReviewPage() {
         <nav className="pb-1" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm">
             <li>
-              <Link href="/admin/pending-businesses" className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium" style={{ fontFamily: FONT }}>
+              <Link
+                href="/admin/pending-businesses"
+                className="text-charcoal/70 hover:text-charcoal transition-colors duration-200 font-medium"
+                style={{ fontFamily: FONT }}
+              >
                 Pending Businesses
               </Link>
             </li>
@@ -401,20 +407,16 @@ export default function AdminBusinessReviewPage() {
               <ChevronRight className="w-4 h-4 text-charcoal/60" />
             </li>
             <li>
-              <span className="text-charcoal font-semibold" style={{ fontFamily: FONT }}>Review Business</span>
+              <span className="text-charcoal font-semibold" style={{ fontFamily: FONT }}>
+                Review Business
+              </span>
             </li>
           </ol>
         </nav>
-        <h1
-          className="text-xl font-bold text-charcoal mt-3"
-          style={{ fontFamily: FONT }}
-        >
+        <h1 className="text-xl font-bold text-charcoal mt-3" style={{ fontFamily: FONT }}>
           Review Business
         </h1>
-        <p
-          className="text-sm text-charcoal/60 mt-1"
-          style={{ fontFamily: FONT }}
-        >
+        <p className="text-sm text-charcoal/60 mt-1" style={{ fontFamily: FONT }}>
           Validate submission before approval
         </p>
       </div>
@@ -454,15 +456,11 @@ export default function AdminBusinessReviewPage() {
             </div>
             <div className="sm:col-span-2">
               <dt className="text-charcoal/60">Description</dt>
-              <dd className="text-charcoal whitespace-pre-wrap">
-                {business.description || "—"}
-              </dd>
+              <dd className="text-charcoal whitespace-pre-wrap">{business.description || "—"}</dd>
             </div>
             <div>
               <dt className="text-charcoal/60">Address / Location</dt>
-              <dd className="text-charcoal">
-                {business.address || business.location || "—"}
-              </dd>
+              <dd className="text-charcoal">{business.address || business.location || "—"}</dd>
             </div>
             <div>
               <dt className="text-charcoal/60">Coordinates</dt>
@@ -537,9 +535,7 @@ export default function AdminBusinessReviewPage() {
           className="rounded-[12px] border border-charcoal/15 bg-white p-6"
           style={{ fontFamily: FONT }}
         >
-          <h2 className="text-lg font-semibold text-charcoal mb-4">
-            Validation Checklist
-          </h2>
+          <h2 className="text-lg font-semibold text-charcoal mb-4">Validation Checklist</h2>
           <ul className="space-y-3 text-sm">
             <li
               className={
@@ -569,7 +565,9 @@ export default function AdminBusinessReviewPage() {
             </li>
             <li
               className={
-                hasAddress && hasCoords ? "text-sage flex items-center gap-2" : "text-red-700 flex items-center gap-2"
+                hasAddress && hasCoords
+                  ? "text-sage flex items-center gap-2"
+                  : "text-red-700 flex items-center gap-2"
               }
             >
               {hasAddress && hasCoords ? (
@@ -583,7 +581,9 @@ export default function AdminBusinessReviewPage() {
             </li>
             <li
               className={
-                hasCategory ? "text-sage flex items-center gap-2" : "text-red-700 flex items-center gap-2"
+                hasCategory
+                  ? "text-sage flex items-center gap-2"
+                  : "text-red-700 flex items-center gap-2"
               }
             >
               {hasCategory ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
@@ -591,7 +591,9 @@ export default function AdminBusinessReviewPage() {
             </li>
             <li
               className={
-                !possibleTestEntry ? "text-sage flex items-center gap-2" : "text-amber-700 flex items-center gap-2"
+                !possibleTestEntry
+                  ? "text-sage flex items-center gap-2"
+                  : "text-amber-700 flex items-center gap-2"
               }
             >
               {!possibleTestEntry ? (
@@ -605,16 +607,23 @@ export default function AdminBusinessReviewPage() {
             </li>
             <li
               className={
-                hasImages ? "text-sage flex items-center gap-2" : "text-amber-700 flex items-center gap-2"
+                hasImages
+                  ? "text-sage flex items-center gap-2"
+                  : "text-amber-700 flex items-center gap-2"
               }
             >
-              {hasImages ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+              {hasImages ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                <AlertTriangle className="w-4 h-4" />
+              )}
               {hasImages ? "At least one image" : "No images — consider requesting before approval"}
             </li>
           </ul>
         </section>
 
-        {((business.uploaded_images && business.uploaded_images.length > 0) || business.image_url) && (
+        {((business.uploaded_images && business.uploaded_images.length > 0) ||
+          business.image_url) && (
           <section
             className="rounded-[12px] border border-charcoal/15 bg-white p-6"
             style={{ fontFamily: FONT }}
@@ -685,10 +694,7 @@ export default function AdminBusinessReviewPage() {
             className="rounded-[12px] border border-charcoal/15 bg-white p-6 max-w-md w-full shadow-lg"
             style={{ fontFamily: FONT }}
           >
-            <h2
-              id="disapprove-title"
-              className="text-lg font-semibold text-charcoal mb-2"
-            >
+            <h2 id="disapprove-title" className="text-lg font-semibold text-charcoal mb-2">
               Reject business
             </h2>
             <p className="text-sm text-charcoal/70 mb-4">

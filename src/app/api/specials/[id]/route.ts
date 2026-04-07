@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { getServiceSupabase } from '@/app/lib/admin';
-import type { Database } from '@/app/types/supabase';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { getServiceSupabase } from "@/app/lib/admin";
+import type { Database } from "@/app/types/supabase";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 async function getReadableSupabase() {
   try {
@@ -21,18 +21,12 @@ async function getReadableSupabase() {
  * GET /api/specials/[id]
  * Fetch a single special by ID
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
-    if (!id || id.trim() === '') {
-      return NextResponse.json(
-        { error: 'Special ID is required' },
-        { status: 400 }
-      );
+    if (!id || id.trim() === "") {
+      return NextResponse.json({ error: "Special ID is required" }, { status: 400 });
     }
 
     const supabase = await getReadableSupabase();
@@ -107,49 +101,45 @@ export async function GET(
     let error: any = null;
 
     ({ data: specialRaw, error } = await supabase
-      .from('events_and_specials')
+      .from("events_and_specials")
       .select(selectWithBooking)
-      .eq('id', id)
-      .eq('type', 'special')
+      .eq("id", id)
+      .eq("type", "special")
       .single());
 
-    const errorMessage = String(error?.message ?? '');
+    const errorMessage = String(error?.message ?? "");
     const isMissingBookingColumn =
       error &&
       /does not exist/i.test(errorMessage) &&
       /events_and_specials\.booking_url|booking_url/i.test(errorMessage);
 
     if (isMissingBookingColumn) {
-      console.warn('[Specials API] booking_url missing; retrying single special without booking fields.');
+      console.warn(
+        "[Specials API] booking_url missing; retrying single special without booking fields."
+      );
       ({ data: specialRaw, error } = await supabase
-        .from('events_and_specials')
+        .from("events_and_specials")
         .select(baseSelect)
-        .eq('id', id)
-        .eq('type', 'special')
+        .eq("id", id)
+        .eq("type", "special")
         .single());
     }
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         // No rows returned
-        return NextResponse.json(
-          { error: 'Special not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Special not found" }, { status: 404 });
       }
-      console.error('[Specials API] Error fetching special:', error);
+      console.error("[Specials API] Error fetching special:", error);
       return NextResponse.json(
-        { error: 'Failed to fetch special', details: error.message },
+        { error: "Failed to fetch special", details: error.message },
         { status: 500 }
       );
     }
 
     const special = specialRaw as Special;
     if (!special) {
-      return NextResponse.json(
-        { error: 'Special not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Special not found" }, { status: 404 });
     }
 
     // Check if special is expired
@@ -160,30 +150,32 @@ export async function GET(
     // A special is expired if:
     // - end_date exists and is in the past, OR
     // - no end_date and start_date is in the past
-    const isExpired = endDate
-      ? endDate < now
-      : startDate < now;
+    const isExpired = endDate ? endDate < now : startDate < now;
 
     // Transform to frontend format
     const transformedSpecial = {
       id: special.id,
       title: special.title,
-      type: 'special' as const,
+      type: "special" as const,
       image: special.image || null,
       alt: `${special.title} special`,
       icon: special.icon,
-      location: special.location || 'Location TBA',
+      location: special.location || "Location TBA",
       rating: special.rating || 0,
-      startDate: special.start_date ? new Date(special.start_date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }) : 'TBA',
-      endDate: special.end_date ? new Date(special.end_date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }) : undefined,
+      startDate: special.start_date
+        ? new Date(special.start_date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })
+        : "TBA",
+      endDate: special.end_date
+        ? new Date(special.end_date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          })
+        : undefined,
       startDateISO: special.start_date,
       endDateISO: special.end_date,
       price: special.price ? `R${special.price}` : null,
@@ -191,33 +183,54 @@ export async function GET(
       bookingUrl: special.booking_url,
       bookingContact: special.booking_contact,
       businessId: special.business_id,
-      businessName: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.name || 'Unknown Business'
-        : Array.isArray(special.businesses) ? special.businesses[0]?.name || 'Unknown Business'
-        : 'Unknown Business',
-      businessSlug: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.slug
-        : Array.isArray(special.businesses) ? special.businesses[0]?.slug
-        : undefined,
-      businessLogo: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.image_url
-        : Array.isArray(special.businesses) ? special.businesses[0]?.image_url
-        : undefined,
-      businessAddress: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.address
-        : Array.isArray(special.businesses) ? special.businesses[0]?.address
-        : undefined,
-      businessPhone: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.phone
-        : Array.isArray(special.businesses) ? special.businesses[0]?.phone
-        : undefined,
-      businessWebsite: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.website
-        : Array.isArray(special.businesses) ? special.businesses[0]?.website
-        : undefined,
-      businessEmail: (special.businesses && !Array.isArray(special.businesses)) ? special.businesses.email
-        : Array.isArray(special.businesses) ? special.businesses[0]?.email
-        : undefined,
+      businessName:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.name || "Unknown Business"
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.name || "Unknown Business"
+            : "Unknown Business",
+      businessSlug:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.slug
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.slug
+            : undefined,
+      businessLogo:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.image_url
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.image_url
+            : undefined,
+      businessAddress:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.address
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.address
+            : undefined,
+      businessPhone:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.phone
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.phone
+            : undefined,
+      businessWebsite:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.website
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.website
+            : undefined,
+      businessEmail:
+        special.businesses && !Array.isArray(special.businesses)
+          ? special.businesses.email
+          : Array.isArray(special.businesses)
+            ? special.businesses[0]?.email
+            : undefined,
       createdBy: special.created_by,
       createdAt: special.created_at,
       updatedAt: special.updated_at,
       isBusinessOwned: true,
       isExpired,
-      source: 'business',
+      source: "business",
       href: `/special/${special.id}`,
     };
 
@@ -226,9 +239,9 @@ export async function GET(
       isExpired,
     });
   } catch (error: any) {
-    console.error('[Specials API] Unexpected error:', error);
+    console.error("[Specials API] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error?.message },
+      { error: "Internal server error", message: error?.message },
       { status: 500 }
     );
   }

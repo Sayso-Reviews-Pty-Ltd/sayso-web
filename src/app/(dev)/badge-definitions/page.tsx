@@ -26,7 +26,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default function BadgeDefinitionsPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const badgesByGroup: Record<string, typeof BADGE_MAPPINGS[string][]> = {};
+  const badgesByGroup: Record<string, (typeof BADGE_MAPPINGS)[string][]> = {};
 
   Object.values(BADGE_MAPPINGS).forEach((badge) => {
     const group = badge.badgeGroup;
@@ -35,7 +35,7 @@ export default function BadgeDefinitionsPage() {
   });
 
   // For specialist badges, further group by categoryKey
-  const specialistByCategory: Record<string, typeof BADGE_MAPPINGS[string][]> = {};
+  const specialistByCategory: Record<string, (typeof BADGE_MAPPINGS)[string][]> = {};
   if (badgesByGroup.specialist) {
     badgesByGroup.specialist.forEach((badge) => {
       const cat = badge.categoryKey || "other";
@@ -132,17 +132,11 @@ export default function BadgeDefinitionsPage() {
   );
 }
 
-function BadgeItem({ badge }: { badge: typeof BADGE_MAPPINGS[string] }) {
+function BadgeItem({ badge }: { badge: (typeof BADGE_MAPPINGS)[string] }) {
   return (
     <div className="flex flex-col items-center text-center p-3 bg-card-bg border-none rounded-[12px] shadow-sm">
       <div className="w-14 h-14 sm:w-16 sm:h-16 relative mb-2">
-        <Image
-          src={badge.pngPath}
-          alt={badge.name}
-          fill
-          className="object-contain"
-          sizes="64px"
-        />
+        <Image src={badge.pngPath} alt={badge.name} fill className="object-contain" sizes="64px" />
       </div>
       <span className="text-sm font-semibold text-charcoal leading-tight">{badge.name}</span>
       {badge.description && (

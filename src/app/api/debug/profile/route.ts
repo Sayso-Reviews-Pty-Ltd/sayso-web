@@ -1,33 +1,36 @@
-import { NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   try {
     const supabase = await getServerSupabase();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json(
-        { error: 'Unauthorized', authError: authError?.message },
+        { error: "Unauthorized", authError: authError?.message },
         { status: 401 }
       );
     }
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (profileError) {
       return NextResponse.json(
-        { error: 'Profile error', profileError: profileError.message, code: profileError.code },
+        { error: "Profile error", profileError: profileError.message, code: profileError.code },
         { status: 500 }
       );
     }
@@ -35,18 +38,19 @@ export async function GET() {
     return NextResponse.json({
       user_id: user.id,
       email: user.email,
-      profile: profile ? {
-        role: profile.role,
-        account_role: profile.account_role,
-        onboarding_step: profile.onboarding_step,
-        email_from_profile: profile.email,
-        all_fields: Object.keys(profile)
-      } : null
+      profile: profile
+        ? {
+            role: profile.role,
+            account_role: profile.account_role,
+            onboarding_step: profile.onboarding_step,
+            email_from_profile: profile.email,
+            all_fields: Object.keys(profile),
+          }
+        : null,
     });
-
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal error', message: error instanceof Error ? error.message : String(error) },
+      { error: "Internal error", message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

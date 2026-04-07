@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
-import { randomUUID } from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 dotenv.config();
 
@@ -11,65 +11,65 @@ function getArgValue(name) {
   const idx = process.argv.findIndex((a) => a === name || a.startsWith(`${name}=`));
   if (idx === -1) return null;
   const v = process.argv[idx];
-  if (v.includes('=')) return v.split('=').slice(1).join('=');
+  if (v.includes("=")) return v.split("=").slice(1).join("=");
   return process.argv[idx + 1] ?? null;
 }
 
-const SUPABASE_URL =
-  process.env.SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const FOURSQUARE_API_KEY = process.env.FOURSQUARE_API_KEY;
 
 // Foursquare migrated Places API away from api.foursquare.com/v3 (returns 410 for many keys).
 // New host: https://places-api.foursquare.com (no /v3 segment).
-const FSQ_BASE_URL = 'https://places-api.foursquare.com';
-const FSQ_API_VERSION = process.env.X_PLACES_API_VERSION || '2025-06-17';
+const FSQ_BASE_URL = "https://places-api.foursquare.com";
+const FSQ_API_VERSION = process.env.X_PLACES_API_VERSION || "2025-06-17";
 
-const CAPE_TOWN_LL = '-33.9249,18.4241';
+const CAPE_TOWN_LL = "-33.9249,18.4241";
 const CAPE_TOWN_RADIUS_M = 5000;
 const LIMIT_PER_PAGE = Math.min(
-  Math.max(Number.parseInt(process.env.LIMIT_PER_PAGE || '50', 10), 1),
+  Math.max(Number.parseInt(process.env.LIMIT_PER_PAGE || "50", 10), 1),
   50
 );
 const MAX_PER_CATEGORY = Math.max(
-  Number.parseInt(process.env.MAX_PER_CATEGORY || getArgValue('--max-per-slug') || '300', 10) || 300,
+  Number.parseInt(process.env.MAX_PER_CATEGORY || getArgValue("--max-per-slug") || "300", 10) ||
+    300,
   1
 );
 const MAX_PAGES = Math.max(
-  Number.parseInt(process.env.MAX_PAGES || getArgValue('--max-pages') || '25', 10) || 25,
+  Number.parseInt(process.env.MAX_PAGES || getArgValue("--max-pages") || "25", 10) || 25,
   1
 );
 
-const PAGE_DELAY_MS = Number.parseInt(process.env.PAGE_DELAY_MS || '150', 10);
-const CATEGORY_DELAY_MS = Number.parseInt(process.env.CATEGORY_DELAY_MS || '250', 10);
+const PAGE_DELAY_MS = Number.parseInt(process.env.PAGE_DELAY_MS || "150", 10);
+const CATEGORY_DELAY_MS = Number.parseInt(process.env.CATEGORY_DELAY_MS || "250", 10);
 
-const DRY_RUN = process.argv.includes('--dry-run');
-const LOG_FSQ_URLS = process.argv.includes('--log-urls') || process.env.LOG_FSQ_URLS === '1';
+const DRY_RUN = process.argv.includes("--dry-run");
+const LOG_FSQ_URLS = process.argv.includes("--log-urls") || process.env.LOG_FSQ_URLS === "1";
 const DISCOVER_FSQ_CATEGORIES =
-  process.argv.includes('--discover-fsq-categories') || process.env.DISCOVER_FSQ_CATEGORIES === '1';
+  process.argv.includes("--discover-fsq-categories") || process.env.DISCOVER_FSQ_CATEGORIES === "1";
 const DISCOVER_JSON_ONLY =
-  process.argv.includes('--json-only') || process.env.DISCOVER_JSON_ONLY === '1';
+  process.argv.includes("--json-only") || process.env.DISCOVER_JSON_ONLY === "1";
 const DISCOVER_COUNT_MODE =
-  (process.env.DISCOVER_COUNT_MODE || '').toLowerCase() === 'all' || process.argv.includes('--all-categories')
-    ? 'all'
-    : 'primary';
-const DISCOVER_MAX_PAGES = Number.parseInt(process.env.DISCOVER_MAX_PAGES || '4', 10);
+  (process.env.DISCOVER_COUNT_MODE || "").toLowerCase() === "all" ||
+  process.argv.includes("--all-categories")
+    ? "all"
+    : "primary";
+const DISCOVER_MAX_PAGES = Number.parseInt(process.env.DISCOVER_MAX_PAGES || "4", 10);
 const DISCOVER_LIMIT_PER_PAGE = Math.min(
-  Math.max(Number.parseInt(process.env.DISCOVER_LIMIT_PER_PAGE || '50', 10), 1),
+  Math.max(Number.parseInt(process.env.DISCOVER_LIMIT_PER_PAGE || "50", 10), 1),
   50
 );
 const MAP_FILE_MAX_IDS_PER_SLUG = Math.min(
-  Math.max(Number.parseInt(process.env.MAP_FILE_MAX_IDS_PER_SLUG || '10', 10), 1),
+  Math.max(Number.parseInt(process.env.MAP_FILE_MAX_IDS_PER_SLUG || "10", 10), 1),
   50
 );
 const FSQ_TO_SAYSO_MAP_FILE =
   process.env.FSQ_TO_SAYSO_MAP_FILE ||
-  path.join(path.dirname(fileURLToPath(import.meta.url)), 'fsq-to-sayso-map.json');
+  path.join(path.dirname(fileURLToPath(import.meta.url)), "fsq-to-sayso-map.json");
 
 // Places Pro (free tier) safe fields only. Keep this minimal to avoid premium credit usage.
-const FSQ_PRO_FIELDS = ['fsq_place_id', 'name', 'latitude', 'longitude', 'location', 'categories'];
-const FSQ_PRO_FIELDS_CSV = FSQ_PRO_FIELDS.join(',');
+const FSQ_PRO_FIELDS = ["fsq_place_id", "name", "latitude", "longitude", "location", "categories"];
+const FSQ_PRO_FIELDS_CSV = FSQ_PRO_FIELDS.join(",");
 let lastLoggedFsqFields = null;
 function logFsqFields(fieldsCsv) {
   if (lastLoggedFsqFields === fieldsCsv) return;
@@ -77,20 +77,22 @@ function logFsqFields(fieldsCsv) {
   console.log(`[FSQ] fields=${fieldsCsv}`);
 }
 
-const ONLY_SUBCATEGORIES_RAW = getArgValue('--subcategories');
+const ONLY_SUBCATEGORIES_RAW = getArgValue("--subcategories");
 const ONLY_SUBCATEGORIES = ONLY_SUBCATEGORIES_RAW
   ? new Set(
-      ONLY_SUBCATEGORIES_RAW.split(',').map((s) => s.trim()).filter(Boolean)
+      ONLY_SUBCATEGORIES_RAW.split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
     )
   : null;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !FOURSQUARE_API_KEY) {
   const missing = [
-    !SUPABASE_URL ? 'SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)' : null,
-    !SUPABASE_SERVICE_ROLE_KEY ? 'SUPABASE_SERVICE_ROLE_KEY' : null,
-    !FOURSQUARE_API_KEY ? 'FOURSQUARE_API_KEY' : null,
+    !SUPABASE_URL ? "SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)" : null,
+    !SUPABASE_SERVICE_ROLE_KEY ? "SUPABASE_SERVICE_ROLE_KEY" : null,
+    !FOURSQUARE_API_KEY ? "FOURSQUARE_API_KEY" : null,
   ].filter(Boolean);
-  console.error(`Missing required env vars: ${missing.join(', ')}`);
+  console.error(`Missing required env vars: ${missing.join(", ")}`);
   process.exit(1);
 }
 
@@ -109,32 +111,32 @@ function chunkArray(items, size) {
 }
 
 function toSlug(value) {
-  return String(value || '')
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
     .slice(0, 80);
 }
 
 function isFoursquareId(value) {
-  return typeof value === 'string' && value.length >= 10;
+  return typeof value === "string" && value.length >= 10;
 }
 
 function csvEscape(value) {
-  const s = value == null ? '' : String(value);
+  const s = value == null ? "" : String(value);
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
 
 function toCsv(rows, headers) {
   const lines = [];
-  lines.push(headers.map(csvEscape).join(','));
+  lines.push(headers.map(csvEscape).join(","));
   for (const r of rows) {
-    lines.push(headers.map((h) => csvEscape(r[h])).join(','));
+    lines.push(headers.map((h) => csvEscape(r[h])).join(","));
   }
-  return lines.join('\n') + '\n';
+  return lines.join("\n") + "\n";
 }
 
 function getFirstDefined(...values) {
@@ -142,7 +144,7 @@ function getFirstDefined(...values) {
   return undefined;
 }
 
-async function fetchJsonWithRetry(url, { headers, method = 'GET' } = {}) {
+async function fetchJsonWithRetry(url, { headers, method = "GET" } = {}) {
   const maxAttempts = 6;
   let lastErr = null;
 
@@ -151,23 +153,21 @@ async function fetchJsonWithRetry(url, { headers, method = 'GET' } = {}) {
       const res = await fetch(url, { method, headers });
       if (res.status === 204) return null;
 
-      const contentType = res.headers.get('content-type') || '';
-      const isJson = contentType.includes('application/json') || contentType.includes('+json');
-      const bodyText = isJson ? null : await res.text().catch(() => '');
+      const contentType = res.headers.get("content-type") || "";
+      const isJson = contentType.includes("application/json") || contentType.includes("+json");
+      const bodyText = isJson ? null : await res.text().catch(() => "");
       const json = isJson ? await res.json() : null;
 
       if (res.ok) return { json, headers: res.headers };
 
-      const retryAfterHeader = res.headers.get('retry-after');
+      const retryAfterHeader = res.headers.get("retry-after");
       const retryAfterMs = retryAfterHeader ? Number.parseFloat(retryAfterHeader) * 1000 : null;
 
       const status = res.status;
       const retryable =
         status === 429 || status === 408 || status === 409 || (status >= 500 && status <= 599);
 
-      const msg = isJson
-        ? JSON.stringify(json)
-        : bodyText || `HTTP ${status} ${res.statusText}`;
+      const msg = isJson ? JSON.stringify(json) : bodyText || `HTTP ${status} ${res.statusText}`;
       const err = new Error(`HTTP ${status}: ${msg}`);
       // Attach useful details for callers (e.g. credit errors / pagination headers)
       err.status = status;
@@ -178,7 +178,7 @@ async function fetchJsonWithRetry(url, { headers, method = 'GET' } = {}) {
       if (
         status === 429 &&
         /no api credits remaining/i.test(
-          typeof json === 'object' && json ? JSON.stringify(json) : String(bodyText || msg)
+          typeof json === "object" && json ? JSON.stringify(json) : String(bodyText || msg)
         )
       ) {
         throw err;
@@ -188,7 +188,9 @@ async function fetchJsonWithRetry(url, { headers, method = 'GET' } = {}) {
 
       const backoffMs = Math.min(8000, 300 * 2 ** (attempt - 1));
       const waitMs =
-        retryAfterMs && Number.isFinite(retryAfterMs) ? Math.max(retryAfterMs, backoffMs) : backoffMs;
+        retryAfterMs && Number.isFinite(retryAfterMs)
+          ? Math.max(retryAfterMs, backoffMs)
+          : backoffMs;
       await sleep(waitMs);
     } catch (e) {
       lastErr = e;
@@ -197,7 +199,7 @@ async function fetchJsonWithRetry(url, { headers, method = 'GET' } = {}) {
     }
   }
 
-  throw lastErr || new Error('fetchJsonWithRetry failed');
+  throw lastErr || new Error("fetchJsonWithRetry failed");
 }
 
 function parseJsonLoose(text, label) {
@@ -210,38 +212,41 @@ function parseJsonLoose(text, label) {
 }
 
 async function loadFsqCategoryMapFromFile() {
-  const txt = await fs.readFile(FSQ_TO_SAYSO_MAP_FILE, 'utf8');
+  const txt = await fs.readFile(FSQ_TO_SAYSO_MAP_FILE, "utf8");
   const parsed = parseJsonLoose(txt, `FSQ_TO_SAYSO_MAP_FILE (${FSQ_TO_SAYSO_MAP_FILE})`);
   const sub = parsed?.subcategories || parsed?.mappings || parsed;
-  if (!sub || typeof sub !== 'object') {
-    throw new Error(`Invalid mapping file shape in ${FSQ_TO_SAYSO_MAP_FILE} (expected {subcategories:{slug:[ids]}}).`);
+  if (!sub || typeof sub !== "object") {
+    throw new Error(
+      `Invalid mapping file shape in ${FSQ_TO_SAYSO_MAP_FILE} (expected {subcategories:{slug:[ids]}}).`
+    );
   }
   return sub;
 }
 
 async function fetchBusinessesColumnsFromOpenApi() {
-  const openApiUrl = new URL('/rest/v1/', SUPABASE_URL);
+  const openApiUrl = new URL("/rest/v1/", SUPABASE_URL);
   const openapiRes = await fetchJsonWithRetry(openApiUrl.toString(), {
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Accept: 'application/openapi+json',
+      Accept: "application/openapi+json",
     },
   });
   const openapi = openapiRes?.json;
 
-  const tableName = 'businesses';
+  const tableName = "businesses";
   const schema =
     openapi?.components?.schemas?.[tableName] ||
     openapi?.definitions?.[tableName] ||
     openapi?.components?.schemas?.public_businesses ||
     openapi?.definitions?.public_businesses;
 
-  if (!schema || typeof schema !== 'object') {
+  if (!schema || typeof schema !== "object") {
     throw new Error('OpenAPI schema for table "businesses" not found.');
   }
 
-  const properties = schema.properties && typeof schema.properties === 'object' ? schema.properties : {};
+  const properties =
+    schema.properties && typeof schema.properties === "object" ? schema.properties : {};
   const requiredList = Array.isArray(schema.required) ? schema.required : [];
   const required = new Set(requiredList);
 
@@ -251,9 +256,9 @@ async function fetchBusinessesColumnsFromOpenApi() {
     const writeOnly = prop?.writeOnly === true;
     const nullable =
       prop?.nullable === true ||
-      prop?.['x-nullable'] === true ||
+      prop?.["x-nullable"] === true ||
       (required.has(name) ? false : prop?.nullable === false ? false : true);
-    const hasDefault = Object.prototype.hasOwnProperty.call(prop || {}, 'default');
+    const hasDefault = Object.prototype.hasOwnProperty.call(prop || {}, "default");
     columns.set(name, {
       name,
       type: prop?.type || null,
@@ -264,7 +269,7 @@ async function fetchBusinessesColumnsFromOpenApi() {
       hasDefault,
       default: hasDefault ? prop.default : null,
       required: required.has(name),
-      source: 'openapi',
+      source: "openapi",
     });
   }
 
@@ -277,15 +282,15 @@ async function fetchBusinessesColumnsFromOpenApi() {
 
 async function fetchBusinessesColumnsFromInformationSchema() {
   const { data, error } = await supabase
-    .schema('information_schema')
-    .from('columns')
-    .select('column_name,data_type,is_nullable,column_default')
-    .eq('table_schema', 'public')
-    .eq('table_name', 'businesses');
+    .schema("information_schema")
+    .from("columns")
+    .select("column_name,data_type,is_nullable,column_default")
+    .eq("table_schema", "public")
+    .eq("table_name", "businesses");
 
   if (error) throw error;
   if (!Array.isArray(data) || data.length === 0) {
-    throw new Error('information_schema.columns returned no rows for public.businesses');
+    throw new Error("information_schema.columns returned no rows for public.businesses");
   }
 
   const columns = new Map();
@@ -295,11 +300,13 @@ async function fetchBusinessesColumnsFromInformationSchema() {
       name,
       type: row.data_type || null,
       format: null,
-      nullable: row.is_nullable === 'YES',
+      nullable: row.is_nullable === "YES",
       hasDefault: row.column_default != null && String(row.column_default).length > 0,
       default: row.column_default ?? null,
-      required: row.is_nullable === 'NO' && !(row.column_default != null && String(row.column_default).length > 0),
-      source: 'information_schema',
+      required:
+        row.is_nullable === "NO" &&
+        !(row.column_default != null && String(row.column_default).length > 0),
+      source: "information_schema",
     });
   }
   return columns;
@@ -334,25 +341,23 @@ function buildColumnIndex(columnsMap) {
 
 function extractLatLng(place) {
   const lat =
-    getFirstDefined(place?.latitude, place?.geocodes?.main?.latitude, place?.geocodes?.main?.lat) ?? null;
+    getFirstDefined(place?.latitude, place?.geocodes?.main?.latitude, place?.geocodes?.main?.lat) ??
+    null;
   const lng =
     getFirstDefined(
       place?.longitude,
       place?.geocodes?.main?.longitude,
       place?.geocodes?.main?.lng
     ) ?? null;
-  return { lat: typeof lat === 'number' ? lat : lat != null ? Number(lat) : null, lng: typeof lng === 'number' ? lng : lng != null ? Number(lng) : null };
+  return {
+    lat: typeof lat === "number" ? lat : lat != null ? Number(lat) : null,
+    lng: typeof lng === "number" ? lng : lng != null ? Number(lng) : null,
+  };
 }
 
 function getFormattedAddress(place) {
   const loc = place?.location || {};
-  return (
-    loc.formatted_address ||
-    loc.formattedAddress ||
-    loc.formatted ||
-    loc.address ||
-    null
-  );
+  return loc.formatted_address || loc.formattedAddress || loc.formatted || loc.address || null;
 }
 
 function mapPlaceToBusinessRow(place, context, columnIndex) {
@@ -367,60 +372,82 @@ function mapPlaceToBusinessRow(place, context, columnIndex) {
   const primaryCategoryName =
     categories?.[0]?.name || categories?.[0]?.short_name || context?.matchedFsqCategoryName || null;
 
-  setIfExists(out, 'name', name);
-  setFirstExisting(out, ['latitude', 'lat'], lat);
-  setFirstExisting(out, ['longitude', 'lng', 'lon'], lng);
+  setIfExists(out, "name", name);
+  setFirstExisting(out, ["latitude", "lat"], lat);
+  setFirstExisting(out, ["longitude", "lng", "lon"], lng);
 
-  setFirstExisting(out, ['address', 'formatted_address'], address);
-  setFirstExisting(out, ['location', 'location_string', 'location_text'], address);
+  setFirstExisting(out, ["address", "formatted_address"], address);
+  setFirstExisting(out, ["location", "location_string", "location_text"], address);
 
-  setFirstExisting(out, ['locality', 'city'], place?.location?.locality ?? null);
-  setFirstExisting(out, ['region', 'province', 'state'], place?.location?.region ?? null);
-  setFirstExisting(out, ['country', 'country_code'], place?.location?.country ?? null);
+  setFirstExisting(out, ["locality", "city"], place?.location?.locality ?? null);
+  setFirstExisting(out, ["region", "province", "state"], place?.location?.region ?? null);
+  setFirstExisting(out, ["country", "country_code"], place?.location?.country ?? null);
 
-  setFirstExisting(out, ['category', 'primary_category', 'primary_category_name'], primaryCategoryName);
+  setFirstExisting(
+    out,
+    ["category", "primary_category", "primary_category_name"],
+    primaryCategoryName
+  );
   if (categories.length > 0) {
-    const categoryRaw = categories.map((c) => c?.name).filter(Boolean).join('|') || null;
-    setIfExists(out, 'category_raw', categoryRaw);
+    const categoryRaw =
+      categories
+        .map((c) => c?.name)
+        .filter(Boolean)
+        .join("|") || null;
+    setIfExists(out, "category_raw", categoryRaw);
   }
 
-  if (columnIndex.has('status') && (out.status == null || out.status === '')) out.status = 'active';
+  if (columnIndex.has("status") && (out.status == null || out.status === "")) out.status = "active";
 
-  const externalIdCol = firstExisting(['source_place_id', 'fsq_place_id', 'external_id', 'source_id']);
+  const externalIdCol = firstExisting([
+    "source_place_id",
+    "fsq_place_id",
+    "external_id",
+    "source_id",
+  ]);
   if (externalIdCol && isFoursquareId(fsqPlaceId)) {
     out[externalIdCol] = fsqPlaceId;
   }
 
-  if (columnIndex.has('source')) out.source = 'foursquare';
+  if (columnIndex.has("source")) out.source = "foursquare";
 
   // Explicitly set canonical external id column if it exists.
   if (isFoursquareId(fsqPlaceId)) {
-    setIfExists(out, 'source_place_id', fsqPlaceId);
-    setIfExists(out, 'source_id', fsqPlaceId);
-    setIfExists(out, 'fsq_place_id', fsqPlaceId);
+    setIfExists(out, "source_place_id", fsqPlaceId);
+    setIfExists(out, "source_id", fsqPlaceId);
+    setIfExists(out, "fsq_place_id", fsqPlaceId);
   }
 
-  setFirstExisting(out, ['source_category_id', 'fsq_category_id', 'external_category_id'], context?.matchedFsqCategoryId);
-  setFirstExisting(out, ['source_category_name', 'fsq_category_name', 'external_category_name'], context?.matchedFsqCategoryName);
+  setFirstExisting(
+    out,
+    ["source_category_id", "fsq_category_id", "external_category_id"],
+    context?.matchedFsqCategoryId
+  );
+  setFirstExisting(
+    out,
+    ["source_category_name", "fsq_category_name", "external_category_name"],
+    context?.matchedFsqCategoryName
+  );
 
   // Sayso taxonomy columns (only if they exist)
   if (context?.saysoSubcategorySlug) {
-    setIfExists(out, 'primary_subcategory_slug', context.saysoSubcategorySlug);
-    setIfExists(out, 'primary_subcategory_label', context.saysoSubcategoryLabel ?? null);
-    setIfExists(out, 'primary_category_slug', context.saysoInterestId ?? null);
+    setIfExists(out, "primary_subcategory_slug", context.saysoSubcategorySlug);
+    setIfExists(out, "primary_subcategory_label", context.saysoSubcategoryLabel ?? null);
+    setIfExists(out, "primary_category_slug", context.saysoInterestId ?? null);
 
     // Backward-compatible columns, if present
-    setIfExists(out, 'sub_interest_id', context.saysoSubcategorySlug);
-    setIfExists(out, 'interest_id', context.saysoInterestId ?? null);
+    setIfExists(out, "sub_interest_id", context.saysoSubcategorySlug);
+    setIfExists(out, "interest_id", context.saysoInterestId ?? null);
   }
 
-  const slugCol = firstExisting(['slug', 'business_slug']);
-  if (slugCol && (out[slugCol] == null || out[slugCol] === '')) {
+  const slugCol = firstExisting(["slug", "business_slug"]);
+  if (slugCol && (out[slugCol] == null || out[slugCol] === "")) {
     const colMeta = get(slugCol);
-    const isRequired = colMeta?.required === true || (colMeta?.nullable === false && colMeta?.hasDefault === false);
+    const isRequired =
+      colMeta?.required === true || (colMeta?.nullable === false && colMeta?.hasDefault === false);
     if (isRequired && name) {
       const base = toSlug(name);
-      const suffix = isFoursquareId(fsqPlaceId) ? String(fsqPlaceId).slice(-6) : '';
+      const suffix = isFoursquareId(fsqPlaceId) ? String(fsqPlaceId).slice(-6) : "";
       const slug = suffix ? `${base}-${suffix}` : base;
       if (slug) out[slugCol] = slug;
     }
@@ -428,10 +455,11 @@ function mapPlaceToBusinessRow(place, context, columnIndex) {
 
   // If the schema really requires an `id` on insert (some OpenAPI metadata marks it as required even when DB has a default),
   // provide a safe fallback only when it clearly looks like a UUID column.
-  if (columnIndex.has('id') && (out.id == null || out.id === '')) {
-    const idMeta = get('id');
-    const isRequired = idMeta?.required === true || (idMeta?.nullable === false && idMeta?.hasDefault === false);
-    const isUuid = idMeta?.format === 'uuid';
+  if (columnIndex.has("id") && (out.id == null || out.id === "")) {
+    const idMeta = get("id");
+    const isRequired =
+      idMeta?.required === true || (idMeta?.nullable === false && idMeta?.hasDefault === false);
+    const isUuid = idMeta?.format === "uuid";
     const canWrite = idMeta?.readOnly !== true;
     if (isRequired && !idMeta?.hasDefault && isUuid && canWrite) {
       out.id = randomUUID();
@@ -443,19 +471,26 @@ function mapPlaceToBusinessRow(place, context, columnIndex) {
 
 function validateRowAgainstSchema(row, columnsMap) {
   const reasons = [];
-  const openApiServerGenerated = new Set(['id', 'created_at', 'updated_at', 'createdAt', 'updatedAt']);
+  const openApiServerGenerated = new Set([
+    "id",
+    "created_at",
+    "updated_at",
+    "createdAt",
+    "updatedAt",
+  ]);
   for (const [colName, meta] of columnsMap.entries()) {
     if (!meta) continue;
 
     // When using PostgREST OpenAPI metadata, server-generated columns like `id`/timestamps are often marked as required
     // even though inserts succeed without them. Avoid false negatives during validation.
     if (meta.readOnly === true) continue;
-    if (meta.source === 'openapi' && openApiServerGenerated.has(colName)) continue;
+    if (meta.source === "openapi" && openApiServerGenerated.has(colName)) continue;
 
-    const required = meta.required === true || (meta.nullable === false && meta.hasDefault === false);
+    const required =
+      meta.required === true || (meta.nullable === false && meta.hasDefault === false);
     if (!required) continue;
     const val = row[colName];
-    if (val === undefined || val === null || val === '') {
+    if (val === undefined || val === null || val === "") {
       reasons.push(`missing required "${colName}"`);
     }
   }
@@ -465,18 +500,17 @@ function validateRowAgainstSchema(row, columnsMap) {
 function fsqHeaders() {
   return {
     Authorization: `Bearer ${FOURSQUARE_API_KEY}`,
-    'X-Places-Api-Version': FSQ_API_VERSION,
-    Accept: 'application/json',
+    "X-Places-Api-Version": FSQ_API_VERSION,
+    Accept: "application/json",
   };
 }
 
 async function loadSaysoSubcategoriesFromRepo() {
-  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-  const subcategoriesPath = path.join(repoRoot, 'src', 'app', 'api', 'subcategories', 'route.ts');
-  const txt = await fs.readFile(subcategoriesPath, 'utf8');
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const subcategoriesPath = path.join(repoRoot, "src", "app", "api", "subcategories", "route.ts");
+  const txt = await fs.readFile(subcategoriesPath, "utf8");
 
-  const re =
-    /\{\s*id:\s*"([^"]+)"\s*,\s*label:\s*"([^"]+)"\s*,\s*interest_id:\s*"([^"]+)"\s*\}/g;
+  const re = /\{\s*id:\s*"([^"]+)"\s*,\s*label:\s*"([^"]+)"\s*,\s*interest_id:\s*"([^"]+)"\s*\}/g;
   const out = [];
   let m;
   while ((m = re.exec(txt))) {
@@ -501,16 +535,16 @@ async function loadSaysoSubcategoriesFromRepo() {
 
 async function loadFsqCategoryMapFromDb() {
   const { data, error } = await supabase
-    .from('fsq_category_map')
-    .select('fsq_category_id, fsq_category_name, sayso_subcategory_slug, sayso_category_slug');
+    .from("fsq_category_map")
+    .select("fsq_category_id, fsq_category_name, sayso_subcategory_slug, sayso_category_slug");
 
   if (error) {
     throw new Error(
       [
-        'Failed to load public.fsq_category_map.',
-        'Create the table via the migration and populate it (CSV/SQL from discovery mode).',
+        "Failed to load public.fsq_category_map.",
+        "Create the table via the migration and populate it (CSV/SQL from discovery mode).",
         `Details: ${error.message}`,
-      ].join(' ')
+      ].join(" ")
     );
   }
 
@@ -528,8 +562,8 @@ function buildFsqMappingFromRows({ rows, canonicalSlugs, slugToInterestId }) {
   const slugToFsqIds = new Map();
 
   for (const r of rows) {
-    const fsqId = String(r?.fsq_category_id || '').trim();
-    const slug = String(r?.sayso_subcategory_slug || '').trim();
+    const fsqId = String(r?.fsq_category_id || "").trim();
+    const slug = String(r?.sayso_subcategory_slug || "").trim();
     if (!fsqId || !slug) continue;
     if (!canonicalSlugs.has(slug)) continue;
 
@@ -555,9 +589,9 @@ function buildFsqMappingFromRows({ rows, canonicalSlugs, slugToInterestId }) {
   if (totalIds === 0) {
     throw new Error(
       [
-        'fsq_category_map has 0 usable IDs for canonical Sayso slugs.',
-        'Run discovery and populate public.fsq_category_map first.',
-      ].join(' ')
+        "fsq_category_map has 0 usable IDs for canonical Sayso slugs.",
+        "Run discovery and populate public.fsq_category_map first.",
+      ].join(" ")
     );
   }
 
@@ -627,17 +661,17 @@ function getNextFromHeaders(headers) {
   const get = (k) => headers.get(k) || headers.get(k.toLowerCase());
 
   const directCursor =
-    get('x-next-cursor') ||
-    get('next-cursor') ||
-    get('x-fsq-next-cursor') ||
-    get('x-pagination-next-cursor') ||
+    get("x-next-cursor") ||
+    get("next-cursor") ||
+    get("x-fsq-next-cursor") ||
+    get("x-pagination-next-cursor") ||
     null;
   if (directCursor) return { nextUrl: null, nextCursor: directCursor };
 
-  const link = get('link');
-  if (link && typeof link === 'string') {
+  const link = get("link");
+  if (link && typeof link === "string") {
     // Parse: <url>; rel="next"
-    const parts = link.split(',').map((s) => s.trim());
+    const parts = link.split(",").map((s) => s.trim());
     for (const part of parts) {
       const m = part.match(/<([^>]+)>\s*;\s*rel="?next"?/i);
       if (m && m[1]) return { nextUrl: m[1], nextCursor: null };
@@ -650,8 +684,8 @@ function getNextFromHeaders(headers) {
 function isNoCredits429(err) {
   const status = err?.status ?? null;
   if (status !== 429) return false;
-  const msg = String(err?.message || '');
-  const body = err?.body ? JSON.stringify(err.body) : '';
+  const msg = String(err?.message || "");
+  const body = err?.body ? JSON.stringify(err.body) : "";
   return /no api credits remaining/i.test(msg) || /no api credits remaining/i.test(body);
 }
 
@@ -663,20 +697,21 @@ async function fetchPlacesByCategories({
   logUrl,
   forceMinimalProFields = false,
 }) {
-  const url = nextUrl ? new URL(nextUrl) : new URL('/places/search', FSQ_BASE_URL);
+  const url = nextUrl ? new URL(nextUrl) : new URL("/places/search", FSQ_BASE_URL);
 
   // Always enforce Pro-tier safe fields, even when following pagination next URLs.
-  url.searchParams.set('fields', FSQ_PRO_FIELDS_CSV);
+  url.searchParams.set("fields", FSQ_PRO_FIELDS_CSV);
   logFsqFields(FSQ_PRO_FIELDS_CSV);
 
   if (!nextUrl) {
-    url.searchParams.set('ll', CAPE_TOWN_LL);
-    url.searchParams.set('radius', String(CAPE_TOWN_RADIUS_M));
-    url.searchParams.set('limit', String(LIMIT_PER_PAGE));
-    url.searchParams.set('categories', String(categoriesCsv));
+    url.searchParams.set("ll", CAPE_TOWN_LL);
+    url.searchParams.set("radius", String(CAPE_TOWN_RADIUS_M));
+    url.searchParams.set("limit", String(LIMIT_PER_PAGE));
+    url.searchParams.set("categories", String(categoriesCsv));
 
-    if (cursor) url.searchParams.set('cursor', String(cursor));
-    if (!cursor && Number.isFinite(offset) && offset > 0) url.searchParams.set('offset', String(offset));
+    if (cursor) url.searchParams.set("cursor", String(cursor));
+    if (!cursor && Number.isFinite(offset) && offset > 0)
+      url.searchParams.set("offset", String(offset));
   }
 
   if (logUrl) console.log(`[FSQ] ${url.toString()}`);
@@ -686,7 +721,9 @@ async function fetchPlacesByCategories({
     res = await fetchJsonWithRetry(url.toString(), { headers: fsqHeaders() });
   } catch (err) {
     if (isNoCredits429(err)) {
-      console.log('[FSQ] Premium field detected or credit issue. Retrying with minimal Pro fields.');
+      console.log(
+        "[FSQ] Premium field detected or credit issue. Retrying with minimal Pro fields."
+      );
 
       // Retry once with enforced minimal Pro fields (even if already minimal).
       if (!forceMinimalProFields) {
@@ -715,10 +752,11 @@ async function fetchPlacesByCategories({
 function chooseConflictTargets(columnIndex) {
   const targets = [];
 
-  if (columnIndex.has('source') && columnIndex.has('source_id')) targets.push('source,source_id');
-  if (columnIndex.has('source') && columnIndex.has('source_place_id')) targets.push('source,source_place_id');
+  if (columnIndex.has("source") && columnIndex.has("source_id")) targets.push("source,source_id");
+  if (columnIndex.has("source") && columnIndex.has("source_place_id"))
+    targets.push("source,source_place_id");
 
-  const singleCandidates = ['source_place_id', 'fsq_place_id', 'external_id', 'source_id', 'slug'];
+  const singleCandidates = ["source_place_id", "fsq_place_id", "external_id", "source_id", "slug"];
   for (const c of singleCandidates) {
     if (columnIndex.has(c)) targets.push(c);
   }
@@ -727,22 +765,22 @@ function chooseConflictTargets(columnIndex) {
 }
 
 function isNoUniqueConstraintError(err) {
-  const code = String(err?.code || '');
-  const msg = String(err?.message || '');
-  const details = String(err?.details || '');
-  const hint = String(err?.hint || '');
+  const code = String(err?.code || "");
+  const msg = String(err?.message || "");
+  const details = String(err?.details || "");
+  const hint = String(err?.hint || "");
   const combined = `${msg} ${details} ${hint}`.toLowerCase();
 
   // Postgres: 42P10 = invalid_column_reference, commonly returned when ON CONFLICT targets no unique index/constraint.
-  if (code === '42p10') return true;
+  if (code === "42p10") return true;
 
   return (
-    combined.includes('there is no unique or exclusion constraint') ||
-    combined.includes('no unique constraint') ||
-    combined.includes('no unique or exclusion constraint') ||
-    combined.includes('could not find the relation') ||
-    combined.includes('invalid input syntax') ||
-    combined.includes('on_conflict') // Supabase/PostgREST phrasing
+    combined.includes("there is no unique or exclusion constraint") ||
+    combined.includes("no unique constraint") ||
+    combined.includes("no unique or exclusion constraint") ||
+    combined.includes("could not find the relation") ||
+    combined.includes("invalid input syntax") ||
+    combined.includes("on_conflict") // Supabase/PostgREST phrasing
   );
 }
 
@@ -751,7 +789,7 @@ async function writeBatch({ rows, conflictTarget, externalIdCol }) {
   if (DRY_RUN) return { written: rows.length, skipped: 0 };
 
   if (conflictTarget) {
-    const attempt = await supabase.from('businesses').upsert(rows, { onConflict: conflictTarget });
+    const attempt = await supabase.from("businesses").upsert(rows, { onConflict: conflictTarget });
     if (!attempt.error) return { written: rows.length, skipped: 0 };
 
     if (isNoUniqueConstraintError(attempt.error)) {
@@ -768,7 +806,7 @@ async function writeBatch({ rows, conflictTarget, externalIdCol }) {
 
     if (uniqueIds.length > 0) {
       const { data, error } = await supabase
-        .from('businesses')
+        .from("businesses")
         .select(externalIdCol)
         .in(externalIdCol, uniqueIds);
       if (!error && Array.isArray(data)) {
@@ -785,71 +823,73 @@ async function writeBatch({ rows, conflictTarget, externalIdCol }) {
 
     if (toInsert.length === 0) return { written: 0, skipped: rows.length };
 
-    const ins = await supabase.from('businesses').insert(toInsert);
+    const ins = await supabase.from("businesses").insert(toInsert);
     if (!ins.error) return { written: toInsert.length, skipped: rows.length - toInsert.length };
     return { written: 0, skipped: rows.length, error: ins.error };
   }
 
-  const ins = await supabase.from('businesses').insert(rows);
+  const ins = await supabase.from("businesses").insert(rows);
   if (!ins.error) return { written: rows.length, skipped: 0 };
   return { written: 0, skipped: rows.length, error: ins.error };
 }
 
 async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }) {
   if (!DISCOVER_JSON_ONLY) {
-    console.log('[Discover] Scanning FSQ category IDs from /places/search using query=Sayso label...');
+    console.log(
+      "[Discover] Scanning FSQ category IDs from /places/search using query=Sayso label..."
+    );
     console.log(
       `[Discover] ll=${CAPE_TOWN_LL} radius=${CAPE_TOWN_RADIUS_M} pages=${DISCOVER_MAX_PAGES} limit=${DISCOVER_LIMIT_PER_PAGE} mode=${DISCOVER_COUNT_MODE}`
     );
   }
 
   const discoveryQueriesBySlug = {
-    restaurants: ['restaurant', 'dinner', 'lunch'],
-    cafes: ['cafe', 'coffee'],
-    bars: ['bar', 'pub'],
-    'fast-food': ['fast food', 'takeaway'],
-    'fine-dining': ['fine dining', 'restaurant'],
+    restaurants: ["restaurant", "dinner", "lunch"],
+    cafes: ["cafe", "coffee"],
+    bars: ["bar", "pub"],
+    "fast-food": ["fast food", "takeaway"],
+    "fine-dining": ["fine dining", "restaurant"],
 
-    gyms: ['gym', 'fitness'],
-    spas: ['spa', 'massage'],
-    salons: ['hair salon', 'salon'],
-    wellness: ['wellness', 'yoga'],
-    'nail-salons': ['nail salon', 'nails'],
+    gyms: ["gym", "fitness"],
+    spas: ["spa", "massage"],
+    salons: ["hair salon", "salon"],
+    wellness: ["wellness", "yoga"],
+    "nail-salons": ["nail salon", "nails"],
 
-    'education-learning': ['school', 'library'],
-    'transport-travel': ['travel', 'car rental'],
-    'finance-insurance': ['bank', 'insurance'],
-    plumbers: ['plumber'],
-    electricians: ['electrician'],
-    'legal-services': ['lawyer'],
+    "education-learning": ["school", "library"],
+    "transport-travel": ["travel", "car rental"],
+    "finance-insurance": ["bank", "insurance"],
+    plumbers: ["plumber"],
+    electricians: ["electrician"],
+    "legal-services": ["lawyer"],
 
-    hiking: ['hiking', 'trail'],
-    cycling: ['cycling', 'bike'],
-    'water-sports': ['water sports', 'surf'],
-    camping: ['camping', 'camp site'],
+    hiking: ["hiking", "trail"],
+    cycling: ["cycling", "bike"],
+    "water-sports": ["water sports", "surf"],
+    camping: ["camping", "camp site"],
 
-    'events-festivals': ['festival', 'event'],
-    'sports-recreation': ['sports', 'stadium'],
-    nightlife: ['nightlife', 'club'],
-    'comedy-clubs': ['comedy', 'comedy club'],
-    cinemas: ['cinema', 'movie theater'],
+    "events-festivals": ["festival", "event"],
+    "sports-recreation": ["sports", "stadium"],
+    nightlife: ["nightlife", "club"],
+    "comedy-clubs": ["comedy", "comedy club"],
+    cinemas: ["cinema", "movie theater"],
 
-    museums: ['museum'],
-    galleries: ['art gallery', 'gallery'],
-    theaters: ['theatre', 'theater'],
-    concerts: ['concert', 'live music'],
+    museums: ["museum"],
+    galleries: ["art gallery", "gallery"],
+    theaters: ["theatre", "theater"],
+    concerts: ["concert", "live music"],
 
-    'family-activities': ['family', 'kids'],
-    'pet-services': ['pet', 'pet store'],
-    childcare: ['childcare', 'daycare'],
-    veterinarians: ['veterinarian', 'vet'],
+    "family-activities": ["family", "kids"],
+    "pet-services": ["pet", "pet store"],
+    childcare: ["childcare", "daycare"],
+    veterinarians: ["veterinarian", "vet"],
 
-    fashion: ['clothing', 'fashion'],
-    electronics: ['electronics', 'mobile phone'],
-    'home-decor': ['home decor', 'furniture'],
-    books: ['bookstore', 'books'],
+    fashion: ["clothing", "fashion"],
+    electronics: ["electronics", "mobile phone"],
+    "home-decor": ["home decor", "furniture"],
+    books: ["bookstore", "books"],
 
-    miscellaneous: ['business'],
+    miscellaneous: ["business"],
   };
 
   const perSlug = new Map(); // slug -> Map(fsqCategoryId -> { name, count })
@@ -868,19 +908,19 @@ async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }
       let nextUrl = null;
 
       for (let p = 1; p <= DISCOVER_MAX_PAGES; p += 1) {
-        const url = nextUrl ? new URL(nextUrl) : new URL('/places/search', FSQ_BASE_URL);
-        const fieldsCsv = ['fsq_place_id', 'name', 'categories'].join(',');
-        url.searchParams.set('fields', fieldsCsv);
+        const url = nextUrl ? new URL(nextUrl) : new URL("/places/search", FSQ_BASE_URL);
+        const fieldsCsv = ["fsq_place_id", "name", "categories"].join(",");
+        url.searchParams.set("fields", fieldsCsv);
         logFsqFields(fieldsCsv);
 
         if (!nextUrl) {
-          url.searchParams.set('ll', CAPE_TOWN_LL);
-          url.searchParams.set('radius', String(CAPE_TOWN_RADIUS_M));
-          url.searchParams.set('limit', String(DISCOVER_LIMIT_PER_PAGE));
-          url.searchParams.set('query', q);
-          if (cursor) url.searchParams.set('cursor', String(cursor));
+          url.searchParams.set("ll", CAPE_TOWN_LL);
+          url.searchParams.set("radius", String(CAPE_TOWN_RADIUS_M));
+          url.searchParams.set("limit", String(DISCOVER_LIMIT_PER_PAGE));
+          url.searchParams.set("query", q);
+          if (cursor) url.searchParams.set("cursor", String(cursor));
           if (!cursor && Number.isFinite(offset) && offset > 0) {
-            url.searchParams.set('offset', String(offset));
+            url.searchParams.set("offset", String(offset));
           }
         }
 
@@ -891,7 +931,7 @@ async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }
 
         for (const place of places) {
           const cats = Array.isArray(place?.categories) ? place.categories : [];
-          const catsToCount = DISCOVER_COUNT_MODE === 'all' ? cats : cats.slice(0, 1);
+          const catsToCount = DISCOVER_COUNT_MODE === "all" ? cats : cats.slice(0, 1);
           for (const c of catsToCount) {
             const idRaw = c?.id ?? c?.category_id ?? c?.fsq_category_id ?? c?.fsqCategoryId ?? null;
             if (idRaw == null) continue;
@@ -920,7 +960,8 @@ async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }
       }
     }
 
-    if (!DISCOVER_JSON_ONLY) console.log(`[Discover] ${subcat.slug}: found ${slugCounts.size} category IDs`);
+    if (!DISCOVER_JSON_ONLY)
+      console.log(`[Discover] ${subcat.slug}: found ${slugCounts.size} category IDs`);
     await sleep(CATEGORY_DELAY_MS);
   }
 
@@ -976,32 +1017,45 @@ async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }
       });
     }
   }
-  discoveryRows.sort((a, b) => (a.sayso_subcategory_slug > b.sayso_subcategory_slug ? 1 : -1) || (b.count - a.count));
+  discoveryRows.sort(
+    (a, b) => (a.sayso_subcategory_slug > b.sayso_subcategory_slug ? 1 : -1) || b.count - a.count
+  );
 
-  const discoveryCsvPath = path.join(scriptsDir, '_fsq_category_discovery.csv');
-  const suggestedCsvPath = path.join(scriptsDir, '_fsq_category_map_suggested.csv');
-  const suggestedSqlPath = path.join(scriptsDir, '_fsq_category_map_suggested.sql');
+  const discoveryCsvPath = path.join(scriptsDir, "_fsq_category_discovery.csv");
+  const suggestedCsvPath = path.join(scriptsDir, "_fsq_category_map_suggested.csv");
+  const suggestedSqlPath = path.join(scriptsDir, "_fsq_category_map_suggested.sql");
 
   await fs.writeFile(
     discoveryCsvPath,
-    toCsv(discoveryRows, ['sayso_subcategory_slug', 'fsq_category_id', 'fsq_category_name', 'count']),
-    'utf8'
+    toCsv(discoveryRows, [
+      "sayso_subcategory_slug",
+      "fsq_category_id",
+      "fsq_category_name",
+      "count",
+    ]),
+    "utf8"
   );
   await fs.writeFile(
     suggestedCsvPath,
-    toCsv(suggestedRows, ['fsq_category_id', 'fsq_category_name', 'sayso_subcategory_slug', 'sayso_category_slug', 'count']),
-    'utf8'
+    toCsv(suggestedRows, [
+      "fsq_category_id",
+      "fsq_category_name",
+      "sayso_subcategory_slug",
+      "sayso_category_slug",
+      "count",
+    ]),
+    "utf8"
   );
 
   const upsertsSql = suggestedRows
     .map((r) => {
       const id = r.fsq_category_id.replace(/'/g, "''");
-      const name = (r.fsq_category_name || '').replace(/'/g, "''");
+      const name = (r.fsq_category_name || "").replace(/'/g, "''");
       const slug = r.sayso_subcategory_slug.replace(/'/g, "''");
-      return `insert into public.fsq_category_map (fsq_category_id, fsq_category_name, sayso_subcategory_slug, updated_at)\nvalues ('${id}', ${name ? `'${name}'` : 'null'}, '${slug}', now())\non conflict (fsq_category_id) do update set\n  fsq_category_name = excluded.fsq_category_name,\n  sayso_subcategory_slug = excluded.sayso_subcategory_slug,\n  updated_at = now();`;
+      return `insert into public.fsq_category_map (fsq_category_id, fsq_category_name, sayso_subcategory_slug, updated_at)\nvalues ('${id}', ${name ? `'${name}'` : "null"}, '${slug}', now())\non conflict (fsq_category_id) do update set\n  fsq_category_name = excluded.fsq_category_name,\n  sayso_subcategory_slug = excluded.sayso_subcategory_slug,\n  updated_at = now();`;
     })
-    .join('\n\n');
-  await fs.writeFile(suggestedSqlPath, `-- generated_at: ${nowIso}\n\n${upsertsSql}\n`, 'utf8');
+    .join("\n\n");
+  await fs.writeFile(suggestedSqlPath, `-- generated_at: ${nowIso}\n\n${upsertsSql}\n`, "utf8");
 
   // Auto-populate local JSON map file for convenience (slug -> top N ids)
   const bySlug = new Map();
@@ -1021,10 +1075,13 @@ async function discoverFsqCategoriesForSaysoSubcategories({ saysoSubcategories }
       mode: DISCOVER_COUNT_MODE,
     },
     subcategories: Object.fromEntries(
-      [...perSlug.keys()].map((slug) => [slug, (bySlug.get(slug) || []).slice(0, MAP_FILE_MAX_IDS_PER_SLUG)])
+      [...perSlug.keys()].map((slug) => [
+        slug,
+        (bySlug.get(slug) || []).slice(0, MAP_FILE_MAX_IDS_PER_SLUG),
+      ])
     ),
   };
-  await fs.writeFile(FSQ_TO_SAYSO_MAP_FILE, JSON.stringify(mapJson, null, 2) + '\n', 'utf8');
+  await fs.writeFile(FSQ_TO_SAYSO_MAP_FILE, JSON.stringify(mapJson, null, 2) + "\n", "utf8");
 
   if (!DISCOVER_JSON_ONLY) {
     console.log(`[Discover] Wrote ${discoveryCsvPath}`);
@@ -1044,12 +1101,17 @@ async function main() {
   const dbColumns = await fetchBusinessesColumns();
   const columnIndex = buildColumnIndex(dbColumns);
 
-  const externalIdCol = columnIndex.firstExisting(['source_place_id', 'fsq_place_id', 'external_id', 'source_id']);
+  const externalIdCol = columnIndex.firstExisting([
+    "source_place_id",
+    "fsq_place_id",
+    "external_id",
+    "source_id",
+  ]);
   const conflictTargets = chooseConflictTargets(columnIndex);
   let conflictTargetIndex = conflictTargets.length > 0 ? 0 : -1;
   let activeConflictTarget = conflictTargetIndex >= 0 ? conflictTargets[conflictTargetIndex] : null;
   console.log(
-    `[Config] externalIdCol=${externalIdCol || 'none'} conflictTargets=${conflictTargets.length ? conflictTargets.join('|') : 'none'}`
+    `[Config] externalIdCol=${externalIdCol || "none"} conflictTargets=${conflictTargets.length ? conflictTargets.join("|") : "none"}`
   );
 
   const saysoSubcategoriesAll = await loadSaysoSubcategoriesFromRepo();
@@ -1076,8 +1138,8 @@ async function main() {
   } catch (e) {
     const msg = String(e?.message || e);
     if (!DISCOVER_JSON_ONLY) {
-      console.warn('[Seed] Falling back to local mapping file (fsq_category_map unavailable).');
-      console.warn('[Seed] Reason:', msg);
+      console.warn("[Seed] Falling back to local mapping file (fsq_category_map unavailable).");
+      console.warn("[Seed] Reason:", msg);
     }
     const mappingBySlug = await loadFsqCategoryMapFromFile();
     ({ fsqIdToRow, slugToFsqIds } = buildFsqMappingFromFile({
@@ -1097,11 +1159,13 @@ async function main() {
   for (const subcat of saysoSubcategories) {
     const fsqIds = slugToFsqIds.get(subcat.slug) || [];
     if (fsqIds.length === 0) {
-      console.log(`\n[Subcategory] ${subcat.slug} - ${subcat.label} (skip: no mapped FSQ category IDs)`);
+      console.log(
+        `\n[Subcategory] ${subcat.slug} - ${subcat.label} (skip: no mapped FSQ category IDs)`
+      );
       continue;
     }
 
-    const categoriesCsv = fsqIds.join(',');
+    const categoriesCsv = fsqIds.join(",");
     console.log(
       `\n[Subcategory] ${subcat.slug} - ${subcat.label} (interest=${subcat.interestId}) fsqCategoryIds=${fsqIds.length}`
     );
@@ -1119,7 +1183,11 @@ async function main() {
     while (page < MAX_PAGES && uniqueForCategory < MAX_PER_CATEGORY) {
       page += 1;
 
-      const { places, nextCursor, nextUrl: nextUrlFromHeaders } = await fetchPlacesByCategories({
+      const {
+        places,
+        nextCursor,
+        nextUrl: nextUrlFromHeaders,
+      } = await fetchPlacesByCategories({
         categoriesCsv,
         cursor,
         offset,
@@ -1144,7 +1212,7 @@ async function main() {
         rawUniqueThisPage += 1;
 
         const resolved = resolveSaysoFromPlace(place, fsqIdToRow);
-        const resolvedSlug = resolved?.saysoSubcategorySlug || 'miscellaneous';
+        const resolvedSlug = resolved?.saysoSubcategorySlug || "miscellaneous";
 
         if (resolvedSlug !== subcat.slug) {
           // We seed by Sayso slug; only accept places whose primary mapped slug matches this subcategory.
@@ -1174,7 +1242,7 @@ async function main() {
         const validation = validateRowAgainstSchema(row, dbColumns);
         if (!validation.ok) {
           totalSkipped += 1;
-          console.log(`[Skip] ${fsqId} - ${validation.reasons.join('; ')}`);
+          console.log(`[Skip] ${fsqId} - ${validation.reasons.join("; ")}`);
           continue;
         }
 
@@ -1204,15 +1272,15 @@ async function main() {
 
             if (!res?.retryWithNextConflictTarget) break;
 
-            const prev = activeConflictTarget || 'none';
+            const prev = activeConflictTarget || "none";
             conflictTargetIndex += 1;
             activeConflictTarget =
               conflictTargetIndex >= 0 && conflictTargetIndex < conflictTargets.length
                 ? conflictTargets[conflictTargetIndex]
                 : null;
-            const next = activeConflictTarget || 'manual-dedupe';
+            const next = activeConflictTarget || "manual-dedupe";
             console.log(
-              `[DB] conflictTarget "${prev}" not usable (${String(res?.error?.message || res?.error || '')}). Trying "${next}".`
+              `[DB] conflictTarget "${prev}" not usable (${String(res?.error?.message || res?.error || "")}). Trying "${next}".`
             );
           }
 
@@ -1231,14 +1299,14 @@ async function main() {
       }
 
       if (rawUniqueThisPage === 0) {
-        console.log('[Stop] No new unique place IDs found; stopping early for this subcategory.');
+        console.log("[Stop] No new unique place IDs found; stopping early for this subcategory.");
         break;
       }
 
       if (insertableThisPage === 0) {
         consecutiveNoInsertablePages += 1;
         if (consecutiveNoInsertablePages >= 2) {
-          console.log('[Stop] No insertable rows for 2 pages; stopping early for this category.');
+          console.log("[Stop] No insertable rows for 2 pages; stopping early for this category.");
           break;
         }
       } else {
@@ -1262,7 +1330,7 @@ async function main() {
     await sleep(CATEGORY_DELAY_MS);
   }
 
-  console.log('\n=== Summary ===');
+  console.log("\n=== Summary ===");
   console.log(`dryRun=${DRY_RUN}`);
   console.log(`subcategoriesTotal=${saysoSubcategories.length}`);
   console.log(`subcategoriesSeeded=${subcategoriesSeeded}`);
@@ -1270,7 +1338,7 @@ async function main() {
   console.log(`uniqueGlobal=${totalUniqueGlobal}`);
   console.log(`written=${totalWritten}`);
   console.log(`skipped=${totalSkipped}`);
-  console.log(`conflictTarget=${activeConflictTarget || 'none'}`);
+  console.log(`conflictTarget=${activeConflictTarget || "none"}`);
 }
 
 await main();

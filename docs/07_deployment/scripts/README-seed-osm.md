@@ -5,11 +5,13 @@ This script seeds businesses from OpenStreetMap Overpass API into your database,
 ## Setup
 
 1. **Install tsx** (if not already installed):
+
    ```bash
    npm install -D tsx
    ```
 
 2. **Set up environment variables** in your `.env` file (all secrets are stored here):
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -23,11 +25,13 @@ This script seeds businesses from OpenStreetMap Overpass API into your database,
 ## Usage
 
 Run the seeding script:
+
 ```bash
 npm run seed:osm
 ```
 
 Or directly with tsx:
+
 ```bash
 npx tsx scripts/seed-osm-businesses.ts
 ```
@@ -56,6 +60,7 @@ npx tsx scripts/seed-osm-businesses.ts
 The script uses GPT-5.1 (when `OPENAI_API_KEY` is provided) to enrich business data:
 
 ### What GPT Does:
+
 - ✅ **Address Inference**: Fills missing addresses based on business name + location
 - ✅ **Category Refinement**: Improves OSM categories
 - ✅ **Location Cleaning**: Converts messy locations to clean format
@@ -64,12 +69,14 @@ The script uses GPT-5.1 (when `OPENAI_API_KEY` is provided) to enrich business d
 - ✅ **Description Generation**: Creates authentic South African-style descriptions
 
 ### What GPT Doesn't Do:
+
 - ❌ Exact addresses (only "most likely" when missing)
 - ❌ Phone numbers
 - ❌ Opening hours
 - ❌ Legal/regulated attributes
 
 ### Safety:
+
 - GPT only fills missing data or cleans messy data
 - Returns `null` if unsure (never guesses)
 - Falls back gracefully if GPT is unavailable
@@ -91,6 +98,7 @@ Edit `SUBCATEGORY_CONFIGS` in `scripts/seed-osm-businesses.ts`:
 ## Current Subcategories
 
 The script includes mappings for:
+
 - **Food & Drink**: Coffee shops, Restaurants, Bars, Fast Food, Fine Dining
 - **Beauty & Wellness**: Gyms, Spas, Hair Salons, Nail Salons, Wellness Centers
 - **Professional Services**: Plumbers, Electricians, Legal Services
@@ -115,4 +123,3 @@ The script includes mappings for:
 - ✅ **No Authentication**: No API keys needed
 - ⚠️ **Slower**: Overpass API can be slower than commercial APIs
 - ⚠️ **Less Structured**: Data quality varies by region
-

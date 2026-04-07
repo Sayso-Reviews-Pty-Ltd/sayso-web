@@ -24,62 +24,80 @@ docs/
 ## 📚 Quick Start
 
 ### New to the Project?
+
 Start here:
+
 1. [Project Overview](01_setup/PROJECT_OVERVIEW.md) - Understanding KLIO
 2. [Setup Guide](01_setup/SETUP.md) - Environment setup and installation
 
 ### Understanding the System
+
 3. [Authentication Analysis](02_architecture/AUTHENTICATION_ANALYSIS.md) - How auth works
 4. [Database Architecture](02_architecture/DATABASE_ARCHITECTURE.md) - Complete database structure
 5. [Business Table Schema](02_architecture/BUSINESSES_TABLE_SCHEMA.md) - Database schema for businesses
 
 ### Working with Features
+
 6. [Business Ownership Workflow](03_features/BUSINESS_OWNERSHIP_WORKFLOW.md) - Business claiming process
 7. [Feature Index](03_features/FEATURE_INDEX.md) - Complete feature list
 
 ### Performance & Optimization
+
 8. [Performance Optimization Guide](04_optimization/PERFORMANCE_OPTIMIZATION_GUIDE.md) - Best practices
 9. [Optimization Summary](04_optimization/OPTIMIZATION_SUMMARY.md) - What's been optimized
 
 ### Design & UI
+
 10. [Animation Guide](05_design/ANIMATION_GUIDE.md) - Animation patterns
 11. [Component Library](05_design/COMPONENT_LIBRARY.md) - UI component guidelines
 12. [Wireframes](05_design/wireframes/) - UI mockups and designs
 
 ### Troubleshooting
+
 13. [Troubleshooting Guide](troubleshooting/README.md) - Diagnostic guides and issue resolution
 
 ### For AI Assistants
+
 14. [Claude Context](06_ai-context/CLAUDE.md) - AI assistant guidelines
 
 ## 🗂️ Category Folders
 
 ### api/
+
 API endpoints, request/response formats, and API-related enhancements.
+
 - [README](api/README.md) - API documentation index
 - **API_USER_PROFILE_ENHANCEMENTS.md** - API enhancements for user profile endpoints
 
 ### database/
+
 Database schemas, migrations, and database-related operations.
+
 - [README](database/README.md) - Database documentation index
 - **MIGRATION_ORDER_FOR_BUSINESS_IMAGES.md** - Migration order and dependencies
 - **USER_STATS_SCHEMA.md** - User statistics table schema
 - **VERIFICATION_STORAGE_URLS.md** - Storage URL verification documentation
 
 ### frontend/
+
 React components, frontend architecture, and UI implementation details.
+
 - [README](frontend/README.md) - Frontend documentation index
 - **SIMILAR_BUSINESSES_COMPONENT_ARCHITECTURE.md** - Similar businesses component architecture
 
 ### backend/
+
 Backend services, cron jobs, and server-side operations.
+
 - [README](backend/README.md) - Backend documentation index
 - **BACKEND_STATUS.md** - Current backend implementation status
 - **LOCAL_CRON_SETUP.md** - Local cron job setup guide
 - **TICKETMASTER_CRON_SETUP.md** - Ticketmaster cron job setup
 
 ### troubleshooting/
+
 Diagnostic guides, debugging procedures, and solutions for common issues.
+
 - [README](troubleshooting/README.md) - Troubleshooting documentation index
 - **BUSINESS_IMAGES_EDGE_CASES.md** - Business images edge cases
 - **BUSINESS_LOGIC_EDGE_CASES.md** - Business logic edge cases
@@ -90,7 +108,9 @@ Diagnostic guides, debugging procedures, and solutions for common issues.
 ## 🗂️ Topic-Based Folders
 
 ### 01_setup/
+
 Project setup, installation, and getting started guides.
+
 - **PROJECT_OVERVIEW.md** - Project goals, tech stack, and architecture overview
 - **SETUP.md** - Local development setup instructions
 - **GETTING_STARTED.md** - Getting started guide
@@ -98,7 +118,9 @@ Project setup, installation, and getting started guides.
 - **SETUP_STORAGE_POLICIES.md** - Storage policies setup
 
 ### 02_architecture/
+
 System architecture, database schemas, and architectural decisions.
+
 - **AUTHENTICATION_ANALYSIS.md** - Authentication flow and security
 - **AUTH_PRODUCTION_READINESS.md** - Auth security assessment and checklist
 - **AUTH_RATE_LIMITING_IMPLEMENTATION.md** - Rate limiting implementation
@@ -113,7 +135,9 @@ System architecture, database schemas, and architectural decisions.
 - **BUSINESS_LOGIN_ANALYSIS.md** - Business login analysis
 
 ### 03_features/
+
 Feature documentation, workflows, and implementation guides.
+
 - **FEATURE_INDEX.md** - Complete feature list and index
 - **BUSINESS_OWNERSHIP_WORKFLOW.md** - Business claim and verification process
 - **BUSINESS_CLAIM_AND_IMAGE_UPLOAD_FLOW.md** - Business claim and image upload workflow
@@ -129,7 +153,9 @@ Feature documentation, workflows, and implementation guides.
 - **ONBOARDING_PERFORMANCE.md** - Onboarding performance documentation
 
 ### 04_optimization/
+
 Performance optimization, refactoring, and optimization guides.
+
 - **PERFORMANCE_OPTIMIZATION_GUIDE.md** - Step-by-step optimization guide
 - **OPTIMIZATION_SUMMARY.md** - Quick reference for optimizations
 - **OPTIMIZATION_CHECKLIST.md** - Performance best practices checklist
@@ -145,22 +171,30 @@ Performance optimization, refactoring, and optimization guides.
 - **PERFORMANCE_OPTIMIZATION.md** - Performance optimization guide (bundle)
 
 ### 05_design/
+
 Design guidelines, animations, component library, and wireframes.
+
 - **ANIMATION_GUIDE.md** - Animation patterns and guidelines
 - **COMPONENT_LIBRARY.md** - UI component guidelines and library
 - **wireframes/** - UI design mockups (13 screens)
 
 ### 06_ai-context/
+
 Guidelines and context for AI assistants working on the project.
+
 - **CLAUDE.md** - Guidelines for AI assistants
 
 ### 07_deployment/
+
 Deployment guides, production fixes, and deployment checklists.
+
 - **DEPLOYMENT_TODO.md** - Deployment checklist and tasks
 - **PRODUCTION_FIXES.md** - Production fixes and improvements log
 
 ### 08_testing/
+
 Testing strategies, test maintenance, and testing guides.
+
 - **TEST_STRATEGY.md** - Testing strategy documentation
 - **TEST_SUITE_SUMMARY.md** - Test suite summary
 - **MAINTAINING_TESTS.md** - Test maintenance guide

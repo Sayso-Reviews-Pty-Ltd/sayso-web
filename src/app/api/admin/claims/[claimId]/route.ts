@@ -1,21 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAdmin } from '@/app/api/_lib/withAuth';
-import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from "next/server";
+import { withAdmin } from "@/app/api/_lib/withAuth";
+import { createClient } from "@supabase/supabase-js";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-export const GET = withAdmin(async (
-  req: NextRequest,
-  { service, params }
-) => {
+export const GET = withAdmin(async (req: NextRequest, { service, params }) => {
   const resolvedClaimId = (await params)?.claimId;
   if (!resolvedClaimId) {
-    return NextResponse.json({ error: 'claimId required' }, { status: 400 });
+    return NextResponse.json({ error: "claimId required" }, { status: 400 });
   }
 
   const { data: claim, error: claimError } = await service
-    .from('business_claims')
+    .from("business_claims")
     .select(
       `
       id,
@@ -35,11 +32,11 @@ export const GET = withAdmin(async (
       businesses ( id, name, primary_subcategory_slug, primary_subcategory_label, location, slug, phone, email, website )
     `
     )
-    .eq('id', resolvedClaimId)
+    .eq("id", resolvedClaimId)
     .single();
 
   if (claimError || !claim) {
-    return NextResponse.json({ error: 'Claim not found' }, { status: 404 });
+    return NextResponse.json({ error: "Claim not found" }, { status: 404 });
   }
   type ClaimRow = {
     id: string;
@@ -83,16 +80,16 @@ export const GET = withAdmin(async (
   const claimRow = claim as ClaimRow;
 
   const { data: events } = await service
-    .from('business_claim_events')
-    .select('id, event_type, event_data, created_at, created_by')
-    .eq('claim_id', resolvedClaimId)
-    .order('created_at', { ascending: true });
+    .from("business_claim_events")
+    .select("id, event_type, event_data, created_at, created_by")
+    .eq("claim_id", resolvedClaimId)
+    .order("created_at", { ascending: true });
 
   const { data: docs } = await service
-    .from('business_claim_documents')
-    .select('id, doc_type, status, uploaded_at, delete_after')
-    .eq('claim_id', resolvedClaimId)
-    .order('uploaded_at', { ascending: false });
+    .from("business_claim_documents")
+    .select("id, doc_type, status, uploaded_at, delete_after")
+    .eq("claim_id", resolvedClaimId)
+    .order("uploaded_at", { ascending: false });
 
   let claimantEmail: string | null = null;
   try {
@@ -104,10 +101,13 @@ export const GET = withAdmin(async (
     const { data: authUser } = await admin.auth.admin.getUserById(claimRow.claimant_user_id);
     claimantEmail = authUser?.user?.email ?? null;
   } catch {
-    claimantEmail = (claimRow.verification_data as Record<string, unknown>)?.email as string ?? null;
+    claimantEmail =
+      ((claimRow.verification_data as Record<string, unknown>)?.email as string) ?? null;
   }
 
-  const business = Array.isArray(claimRow.businesses) ? claimRow.businesses[0] : claimRow.businesses;
+  const business = Array.isArray(claimRow.businesses)
+    ? claimRow.businesses[0]
+    : claimRow.businesses;
 
   return NextResponse.json({
     claim: {
@@ -133,12 +133,20 @@ export const GET = withAdmin(async (
       last_notified_at: claimRow.last_notified_at,
     },
     events: events ?? [],
-    documents: (docs ?? []).map((d: { id: string; doc_type: string; status: string; uploaded_at: string; delete_after: string }) => ({
-      id: d.id,
-      doc_type: d.doc_type,
-      status: d.status,
-      uploaded_at: d.uploaded_at,
-      delete_after: d.delete_after,
-    })),
+    documents: (docs ?? []).map(
+      (d: {
+        id: string;
+        doc_type: string;
+        status: string;
+        uploaded_at: string;
+        delete_after: string;
+      }) => ({
+        id: d.id,
+        doc_type: d.doc_type,
+        status: d.status,
+        uploaded_at: d.uploaded_at,
+        delete_after: d.delete_after,
+      })
+    ),
   });
 });

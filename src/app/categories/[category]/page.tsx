@@ -1,5 +1,7 @@
-import type { Metadata } from 'next';
-import CategoryPage, { generateMetadata as generateCategoryMetadata } from '../../category/[slug]/page';
+import type { Metadata } from "next";
+import CategoryPage, {
+  generateMetadata as generateCategoryMetadata,
+} from "../../category/[slug]/page";
 
 interface CategoriesPageProps {
   params: Promise<{ category: string }>;

@@ -10,12 +10,12 @@ interface ValidationMessageProps {
   successMessage?: string;
 }
 
-export default function ValidationMessage({ 
-  error, 
-  isValid, 
-  touched, 
-  value, 
-  successMessage = "Looks good!" 
+export default function ValidationMessage({
+  error,
+  isValid,
+  touched,
+  value,
+  successMessage = "Looks good!",
 }: ValidationMessageProps) {
   if (error) {
     return (

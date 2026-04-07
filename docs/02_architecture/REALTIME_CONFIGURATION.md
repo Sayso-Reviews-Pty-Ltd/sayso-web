@@ -7,6 +7,7 @@ This document outlines the steps to configure Supabase Realtime for instant UI u
 Navigate to **Supabase Dashboard > Database > Replication** and enable Realtime for the following tables:
 
 ### Tables to Enable:
+
 - `reviews`
 - `review_helpful_votes`
 - `user_badges`
@@ -44,7 +45,7 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 -- Ensure helpful_votes table has RLS enabled
 ALTER TABLE review_helpful_votes ENABLE ROW LEVEL SECURITY;
 
--- Ensure user_badges table has RLS enabled  
+-- Ensure user_badges table has RLS enabled
 ALTER TABLE user_badges ENABLE ROW LEVEL SECURITY;
 
 -- Ensure business_stats table has RLS enabled
@@ -57,7 +58,7 @@ Ensure Row Level Security policies allow realtime replication for authenticated 
 
 ```sql
 -- Reviews: Allow select for all authenticated users
-CREATE POLICY "Reviews readable by authenticated users" 
+CREATE POLICY "Reviews readable by authenticated users"
   ON reviews FOR SELECT
   TO authenticated
   USING (true);
@@ -88,31 +89,37 @@ CREATE POLICY "Business stats readable by authenticated users"
 Run this in your browser console (with your app running):
 
 ```javascript
-import { getBrowserSupabase } from '@/app/lib/supabase/client';
+import { getBrowserSupabase } from "@/app/lib/supabase/client";
 
 const supabase = getBrowserSupabase();
 
 // Test reviews subscription
 const channel = supabase
-  .channel('test-reviews')
-  .on('postgres_changes', {
-    event: '*',
-    schema: 'public',
-    table: 'reviews'
-  }, (payload) => {
-    console.log('Review change detected:', payload);
-  })
+  .channel("test-reviews")
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "reviews",
+    },
+    (payload) => {
+      console.log("Review change detected:", payload);
+    }
+  )
   .subscribe((status) => {
-    console.log('Subscription status:', status);
+    console.log("Subscription status:", status);
   });
 ```
 
 ### Expected Console Output:
+
 ```
 Subscription status: SUBSCRIBED
 ```
 
 When a review is created/updated/deleted, you should see:
+
 ```
 Review change detected: { eventType: 'INSERT', new: {...}, old: null }
 ```
@@ -130,7 +137,7 @@ Review change detected: { eventType: 'INSERT', new: {...}, old: null }
 ### Check Active Realtime Connections
 
 ```sql
-SELECT 
+SELECT
   application_name,
   state,
   COUNT(*) as connection_count
@@ -142,7 +149,7 @@ GROUP BY application_name, state;
 ### Monitor Replication Lag
 
 ```sql
-SELECT 
+SELECT
   slot_name,
   active,
   restart_lsn,
@@ -191,6 +198,7 @@ SELECT pg_reload_conf();
 ### Rate Limiting
 
 Configure rate limiting in Supabase Dashboard > Settings > API:
+
 - Limit realtime connections per IP: 10
 - Limit subscriptions per connection: 100
 

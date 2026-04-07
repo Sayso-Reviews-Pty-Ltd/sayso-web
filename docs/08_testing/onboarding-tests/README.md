@@ -15,30 +15,36 @@ The onboarding workflow enforces prerequisites at the **guard/middleware level**
 ```
 
 **Guards/Middleware** (enforce "should never happen"):
+
 - `OnboardingGuard` redirects `/subcategories` → `/interests` if no interests
 - `OnboardingGuard` redirects `/deal-breakers` → `/subcategories` if no subcategories
 - Completed users redirected away from onboarding (except `/complete`)
 
 **Page Components** (assume prerequisites met):
+
 - Focus on selection validation, loading states, UI interactions
 - May have defensive fallbacks, but guards are primary enforcement
 
 ## Test Files
 
 ### Guard Tests
+
 - **`OnboardingGuard.test.tsx`** - Tests prerequisite enforcement
 
 ### Page Tests (assume prerequisites met)
+
 - **`InterestsPage.test.tsx`** - Interests selection (3-6 required)
 - **`SubcategoriesPage.test.tsx`** - Subcategories selection (1-10 required)
 - **`DealBreakersPage.test.tsx`** - Deal-breakers selection (1-3 required)
 
 ### Context & Integration Tests
+
 - **`OnboardingContext.test.tsx`** - State management
 - **`onboarding-route.test.ts`** - API route handler
 - **`regression-guardrails.test.tsx`** - Critical error scenarios
 
 ### E2E Tests
+
 - **`e2e/onboarding-flow.spec.ts`** - Complete user journey
 
 ## Running Tests

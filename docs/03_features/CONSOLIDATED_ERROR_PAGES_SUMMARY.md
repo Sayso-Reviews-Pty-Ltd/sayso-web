@@ -11,6 +11,7 @@ A complete, unified error page design system has been implemented across the KLI
 **File**: [src/app/components/ErrorPages/ErrorPage.tsx](./ErrorPage.tsx)
 
 A reusable, configurable component that handles:
+
 - 6 error types: 404, 401, 403, 500, 503, and generic errors
 - Customizable titles, descriptions, and icons
 - Primary and secondary action buttons
@@ -19,6 +20,7 @@ A reusable, configurable component that handles:
 - Responsive design (mobile, tablet, desktop)
 
 **Color Palette**:
+
 - Sage (#7D9B76) - Primary CTAs and accents
 - Charcoal (#2D2D2D) - Text
 - Off-white (#E5E0E5) - Background
@@ -27,17 +29,21 @@ A reusable, configurable component that handles:
 ### 2. ✅ Refactored Error Pages
 
 #### 404 - Page Not Found
+
 **File**: [src/app/not-found.tsx](../../not-found.tsx)
 
 Now uses the unified component with:
+
 - Graceful gradient text "404"
 - Clear explanation
 - Home and back navigation options
 
 #### 401 - Authentication Error
+
 **File**: [src/app/auth/auth-code-error/page.tsx](../../auth/auth-code-error/page.tsx)
 
 Now uses the unified component with:
+
 - Contextual error messaging
 - Login redirect as primary action
 - Back button as secondary action
@@ -45,9 +51,11 @@ Now uses the unified component with:
 ### 3. ✅ Updated Error Boundaries
 
 #### Main Error Boundary
+
 **File**: [src/app/components/ErrorBoundary/ErrorBoundary.tsx](../ErrorBoundary/ErrorBoundary.tsx)
 
 Enhanced with:
+
 - Premium minimal design matching the system
 - Automatic retry mechanism
 - Development error details
@@ -55,9 +63,11 @@ Enhanced with:
 - Animated entrance and spinner
 
 #### Onboarding Error Boundary
+
 **File**: [src/app/components/Onboarding/OnboardingErrorBoundary.tsx](../Onboarding/OnboardingErrorBoundary.tsx)
 
 Enhanced with:
+
 - Unified design system styling
 - Soft error UI within premium container
 - Refresh and retry options
@@ -67,9 +77,11 @@ Enhanced with:
 ### 4. ✅ Comprehensive Documentation
 
 #### Design System Documentation
+
 **File**: [ERROR_DESIGN_SYSTEM.md](./ERROR_DESIGN_SYSTEM.md)
 
 Complete guide covering:
+
 - Design principles and philosophy
 - Color palette and usage
 - Typography scale
@@ -83,9 +95,11 @@ Complete guide covering:
 - Best practices
 
 #### Implementation Examples
+
 **File**: [IMPLEMENTATION_EXAMPLES.md](./IMPLEMENTATION_EXAMPLES.md)
 
 Practical guide with:
+
 - Quick start instructions
 - Standard implementations for each error type
 - Error boundary usage patterns
@@ -98,6 +112,7 @@ Practical guide with:
 ## Design System Features
 
 ### 🎨 Color Palette
+
 - **Sage (#7D9B76)**: Primary brand color for CTAs
 - **Navbar-bg (#722F37)**: Reserved for special emphasis
 - **Off-white (#E5E0E5)**: Background and neutral base
@@ -105,6 +120,7 @@ Practical guide with:
 - **Subtle accents**: 5-10% opacity sage gradients
 
 ### 📐 Typography
+
 - **Font**: Urbanist (consistent with site)
 - **Headings**: 24-32px, 700 weight
 - **Body**: 16-18px, 500 weight
@@ -112,12 +128,14 @@ Practical guide with:
 - **Line heights**: 1.2-1.6 depending on type
 
 ### 📏 Spacing
+
 - Consistent 4px grid system
 - Base spacing: 16px (mobile), 24px (tablet), 32px (desktop)
 - Component gaps: 16-20px
 - Vertical rhythm maintained throughout
 
 ### ✨ Animations
+
 - Subtle entrance animations (0.5s)
 - Sequential element delays (0.1s increments)
 - Micro-interactions on hover (scale 1.02x, shadow)
@@ -125,6 +143,7 @@ Practical guide with:
 - Respectful of motion preferences
 
 ### ♿ Accessibility
+
 - WCAG AA color contrast (4.5:1 minimum)
 - Visible focus states (sage ring)
 - Keyboard navigation support
@@ -152,6 +171,7 @@ Error Routes/
 ## Key Improvements
 
 ### Before
+
 - Inconsistent error page designs
 - Different color schemes and typography
 - Varying button styles and spacing
@@ -160,6 +180,7 @@ Error Routes/
 - Limited customization options
 
 ### After
+
 ✅ Unified, consistent design across all error states
 ✅ Premium, minimal aesthetic
 ✅ Natural extension of product design
@@ -173,6 +194,7 @@ Error Routes/
 ## Usage
 
 ### Simple Usage
+
 ```typescript
 import ErrorPage from "@/app/components/ErrorPages/ErrorPage";
 
@@ -182,6 +204,7 @@ export default function CustomError() {
 ```
 
 ### Advanced Usage
+
 ```typescript
 import ErrorPage from "@/app/components/ErrorPages/ErrorPage";
 
@@ -224,12 +247,14 @@ export default function CustomError() {
 ## Files Modified/Created
 
 ### New Files
+
 - ✅ [src/app/components/ErrorPages/ErrorPage.tsx](./ErrorPage.tsx)
 - ✅ [src/app/components/ErrorPages/index.ts](./index.ts)
 - ✅ [src/app/components/ErrorPages/ERROR_DESIGN_SYSTEM.md](./ERROR_DESIGN_SYSTEM.md)
 - ✅ [src/app/components/ErrorPages/IMPLEMENTATION_EXAMPLES.md](./IMPLEMENTATION_EXAMPLES.md)
 
 ### Modified Files
+
 - ✅ [src/app/not-found.tsx](../../not-found.tsx) - Refactored to use ErrorPage
 - ✅ [src/app/auth/auth-code-error/page.tsx](../../auth/auth-code-error/page.tsx) - Refactored to use ErrorPage
 - ✅ [src/app/components/ErrorBoundary/ErrorBoundary.tsx](../ErrorBoundary/ErrorBoundary.tsx) - Updated with unified design
@@ -238,27 +263,32 @@ export default function CustomError() {
 ## Design System Alignment
 
 ### ✅ Sage Color (#7D9B76)
+
 - Primary brand color for CTAs
 - Focus states and accents
 - Used in gradients and backgrounds
 
 ### ✅ Navbar-bg Color (#722F37)
+
 - Reserved for special emphasis
 - Available but not required
 - Maintains color hierarchy
 
 ### ✅ Off-white (#E5E0E5)
+
 - Primary background color
 - Maintains premium, minimal aesthetic
 - Consistent with site background
 
 ### ✅ Typography & Spacing
+
 - Uses Urbanist font family
 - Consistent font scale
 - Follows 4px grid system
 - Maintains site design language
 
 ### ✅ Animation & Motion
+
 - Subtle, purposeful animations
 - Smooth transitions
 - Entrance animations with stagger
@@ -267,16 +297,19 @@ export default function CustomError() {
 ## Maintenance
 
 ### Adding New Error Type
+
 1. Update `ErrorType` type in ErrorPage.tsx
 2. Add configuration to `errorConfig` object
 3. Update documentation
 
 ### Customizing Appearance
+
 1. Update color values in ErrorPage component
 2. Modify spacing values via props or component
 3. Update animations as needed
 
 ### Updating Documentation
+
 1. Keep design guidelines synchronized
 2. Update examples when patterns change
 3. Document any special cases or exceptions
@@ -284,6 +317,7 @@ export default function CustomError() {
 ## Support & Questions
 
 For questions about the error page system:
+
 1. Review [ERROR_DESIGN_SYSTEM.md](./ERROR_DESIGN_SYSTEM.md)
 2. Check [IMPLEMENTATION_EXAMPLES.md](./IMPLEMENTATION_EXAMPLES.md)
 3. Inspect component source code

@@ -8,13 +8,8 @@ export default function SubcategoryGridSkeleton() {
       {Array.from({ length: 3 }).map((_, groupIdx) => (
         <div key={groupIdx} className="space-y-4">
           {/* Group title skeleton */}
-          <Skeleton
-            variant="rectangular"
-            width="40%"
-            height={28}
-            className="bg-charcoal/10 mb-4"
-          />
-          
+          <Skeleton variant="rectangular" width="40%" height={28} className="bg-charcoal/10 mb-4" />
+
           {/* Subcategory grid skeleton */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, itemIdx) => (
@@ -36,4 +31,3 @@ export default function SubcategoryGridSkeleton() {
     </div>
   );
 }
-

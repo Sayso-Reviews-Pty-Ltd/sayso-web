@@ -1,2 +1,2 @@
-export { AchievementsList } from './AchievementsList';
-export type { AchievementsListProps } from './AchievementsList';
+export { AchievementsList } from "./AchievementsList";
+export type { AchievementsListProps } from "./AchievementsList";

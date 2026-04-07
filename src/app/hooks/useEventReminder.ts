@@ -1,15 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
-export type RemindBefore = '1_day' | '2_hours';
+export type RemindBefore = "1_day" | "2_hours";
 
-export function useEventReminder(
-  eventId: string,
-  eventTitle: string,
-  eventStartISO?: string
-) {
+export function useEventReminder(eventId: string, eventTitle: string, eventStartISO?: string) {
   const { user } = useAuth();
   const [activeReminders, setActiveReminders] = useState<RemindBefore[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,7 +22,9 @@ export function useEventReminder(
       })
       .catch(() => {});
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [eventId, user]);
 
   const toggle = useCallback(
@@ -40,13 +38,13 @@ export function useEventReminder(
         if (has) {
           await fetch(
             `/api/events-and-specials/${eventId}/reminder?remind_before=${remindBefore}`,
-            { method: 'DELETE' }
+            { method: "DELETE" }
           );
           setActiveReminders((prev) => prev.filter((r) => r !== remindBefore));
         } else {
           const res = await fetch(`/api/events-and-specials/${eventId}/reminder`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               remind_before: remindBefore,
               event_title: eventTitle,
@@ -57,7 +55,7 @@ export function useEventReminder(
             setActiveReminders((prev) => [...prev, remindBefore]);
           } else {
             const data = await res.json();
-            throw new Error(data.error || 'Failed to set reminder');
+            throw new Error(data.error || "Failed to set reminder");
           }
         }
         return !has;

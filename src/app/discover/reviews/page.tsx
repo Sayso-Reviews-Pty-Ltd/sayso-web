@@ -17,131 +17,7 @@ import {
 import VerifiedBadge from "@/app/components/VerifiedBadge/VerifiedBadge";
 import { Badge } from "@/app/components/ui/badge";
 import FilterPillGroup from "@/app/components/Filters/FilterPillGroup";
-
-// Mock reviews data - in production this would come from API
-const MOCK_REVIEWS = [
-  {
-    id: 1,
-    businessName: "Mama's Kitchen",
-    businessId: "demo",
-    author: "Jessica Martinez",
-    avatar: "JM",
-    profilePic:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
-    rating: 5,
-    date: "2 days ago",
-    text: "Absolutely amazing experience! The atmosphere was perfect, staff were incredibly friendly and attentive. The food came out fast and hot. Will definitely be coming back with friends!",
-    helpful: 24,
-    images: [
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
-    ],
-    tags: ["trustworthy", "on time", "friendly", "great atmosphere"],
-  },
-  {
-    id: 2,
-    businessName: "The Coffee Spot",
-    businessId: "coffee-spot",
-    author: "Michael Chen",
-    avatar: "MC",
-    profilePic:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
-    rating: 4,
-    date: "1 week ago",
-    text: "Really good coffee and service. The portions were generous and everything tasted fresh. Only minor complaint is it got a bit noisy during peak hours, but that's expected for a popular spot.",
-    helpful: 18,
-    tags: ["on time", "quality food", "good value"],
-  },
-  {
-    id: 3,
-    businessName: "Mama's Kitchen",
-    businessId: "demo",
-    author: "Sarah Williams",
-    avatar: "SW",
-    profilePic:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces",
-    rating: 5,
-    date: "2 weeks ago",
-    text: "One of the best dining experiences I've had in a while. The staff went above and beyond to accommodate our dietary restrictions. The presentation was beautiful and taste was phenomenal!",
-    helpful: 32,
-    images: ["https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop"],
-    tags: ["trustworthy", "friendly", "accommodating", "excellent service"],
-  },
-  {
-    id: 4,
-    businessName: "Urban Bistro",
-    businessId: "urban-bistro",
-    author: "David Thompson",
-    avatar: "DT",
-    profilePic:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
-    rating: 3,
-    date: "3 weeks ago",
-    text: "Decent place overall. Food was good but nothing extraordinary. Service was a bit slow on the day we visited, but the staff were apologetic about it. Would give it another try during off-peak hours.",
-    helpful: 9,
-    tags: ["average experience"],
-  },
-  {
-    id: 5,
-    businessName: "The Coffee Spot",
-    businessId: "coffee-spot",
-    author: "Emily Rodriguez",
-    avatar: "ER",
-    profilePic:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces",
-    rating: 5,
-    date: "1 month ago",
-    text: "Love this place! Been coming here for years and the quality never disappoints. The specials are always creative and delicious. Staff remembers regulars which makes you feel valued.",
-    helpful: 45,
-    tags: ["trustworthy", "loyal customer", "consistent quality", "friendly"],
-  },
-  {
-    id: 6,
-    businessName: "Mama's Kitchen",
-    businessId: "demo",
-    author: "James Parker",
-    avatar: "JP",
-    profilePic:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces",
-    rating: 4,
-    date: "1 month ago",
-    text: "Great spot for a casual dinner. The menu has something for everyone. Prices are reasonable for the quality you get. The only downside is parking can be challenging during weekends.",
-    helpful: 15,
-    tags: ["good value", "variety", "casual dining"],
-  },
-  {
-    id: 7,
-    businessName: "Sunset Grill",
-    businessId: "sunset-grill",
-    author: "Olivia Anderson",
-    avatar: "OA",
-    profilePic:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=faces",
-    rating: 5,
-    date: "2 months ago",
-    text: "Perfect for special occasions! The ambiance is romantic and intimate. We celebrated our anniversary here and the staff made it extra special with a complimentary dessert. Highly recommend!",
-    helpful: 28,
-    images: [
-      "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop",
-    ],
-    tags: ["romantic", "special occasion", "excellent service", "friendly"],
-  },
-  {
-    id: 8,
-    businessName: "Urban Bistro",
-    businessId: "urban-bistro",
-    author: "Ryan Mitchell",
-    avatar: "RM",
-    profilePic:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
-    rating: 4,
-    date: "2 months ago",
-    text: "Solid choice for lunch meetings. Quick service, quiet atmosphere during daytime, and the lunch specials are a great deal. Coffee is excellent too!",
-    helpful: 12,
-    tags: ["on time", "professional", "good value"],
-  },
-];
+import { useRecentReviews } from "@/app/hooks/useRecentReviews";
 
 const FILTER_OPTIONS = [
   { id: "all", label: "All Reviews", icon: <FileText className="w-4 h-4" /> },
@@ -158,33 +34,44 @@ const SORT_OPTIONS = [
 ];
 
 export default function GeneralReviewsPage() {
+  const { reviews: apiReviews, loading } = useRecentReviews(20);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedSort, setSelectedSort] = useState("recent");
-  const [expandedReviews, setExpandedReviews] = useState<Set<number>>(new Set());
-  const [currentImageIndex, setCurrentImageIndex] = useState<Record<number, number>>({});
+  const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
+  const [currentImageIndex, setCurrentImageIndex] = useState<Record<string, number>>({});
 
-  // Calculate overall stats
-  const stats = useMemo(() => {
-    const totalReviews = MOCK_REVIEWS.length;
-    const avgRating = MOCK_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
-    const ratingBreakdown = {
-      5: MOCK_REVIEWS.filter((r) => r.rating === 5).length,
-      4: MOCK_REVIEWS.filter((r) => r.rating === 4).length,
-      3: MOCK_REVIEWS.filter((r) => r.rating === 3).length,
-      2: MOCK_REVIEWS.filter((r) => r.rating === 2).length,
-      1: MOCK_REVIEWS.filter((r) => r.rating === 1).length,
-    };
-
-    return {
-      totalReviews,
-      avgRating: Number(avgRating.toFixed(1)),
-      ratingBreakdown,
-    };
-  }, []);
+  // Map API reviews to the shape used by the template
+  const reviews = useMemo(
+    () =>
+      apiReviews.map((r) => {
+        const name = r.reviewer?.name ?? "Anonymous";
+        const initials = name
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase();
+        return {
+          id: r.id,
+          businessName: r.businessName,
+          businessId: r.businessId ?? "",
+          author: name,
+          avatar: initials,
+          profilePic: r.reviewer?.profilePicture ?? "",
+          rating: r.rating,
+          date: r.date,
+          text: r.reviewText ?? "",
+          helpful: r.likes,
+          images: r.images,
+          tags: r.tags,
+        };
+      }),
+    [apiReviews]
+  );
 
   // Filter and sort reviews
   const filteredReviews = useMemo(() => {
-    let filtered = [...MOCK_REVIEWS];
+    let filtered = [...reviews];
 
     // Apply filter
     if (selectedFilter === "5") {
@@ -208,7 +95,7 @@ export default function GeneralReviewsPage() {
     return filtered;
   }, [selectedFilter, selectedSort]);
 
-  const toggleExpanded = (reviewId: number) => {
+  const toggleExpanded = (reviewId: string) => {
     setExpandedReviews((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(reviewId)) {
@@ -220,14 +107,14 @@ export default function GeneralReviewsPage() {
     });
   };
 
-  const nextImage = (reviewId: number, totalImages: number) => {
+  const nextImage = (reviewId: string, totalImages: number) => {
     setCurrentImageIndex((prev) => ({
       ...prev,
       [reviewId]: ((prev[reviewId] || 0) + 1) % totalImages,
     }));
   };
 
-  const prevImage = (reviewId: number, totalImages: number) => {
+  const prevImage = (reviewId: string, totalImages: number) => {
     setCurrentImageIndex((prev) => ({
       ...prev,
       [reviewId]: ((prev[reviewId] || 0) - 1 + totalImages) % totalImages,
@@ -334,6 +221,13 @@ export default function GeneralReviewsPage() {
             </div>
           </div>
         </m.div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="text-charcoal/60 font-urbanist text-base">Loading reviews...</div>
+          </div>
+        )}
 
         {/* Reviews List - Masonry Layout */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-3 sm:gap-6">

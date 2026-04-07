@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 import { User, Trophy, CheckCircle, MapPin } from "@/app/lib/icons";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '@/app/components/ui/avatar';
-import { cn } from '@/app/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from "@/app/components/ui/avatar";
+import { cn } from "@/app/lib/utils";
 
 interface ProfilePictureProps {
   src: string;
@@ -28,10 +24,14 @@ const iconSizeClasses = {
 
 function getBadgeIcon(badgeType: string) {
   switch (badgeType) {
-    case "top":      return Trophy;
-    case "verified": return CheckCircle;
-    case "local":    return MapPin;
-    default:         return User;
+    case "top":
+      return Trophy;
+    case "verified":
+      return CheckCircle;
+    case "local":
+      return MapPin;
+    default:
+      return User;
   }
 }
 
@@ -41,45 +41,35 @@ function getUniqueBadgeColor(userIdentifier: string, badgeType: string): string 
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   const colorPalette = [
-    'from-coral/20 to-coral/10',
-    'from-sage/20 to-sage/10',
-    'from-purple-400/20 to-purple-400/10',
-    'from-blue-400/20 to-blue-400/10',
-    'from-pink-400/20 to-pink-400/10',
-    'from-yellow-400/20 to-yellow-400/10',
-    'from-indigo-400/20 to-indigo-400/10',
-    'from-teal-400/20 to-teal-400/10',
-    'from-orange-400/20 to-orange-400/10',
-    'from-rose-400/20 to-rose-400/10',
-    'from-cyan-400/20 to-cyan-400/10',
-    'from-emerald-400/20 to-emerald-400/10',
+    "from-coral/20 to-coral/10",
+    "from-sage/20 to-sage/10",
+    "from-purple-400/20 to-purple-400/10",
+    "from-blue-400/20 to-blue-400/10",
+    "from-pink-400/20 to-pink-400/10",
+    "from-yellow-400/20 to-yellow-400/10",
+    "from-indigo-400/20 to-indigo-400/10",
+    "from-teal-400/20 to-teal-400/10",
+    "from-orange-400/20 to-orange-400/10",
+    "from-rose-400/20 to-rose-400/10",
+    "from-cyan-400/20 to-cyan-400/10",
+    "from-emerald-400/20 to-emerald-400/10",
   ];
   return colorPalette[Math.abs(hash) % colorPalette.length];
 }
 
-export default function ProfilePicture({
-  src,
-  alt,
-  size = "md",
-  badge,
-}: ProfilePictureProps) {
+export default function ProfilePicture({ src, alt, size = "md", badge }: ProfilePictureProps) {
   const normalizedSrc =
-    src && typeof src === 'string' && src.trim().length > 0 ? src.trim() : undefined;
+    src && typeof src === "string" && src.trim().length > 0 ? src.trim() : undefined;
 
   return (
     <div className="relative inline-block">
       <Avatar className={cn(sizeClasses[size], "border-2 border-white ring-2 ring-white/50")}>
-        {normalizedSrc && (
-          <AvatarImage src={normalizedSrc} alt={alt} />
-        )}
-        <AvatarFallback
-          delayMs={normalizedSrc ? 200 : 0}
-          className="bg-card-bg/10"
-        >
+        {normalizedSrc && <AvatarImage src={normalizedSrc} alt={alt} />}
+        <AvatarFallback delayMs={normalizedSrc ? 200 : 0} className="bg-card-bg/10">
           <User className={cn(iconSizeClasses[size], "text-sage/70")} />
         </AvatarFallback>
       </Avatar>

@@ -27,7 +27,6 @@ export default function EventContent({ title, location, description, href }: Eve
         </div>
       </div>
 
-
       {/* Learn More Button - Fixed at bottom */}
       <div className="flex justify-center mt-auto pt-3 pb-2 flex-shrink-0">
         <button className="w-full max-w-[300px] py-2 bg-gradient-to-r from-coral to-coral/90 text-white text-sm sm:text-xs font-600 font-urbanist rounded-full hover:from-coral/90 hover:to-coral/80 transition-all duration-300 hover:shadow-lg hover:scale-105 shadow-md">

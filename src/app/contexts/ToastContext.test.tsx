@@ -20,13 +20,17 @@ jest.mock("framer-motion", () => ({
       exit,
       transition,
       ...props
-    }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>) => <div {...props}>{children}</div>,
+    }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>) => (
+      <div {...props}>{children}</div>
+    ),
     button: ({
       children,
       whileHover,
       whileTap,
       ...props
-    }: React.ButtonHTMLAttributes<HTMLButtonElement> & Record<string, unknown>) => <button {...props}>{children}</button>,
+    }: React.ButtonHTMLAttributes<HTMLButtonElement> & Record<string, unknown>) => (
+      <button {...props}>{children}</button>
+    ),
   },
 }));
 

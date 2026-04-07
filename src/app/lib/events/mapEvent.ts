@@ -95,22 +95,41 @@ export type EventsAndSpecialsRow = {
 
 export function mapEventsAndSpecialsRowToEventCard(
   row: EventsAndSpecialsRow,
-  opts?: { occurrencesCount?: number; dateRangeLabel?: string | null; startDates?: string[]; isExternalEvent?: boolean },
-): Event & { occurrencesCount?: number; date_range_label?: string | null; isExternalEvent?: boolean } {
+  opts?: {
+    occurrencesCount?: number;
+    dateRangeLabel?: string | null;
+    startDates?: string[];
+    isExternalEvent?: boolean;
+  }
+): Event & {
+  occurrencesCount?: number;
+  date_range_label?: string | null;
+  isExternalEvent?: boolean;
+} {
   const startIso = row.start_date;
   const endIso = row.end_date;
 
   const occurrencesCount = opts?.occurrencesCount;
   const computedRange =
     occurrencesCount && occurrencesCount > 1
-      ? opts?.dateRangeLabel ?? formatDateRangeLabel(startIso, endIso || startIso)
+      ? (opts?.dateRangeLabel ?? formatDateRangeLabel(startIso, endIso || startIso))
       : null;
 
   const bookingUrl = row.booking_url ?? null;
   const occurrencesArray =
     Array.isArray(opts?.startDates) && opts!.startDates!.length > 0
-      ? opts!.startDates!.map((d) => ({ startDate: d, endDate: undefined, bookingUrl: bookingUrl || undefined }))
-      : [{ startDate: startIso, endDate: endIso || undefined, bookingUrl: bookingUrl || undefined }];
+      ? opts!.startDates!.map((d) => ({
+          startDate: d,
+          endDate: undefined,
+          bookingUrl: bookingUrl || undefined,
+        }))
+      : [
+          {
+            startDate: startIso,
+            endDate: endIso || undefined,
+            bookingUrl: bookingUrl || undefined,
+          },
+        ];
 
   // Parse composite location "venue • city • country" into separate fields.
   let parsedVenueName: string | undefined;
@@ -118,7 +137,10 @@ export function mapEventsAndSpecialsRowToEventCard(
   let parsedCountry: string | undefined;
   const locationStr = row.location ?? "";
   if (locationStr.includes(" \u2022 ")) {
-    const parts = locationStr.split(" \u2022 ").map((s) => s.trim()).filter(Boolean);
+    const parts = locationStr
+      .split(" \u2022 ")
+      .map((s) => s.trim())
+      .filter(Boolean);
     if (parts.length >= 2) {
       parsedVenueName = parts[0];
       parsedCity = parts[1];
@@ -126,7 +148,8 @@ export function mapEventsAndSpecialsRowToEventCard(
     }
   }
 
-  const venueAddress = [row.venue_address_line1, row.venue_address_line2].filter(Boolean).join(", ") || undefined;
+  const venueAddress =
+    [row.venue_address_line1, row.venue_address_line2].filter(Boolean).join(", ") || undefined;
   const venueName = row.venue_name ?? parsedVenueName;
   const city = row.locality_level_three ?? parsedCity;
   const country = row.locality_level_one ?? parsedCountry;
@@ -143,15 +166,15 @@ export function mapEventsAndSpecialsRowToEventCard(
   const quicketSchedules = asArray(row.schedules_json);
 
   const hasQuicketMetadata = Boolean(
-    row.quicket_event_id != null
-      || row.event_name
-      || row.event_url
-      || row.event_start_date
-      || row.organiser_name
-      || row.venue_id != null
-      || quicketCategories.length > 0
-      || quicketTickets.length > 0
-      || quicketSchedules.length > 0,
+    row.quicket_event_id != null ||
+    row.event_name ||
+    row.event_url ||
+    row.event_start_date ||
+    row.organiser_name ||
+    row.venue_id != null ||
+    quicketCategories.length > 0 ||
+    quicketTickets.length > 0 ||
+    quicketSchedules.length > 0
   );
 
   return {
@@ -179,7 +202,8 @@ export function mapEventsAndSpecialsRowToEventCard(
       ? (row.quicket_category_label ?? QUICKET_CATEGORY_LABEL_BY_SLUG[row.quicket_category_slug])
       : null,
     businessId: opts?.isExternalEvent ? undefined : (row.business_id ?? undefined),
-    isCommunityEvent: row.type === "event" ? (row.business_id == null || opts?.isExternalEvent) : false,
+    isCommunityEvent:
+      row.type === "event" ? row.business_id == null || opts?.isExternalEvent : false,
     isExternalEvent: opts?.isExternalEvent || false,
     venueId: row.venue_id != null ? String(row.venue_id) : undefined,
     venueName,

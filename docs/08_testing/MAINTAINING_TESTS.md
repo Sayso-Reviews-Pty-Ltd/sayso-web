@@ -5,31 +5,33 @@
 ### When Adding New Features
 
 1. **Write tests first** (TDD approach):
+
    ```typescript
    // 1. Write failing test
-   it('should filter businesses by new feature', () => {
+   it("should filter businesses by new feature", () => {
      // Test implementation
    });
-   
+
    // 2. Implement feature
    // 3. Make test pass
    ```
 
 2. **Update factories** if data structure changes:
+
    ```typescript
    // If business schema changes, update factory
    export function createBusiness(options: BusinessFactoryOptions = {}) {
      return {
        // ... existing fields
-       newField: options.newField || 'default', // Add new field
+       newField: options.newField || "default", // Add new field
      };
    }
    ```
 
 3. **Add integration tests** for new user flows:
    ```typescript
-   describe('New Feature Flow', () => {
-     it('should complete new feature flow end-to-end', async () => {
+   describe("New Feature Flow", () => {
+     it("should complete new feature flow end-to-end", async () => {
        // Test complete flow
      });
    });
@@ -38,6 +40,7 @@
 ### When Refactoring
 
 1. **Run tests before refactoring**:
+
    ```bash
    npm run test:all
    ```
@@ -47,28 +50,31 @@
    - If tests break, fix them to match new implementation
 
 3. **Update test descriptions** if behavior changes:
+
    ```typescript
    // Old
-   it('should fetch businesses', () => {});
-   
+   it("should fetch businesses", () => {});
+
    // New (if behavior changed)
-   it('should fetch businesses with pagination', () => {});
+   it("should fetch businesses with pagination", () => {});
    ```
 
 ### When Fixing Bugs
 
 1. **Write regression test first**:
+
    ```typescript
-   it('should not crash when business has null category', () => {
+   it("should not crash when business has null category", () => {
      const business = createBusiness({ category: null });
      // Test that handles null category
    });
    ```
 
 2. **Fix the bug**:
+
    ```typescript
    // Fix implementation
-   const category = business.category || 'Unknown';
+   const category = business.category || "Unknown";
    ```
 
 3. **Verify test passes**:
@@ -81,15 +87,15 @@
 ### Testing Async Operations
 
 ```typescript
-it('should handle async data loading', async () => {
+it("should handle async data loading", async () => {
   const { result } = renderHook(() => useBusinesses());
-  
+
   expect(result.current.loading).toBe(true);
-  
+
   await waitFor(() => {
     expect(result.current.loading).toBe(false);
   });
-  
+
   expect(result.current.businesses).toHaveLength(5);
 });
 ```
@@ -97,13 +103,13 @@ it('should handle async data loading', async () => {
 ### Testing Error States
 
 ```typescript
-it('should handle API errors gracefully', async () => {
-  mockFetchError(new Error('Network error'));
-  
+it("should handle API errors gracefully", async () => {
+  mockFetchError(new Error("Network error"));
+
   const { result } = renderHook(() => useBusinesses());
-  
+
   await waitFor(() => {
-    expect(result.current.error).toBe('Network error');
+    expect(result.current.error).toBe("Network error");
   });
 });
 ```
@@ -113,10 +119,10 @@ it('should handle API errors gracefully', async () => {
 ```typescript
 it('should update when user clicks button', async () => {
   const { getByRole } = render(<Component />);
-  
+
   const button = getByRole('button', { name: /submit/i });
   fireEvent.click(button);
-  
+
   await waitFor(() => {
     expect(screen.getByText('Success')).toBeInTheDocument();
   });
@@ -128,25 +134,27 @@ it('should update when user clicks button', async () => {
 ### Organizing Tests
 
 1. **Group related tests**:
+
    ```typescript
-   describe('BusinessProfilePage', () => {
-     describe('when user is owner', () => {
-       it('should show edit button', () => {});
+   describe("BusinessProfilePage", () => {
+     describe("when user is owner", () => {
+       it("should show edit button", () => {});
      });
-     
-     describe('when user is not owner', () => {
-       it('should not show edit button', () => {});
+
+     describe("when user is not owner", () => {
+       it("should not show edit button", () => {});
      });
    });
    ```
 
 2. **Use shared setup/teardown**:
+
    ```typescript
-   describe('Component', () => {
+   describe("Component", () => {
      beforeEach(() => {
        // Setup common test data
      });
-     
+
      afterEach(() => {
        // Cleanup
      });
@@ -156,17 +164,19 @@ it('should update when user clicks button', async () => {
 ### Performance Optimization
 
 1. **Mock expensive operations**:
+
    ```typescript
    // Mock API calls
-   vi.mock('@/app/api/businesses', () => ({
+   vi.mock("@/app/api/businesses", () => ({
      fetchBusinesses: vi.fn(() => Promise.resolve(mockData)),
    }));
    ```
 
 2. **Use test data factories**:
+
    ```typescript
    // Instead of creating objects manually
-   const business = createBusiness({ category: 'Restaurant' });
+   const business = createBusiness({ category: "Restaurant" });
    ```
 
 3. **Parallelize tests**:
@@ -246,4 +256,3 @@ npx playwright show-report
 - [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
 - [Jest Best Practices](https://github.com/goldbergyoni/javascript-testing-best-practices)
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
-

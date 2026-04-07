@@ -1,12 +1,16 @@
-import { supabase } from '../supabase';
-import type { Review, ReviewWithUser, ReviewFormData, ReviewImage } from '../types/database';
+import { supabase } from "../supabase";
+import type { Review, ReviewWithUser, ReviewFormData, ReviewImage } from "../types/database";
 
 export class ReviewService {
-  static async getReviewsForBusiness(businessId: string, limit: number = 10): Promise<ReviewWithUser[]> {
+  static async getReviewsForBusiness(
+    businessId: string,
+    limit: number = 10
+  ): Promise<ReviewWithUser[]> {
     try {
       const { data, error } = await supabase
-        .from('reviews')
-        .select(`
+        .from("reviews")
+        .select(
+          `
           *,
           profile:profiles!reviews_user_id_fkey (
             user_id,
@@ -18,16 +22,17 @@ export class ReviewService {
             image_url,
             alt_text
           )
-        `)
-        .eq('business_id', businessId)
-        .order('created_at', { ascending: false })
+        `
+        )
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
 
       return data || [];
     } catch (error) {
-      console.error('Error fetching reviews:', error);
+      console.error("Error fetching reviews:", error);
       return [];
     }
   }
@@ -36,7 +41,7 @@ export class ReviewService {
     try {
       // First, create the review
       const { data: review, error: reviewError } = await supabase
-        .from('reviews')
+        .from("reviews")
         .insert({
           business_id: reviewData.business_id,
           user_id: userId,
@@ -44,7 +49,7 @@ export class ReviewService {
           title: reviewData.title || null,
           content: reviewData.content,
           tags: reviewData.tags,
-          helpful_count: 0
+          helpful_count: 0,
         })
         .select()
         .single();
@@ -61,7 +66,7 @@ export class ReviewService {
 
       return review;
     } catch (error) {
-      console.error('Error creating review:', error);
+      console.error("Error creating review:", error);
       throw error;
     }
   }
@@ -71,46 +76,46 @@ export class ReviewService {
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
-      const fileExt = image.name.split('.').pop();
+      const fileExt = image.name.split(".").pop();
       const fileName = `${reviewId}_${i}.${fileExt}`;
       const filePath = `${reviewId}/${fileName}`; // Organize by review ID
 
       try {
         // Upload image to Supabase Storage
         const { error: uploadError } = await supabase.storage
-          .from('review_images')
+          .from("review_images")
           .upload(filePath, image);
 
         if (uploadError) {
-          console.error('Error uploading image:', uploadError);
+          console.error("Error uploading image:", uploadError);
           continue;
         }
 
         // Get the public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('review_images')
-          .getPublicUrl(filePath);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("review_images").getPublicUrl(filePath);
 
         // Save image record to database
         const { data: imageRecord, error: dbError } = await supabase
-          .from('review_images')
+          .from("review_images")
           .insert({
             review_id: reviewId,
             storage_path: filePath,
             image_url: publicUrl,
-            alt_text: `Review image ${i + 1}`
+            alt_text: `Review image ${i + 1}`,
           })
           .select()
           .single();
 
         if (dbError) {
-          console.error('Error saving image record:', dbError);
+          console.error("Error saving image record:", dbError);
           continue;
         }
 
         uploadedImages.push(imageRecord);
       } catch (error) {
-        console.error('Error processing image upload:', error);
+        console.error("Error processing image upload:", error);
         continue;
       }
     }
@@ -120,7 +125,7 @@ export class ReviewService {
 
   static async updateBusinessStats(businessId: string): Promise<void> {
     try {
-      const { error } = await supabase.rpc('update_business_stats', {
+      const { error } = await supabase.rpc("update_business_stats", {
         p_business_id: businessId,
       });
 
@@ -128,15 +133,16 @@ export class ReviewService {
         throw error;
       }
     } catch (error) {
-      console.error('Error updating business stats:', error);
+      console.error("Error updating business stats:", error);
     }
   }
 
   static async getRecentReviews(limit: number = 10): Promise<ReviewWithUser[]> {
     try {
       const { data, error } = await supabase
-        .from('reviews')
-        .select(`
+        .from("reviews")
+        .select(
+          `
           *,
           profile:profiles!reviews_user_id_fkey (
             user_id,
@@ -153,15 +159,16 @@ export class ReviewService {
             image_url,
             alt_text
           )
-        `)
-        .order('created_at', { ascending: false })
+        `
+        )
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
 
       return data || [];
     } catch (error) {
-      console.error('Error fetching recent reviews:', error);
+      console.error("Error fetching recent reviews:", error);
       return [];
     }
   }
@@ -170,19 +177,19 @@ export class ReviewService {
     try {
       // Check if user already liked this review
       const { data: existingLike } = await supabase
-        .from('review_likes')
-        .select('id')
-        .eq('review_id', reviewId)
-        .eq('user_id', userId)
+        .from("review_likes")
+        .select("id")
+        .eq("review_id", reviewId)
+        .eq("user_id", userId)
         .single();
 
       if (existingLike) {
         // Remove like
         const { error } = await supabase
-          .from('review_likes')
+          .from("review_likes")
           .delete()
-          .eq('review_id', reviewId)
-          .eq('user_id', userId);
+          .eq("review_id", reviewId)
+          .eq("user_id", userId);
 
         if (error) throw error;
 
@@ -191,12 +198,10 @@ export class ReviewService {
         return false; // Unliked
       } else {
         // Add like
-        const { error } = await supabase
-          .from('review_likes')
-          .insert({
-            review_id: reviewId,
-            user_id: userId
-          });
+        const { error } = await supabase.from("review_likes").insert({
+          review_id: reviewId,
+          user_id: userId,
+        });
 
         if (error) throw error;
 
@@ -205,21 +210,24 @@ export class ReviewService {
         return true; // Liked
       }
     } catch (error) {
-      console.error('Error toggling review like:', error);
+      console.error("Error toggling review like:", error);
       throw error;
     }
   }
 
-  private static async updateReviewHelpfulCount(reviewId: string, increment: number): Promise<void> {
+  private static async updateReviewHelpfulCount(
+    reviewId: string,
+    increment: number
+  ): Promise<void> {
     try {
-      const { error } = await supabase.rpc('increment_review_helpful_count', {
+      const { error } = await supabase.rpc("increment_review_helpful_count", {
         review_id: reviewId,
-        increment_by: increment
+        increment_by: increment,
       });
 
       if (error) throw error;
     } catch (error) {
-      console.error('Error updating helpful count:', error);
+      console.error("Error updating helpful count:", error);
     }
   }
 
@@ -227,9 +235,9 @@ export class ReviewService {
     try {
       // First, check if the review belongs to the user
       const { data: review, error: fetchError } = await supabase
-        .from('reviews')
-        .select('user_id, business_id')
-        .eq('id', reviewId)
+        .from("reviews")
+        .select("user_id, business_id")
+        .eq("id", reviewId)
         .single();
 
       if (fetchError || !review) {
@@ -237,32 +245,29 @@ export class ReviewService {
       }
 
       if (review.user_id !== userId) {
-        throw new Error('Unauthorized: Cannot delete another user\'s review');
+        throw new Error("Unauthorized: Cannot delete another user's review");
       }
 
       // Delete review images from storage (bucket: review_images)
       const { data: images } = await supabase
-        .from('review_images')
-        .select('storage_path')
-        .eq('review_id', reviewId);
+        .from("review_images")
+        .select("storage_path")
+        .eq("review_id", reviewId);
 
       const storagePaths = (images ?? [])
         .map((img) => img?.storage_path)
         .filter((path): path is string => Boolean(path));
       if (storagePaths.length > 0) {
         const { error: storageError } = await supabase.storage
-          .from('review_images')
+          .from("review_images")
           .remove(storagePaths);
         if (storageError) {
-          console.error('Error deleting review images from storage:', storageError);
+          console.error("Error deleting review images from storage:", storageError);
         }
       }
 
       // Delete the review (this will cascade delete related records)
-      const { error: deleteError } = await supabase
-        .from('reviews')
-        .delete()
-        .eq('id', reviewId);
+      const { error: deleteError } = await supabase.from("reviews").delete().eq("id", reviewId);
 
       if (deleteError) throw deleteError;
 
@@ -271,7 +276,7 @@ export class ReviewService {
 
       return true;
     } catch (error) {
-      console.error('Error deleting review:', error);
+      console.error("Error deleting review:", error);
       throw error;
     }
   }

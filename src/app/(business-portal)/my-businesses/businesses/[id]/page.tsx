@@ -8,4 +8,3 @@ export default async function LegacyMyBusinessesBusinessRedirect({
   const { id } = await params;
   redirect(`/my-businesses/${id}`);
 }
-

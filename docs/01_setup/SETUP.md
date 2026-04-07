@@ -90,12 +90,13 @@ ON CONFLICT (id) DO NOTHING;
 
 ```sql
 -- Verify profiles table has all columns
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'profiles';
 ```
 
 You should see:
+
 - user_id
 - avatar_url
 - username
@@ -110,8 +111,8 @@ You should see:
 
 ```sql
 -- Verify storage buckets exist
-SELECT id, name, public 
-FROM storage.buckets 
+SELECT id, name, public
+FROM storage.buckets
 WHERE id IN ('avatars', 'review-images', 'business-images');
 ```
 
@@ -119,8 +120,8 @@ WHERE id IN ('avatars', 'review-images', 'business-images');
 
 ```sql
 -- Verify storage policies
-SELECT * FROM pg_policies 
-WHERE schemaname = 'storage' 
+SELECT * FROM pg_policies
+WHERE schemaname = 'storage'
 AND tablename = 'objects';
 ```
 
@@ -175,7 +176,7 @@ Run these SQL files in order:
 ## Need Help?
 
 If you encounter issues:
+
 1. Check the browser console for specific error messages
 2. Check Supabase logs in Dashboard > Logs
 3. Verify all environment variables are set correctly in `.env.local`
-

@@ -13,13 +13,6 @@ interface ScrollRevealProps {
   once?: boolean;
 }
 
-export default function ScrollReveal({
-  children,
-  className = "",
-}: ScrollRevealProps) {
-  return (
-    <div className={className}>
-      {children}
-    </div>
-  );
+export default function ScrollReveal({ children, className = "" }: ScrollRevealProps) {
+  return <div className={className}>{children}</div>;
 }

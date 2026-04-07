@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { ChevronRight } from "@/app/lib/icons";
 
-export type SettingsMenuItemVariant = 'default' | 'danger';
+export type SettingsMenuItemVariant = "default" | "danger";
 
 export interface SettingsMenuItemProps {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -14,16 +14,19 @@ export interface SettingsMenuItemProps {
   className?: string;
 }
 
-const variantStyles: Record<SettingsMenuItemVariant, { icon: string; text: string; hover: string }> = {
+const variantStyles: Record<
+  SettingsMenuItemVariant,
+  { icon: string; text: string; hover: string }
+> = {
   default: {
-    icon: 'text-gray-500 group-hover:text-coral',
-    text: 'text-charcoal group-hover:text-coral',
-    hover: 'hover:bg-coral/5',
+    icon: "text-gray-500 group-hover:text-coral",
+    text: "text-charcoal group-hover:text-coral",
+    hover: "hover:bg-coral/5",
   },
   danger: {
-    icon: 'text-coral',
-    text: 'text-coral group-hover:text-coral/80',
-    hover: 'hover:bg-coral/5',
+    icon: "text-coral",
+    text: "text-coral group-hover:text-coral/80",
+    hover: "hover:bg-coral/5",
   },
 };
 
@@ -31,9 +34,9 @@ export const SettingsMenuItem: React.FC<SettingsMenuItemProps> = ({
   icon: Icon,
   label,
   onClick,
-  variant = 'default',
+  variant = "default",
   showChevron = true,
-  className = '',
+  className = "",
 }) => {
   const styles = variantStyles[variant];
 
@@ -44,13 +47,19 @@ export const SettingsMenuItem: React.FC<SettingsMenuItemProps> = ({
     >
       <div className="flex items-center space-x-3">
         <Icon className={`${styles.icon} w-5 h-5`} />
-        <span className={`font-urbanist text-base font-500 ${styles.text} transition-colors duration-200`}>
+        <span
+          className={`font-urbanist text-base font-500 ${styles.text} transition-colors duration-200`}
+        >
           {label}
         </span>
       </div>
       {showChevron && (
         <ChevronRight
-          className={variant === 'danger' ? 'text-coral' : 'text-gray-400 group-hover:text-coral transition-colors duration-200'}
+          className={
+            variant === "danger"
+              ? "text-coral"
+              : "text-gray-400 group-hover:text-coral transition-colors duration-200"
+          }
           size={16}
         />
       )}

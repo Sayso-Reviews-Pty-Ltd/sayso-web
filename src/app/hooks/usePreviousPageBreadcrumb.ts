@@ -42,10 +42,7 @@ function formatPathLabel(pathname: string): string {
   }
 
   const knownRoute = KNOWN_ROUTE_LABELS.find((route) => {
-    return (
-      normalizedPath === route.prefix ||
-      normalizedPath.startsWith(`${route.prefix}/`)
-    );
+    return normalizedPath === route.prefix || normalizedPath.startsWith(`${route.prefix}/`);
   });
   if (knownRoute) return knownRoute.label;
 

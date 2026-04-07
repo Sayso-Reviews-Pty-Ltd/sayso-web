@@ -2,8 +2,8 @@
  * Maps Foursquare API business data to our Business type and upserts to database
  */
 
-import { getServerSupabase } from '../supabase/server';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSupabase } from "../supabase/server";
+import { createClient } from "@supabase/supabase-js";
 
 // Foursquare API types (updated for new Places API)
 export interface FsqPlace {
@@ -85,7 +85,7 @@ export function generateDescription(opts: {
     `A popular ${categoryText} in ${locText}, known for consistent service and a proper SA atmosphere for ${subcat}.`,
     `A local favourite in ${locText}, offering a simple, honest experience for ${subcat}.`,
     `A solid ${categoryText} based in ${locText}, where people pull through for trustworthy ${subcat}.`,
-    `A classic ${categoryText} in ${locText}, keeping things real with no-frills, quality ${subcat}.`
+    `A classic ${categoryText} in ${locText}, keeping things real with no-frills, quality ${subcat}.`,
   ];
 
   return templates[Math.floor(Math.random() * templates.length)];
@@ -94,51 +94,51 @@ export function generateDescription(opts: {
 /**
  * Maps Foursquare price value (1-4) to our price range format
  */
-function mapPriceRange(price?: number): '$' | '$$' | '$$$' | '$$$$' {
+function mapPriceRange(price?: number): "$" | "$$" | "$$$" | "$$$$" {
   if (!price || price < 1 || price > 4) {
-    return '$$'; // Default to mid-range
+    return "$$"; // Default to mid-range
   }
-  
+
   switch (price) {
     case 1:
-      return '$';
+      return "$";
     case 2:
-      return '$$';
+      return "$$";
     case 3:
-      return '$$$';
+      return "$$$";
     case 4:
-      return '$$$$';
+      return "$$$$";
     default:
-      return '$$';
+      return "$$";
   }
 }
 
 /**
  * Builds a location string from Foursquare location data
  */
-function buildLocationString(loc: FsqPlace['location']): string | null {
+function buildLocationString(loc: FsqPlace["location"]): string | null {
   if (!loc) return null;
-  
+
   // Try formatted_address first
   if (loc.formatted_address) {
     return loc.formatted_address;
   }
-  
+
   // Build from components
   const parts: string[] = [];
-  
+
   if (loc.address) parts.push(loc.address);
   if (loc.locality) parts.push(loc.locality);
   if (loc.region) parts.push(loc.region);
   if (loc.postcode) parts.push(loc.postcode);
-  if (loc.country && loc.country !== 'ZA') parts.push(loc.country);
-  
-  return parts.length > 0 ? parts.join(', ') : null;
+  if (loc.country && loc.country !== "ZA") parts.push(loc.country);
+
+  return parts.length > 0 ? parts.join(", ") : null;
 }
 
 /**
  * Upserts a business from Foursquare data into the database
- * 
+ *
  * @param place - Foursquare place data
  * @param details - Optional Foursquare details (price, hours, contact info)
  * @param photoUrl - Optional photo URL from Foursquare
@@ -157,17 +157,17 @@ export async function upsertBusinessFromFsq(
   supabaseClient?: ReturnType<typeof createClient>
 ) {
   // Use provided client or get server client (for Next.js API routes)
-  const supabase = supabaseClient || await getServerSupabase();
-  
+  const supabase = supabaseClient || (await getServerSupabase());
+
   const geocode = place.geocodes?.main;
   const loc = place.location ?? {};
   const categories = place.categories ?? [];
-  const primaryCategory = categories[0]?.name ?? 'Unknown';
-  const categoryRaw = categories.map(c => c.name).join('|') || null;
+  const primaryCategory = categories[0]?.name ?? "Unknown";
+  const categoryRaw = categories.map((c) => c.name).join("|") || null;
 
-  const priceRange = mapPriceRange(details?.price) ?? '$$'; // Default to $$
+  const priceRange = mapPriceRange(details?.price) ?? "$$"; // Default to $$
 
-  const locationString = buildLocationString(loc) || loc.address || 'Unknown';
+  const locationString = buildLocationString(loc) || loc.address || "Unknown";
 
   // Generate description if subcategory label is provided
   const description = subcategoryLabel
@@ -202,13 +202,13 @@ export async function upsertBusinessFromFsq(
 
     verified: false,
     price_range: priceRange,
-    status: 'active',
+    status: "active",
     badge: null,
     owner_id: null,
     slug: null, // let your app generate slug later
     lat: geocode?.latitude ?? null,
     lng: geocode?.longitude ?? null,
-    source: 'foursquare',
+    source: "foursquare",
     source_id: place.fsq_place_id, // Updated for new API: fsq_id → fsq_place_id
     owner_verified: false,
     owner_verification_requested_at: null,
@@ -222,16 +222,15 @@ export async function upsertBusinessFromFsq(
   };
 
   const { data, error } = await supabase
-    .from('businesses')
+    .from("businesses")
     .upsert(payload, {
-      onConflict: 'source,source_id',
+      onConflict: "source,source_id",
     })
     .select();
 
   if (error) {
-    console.error('Supabase upsert error for', place.fsq_place_id, error);
+    console.error("Supabase upsert error for", place.fsq_place_id, error);
   } else if (data && data[0]) {
-    console.log('Saved business:', data[0].name);
+    console.log("Saved business:", data[0].name);
   }
 }
-

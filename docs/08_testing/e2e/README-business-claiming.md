@@ -19,6 +19,7 @@ npx playwright codegen --save-storage=playwright/.auth/user.json http://localhos
 ```
 
 **Steps:**
+
 1. A browser window will open to the login page
 2. Log in with valid credentials (use a test account)
 3. Once logged in, close the browser window
@@ -37,11 +38,13 @@ That's it! The tests will use the saved authentication state and skip the login 
 ## How It Works
 
 The tests use Playwright's `storageState` feature to:
+
 - **Skip login** in every test (faster, more reliable)
 - **Reuse authentication** across all tests
 - **Avoid credential management** in test code
 
 This means:
+
 - ✅ Tests run faster (no login step)
 - ✅ Tests are more reliable (no credential issues)
 - ✅ Tests focus on business logic, not auth setup
@@ -93,23 +96,27 @@ If you need to test the login flow itself, you can:
 ## Troubleshooting
 
 ### Tests fail with "storageState file not found"
+
 - ✅ Run `npx playwright codegen --save-storage=playwright/.auth/user.json http://localhost:3000/login`
 - ✅ Make sure you log in successfully before closing the browser
 - ✅ Verify the file exists at `playwright/.auth/user.json`
 
 ### Tests timeout waiting for business
+
 - ✅ Verify business exists in database
 - ✅ Check business `claim_status` is 'unclaimed'
 - ✅ Verify API route `/api/businesses/search` works
 - ✅ Check that API mocking is working (tests mock the search API)
 
 ### Tests timeout after clicking claim
+
 - ✅ Verify user is actually authenticated (check cookies/localStorage)
 - ✅ Check API route `/api/business/claim` is accessible
 - ✅ Verify business is claimable (not already claimed)
 - ✅ Check browser console for errors
 
 ### API returns 401/403
+
 - ✅ User not authenticated properly - recreate auth state
 - ✅ RLS policies blocking access
 - ✅ Missing required permissions

@@ -1,37 +1,37 @@
 "use client";
 
-import { useAuth } from '../../contexts/AuthContext';
-import { useState } from 'react';
+import { useAuth } from "../../contexts/AuthContext";
+import { useState } from "react";
 
 export default function TestAuthPage() {
   const { user, login, register, logout, isLoading, error } = useAuth();
-  const [email, setEmail] = useState('test@example.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState("test@example.com");
+  const [password, setPassword] = useState("password123");
 
   const handleLogin = async () => {
     const success = await login(email, password);
     if (success) {
-      console.log('Login successful!');
+      console.log("Login successful!");
     }
   };
 
   const handleRegister = async () => {
-    const success = await register(email, password, email.split('@')[0] || 'user');
+    const success = await register(email, password, email.split("@")[0] || "user");
     if (success) {
-      console.log('Registration successful!');
+      console.log("Registration successful!");
     }
   };
 
   const handleLogout = async () => {
     await logout();
-    console.log('Logged out!');
+    console.log("Logged out!");
   };
 
   return (
     <div className="min-h-[100dvh] bg-off-white p-8">
       <div className="max-w-md mx-auto">
         <h1 className="text-lg font-bold mb-6">Auth Test Page</h1>
-        
+
         {/* Current User Status */}
         <div className="mb-6 p-4 bg-gray-100 rounded-lg">
           <h2 className="font-semibold mb-2">Current User:</h2>
@@ -39,13 +39,23 @@ export default function TestAuthPage() {
             <p>Loading...</p>
           ) : user ? (
             <div>
-              <p><strong>ID:</strong> {user.id}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Created:</strong> {user.created_at}</p>
+              <p>
+                <strong>ID:</strong> {user.id}
+              </p>
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+              <p>
+                <strong>Created:</strong> {user.created_at}
+              </p>
               {user.profile && (
                 <div className="mt-2">
-                  <p><strong>Onboarding Step:</strong> {user.profile.onboarding_step}</p>
-                  <p><strong>Complete:</strong> {user.profile.onboarding_complete ? 'Yes' : 'No'}</p>
+                  <p>
+                    <strong>Onboarding Step:</strong> {user.profile.onboarding_step}
+                  </p>
+                  <p>
+                    <strong>Complete:</strong> {user.profile.onboarding_complete ? "Yes" : "No"}
+                  </p>
                 </div>
               )}
             </div>
@@ -72,7 +82,7 @@ export default function TestAuthPage() {
               className="w-full p-2 border rounded"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Password:</label>
             <input
@@ -91,7 +101,7 @@ export default function TestAuthPage() {
             >
               Login
             </button>
-            
+
             <button
               onClick={handleRegister}
               disabled={isLoading}
@@ -99,7 +109,7 @@ export default function TestAuthPage() {
             >
               Register
             </button>
-            
+
             {user && (
               <button
                 onClick={handleLogout}
@@ -115,8 +125,14 @@ export default function TestAuthPage() {
         {/* Environment Check */}
         <div className="mt-8 p-4 bg-yellow-100 rounded-lg">
           <h3 className="font-semibold mb-2">Environment Check:</h3>
-          <p><strong>Supabase URL:</strong> {process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Missing'}</p>
-          <p><strong>Supabase Anon Key:</strong> {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'}</p>
+          <p>
+            <strong>Supabase URL:</strong>{" "}
+            {process.env.NEXT_PUBLIC_SUPABASE_URL ? "✅ Set" : "❌ Missing"}
+          </p>
+          <p>
+            <strong>Supabase Anon Key:</strong>{" "}
+            {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ Set" : "❌ Missing"}
+          </p>
         </div>
       </div>
     </div>

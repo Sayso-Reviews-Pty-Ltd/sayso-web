@@ -106,7 +106,9 @@ export default function ScrollToTopButton({
         >
           <m.span
             animate={prefersReducedMotion ? {} : { scale: [1, 1.08, 1] }}
-            transition={prefersReducedMotion ? {} : { duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            transition={
+              prefersReducedMotion ? {} : { duration: 2.6, repeat: Infinity, ease: "easeInOut" }
+            }
             className="flex items-center justify-center"
           >
             <ChevronUp className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={2.25} />

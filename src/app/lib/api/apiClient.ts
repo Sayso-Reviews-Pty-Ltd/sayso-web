@@ -18,7 +18,7 @@ class ApiClient {
   private pendingRequests: Map<string, PendingRequest> = new Map();
   private cache: Map<string, CacheEntry> = new Map();
   private defaultCacheTTL = 5000; // 5 seconds default cache
-  private isDev = process.env.NODE_ENV === 'development';
+  private isDev = process.env.NODE_ENV === "development";
 
   /**
    * Fetch with deduplication and caching
@@ -70,14 +70,14 @@ class ApiClient {
     // Create new request with no-store cache in dev mode
     const fetchOptions: RequestInit = {
       ...options,
-      credentials: 'include',
+      credentials: "include",
     };
-    
+
     // Force no-store in dev mode to prevent any caching
     if (this.isDev) {
-      fetchOptions.cache = 'no-store';
+      fetchOptions.cache = "no-store";
     }
-    
+
     const requestPromise = fetch(url, fetchOptions)
       .then(async (response) => {
         // Remove from pending
@@ -155,4 +155,3 @@ export const apiClient = new ApiClient();
 export function useApiClient() {
   return apiClient;
 }
-

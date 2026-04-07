@@ -31,15 +31,15 @@ function InterestsContent() {
   // Then check role as fallback. If EITHER is business_owner, treat as business owner.
   const currentRole = user?.profile?.account_role;
   const role = user?.profile?.role;
-  const isBusinessOwner = currentRole === 'business_owner' || role === 'business_owner';
+  const isBusinessOwner = currentRole === "business_owner" || role === "business_owner";
 
   // Debug logging for role detection
-  console.log('[InterestsPage] Role detection:', {
+  console.log("[InterestsPage] Role detection:", {
     currentRole,
     role,
     isBusinessOwner,
     profileExists: !!user?.profile,
-    userId: user?.id
+    userId: user?.id,
   });
 
   const {
@@ -67,10 +67,10 @@ function InterestsContent() {
     const timeoutId = window.setTimeout(() => {
       syncAttemptedRef.current = true;
 
-      fetch('/api/auth/sync-profile-role', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin'
+      fetch("/api/auth/sync-profile-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
       })
         .then((response) => {
           if (response.status === 401) {
@@ -81,12 +81,12 @@ function InterestsContent() {
         })
         .then((data) => {
           if (!data) return;
-          if (data.synced && data.newRole === 'business_owner') {
-            refreshUser().then(() => router.replace('/my-businesses'));
+          if (data.synced && data.newRole === "business_owner") {
+            refreshUser().then(() => router.replace("/my-businesses"));
           }
         })
         .catch((err) => {
-          console.warn('[InterestsPage] Sync profile role failed (non-fatal):', err);
+          console.warn("[InterestsPage] Sync profile role failed (non-fatal):", err);
         });
     }, 500);
 
@@ -97,24 +97,31 @@ function InterestsContent() {
   // This is a second-layer guard in case ProtectedRoute doesn't catch it
   useEffect(() => {
     if (!isLoading && isBusinessOwner) {
-      console.log('[InterestsPage] Business owner detected, redirecting to /my-businesses');
-      router.replace('/my-businesses');
+      console.log("[InterestsPage] Business owner detected, redirecting to /my-businesses");
+      router.replace("/my-businesses");
     }
   }, [isLoading, isBusinessOwner, router]);
 
   // Handle verification success from URL flag
   useEffect(() => {
-    const verified = searchParams.get('verified');
-    const emailVerified = searchParams.get('email_verified');
+    const verified = searchParams.get("verified");
+    const emailVerified = searchParams.get("email_verified");
 
-    if (verified === '1' || emailVerified === 'true') {
-      showToastOnce('email-verified-v1', '🎉 You\'re verified! Your account is now secured and ready.', 'success', 3000);
+    if (verified === "1" || emailVerified === "true") {
+      showToastOnce(
+        "email-verified-v1",
+        "🎉 You're verified! Your account is now secured and ready.",
+        "success",
+        3000
+      );
 
       requestAnimationFrame(() => {
         const url = new URL(window.location.href);
-        url.searchParams.delete('verified');
-        url.searchParams.delete('email_verified');
-        router.replace(url.pathname + (url.search ? '?' + url.searchParams.toString() : ''), { scroll: false });
+        url.searchParams.delete("verified");
+        url.searchParams.delete("email_verified");
+        router.replace(url.pathname + (url.search ? "?" + url.searchParams.toString() : ""), {
+          scroll: false,
+        });
       });
     }
   }, [searchParams, router, showToastOnce]);
@@ -135,10 +142,7 @@ function InterestsContent() {
       <OnboardingErrorBoundary>
         <InterestStyles />
 
-        <OnboardingLayout
-          backHref="/register"
-          step={1}
-        >
+        <OnboardingLayout backHref="/register" step={1}>
           <EmailVerificationBanner className="mb-4" />
           <InterestHeader isOnline={true} />
 
@@ -146,12 +150,12 @@ function InterestsContent() {
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-[12px] p-4 text-center mb-4 animate-fade-in-up delay-100">
                 <p className="text-sm font-semibold text-red-600">
-                  {error instanceof Error ? error.message : String(error) || 'An error occurred'}
+                  {error instanceof Error ? error.message : String(error) || "An error occurred"}
                 </p>
               </div>
             )}
 
-            <InterestSelection 
+            <InterestSelection
               selectedCount={selectedInterests.length}
               minSelections={MIN_SELECTIONS}
               maxSelections={MAX_SELECTIONS}
@@ -181,21 +185,22 @@ function InterestsContent() {
 }
 
 // Optimize: Allow static generation where possible - interests are static data
-export const dynamic = 'auto';
+export const dynamic = "auto";
 
 export default function InterestsPage() {
   return (
     <ProtectedRoute requiresAuth={true}>
-      <Suspense fallback={
-        <OnboardingLayout backHref="/register" step={1}>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Loader size="md" variant="wavy" color="sage" />
-          </div>
-        </OnboardingLayout>
-      }>
+      <Suspense
+        fallback={
+          <OnboardingLayout backHref="/register" step={1}>
+            <div className="flex items-center justify-center min-h-[400px]">
+              <Loader size="md" variant="wavy" color="sage" />
+            </div>
+          </OnboardingLayout>
+        }
+      >
         <InterestsContent />
       </Suspense>
     </ProtectedRoute>
   );
 }
-

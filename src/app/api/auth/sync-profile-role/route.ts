@@ -1,22 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
 
-type NormalizedRole = 'admin' | 'business_owner' | 'user';
+type NormalizedRole = "admin" | "business_owner" | "user";
 
 function normalizeRole(value: string | null | undefined): NormalizedRole | null {
-  const role = String(value || '').toLowerCase().trim();
+  const role = String(value || "")
+    .toLowerCase()
+    .trim();
   if (!role) return null;
 
-  if (role === 'admin' || role === 'super_admin' || role === 'superadmin') {
-    return 'admin';
+  if (role === "admin" || role === "super_admin" || role === "superadmin") {
+    return "admin";
   }
 
-  if (role === 'business_owner' || role === 'business' || role === 'owner') {
-    return 'business_owner';
+  if (role === "business_owner" || role === "business" || role === "owner") {
+    return "business_owner";
   }
 
-  if (role === 'user' || role === 'personal') {
-    return 'user';
+  if (role === "user" || role === "personal") {
+    return "user";
   }
 
   return null;
@@ -32,25 +34,25 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
     // Get account_type/role from user metadata
     let userMetadataAccountType = normalizeRole(
       (user.user_metadata?.account_type as string | undefined) ||
-      (user.user_metadata?.role as string | undefined) ||
-      (user.app_metadata?.role as string | undefined)
+        (user.user_metadata?.role as string | undefined) ||
+        (user.app_metadata?.role as string | undefined)
     );
 
     if (!userMetadataAccountType) {
-      userMetadataAccountType = 'user';
+      userMetadataAccountType = "user";
     }
 
     // Get current profile
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role, account_role, onboarding_completed_at')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("role, account_role, onboarding_completed_at")
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (profileError) {
-      console.error('Error fetching profile:', profileError);
+      console.error("Error fetching profile:", profileError);
       return NextResponse.json(
-        { error: 'Failed to fetch profile', synced: false },
+        { error: "Failed to fetch profile", synced: false },
         { status: 500 }
       );
     }
@@ -64,37 +66,40 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
         updated_at: new Date().toISOString(),
       };
 
-      if (userMetadataAccountType === 'business_owner') {
-        insertPayload.onboarding_step = 'business_setup';
+      if (userMetadataAccountType === "business_owner") {
+        insertPayload.onboarding_step = "business_setup";
       }
 
       const { error: insertError } = await supabase
-        .from('profiles')
-        .upsert(insertPayload, { onConflict: 'user_id' });
+        .from("profiles")
+        .upsert(insertPayload, { onConflict: "user_id" });
 
       if (insertError) {
-        console.error('Error creating missing profile:', insertError);
+        console.error("Error creating missing profile:", insertError);
         return NextResponse.json(
-          { error: 'Failed to create profile', synced: false },
+          { error: "Failed to create profile", synced: false },
           { status: 500 }
         );
       }
 
       return NextResponse.json({
-        message: 'Profile created and role synced successfully',
+        message: "Profile created and role synced successfully",
         synced: true,
         previousRole: null,
-        newRole: userMetadataAccountType
+        newRole: userMetadataAccountType,
       });
     }
 
     // Check if sync is needed
-    if (normalizeRole(profile.role) === userMetadataAccountType && normalizeRole(profile.account_role) === userMetadataAccountType) {
+    if (
+      normalizeRole(profile.role) === userMetadataAccountType &&
+      normalizeRole(profile.account_role) === userMetadataAccountType
+    ) {
       return NextResponse.json({
-        message: 'Profile already synced',
+        message: "Profile already synced",
         synced: false,
         currentRole: profile.role,
-        metadataAccountType: userMetadataAccountType
+        metadataAccountType: userMetadataAccountType,
       });
     }
 
@@ -103,34 +108,30 @@ export const POST = withUser(async (_req: NextRequest, { user, supabase }) => {
     // onboarding_step, interests_count, subcategories_count, onboarding_completed_at.
     // This endpoint is idempotent for role sync and must not reset onboarding progress.
     const { error: updateError } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({
         role: userMetadataAccountType,
         account_role: userMetadataAccountType,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('user_id', user.id);
+      .eq("user_id", user.id);
 
     if (updateError) {
-      console.error('Error updating profile role:', updateError);
+      console.error("Error updating profile role:", updateError);
       return NextResponse.json(
-        { error: 'Failed to update profile role', synced: false },
+        { error: "Failed to update profile role", synced: false },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
-      message: 'Profile role synced successfully',
+      message: "Profile role synced successfully",
       synced: true,
       previousRole: profile.role,
-      newRole: userMetadataAccountType
+      newRole: userMetadataAccountType,
     });
-
   } catch (error) {
-    console.error('Error in sync-profile-role:', error);
-    return NextResponse.json(
-      { error: 'Internal server error', synced: false },
-      { status: 500 }
-    );
+    console.error("Error in sync-profile-role:", error);
+    return NextResponse.json({ error: "Internal server error", synced: false }, { status: 500 });
   }
 });

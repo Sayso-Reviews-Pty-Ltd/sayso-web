@@ -25,7 +25,9 @@ export function resolveServerBaseUrl(
   headerList: Pick<Headers, "get">,
   fallbackBaseUrl?: string
 ): string {
-  const host = readForwardedValue(headerList.get("x-forwarded-host")) ?? readForwardedValue(headerList.get("host"));
+  const host =
+    readForwardedValue(headerList.get("x-forwarded-host")) ??
+    readForwardedValue(headerList.get("host"));
   if (host) {
     const protocol = readForwardedValue(headerList.get("x-forwarded-proto")) || "http";
     return `${protocol}://${host}`;

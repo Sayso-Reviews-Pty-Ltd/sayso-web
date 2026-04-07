@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withUser } from '@/app/api/_lib/withAuth';
+import { withUser } from "@/app/api/_lib/withAuth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,19 +22,22 @@ type ClaimRow = {
   reviewed_at: string | null;
   rejection_reason: string | null;
   created_at: string;
-  businesses?: {
-    id: string;
-    name: string;
-    primary_subcategory_label: string | null;
-    location: string | null;
-    slug: string | null;
-  } | Array<{
-    id: string;
-    name: string;
-    primary_subcategory_label: string | null;
-    location: string | null;
-    slug: string | null;
-  }> | null;
+  businesses?:
+    | {
+        id: string;
+        name: string;
+        primary_subcategory_label: string | null;
+        location: string | null;
+        slug: string | null;
+      }
+    | Array<{
+        id: string;
+        name: string;
+        primary_subcategory_label: string | null;
+        location: string | null;
+        slug: string | null;
+      }>
+    | null;
 };
 
 function json(payload: unknown, status = 200) {
@@ -57,12 +60,16 @@ function toDisplayStatus(status: string, methodAttempted: string | null): string
 function getNextStepMessage(status: string, methodAttempted: string | null): string {
   if (status === "verified") return "You can manage your listing in My Businesses.";
   if (status === "rejected") return "Contact support if you believe this was an error.";
-  if (status === "action_required") return "Please upload the requested documents or complete the requested step.";
+  if (status === "action_required")
+    return "Please upload the requested documents or complete the requested step.";
   if (status === "under_review") return "We're reviewing your claim. We'll email you when done.";
   if (status === "pending" || status === "draft") {
-    if (methodAttempted === "cipc") return "We're reviewing your CIPC details. We'll email you when done.";
-    if (methodAttempted === "phone") return "Check the business phone for an OTP and enter it when prompted.";
-    if (methodAttempted === "email") return "Check your business email or complete the next verification step.";
+    if (methodAttempted === "cipc")
+      return "We're reviewing your CIPC details. We'll email you when done.";
+    if (methodAttempted === "phone")
+      return "Check the business phone for an OTP and enter it when prompted.";
+    if (methodAttempted === "email")
+      return "Check your business email or complete the next verification step.";
     return "We're checking your details. You may need to complete a verification step.";
   }
   return "";
@@ -85,7 +92,10 @@ function shouldUseFallbackWithoutJoin(error: any): boolean {
   );
 }
 
-async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{ data: ClaimRow[]; error: any | null }> {
+async function fetchClaimsWithFallback(
+  supabase: any,
+  userId: string
+): Promise<{ data: ClaimRow[]; error: any | null }> {
   const baseSelect = `
     id,
     business_id,
@@ -108,7 +118,7 @@ async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{
          primary_subcategory_label,
          location,
          slug
-       )`,
+       )`
     )
     .eq("claimant_user_id", userId)
     .in("status", ["draft", "pending", "action_required", "under_review", "verified", "rejected"])
@@ -138,7 +148,9 @@ async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{
   }
 
   const claimRows = (fallback.data || []) as ClaimRow[];
-  const businessIds = Array.from(new Set(claimRows.map((claim) => claim.business_id).filter(Boolean)));
+  const businessIds = Array.from(
+    new Set(claimRows.map((claim) => claim.business_id).filter(Boolean))
+  );
 
   if (businessIds.length === 0) {
     return { data: claimRows, error: null };
@@ -150,7 +162,10 @@ async function fetchClaimsWithFallback(supabase: any, userId: string): Promise<{
     .in("id", businessIds);
 
   if (businessesResult.error) {
-    console.error("[GET /api/business/claims] fallback business lookup failed:", businessesResult.error);
+    console.error(
+      "[GET /api/business/claims] fallback business lookup failed:",
+      businessesResult.error
+    );
     return { data: claimRows, error: null };
   }
 
@@ -180,15 +195,12 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       if (status === 403) {
         return json(
           { success: false, error: "You don't have permission to view claims for this account." },
-          403,
+          403
         );
       }
 
       if (status === 400) {
-        return json(
-          { success: false, error: "Invalid claim query parameters." },
-          400,
-        );
+        return json({ success: false, error: "Invalid claim query parameters." }, 400);
       }
 
       return json({ success: false, error: "Failed to fetch claims" }, 500);

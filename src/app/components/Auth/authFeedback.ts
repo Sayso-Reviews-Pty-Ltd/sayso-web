@@ -8,7 +8,10 @@ function normalizeRawMessage(raw: string): string {
     .trim();
 }
 
-export function getClearAuthMessage(rawMessage: string | null | undefined, action: AuthAction): string {
+export function getClearAuthMessage(
+  rawMessage: string | null | undefined,
+  action: AuthAction
+): string {
   const fallback =
     action === "login"
       ? "We could not sign you in right now. Please try again."

@@ -7,10 +7,7 @@ import {
 } from "../../lib/utils/seoMetadata";
 import { getServerSupabase } from "../../lib/supabase/server";
 import SchemaMarkup from "../../components/SEO/SchemaMarkup";
-import {
-  generateBreadcrumbSchema,
-  generateEventSchema,
-} from "../../lib/utils/schemaMarkup";
+import { generateBreadcrumbSchema, generateEventSchema } from "../../lib/utils/schemaMarkup";
 
 interface SpecialLayoutProps {
   children: React.ReactNode;
@@ -80,10 +77,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function SpecialLayout({
-  children,
-  params,
-}: SpecialLayoutProps) {
+export default async function SpecialLayout({ children, params }: SpecialLayoutProps) {
   const { id } = await params;
   const special = await getSpecialData(id);
 
@@ -114,9 +108,7 @@ export default async function SpecialLayout({
     schemas = [specialSchema, breadcrumbSchema];
     relatedLinks = [
       { href: "/events-specials", label: "More events and specials" },
-      ...(citySlug
-        ? [{ href: `/${citySlug}`, label: `More specials in ${location}` }]
-        : []),
+      ...(citySlug ? [{ href: `/${citySlug}`, label: `More specials in ${location}` }] : []),
     ];
   }
 

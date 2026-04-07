@@ -1,13 +1,18 @@
 // Performance monitoring utilities
 
-export function reportWebVitals(metric: { name: string; value: number; id: string; delta: number }) {
+export function reportWebVitals(metric: {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+}) {
   // Log to console in development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     console.log(`[Performance] ${metric.name}:`, metric.value);
   }
 
   // Send to analytics in production
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     // You can send to your analytics service here
     // Example: analytics.track('Web Vitals', metric);
   }
@@ -21,21 +26,24 @@ export function measureComponentRender(componentName: string) {
     const end = performance.now();
     const duration = end - start;
 
-    if (duration > 16) { // Longer than one frame (60fps)
-      console.warn(`[Performance Warning] ${componentName} took ${duration.toFixed(2)}ms to render`);
+    if (duration > 16) {
+      // Longer than one frame (60fps)
+      console.warn(
+        `[Performance Warning] ${componentName} took ${duration.toFixed(2)}ms to render`
+      );
     }
   };
 }
 
 // Preload critical resources
-export function preloadResource(url: string, type: 'image' | 'font' | 'script' | 'style') {
-  const link = document.createElement('link');
-  link.rel = 'preload';
+export function preloadResource(url: string, type: "image" | "font" | "script" | "style") {
+  const link = document.createElement("link");
+  link.rel = "preload";
   link.href = url;
   link.as = type;
 
-  if (type === 'font') {
-    link.crossOrigin = 'anonymous';
+  if (type === "font") {
+    link.crossOrigin = "anonymous";
   }
 
   document.head.appendChild(link);

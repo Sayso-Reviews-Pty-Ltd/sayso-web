@@ -22,7 +22,7 @@ export default function EventBanner({
   rating,
   startDate,
   endDate,
-  eventId
+  eventId,
 }: EventBannerProps) {
   return (
     <div className="relative overflow-hidden rounded-t-lg h-[320px] flex-shrink-0 z-10">
@@ -49,9 +49,9 @@ export default function EventBanner({
       </div>
 
       {/* Badges */}
-      <EventBadge 
-        startDate={startDate} 
-        endDate={endDate} 
+      <EventBadge
+        startDate={startDate}
+        endDate={endDate}
         eventId={eventId}
         // Pass-through optional props for consistency when parent has them
         // These props will be undefined here unless the parent forwards them

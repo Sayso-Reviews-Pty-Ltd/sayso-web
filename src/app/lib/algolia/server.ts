@@ -10,9 +10,7 @@ export function getAlgoliaAdminClient() {
   const adminKey = process.env.ALGOLIA_ADMIN_KEY;
 
   if (!appId || !adminKey) {
-    throw new Error(
-      "Algolia admin client requires ALGOLIA_APP_ID and ALGOLIA_ADMIN_KEY"
-    );
+    throw new Error("Algolia admin client requires ALGOLIA_APP_ID and ALGOLIA_ADMIN_KEY");
   }
 
   return algoliasearch(appId, adminKey);

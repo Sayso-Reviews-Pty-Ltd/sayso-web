@@ -1,3 +1,2 @@
-export { ConfirmationDialog } from './ConfirmationDialog';
-export type { ConfirmationDialogProps } from './ConfirmationDialog';
-
+export { ConfirmationDialog } from "./ConfirmationDialog";
+export type { ConfirmationDialogProps } from "./ConfirmationDialog";

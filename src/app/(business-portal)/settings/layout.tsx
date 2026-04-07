@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ReactNode } from "react";
-import { PageMetadata } from '../../lib/utils/seoMetadata';
+import { PageMetadata } from "../../lib/utils/seoMetadata";
 
 export const metadata: Metadata = PageMetadata.settings();
 

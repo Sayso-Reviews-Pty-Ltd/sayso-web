@@ -36,24 +36,24 @@ Multi-layer business verification with clear trust levels, privacy protection, a
 
 ## Status States (UI)
 
-| Status              | Meaning                                      |
-|---------------------|----------------------------------------------|
-| Pending Verification | System checking methods / evaluating claim  |
-| Action Required     | User must complete OTP or upload docs        |
-| Under Review        | Admin reviewing CIPC or documents            |
-| Verified            | Business approved                            |
-| Rejected            | Claim denied (with reason)                    |
+| Status               | Meaning                                    |
+| -------------------- | ------------------------------------------ |
+| Pending Verification | System checking methods / evaluating claim |
+| Action Required      | User must complete OTP or upload docs      |
+| Under Review         | Admin reviewing CIPC or documents          |
+| Verified             | Business approved                          |
+| Rejected             | Claim denied (with reason)                 |
 
 Mapping to DB: `draft` → user filling; `pending` → Pending Verification / Action Required / Under Review (by method); `verified` → Verified; `rejected` → Rejected.
 
 ## Verification Method Detection (After Submit)
 
-| Condition                          | Action                |
-|-----------------------------------|------------------------|
-| Business email domain matches website | Auto-verify           |
-| Personal email                    | Require phone OTP or CIPC |
-| Valid business phone              | Send OTP               |
-| CIPC provided                     | Move to manual CIPC review |
+| Condition                             | Action                     |
+| ------------------------------------- | -------------------------- |
+| Business email domain matches website | Auto-verify                |
+| Personal email                        | Require phone OTP or CIPC  |
+| Valid business phone                  | Send OTP                   |
+| CIPC provided                         | Move to manual CIPC review |
 
 ## Data Privacy & Retention
 

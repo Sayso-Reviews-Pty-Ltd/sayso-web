@@ -18,6 +18,7 @@ This folder contains diagnostic guides, debugging procedures, and solutions for 
 ## Using This Documentation
 
 When encountering an issue:
+
 1. Search this folder for related documentation
 2. Follow the diagnostic steps provided
 3. Check for fixes or workarounds
@@ -31,9 +32,9 @@ When encountering an issue:
 ## Adding New Troubleshooting Documentation
 
 When documenting a new issue or fix:
+
 1. Create a descriptive filename using `kebab-case` (e.g., `debug-feature-x.md`)
 2. Include problem description, symptoms, and diagnostic steps
 3. Document the root cause and solution
 4. Add prevention measures if applicable
 5. Update this README with a brief description
-

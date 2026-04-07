@@ -17,7 +17,10 @@ test.describe("Business Account E2E smoke test", () => {
   }) => {
     test.setTimeout(90000);
     if (!BUSINESS_EMAIL || !BUSINESS_PASSWORD) {
-      test.skip(true, "Set E2E_BUSINESS_ACCOUNT_EMAIL and E2E_BUSINESS_ACCOUNT_PASSWORD in .env to run this test");
+      test.skip(
+        true,
+        "Set E2E_BUSINESS_ACCOUNT_EMAIL and E2E_BUSINESS_ACCOUNT_PASSWORD in .env to run this test"
+      );
     }
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
@@ -47,7 +50,9 @@ test.describe("Business Account E2E smoke test", () => {
     const myBusinessesUrl = page.waitForURL(/\/my-businesses/, { timeout: 5000 }).catch(() => null);
     await Promise.race([
       switchToLogin.waitFor({ state: "visible", timeout: 8000 }),
-      page.getByText(/account created|Check your email/i).waitFor({ state: "visible", timeout: 8000 }),
+      page
+        .getByText(/account created|Check your email/i)
+        .waitFor({ state: "visible", timeout: 8000 }),
       myBusinessesUrl,
     ]);
     if (await page.url().includes("/my-businesses")) {
@@ -58,7 +63,12 @@ test.describe("Business Account E2E smoke test", () => {
       await page.getByPlaceholder(/business@company\.com|you@example\.com/i).fill(BUSINESS_EMAIL);
       await page.getByPlaceholder(/Enter your password|Create a password/i).fill(BUSINESS_PASSWORD);
       await page.getByRole("button", { name: "Sign in" }).click();
-    } else if (await page.getByText(/account created|Check your email/i).isVisible().catch(() => false)) {
+    } else if (
+      await page
+        .getByText(/account created|Check your email/i)
+        .isVisible()
+        .catch(() => false)
+    ) {
       // Just registered: try logging in (in case email is auto-confirmed in test env)
       await page.getByRole("button", { name: /^Login$/i }).click();
       await page.getByPlaceholder(/business@company\.com|you@example\.com/i).fill(BUSINESS_EMAIL);
@@ -103,7 +113,9 @@ test.describe("Business Account E2E smoke test", () => {
     await page.goto("/my-businesses");
     await page.waitForLoadState("domcontentloaded");
     await expect(
-      page.getByRole("button", { name: new RegExp(`View ${E2E_BUSINESS_NAME} details`, "i") }).first()
+      page
+        .getByRole("button", { name: new RegExp(`View ${E2E_BUSINESS_NAME} details`, "i") })
+        .first()
     ).toBeVisible({ timeout: 20000 });
 
     // 8. No critical console errors (no validation/RLS errors in console)

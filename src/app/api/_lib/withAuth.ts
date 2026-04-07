@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient, type User } from '@supabase/supabase-js';
-import { getServerSupabase } from '@/app/lib/supabase/server';
-import { getServiceSupabase, isAdmin } from '@/app/lib/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient, type User } from "@supabase/supabase-js";
+import { getServerSupabase } from "@/app/lib/supabase/server";
+import { getServiceSupabase, isAdmin } from "@/app/lib/admin";
 
 // --- Types ---
 
@@ -34,12 +34,12 @@ export type OptionalUserHandlerCtx = {
 };
 
 function extractBearerToken(req: NextRequest): string | null {
-  const authHeader = req.headers.get('authorization');
+  const authHeader = req.headers.get("authorization");
   if (!authHeader) return null;
 
   const [scheme, token] = authHeader.trim().split(/\s+/, 2);
   if (!scheme || !token) return null;
-  if (scheme.toLowerCase() !== 'bearer') return null;
+  if (scheme.toLowerCase() !== "bearer") return null;
 
   return token.trim() || null;
 }
@@ -48,7 +48,7 @@ function createBearerSupabase(accessToken: string): ServerSupabase {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !anonKey) {
-    throw new Error('Supabase public env vars are required for bearer auth');
+    throw new Error("Supabase public env vars are required for bearer auth");
   }
 
   return createClient(supabaseUrl, anonKey, {
@@ -98,7 +98,7 @@ export function withUser(
   return async (req: NextRequest, ctx: RouteContext = {}) => {
     const { user, supabase } = await resolveAuthenticatedUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return handler(req, { ...ctx, user, supabase });
   };
@@ -116,11 +116,11 @@ export function withAdmin(
   return async (req: NextRequest, ctx: RouteContext = {}) => {
     const { user, supabase } = await resolveAuthenticatedUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     if (!(await isAdmin(user.id))) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const service = getServiceSupabase();
@@ -140,22 +140,22 @@ export function withBusinessOwner(
   return async (req: NextRequest, ctx: RouteContext = {}) => {
     const { user, supabase } = await resolveAuthenticatedUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const service = getServiceSupabase();
     const { data: profile } = await service
-      .from('profiles')
-      .select('role, account_role')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("role, account_role")
+      .eq("user_id", user.id)
       .maybeSingle();
 
     const role = profile as { role?: string | null; account_role?: string | null } | null;
-    const isOwner = role?.account_role === 'business_owner' || role?.role === 'business_owner';
-    const isUserAdmin = role?.account_role === 'admin' || role?.role === 'admin';
+    const isOwner = role?.account_role === "business_owner" || role?.role === "business_owner";
+    const isUserAdmin = role?.account_role === "admin" || role?.role === "admin";
 
     if (!isOwner && !isUserAdmin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return handler(req, { ...ctx, user, supabase });

@@ -166,9 +166,7 @@ function ActionModal({
             <div>
               <h2 className="font-urbanist text-lg font-bold text-charcoal">Moderate Flag</h2>
               {business && (
-                <p className="font-urbanist text-sm text-charcoal/50">
-                  {business.name}
-                </p>
+                <p className="font-urbanist text-sm text-charcoal/50">{business.name}</p>
               )}
             </div>
             <button
@@ -187,7 +185,9 @@ function ActionModal({
               <div className="flex items-center gap-2 mb-2">
                 <Stars rating={review.rating} />
                 {review.title && (
-                  <span className="font-urbanist text-sm font-semibold text-charcoal">{review.title}</span>
+                  <span className="font-urbanist text-sm font-semibold text-charcoal">
+                    {review.title}
+                  </span>
                 )}
               </div>
               {review.content && (
@@ -196,7 +196,9 @@ function ActionModal({
                 </p>
               )}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-urbanist ${REASON_COLORS[flag.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}>
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-urbanist ${REASON_COLORS[flag.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}
+                >
                   {REASON_LABELS[flag.reason] ?? flag.reason}
                 </span>
                 {flag.total_flags_on_review > 1 && (
@@ -263,7 +265,10 @@ function ActionModal({
                 </div>
                 {action === value && (
                   <div className="ml-auto w-4 h-4 rounded-full bg-charcoal flex items-center justify-center flex-shrink-0">
-                    <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-white fill-none stroke-white stroke-[1.5]">
+                    <svg
+                      viewBox="0 0 10 10"
+                      className="w-2.5 h-2.5 text-white fill-none stroke-white stroke-[1.5]"
+                    >
                       <polyline points="1.5,5 4,7.5 8.5,2.5" />
                     </svg>
                   </div>
@@ -348,7 +353,11 @@ export default function FlaggedReviewsPage() {
     setActiveFlagId(null);
     mutate();
     // Also revalidate pending count used by dashboard
-    globalMutate((key: unknown) => typeof key === "string" && key.includes("/api/admin/flags?status=pending"), undefined, { revalidate: true });
+    globalMutate(
+      (key: unknown) => typeof key === "string" && key.includes("/api/admin/flags?status=pending"),
+      undefined,
+      { revalidate: true }
+    );
   }
 
   return (
@@ -414,7 +423,9 @@ export default function FlaggedReviewsPage() {
             No {statusFilter} flags
           </p>
           <p className="font-urbanist text-sm text-charcoal/40">
-            {statusFilter === "pending" ? "Nothing needs moderation right now." : "No reviewed flags found."}
+            {statusFilter === "pending"
+              ? "Nothing needs moderation right now."
+              : "No reviewed flags found."}
           </p>
         </div>
       )}
@@ -426,10 +437,18 @@ export default function FlaggedReviewsPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-charcoal/8 bg-charcoal/[0.025]">
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Review</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Reason</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Flags</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Reported</th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Review
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Reason
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Flags
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Reported
+                  </th>
                   <th className="px-5 py-3.5 w-24" />
                 </tr>
               </thead>
@@ -462,7 +481,9 @@ export default function FlaggedReviewsPage() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-urbanist ${REASON_COLORS[f.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-urbanist ${REASON_COLORS[f.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}
+                        >
                           {REASON_LABELS[f.reason] ?? f.reason}
                         </span>
                         {f.details && (
@@ -472,7 +493,9 @@ export default function FlaggedReviewsPage() {
                         )}
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`font-urbanist text-sm font-bold tabular-nums ${f.total_flags_on_review >= 3 ? "text-red-600" : "text-charcoal/60"}`}>
+                        <span
+                          className={`font-urbanist text-sm font-bold tabular-nums ${f.total_flags_on_review >= 3 ? "text-red-600" : "text-charcoal/60"}`}
+                        >
                           {f.total_flags_on_review}
                         </span>
                       </td>
@@ -541,7 +564,9 @@ export default function FlaggedReviewsPage() {
                             </p>
                           )}
                         </div>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold font-urbanist flex-shrink-0 ${REASON_COLORS[f.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold font-urbanist flex-shrink-0 ${REASON_COLORS[f.reason] ?? "bg-charcoal/8 text-charcoal/60"}`}
+                        >
                           {REASON_LABELS[f.reason] ?? f.reason}
                         </span>
                       </div>
@@ -624,11 +649,7 @@ export default function FlaggedReviewsPage() {
 
       {/* Action modal */}
       {activeFlag && (
-        <ActionModal
-          flag={activeFlag}
-          onClose={() => setActiveFlagId(null)}
-          onDone={handleDone}
-        />
+        <ActionModal flag={activeFlag} onClose={() => setActiveFlagId(null)} onDone={handleDone} />
       )}
     </div>
   );

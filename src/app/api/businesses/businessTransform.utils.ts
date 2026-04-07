@@ -23,7 +23,10 @@ export function scorePersonal(business: BusinessRPCResult) {
   const reviews = Math.log(Math.max(business.total_reviews || 0, 1) + 1);
   const recency = calculateRecencyBoost(business.created_at, 1.2);
   const verifiedBonus = business.verified ? 0.4 : 0;
-  const photoBonus = business.image_url || (business.uploaded_images && business.uploaded_images.length > 0) ? 0.2 : 0;
+  const photoBonus =
+    business.image_url || (business.uploaded_images && business.uploaded_images.length > 0)
+      ? 0.2
+      : 0;
   const contactBoost = calculateContactRankingBoost(business, 1.0);
   return rating * 2.2 + reviews + recency + verifiedBonus + photoBonus + contactBoost;
 }
@@ -40,7 +43,10 @@ export function scoreExplore(business: BusinessRPCResult) {
   const recency = calculateRecencyBoost(business.created_at, 2.5);
   const lowReviewBoost = (business.total_reviews || 0) < 10 ? 1.2 : 0;
   const ratingSupport = (business.average_rating || 0) * 0.8;
-  const photoBonus = business.image_url || (business.uploaded_images && business.uploaded_images.length > 0) ? 0.4 : 0;
+  const photoBonus =
+    business.image_url || (business.uploaded_images && business.uploaded_images.length > 0)
+      ? 0.4
+      : 0;
   const verifiedBonus = business.verified ? 0.3 : 0;
   const contactBoost = calculateContactRankingBoost(business, 0.8);
   return recency + lowReviewBoost + ratingSupport + photoBonus + verifiedBonus + contactBoost;
@@ -52,11 +58,14 @@ export function transformBusinessForCard(business: BusinessRPCResult) {
   const hasRating = business.average_rating && business.average_rating > 0;
   const hasReviews = business.total_reviews && business.total_reviews > 0;
   const shouldShowBadge = business.verified && business.badge;
-  const subInterestLabel = business.sub_interest_id ? getSubcategoryLabel(business.sub_interest_id) : undefined;
+  const subInterestLabel = business.sub_interest_id
+    ? getSubcategoryLabel(business.sub_interest_id)
+    : undefined;
 
-  const firstUploadedImage = business.uploaded_images && business.uploaded_images.length > 0
-    ? business.uploaded_images[0]
-    : null;
+  const firstUploadedImage =
+    business.uploaded_images && business.uploaded_images.length > 0
+      ? business.uploaded_images[0]
+      : null;
   const displayImage = firstUploadedImage || business.image_url;
 
   const transformLog = {
@@ -70,15 +79,18 @@ export function transformBusinessForCard(business: BusinessRPCResult) {
     hasDisplayImage: !!displayImage,
     uploadedImagesCount: business.uploaded_images?.length || 0,
     category: business.category,
-    status: 'transforming',
+    status: "transforming",
   };
 
   const wouldBeDropped = !business.id || !business.name;
   if (wouldBeDropped) {
-    transformLog.status = 'dropped';
-    console.warn('[BUSINESSES API] transformBusinessForCard: Business would be dropped:', transformLog);
+    transformLog.status = "dropped";
+    console.warn(
+      "[BUSINESSES API] transformBusinessForCard: Business would be dropped:",
+      transformLog
+    );
   } else {
-    transformLog.status = 'transformed';
+    transformLog.status = "transformed";
   }
 
   const resolvedInterestId = resolveInterestId(business);
@@ -99,7 +111,8 @@ export function transformBusinessForCard(business: BusinessRPCResult) {
     category_label: displayLabel,
     sub_interest_id: business.sub_interest_id ?? undefined,
     subInterestId: business.sub_interest_id ?? undefined,
-    subInterestLabel: subInterestLabel ?? (displayLabel !== "Miscellaneous" ? displayLabel : undefined),
+    subInterestLabel:
+      subInterestLabel ?? (displayLabel !== "Miscellaneous" ? displayLabel : undefined),
     interest_id: resolvedInterestId ?? business.interest_id ?? undefined,
     interestId: resolvedInterestId ?? business.interest_id ?? undefined,
     location: business.location,
@@ -116,23 +129,24 @@ export function transformBusinessForCard(business: BusinessRPCResult) {
     badge: shouldShowBadge ? business.badge : undefined,
     href: `/business/${business.id}`,
     verified: business.verified || false,
-    priceRange: business.price_range || '$$',
+    priceRange: business.price_range || "$$",
     distance: business.distance_km,
     hasRating,
-    percentiles: hasReviews && business.percentiles
-      ? {
-          punctuality: business.percentiles.punctuality ?? 0,
-          friendliness: business.percentiles.friendliness ?? 0,
-          trustworthiness: business.percentiles.trustworthiness ?? 0,
-          'cost-effectiveness': business.percentiles['cost-effectiveness'] ?? 0,
-        }
-      : undefined,
+    percentiles:
+      hasReviews && business.percentiles
+        ? {
+            punctuality: business.percentiles.punctuality ?? 0,
+            friendliness: business.percentiles.friendliness ?? 0,
+            trustworthiness: business.percentiles.trustworthiness ?? 0,
+            "cost-effectiveness": business.percentiles["cost-effectiveness"] ?? 0,
+          }
+        : undefined,
   };
 
   if (!wouldBeDropped) {
-    console.log('[BUSINESSES API] transformBusinessForCard: Successfully transformed:', {
+    console.log("[BUSINESSES API] transformBusinessForCard: Successfully transformed:", {
       ...transformLog,
-      finalImage: transformed.image ? 'present' : 'missing',
+      finalImage: transformed.image ? "present" : "missing",
       uploadedImagesArray: transformed.uploaded_images?.length || 0,
       uploadedImagesSample: transformed.uploaded_images?.slice(0, 2) || [],
     });
@@ -149,14 +163,14 @@ export async function excludeAlreadyReviewedBusinesses(
   if (!businesses?.length) return businesses;
   try {
     const { data: reviews, error } = await supabase
-      .from('reviews')
-      .select('business_id')
-      .eq('user_id', userId);
+      .from("reviews")
+      .select("business_id")
+      .eq("user_id", userId);
     if (error || !reviews?.length) return businesses;
     const reviewedIds = new Set(reviews.map((r) => r.business_id));
     return businesses.filter((b) => !reviewedIds.has(b.id) && !reviewedIds.has(b.slug));
   } catch (e) {
-    console.warn('[BUSINESSES API] excludeAlreadyReviewedBusinesses error:', e);
+    console.warn("[BUSINESSES API] excludeAlreadyReviewedBusinesses error:", e);
     return businesses;
   }
 }
@@ -170,7 +184,9 @@ export async function prioritizeRecentlyReviewedBusinesses(
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       return businesses;
     }
@@ -178,17 +194,17 @@ export async function prioritizeRecentlyReviewedBusinesses(
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data: recentReviews, error } = await supabase
-      .from('reviews')
-      .select('business_id, created_at')
-      .eq('user_id', user.id)
-      .gte('created_at', twentyFourHoursAgo)
-      .order('created_at', { ascending: false });
+      .from("reviews")
+      .select("business_id, created_at")
+      .eq("user_id", user.id)
+      .gte("created_at", twentyFourHoursAgo)
+      .order("created_at", { ascending: false });
 
     if (error || !recentReviews || recentReviews.length === 0) {
       return businesses;
     }
 
-    const reviewedBusinessIds = [...new Set(recentReviews.map(r => r.business_id))];
+    const reviewedBusinessIds = [...new Set(recentReviews.map((r) => r.business_id))];
 
     if (reviewedBusinessIds.length === 0) {
       return businesses;
@@ -198,8 +214,8 @@ export async function prioritizeRecentlyReviewedBusinesses(
     const nonReviewedBusinesses: BusinessRPCResult[] = [];
 
     for (const business of businesses) {
-      const isRecentlyReviewed = reviewedBusinessIds.some(reviewedId =>
-        reviewedId === business.id || reviewedId === business.slug
+      const isRecentlyReviewed = reviewedBusinessIds.some(
+        (reviewedId) => reviewedId === business.id || reviewedId === business.slug
       );
 
       if (isRecentlyReviewed) {
@@ -210,8 +226,8 @@ export async function prioritizeRecentlyReviewedBusinesses(
     }
 
     reviewedBusinesses.sort((a, b) => {
-      const aReview = recentReviews.find(r => r.business_id === a.id || r.business_id === a.slug);
-      const bReview = recentReviews.find(r => r.business_id === b.id || r.business_id === b.slug);
+      const aReview = recentReviews.find((r) => r.business_id === a.id || r.business_id === a.slug);
+      const bReview = recentReviews.find((r) => r.business_id === b.id || r.business_id === b.slug);
 
       if (!aReview) return 1;
       if (!bReview) return -1;
@@ -221,7 +237,7 @@ export async function prioritizeRecentlyReviewedBusinesses(
 
     return [...reviewedBusinesses, ...nonReviewedBusinesses];
   } catch (error) {
-    console.error('[BUSINESSES API] Error prioritizing recently reviewed businesses:', error);
+    console.error("[BUSINESSES API] Error prioritizing recently reviewed businesses:", error);
     return businesses;
   }
 }
@@ -240,8 +256,9 @@ export async function findSimilarBusinesses(
       : false;
 
     let query = supabase
-      .from('businesses')
-      .select(`
+      .from("businesses")
+      .select(
+        `
         id,
         name,
         primary_subcategory_slug,
@@ -254,20 +271,21 @@ export async function findSimilarBusinesses(
           total_reviews,
           average_rating
         )
-      `)
-      .eq('primary_subcategory_slug', category)
-      .eq('status', 'active')
-      .or('is_system.is.null,is_system.eq.false')
+      `
+      )
+      .eq("primary_subcategory_slug", category)
+      .eq("status", "active")
+      .or("is_system.is.null,is_system.eq.false")
       .limit(limit + 1);
 
     if (excludeBusinessId && isValidUUID) {
-      query = query.neq('id', excludeBusinessId);
+      query = query.neq("id", excludeBusinessId);
     }
 
     const { data: businesses, error } = await query;
 
     if (error) {
-      console.error('[API] Error finding similar businesses:', error);
+      console.error("[API] Error finding similar businesses:", error);
       return [];
     }
 
@@ -275,20 +293,26 @@ export async function findSimilarBusinesses(
       return [];
     }
 
-    const scoredBusinesses = businesses.map(business => {
+    const scoredBusinesses = businesses.map((business) => {
       let score = 0;
 
-      const businessNameLower = business.name?.toLowerCase() || '';
+      const businessNameLower = business.name?.toLowerCase() || "";
       const searchNameLower = name.toLowerCase();
 
-      if (businessNameLower.includes(searchNameLower) || searchNameLower.includes(businessNameLower)) {
+      if (
+        businessNameLower.includes(searchNameLower) ||
+        searchNameLower.includes(businessNameLower)
+      ) {
         score += 10;
       }
 
       if (location && business.location) {
         const businessLocationLower = business.location.toLowerCase();
         const searchLocationLower = location.toLowerCase();
-        if (businessLocationLower.includes(searchLocationLower) || searchLocationLower.includes(businessLocationLower)) {
+        if (
+          businessLocationLower.includes(searchLocationLower) ||
+          searchLocationLower.includes(businessLocationLower)
+        ) {
           score += 5;
         }
       }
@@ -308,7 +332,7 @@ export async function findSimilarBusinesses(
       .slice(0, limit)
       .map(({ relevanceScore, ...business }) => business);
   } catch (error) {
-    console.error('[API] Error in findSimilarBusinesses:', error);
+    console.error("[API] Error in findSimilarBusinesses:", error);
     return [];
   }
 }

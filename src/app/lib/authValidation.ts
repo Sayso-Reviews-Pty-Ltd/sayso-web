@@ -8,17 +8,17 @@ export interface ValidationResult {
 export class AuthValidator {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly DISPOSABLE_EMAIL_DOMAINS = [
-    '10minutemail.com',
-    'tempmail.org',
-    'guerrillamail.com',
-    'mailinator.com'
+    "10minutemail.com",
+    "tempmail.org",
+    "guerrillamail.com",
+    "mailinator.com",
   ];
 
   static validateEmail(email: string): ValidationResult {
     const result: ValidationResult = { isValid: true, errors: [], warnings: [] };
 
     if (!email || !email.trim()) {
-      result.errors.push('Email is required');
+      result.errors.push("Email is required");
       result.isValid = false;
       return result;
     }
@@ -27,27 +27,27 @@ export class AuthValidator {
 
     // Basic format validation
     if (!this.EMAIL_REGEX.test(trimmedEmail)) {
-      result.errors.push('Invalid email format');
+      result.errors.push("Invalid email format");
       result.isValid = false;
     }
 
     // Length validation
     if (trimmedEmail.length > 254) {
-      result.errors.push('Email is too long (max 254 characters)');
+      result.errors.push("Email is too long (max 254 characters)");
       result.isValid = false;
     }
 
     // Check for disposable email domains
-    const domain = trimmedEmail.split('@')[1];
+    const domain = trimmedEmail.split("@")[1];
     if (this.DISPOSABLE_EMAIL_DOMAINS.includes(domain)) {
-      result.warnings.push('Disposable email addresses may cause delivery issues');
+      result.warnings.push("Disposable email addresses may cause delivery issues");
     }
 
     // Check for common typos
-    const commonDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
+    const commonDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"];
     const suggestions = this.suggestEmailCorrection(trimmedEmail, commonDomains);
     if (suggestions.length > 0) {
-      result.warnings.push(`Did you mean: ${suggestions.join(', ')}?`);
+      result.warnings.push(`Did you mean: ${suggestions.join(", ")}?`);
     }
 
     return result;
@@ -57,26 +57,30 @@ export class AuthValidator {
     const result: ValidationResult = { isValid: true, errors: [], warnings: [] };
 
     if (!password) {
-      result.errors.push('Password is required');
+      result.errors.push("Password is required");
       result.isValid = false;
       return result;
     }
 
     // Length validation - relaxed to minimum 6 characters
     if (password.length < 6) {
-      result.errors.push('Password must be at least 6 characters long');
+      result.errors.push("Password must be at least 6 characters long");
       result.isValid = false;
     }
 
     if (password.length > 128) {
-      result.errors.push('Password is too long (max 128 characters)');
+      result.errors.push("Password is too long (max 128 characters)");
       result.isValid = false;
     }
 
     return result;
   }
 
-  static validateRegistrationData(email: string, password: string, confirmPassword?: string): ValidationResult {
+  static validateRegistrationData(
+    email: string,
+    password: string,
+    confirmPassword?: string
+  ): ValidationResult {
     const result: ValidationResult = { isValid: true, errors: [], warnings: [] };
 
     // Validate email
@@ -91,12 +95,12 @@ export class AuthValidator {
 
     // Validate password confirmation if provided
     if (confirmPassword !== undefined && password !== confirmPassword) {
-      result.errors.push('Passwords do not match');
+      result.errors.push("Passwords do not match");
     }
 
     // Check if email and password are too similar
     if (email && password && this.areStringSimilar(email.toLowerCase(), password.toLowerCase())) {
-      result.warnings.push('Password should not be similar to your email');
+      result.warnings.push("Password should not be similar to your email");
     }
 
     result.isValid = result.errors.length === 0;
@@ -104,7 +108,7 @@ export class AuthValidator {
   }
 
   private static suggestEmailCorrection(email: string, domains: string[]): string[] {
-    const [localPart, domain] = email.split('@');
+    const [localPart, domain] = email.split("@");
     if (!domain) return [];
 
     const suggestions: string[] = [];
@@ -120,7 +124,9 @@ export class AuthValidator {
   }
 
   private static levenshteinDistance(str1: string, str2: string): number {
-    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+    const matrix = Array(str2.length + 1)
+      .fill(null)
+      .map(() => Array(str1.length + 1).fill(null));
 
     for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
     for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
@@ -173,48 +179,48 @@ export class AuthValidator {
 export const authEdgeCases = {
   emails: {
     valid: [
-      'user@example.com',
-      'test.email@domain.co.uk',
-      'user+tag@example.org',
-      'user123@sub.domain.com'
+      "user@example.com",
+      "test.email@domain.co.uk",
+      "user+tag@example.org",
+      "user123@sub.domain.com",
     ],
     invalid: [
-      '',
-      'invalid-email',
-      '@domain.com',
-      'user@',
-      'user@domain',
-      'user..double.dot@domain.com',
-      'user@domain..com'
+      "",
+      "invalid-email",
+      "@domain.com",
+      "user@",
+      "user@domain",
+      "user..double.dot@domain.com",
+      "user@domain..com",
     ],
     edge: [
-      'a@b.co', // very short
-      'user@'.padEnd(250, 'x') + '.com', // very long
-      'user@domain-with-many-hyphens.com',
-      'user@[192.168.1.1]' // IP address domain
-    ]
+      "a@b.co", // very short
+      "user@".padEnd(250, "x") + ".com", // very long
+      "user@domain-with-many-hyphens.com",
+      "user@[192.168.1.1]", // IP address domain
+    ],
   },
   passwords: {
     valid: [
-      'password', // letters only (6+ chars)
-      '123456', // numbers only (6 chars)
-      'onlylowercase', // lowercase only
-      'ONLYUPPERCASE', // uppercase only
-      '1234567890', // numbers only (10 chars)
-      'Password123!', // mixed with symbols
-      'MyStr0ng@Pass' // complex
+      "password", // letters only (6+ chars)
+      "123456", // numbers only (6 chars)
+      "onlylowercase", // lowercase only
+      "ONLYUPPERCASE", // uppercase only
+      "1234567890", // numbers only (10 chars)
+      "Password123!", // mixed with symbols
+      "MyStr0ng@Pass", // complex
     ],
     invalid: [
-      '', // empty
-      'short', // too short (5 chars)
-      '12345', // too short (5 chars)
-      'abc' // too short (3 chars)
+      "", // empty
+      "short", // too short (5 chars)
+      "12345", // too short (5 chars)
+      "abc", // too short (3 chars)
     ],
     edge: [
-      'a'.repeat(129), // too long (max 128)
-      '123456', // minimum valid (6 chars)
-      'abcdef', // minimum valid letters
-      'a'.repeat(128) // maximum valid length
-    ]
-  }
+      "a".repeat(129), // too long (max 128)
+      "123456", // minimum valid (6 chars)
+      "abcdef", // minimum valid letters
+      "a".repeat(128), // maximum valid length
+    ],
+  },
 };

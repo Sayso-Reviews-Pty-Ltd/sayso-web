@@ -30,12 +30,14 @@ export default function BadgeCard({ badge, onClick }: BadgeCardProps) {
 
   // Group-based color schemes for earned badges
   const groupColors: Record<string, { bg: string; border: string }> = {
-    explorer:   { bg: "from-blue-50 to-cyan-50/60",      border: "border-blue-200/60"    },
-    specialist: { bg: "from-purple-50 to-fuchsia-50/60",  border: "border-purple-200/60"  },
-    milestone:  { bg: "from-amber-50 to-yellow-50/60",    border: "border-amber-200/60"   },
-    community:  { bg: "from-emerald-50 to-teal-50/60",    border: "border-emerald-200/60" },
+    explorer: { bg: "from-blue-50 to-cyan-50/60", border: "border-blue-200/60" },
+    specialist: { bg: "from-purple-50 to-fuchsia-50/60", border: "border-purple-200/60" },
+    milestone: { bg: "from-amber-50 to-yellow-50/60", border: "border-amber-200/60" },
+    community: { bg: "from-emerald-50 to-teal-50/60", border: "border-emerald-200/60" },
   };
-  const colors = !isLocked ? (groupColors[badge.badge_group] || { bg: "from-sage/5 to-coral/5", border: "border-sage/30" }) : null;
+  const colors = !isLocked
+    ? groupColors[badge.badge_group] || { bg: "from-sage/5 to-coral/5", border: "border-sage/30" }
+    : null;
 
   return (
     <m.div

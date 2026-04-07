@@ -16,10 +16,10 @@ All selections MUST be persisted to the database so back navigation shows previo
 
 ```typescript
 // src/app/interests/page.tsx
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function InterestsPage() {
   const { user } = useAuth();
@@ -30,21 +30,21 @@ export default function InterestsPage() {
   useEffect(() => {
     async function loadSelections() {
       if (!user) return;
-      
+
       try {
-        const response = await fetch('/api/user/onboarding');
+        const response = await fetch("/api/user/onboarding");
         if (response.ok) {
           const data = await response.json();
           // Pre-populate selections from DB
           setSelectedInterests(data.interests || []);
         }
       } catch (error) {
-        console.error('Failed to load interests:', error);
+        console.error("Failed to load interests:", error);
       } finally {
         setLoading(false);
       }
     }
-    
+
     loadSelections();
   }, [user]);
 
@@ -56,14 +56,14 @@ export default function InterestsPage() {
     }
 
     try {
-      const response = await fetch('/api/onboarding/interests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/onboarding/interests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ interests: selectedInterests }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save interests');
+        throw new Error("Failed to save interests");
       }
 
       // API route automatically:
@@ -72,9 +72,9 @@ export default function InterestsPage() {
       // 3. Updates profiles.interests_count
 
       // Navigate to next step
-      router.push('/subcategories');
+      router.push("/subcategories");
     } catch (error) {
-      console.error('Error saving interests:', error);
+      console.error("Error saving interests:", error);
     }
   };
 
@@ -86,10 +86,10 @@ export default function InterestsPage() {
 
 ```typescript
 // src/app/subcategories/page.tsx
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SubcategoriesPage() {
   const { user } = useAuth();
@@ -100,9 +100,9 @@ export default function SubcategoriesPage() {
   useEffect(() => {
     async function loadSelections() {
       if (!user) return;
-      
+
       try {
-        const response = await fetch('/api/user/onboarding');
+        const response = await fetch("/api/user/onboarding");
         if (response.ok) {
           const data = await response.json();
           // Pre-populate selections from DB
@@ -111,12 +111,12 @@ export default function SubcategoriesPage() {
           setSelectedSubcategories(subcategoryIds);
         }
       } catch (error) {
-        console.error('Failed to load subcategories:', error);
+        console.error("Failed to load subcategories:", error);
       } finally {
         setLoading(false);
       }
     }
-    
+
     loadSelections();
   }, [user]);
 
@@ -129,23 +129,23 @@ export default function SubcategoriesPage() {
 
     try {
       // Map selected subcategory IDs to format expected by API
-      const subcategoryData = selectedSubcategories.map(subId => {
+      const subcategoryData = selectedSubcategories.map((subId) => {
         // Find the subcategory to get its interest_id
-        const sub = subcategories.find(s => s.id === subId);
+        const sub = subcategories.find((s) => s.id === subId);
         return {
           subcategory_id: subId,
-          interest_id: sub?.interest_id || '', // Must have interest_id
+          interest_id: sub?.interest_id || "", // Must have interest_id
         };
       });
 
-      const response = await fetch('/api/onboarding/subcategories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/onboarding/subcategories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subcategories: subcategoryData }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save subcategories');
+        throw new Error("Failed to save subcategories");
       }
 
       // API route automatically:
@@ -154,9 +154,9 @@ export default function SubcategoriesPage() {
       // 3. Updates profiles.subcategories_count
 
       // Navigate to next step
-      router.push('/deal-breakers');
+      router.push("/deal-breakers");
     } catch (error) {
-      console.error('Error saving subcategories:', error);
+      console.error("Error saving subcategories:", error);
     }
   };
 
@@ -168,10 +168,10 @@ export default function SubcategoriesPage() {
 
 ```typescript
 // src/app/deal-breakers/page.tsx
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function DealBreakersPage() {
   const { user } = useAuth();
@@ -182,21 +182,21 @@ export default function DealBreakersPage() {
   useEffect(() => {
     async function loadSelections() {
       if (!user) return;
-      
+
       try {
-        const response = await fetch('/api/user/onboarding');
+        const response = await fetch("/api/user/onboarding");
         if (response.ok) {
           const data = await response.json();
           // Pre-populate selections from DB
           setSelectedDealbreakers(data.dealbreakers || []);
         }
       } catch (error) {
-        console.error('Failed to load deal-breakers:', error);
+        console.error("Failed to load deal-breakers:", error);
       } finally {
         setLoading(false);
       }
     }
-    
+
     loadSelections();
   }, [user]);
 
@@ -208,14 +208,14 @@ export default function DealBreakersPage() {
     }
 
     try {
-      const response = await fetch('/api/onboarding/deal-breakers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/onboarding/deal-breakers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dealbreakers: selectedDealbreakers }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save deal-breakers');
+        throw new Error("Failed to save deal-breakers");
       }
 
       // API route automatically:
@@ -225,9 +225,9 @@ export default function DealBreakersPage() {
       // NOTE: onboarding_complete stays false until /complete page
 
       // Navigate to next step
-      router.push('/complete');
+      router.push("/complete");
     } catch (error) {
-      console.error('Error saving deal-breakers:', error);
+      console.error("Error saving deal-breakers:", error);
     }
   };
 
@@ -250,4 +250,3 @@ export default function DealBreakersPage() {
 4. **Validation**: Each step validates required data before allowing save (e.g., at least 1 interest, 1 subcategory, 1 deal-breaker).
 
 5. **Back Navigation**: Since selections are persisted, users can go back and see/edit their previous choices.
-

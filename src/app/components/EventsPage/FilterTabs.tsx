@@ -14,10 +14,7 @@ const TABS = [
   { value: "special" as const, label: "Specials" },
 ];
 
-export default function FilterTabs({
-  selectedFilter,
-  onFilterChange,
-}: FilterTabsProps) {
+export default function FilterTabs({ selectedFilter, onFilterChange }: FilterTabsProps) {
   return (
     <FilterPillGroup
       options={TABS}

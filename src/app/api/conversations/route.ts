@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
 import {
   formatConversationListItem,
   getOwnedBusinessIds,
   isConversationSchemaDriftError,
   normalizeConversationRow,
   parseRole,
-} from './_lib';
+} from "./_lib";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const BUSINESS_RELATION_SELECT = `
   businesses (
@@ -106,7 +106,7 @@ async function insertConversationWithFallback(
   legacyPayload: Record<string, any>
 ): Promise<{ data: any | null; error: any; usedLegacy: boolean }> {
   const modernInsert = await supabase
-    .from('conversations')
+    .from("conversations")
     .insert(modernPayload)
     .select(CONVERSATION_SELECT_V2)
     .single();
@@ -124,7 +124,7 @@ async function insertConversationWithFallback(
   }
 
   const legacyInsert = await supabase
-    .from('conversations')
+    .from("conversations")
     .insert(legacyPayload)
     .select(CONVERSATION_SELECT_LEGACY)
     .single();
@@ -142,7 +142,7 @@ async function insertConversationWithFallback(
   }
 
   const minimalInsert = await supabase
-    .from('conversations')
+    .from("conversations")
     .insert(legacyPayload)
     .select(CONVERSATION_SELECT_MINIMAL)
     .single();
@@ -161,22 +161,22 @@ async function insertConversationWithFallback(
 export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
   try {
     const { searchParams } = new URL(req.url);
-    const role = parseRole(searchParams.get('role'));
-    const requestedBusinessId = searchParams.get('business_id');
+    const role = parseRole(searchParams.get("role"));
+    const requestedBusinessId = searchParams.get("business_id");
 
-    if (role === 'user') {
+    if (role === "user") {
       const { data: conversations, error } = await selectConversationsWithFallback((selectClause) =>
         supabase
-          .from('conversations')
+          .from("conversations")
           .select(selectClause)
-          .eq('user_id', user.id)
-          .order('last_message_at', { ascending: false })
+          .eq("user_id", user.id)
+          .order("last_message_at", { ascending: false })
       );
 
       if (error) {
-        console.error('[Conversations API] User list error:', error);
+        console.error("[Conversations API] User list error:", error);
         return NextResponse.json(
-          { error: 'Failed to fetch conversations', details: error?.message || null },
+          { error: "Failed to fetch conversations", details: error?.message || null },
           { status: 500 }
         );
       }
@@ -190,9 +190,9 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
 
       if (missingBusinessIds.length > 0) {
         const { data: fetchedBusinesses } = await supabase
-          .from('businesses')
-          .select('id, name, slug, image_url, primary_subcategory_label, verified')
-          .in('id', missingBusinessIds);
+          .from("businesses")
+          .select("id, name, slug, image_url, primary_subcategory_label, verified")
+          .in("id", missingBusinessIds);
 
         if (fetchedBusinesses && fetchedBusinesses.length > 0) {
           const businessById = new Map(fetchedBusinesses.map((b: any) => [b.id, b]));
@@ -205,14 +205,17 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
       }
 
       const items = enrichedConversations.map((conversation: any) =>
-        formatConversationListItem(conversation, 'user')
+        formatConversationListItem(conversation, "user")
       );
 
-      const unreadTotal = items.reduce((sum: number, item: any) => sum + Number(item.unread_count || 0), 0);
+      const unreadTotal = items.reduce(
+        (sum: number, item: any) => sum + Number(item.unread_count || 0),
+        0
+      );
 
       return NextResponse.json({
         data: items,
-        role: 'user',
+        role: "user",
         unread_total: unreadTotal,
       });
     }
@@ -222,86 +225,100 @@ export const GET = withUser(async (req: NextRequest, { user, supabase }) => {
     if (ownedBusinessIds.length === 0) {
       return NextResponse.json({
         data: [],
-        role: 'business',
+        role: "business",
         unread_total: 0,
       });
     }
 
     if (requestedBusinessId && !ownedBusinessIds.includes(requestedBusinessId)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const scopedBusinessIds = requestedBusinessId
-      ? [requestedBusinessId]
-      : ownedBusinessIds;
+    const scopedBusinessIds = requestedBusinessId ? [requestedBusinessId] : ownedBusinessIds;
 
     const { data: conversations, error } = await selectConversationsWithFallback((selectClause) =>
       supabase
-        .from('conversations')
+        .from("conversations")
         .select(selectClause)
-        .in('business_id', scopedBusinessIds)
-        .order('last_message_at', { ascending: false })
+        .in("business_id", scopedBusinessIds)
+        .order("last_message_at", { ascending: false })
     );
 
     if (error) {
-      console.error('[Conversations API] Business list error:', error);
+      console.error("[Conversations API] Business list error:", error);
       return NextResponse.json(
-        { error: 'Failed to fetch conversations', details: error?.message || null },
+        { error: "Failed to fetch conversations", details: error?.message || null },
         { status: 500 }
       );
     }
 
-    const userIds = Array.from(new Set((conversations || []).map((conversation: any) => conversation.user_id).filter(Boolean)));
+    const userIds = Array.from(
+      new Set(
+        (conversations || []).map((conversation: any) => conversation.user_id).filter(Boolean)
+      )
+    );
 
     let profilesByUserId = new Map<string, any>();
     if (userIds.length > 0) {
       const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, username, full_name, avatar_url')
-        .in('user_id', userIds);
+        .from("profiles")
+        .select("user_id, display_name, username, full_name, avatar_url")
+        .in("user_id", userIds);
 
       if (profileError) {
-        console.warn('[Conversations API] Failed to fetch participant profiles:', profileError);
+        console.warn("[Conversations API] Failed to fetch participant profiles:", profileError);
       } else {
-        profilesByUserId = new Map((profiles || []).map((profile: any) => [profile.user_id, profile]));
+        profilesByUserId = new Map(
+          (profiles || []).map((profile: any) => [profile.user_id, profile])
+        );
       }
     }
 
     const items = (conversations || []).map((conversation: any) =>
-      formatConversationListItem(conversation, 'business', profilesByUserId.get(conversation.user_id))
+      formatConversationListItem(
+        conversation,
+        "business",
+        profilesByUserId.get(conversation.user_id)
+      )
     );
 
-    const unreadTotal = items.reduce((sum: number, item: any) => sum + Number(item.unread_count || 0), 0);
+    const unreadTotal = items.reduce(
+      (sum: number, item: any) => sum + Number(item.unread_count || 0),
+      0
+    );
 
     return NextResponse.json({
       data: items,
-      role: 'business',
+      role: "business",
       unread_total: unreadTotal,
     });
   } catch (error: any) {
-    console.error('[Conversations API] Unexpected list error:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error?.message }, { status: 500 });
+    console.error("[Conversations API] Unexpected list error:", error);
+    return NextResponse.json(
+      { error: "Internal server error", details: error?.message },
+      { status: 500 }
+    );
   }
 });
 
 export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
   try {
     const body = await req.json();
-    const businessId = typeof body?.business_id === 'string' ? body.business_id : null;
-    const requestedUserId = typeof body?.user_id === 'string' ? body.user_id : null;
+    const businessId = typeof body?.business_id === "string" ? body.business_id : null;
+    const requestedUserId = typeof body?.user_id === "string" ? body.user_id : null;
 
     if (!businessId) {
-      return NextResponse.json({ error: 'business_id is required' }, { status: 400 });
+      return NextResponse.json({ error: "business_id is required" }, { status: 400 });
     }
 
     const { data: business, error: businessError } = await supabase
-      .from('businesses')
-      .select('id, owner_id, name')
-      .eq('id', businessId)
+      .from("businesses")
+      .select("id, owner_id, name")
+      .eq("id", businessId)
       .maybeSingle();
 
     if (businessError || !business) {
-      return NextResponse.json({ error: 'Business not found' }, { status: 404 });
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
     const ownedBusinessIds = await getOwnedBusinessIds(supabase, user.id);
@@ -311,31 +328,35 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
 
     if (!requestedUserId && userOwnsBusiness) {
       return NextResponse.json(
-        { error: 'Business owners must provide user_id when starting a customer conversation.' },
+        { error: "Business owners must provide user_id when starting a customer conversation." },
         { status: 400 }
       );
     }
 
     if (requestedUserId && !userOwnsBusiness) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     if (conversationUserId === business.owner_id) {
-      return NextResponse.json({ error: 'Cannot create a conversation with yourself.' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Cannot create a conversation with yourself." },
+        { status: 400 }
+      );
     }
 
-    const { data: existingConversations, error: existingError } = await selectConversationsWithFallback((selectClause) =>
-      supabase
-        .from('conversations')
-        .select(selectClause)
-        .eq('user_id', conversationUserId)
-        .eq('business_id', businessId)
-        .order('created_at', { ascending: true })
-        .limit(1)
-    );
+    const { data: existingConversations, error: existingError } =
+      await selectConversationsWithFallback((selectClause) =>
+        supabase
+          .from("conversations")
+          .select(selectClause)
+          .eq("user_id", conversationUserId)
+          .eq("business_id", businessId)
+          .order("created_at", { ascending: true })
+          .limit(1)
+      );
 
     if (existingError) {
-      console.error('[Conversations API] Existing conversation lookup failed:', existingError);
+      console.error("[Conversations API] Existing conversation lookup failed:", existingError);
     }
 
     const existingConversation = existingConversations?.[0];
@@ -345,7 +366,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
         {
           data: formatConversationListItem(
             existingConversation,
-            conversationUserId === user.id ? 'user' : 'business'
+            conversationUserId === user.id ? "user" : "business"
           ),
           created: false,
         },
@@ -357,7 +378,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
       user_id: conversationUserId,
       business_id: businessId,
       owner_id: business.owner_id || null,
-      last_message_preview: '',
+      last_message_preview: "",
       last_message_at: new Date().toISOString(),
       user_unread_count: 0,
       business_unread_count: 0,
@@ -370,21 +391,23 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
       last_message_at: new Date().toISOString(),
     };
 
-    const {
-      data: insertedConversation,
-      error: insertError,
-    } = await insertConversationWithFallback(supabase, modernInsertPayload, legacyInsertPayload);
+    const { data: insertedConversation, error: insertError } = await insertConversationWithFallback(
+      supabase,
+      modernInsertPayload,
+      legacyInsertPayload
+    );
 
     if (insertError) {
-      if (insertError.code === '23505') {
-        const { data: fallbackConversations } = await selectConversationsWithFallback((selectClause) =>
-          supabase
-            .from('conversations')
-            .select(selectClause)
-            .eq('user_id', conversationUserId)
-            .eq('business_id', businessId)
-            .order('created_at', { ascending: true })
-            .limit(1)
+      if (insertError.code === "23505") {
+        const { data: fallbackConversations } = await selectConversationsWithFallback(
+          (selectClause) =>
+            supabase
+              .from("conversations")
+              .select(selectClause)
+              .eq("user_id", conversationUserId)
+              .eq("business_id", businessId)
+              .order("created_at", { ascending: true })
+              .limit(1)
         );
 
         const fallbackConversation = fallbackConversations?.[0];
@@ -393,7 +416,7 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
             {
               data: formatConversationListItem(
                 fallbackConversation,
-                conversationUserId === user.id ? 'user' : 'business'
+                conversationUserId === user.id ? "user" : "business"
               ),
               created: false,
             },
@@ -402,9 +425,9 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
         }
       }
 
-      console.error('[Conversations API] Create error:', insertError);
+      console.error("[Conversations API] Create error:", insertError);
       return NextResponse.json(
-        { error: 'Failed to create conversation', details: insertError?.message || null },
+        { error: "Failed to create conversation", details: insertError?.message || null },
         { status: 500 }
       );
     }
@@ -413,14 +436,17 @@ export const POST = withUser(async (req: NextRequest, { user, supabase }) => {
       {
         data: formatConversationListItem(
           insertedConversation,
-          conversationUserId === user.id ? 'user' : 'business'
+          conversationUserId === user.id ? "user" : "business"
         ),
         created: true,
       },
       { status: 201 }
     );
   } catch (error: any) {
-    console.error('[Conversations API] Unexpected create error:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error?.message }, { status: 500 });
+    console.error("[Conversations API] Unexpected create error:", error);
+    return NextResponse.json(
+      { error: "Internal server error", details: error?.message },
+      { status: 500 }
+    );
   }
 });

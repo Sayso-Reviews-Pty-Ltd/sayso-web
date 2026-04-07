@@ -59,8 +59,10 @@ export default function PhoneOtpModal({
     return Number.isFinite(parsed) ? parsed : 0;
   }, [session?.expiresAt]);
 
-  const expirySecondsLeft = expiresAtMs > 0 ? Math.max(0, Math.ceil((expiresAtMs - nowMs) / 1000)) : 0;
-  const resendSecondsLeft = resendAvailableAtMs > 0 ? Math.max(0, Math.ceil((resendAvailableAtMs - nowMs) / 1000)) : 0;
+  const expirySecondsLeft =
+    expiresAtMs > 0 ? Math.max(0, Math.ceil((expiresAtMs - nowMs) / 1000)) : 0;
+  const resendSecondsLeft =
+    resendAvailableAtMs > 0 ? Math.max(0, Math.ceil((resendAvailableAtMs - nowMs) / 1000)) : 0;
 
   const hasExpired = expirySecondsLeft <= 0;
   const canVerify = otpCode.length === 6 && !isVerifying && !hasExpired && !autoModeEnabled;
@@ -144,7 +146,12 @@ export default function PhoneOtpModal({
   };
 
   return (
-    <Dialog open={open && Boolean(session)} onOpenChange={(isOpen) => { if (!isOpen && !isVerifying) onClose(); }}>
+    <Dialog
+      open={open && Boolean(session)}
+      onOpenChange={(isOpen) => {
+        if (!isOpen && !isVerifying) onClose();
+      }}
+    >
       <DialogContent className="max-w-md p-0 gap-0">
         <DialogTitle className="sr-only">Verify Phone Number</DialogTitle>
         <DialogDescription className="sr-only">Enter the OTP sent to your phone</DialogDescription>

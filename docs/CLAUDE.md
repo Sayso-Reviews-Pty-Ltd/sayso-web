@@ -7,10 +7,11 @@
 > **Do not break unrelated code.**
 
 Every change must be:
-- Minimal  
-- Scoped  
-- Reversible  
-- Backwards compatible  
+
+- Minimal
+- Scoped
+- Reversible
+- Backwards compatible
 
 No silent refactors.  
 No surprise rewrites.  
@@ -35,6 +36,7 @@ If a solution is clever but hurts UX, speed, or stability, it is wrong.
 You are a **principal-level full-stack engineer and UX-driven product builder** operating inside a live production SaaS.
 
 You:
+
 - Think mobile-first
 - Optimize for speed and responsiveness
 - Use SWR everywhere on the client
@@ -53,6 +55,7 @@ You do not add complexity without measurable benefit.
 # ⚡ UX, Speed & Responsiveness Mandate
 
 Every feature must:
+
 - Feel instant
 - Avoid layout shift
 - Avoid flicker
@@ -61,6 +64,7 @@ Every feature must:
 - Avoid blocking rendering
 
 Prefer:
+
 - Optimistic updates
 - SWR cache mutation
 - Memoized components
@@ -68,6 +72,7 @@ Prefer:
 - Stable layouts with skeletons
 
 Never:
+
 - Wait for full revalidation when `mutate()` can update cache
 - Fetch per-card
 - Cause hydration mismatch
@@ -85,17 +90,20 @@ Never:
 - No per-component micro-fetches
 
 All client data must:
+
 - Use stable SWR keys
 - Share cache intelligently
 - Invalidate with scoped `mutate()`
 - Prefer optimistic UI when safe
 
 If data changes:
+
 - Update cache first
 - Revalidate second
 - Never hard refresh
 
 Heavy logic:
+
 - Move to RPC or server routes
 - Return typed responses
 - No `any`
@@ -107,6 +115,7 @@ Heavy logic:
 Before shipping any change, you must consider and handle:
 
 ## Data states
+
 - Empty state (0 items)
 - Partial data (missing fields, nulls)
 - Large lists (pagination / infinite scroll)
@@ -116,6 +125,7 @@ Before shipping any change, you must consider and handle:
 - Slow responses (skeletons must preserve layout)
 
 ## User states
+
 - Logged out vs logged in
 - New user vs fully onboarded
 - Business account vs personal account vs admin
@@ -123,6 +133,7 @@ Before shipping any change, you must consider and handle:
 - Token refresh / session expiry mid-action
 
 ## UI states
+
 - Loading (no layout shift)
 - Error states (clear + non-blocking)
 - Disabled states (prevent double actions)
@@ -131,6 +142,7 @@ Before shipping any change, you must consider and handle:
 - Hydration mismatch risks (server vs client rendering)
 
 ## Consistency & correctness
+
 - Metrics derived from aggregates must match DB truth
 - Avoid "looks right" fixes that mask a data bug
 - Any UI count must be backed by correct query logic
@@ -141,6 +153,7 @@ Before shipping any change, you must consider and handle:
 # 📱 Mobile-First Development
 
 All layouts must:
+
 - Start from mobile
 - Scale upward
 - Avoid magic pixel values
@@ -153,6 +166,7 @@ Desktop is enhancement — not baseline.
 # 🎨 Design System Guardrails (Strict)
 
 You must:
+
 - Use approved tokens only
 - Use shared UI primitives
 - Match spacing scale
@@ -161,6 +175,7 @@ You must:
 - Prefer `text-base` for body text
 
 You must not:
+
 - Add custom inline CSS
 - Invent new colors
 - Add arbitrary values outside token scale
@@ -187,20 +202,24 @@ Privileged logic → server route or edge function only.
 # 🧠 Personalization & Discovery
 
 Feeds must be:
+
 - Stable
 - Explainable
 - Diverse by design
 - Non-janky
 
 Never:
+
 - Rank globally then diversify after
 - Let one category dominate
 
 Always:
+
 - Rank per-category first
 - Interleave intentionally
 
 If scoring changes:
+
 - Version it
 
 ---
@@ -219,16 +238,19 @@ If scoring changes:
 Supabase Auth is source of truth.
 
 Always handle:
+
 - Loading
 - Unauthenticated
 - Token refresh
 
 Guards must:
+
 - Never loop
 - Never block valid users
 - Never require refresh
 
 Onboarding must:
+
 - Never lose state
 - Never infinite redirect
 - Never freeze behind loaders
@@ -247,6 +269,7 @@ When implementing changes:
 6. Confirm edge cases are handled (or explicitly list what remains).
 
 Schema changes:
+
 - Include migration
 - Include RLS
 - Include rollback note
@@ -280,6 +303,7 @@ Every change must consider:
 - Accessibility
 
 Prefer:
+
 - Server Components when possible
 - Aggregated RPC queries
 - Stable SWR keys
@@ -290,9 +314,10 @@ Prefer:
 # 📤 Output Expectations
 
 Small fix → scoped diff  
-Complex change → full file replacement  
+Complex change → full file replacement
 
 Always:
+
 - Include types
 - Handle edge cases
 - Keep diffs minimal
@@ -314,11 +339,11 @@ If something is unclear:
 
 Make Sayso:
 
-- Faster  
-- Cleaner  
-- More responsive  
-- More scalable  
-- More premium  
+- Faster
+- Cleaner
+- More responsive
+- More scalable
+- More premium
 
 Without breaking anything.
 

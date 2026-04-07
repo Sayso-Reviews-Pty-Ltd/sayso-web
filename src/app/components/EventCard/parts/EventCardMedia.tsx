@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { m } from 'framer-motion';
-import Image from 'next/image';
-import { BLUR_DATA_URL } from '../EventCard.constants';
-import { RAIL_CARD_MEDIA_HEIGHT } from '../../HomeSectionRow/cardDimensions';
+import { m } from "framer-motion";
+import Image from "next/image";
+import { BLUR_DATA_URL } from "../EventCard.constants";
+import { RAIL_CARD_MEDIA_HEIGHT } from "../../HomeSectionRow/cardDimensions";
 
 interface EventCardMediaProps {
   mediaImage: string;
@@ -34,7 +34,10 @@ export function EventCardMedia({
       >
         {showLoadingOverlay && (
           <div className="absolute inset-0 bg-charcoal/5 animate-pulse z-10 flex items-center justify-center">
-            <span className="w-10 h-10 border-2 border-white/50 border-t-navbar-bg rounded-full animate-spin" aria-hidden />
+            <span
+              className="w-10 h-10 border-2 border-white/50 border-t-navbar-bg rounded-full animate-spin"
+              aria-hidden
+            />
             <span className="sr-only">Loading image</span>
           </div>
         )}
@@ -43,7 +46,11 @@ export function EventCardMedia({
           alt={altText}
           fill
           sizes="(max-width: 640px) 85vw, 340px"
-          className={hasRealImage ? "object-cover card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none" : "object-contain w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"}
+          className={
+            hasRealImage
+              ? "object-cover card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"
+              : "object-contain w-32 h-32 sm:w-36 sm:h-36 md:w-32 md:h-32 card-img-zoom sm:group-active:scale-[0.98] motion-reduce:transition-none"
+          }
           quality={hasRealImage ? 75 : 60}
           priority={false}
           onLoadingComplete={onImageLoadingComplete}

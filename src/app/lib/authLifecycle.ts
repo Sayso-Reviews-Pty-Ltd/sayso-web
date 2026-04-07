@@ -18,20 +18,17 @@ function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
-export function emitAuthLifecycleEvent(
-  type: AuthLifecycleEventType,
-  reason?: string,
-): void {
+export function emitAuthLifecycleEvent(type: AuthLifecycleEventType, reason?: string): void {
   if (!isBrowser()) return;
   window.dispatchEvent(
     new CustomEvent<AuthLifecycleEventDetail>(EVENT_NAME, {
       detail: { type, reason, timestamp: Date.now() },
-    }),
+    })
   );
 }
 
 export function subscribeAuthLifecycleEvent(
-  listener: (detail: AuthLifecycleEventDetail) => void,
+  listener: (detail: AuthLifecycleEventDetail) => void
 ): () => void {
   if (!isBrowser()) return () => {};
 

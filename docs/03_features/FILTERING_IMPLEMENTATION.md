@@ -11,21 +11,23 @@ This implementation tracks user selected interests and subcategories from the on
 A custom React hook that fetches and manages user preferences.
 
 **Features:**
+
 - Fetches user's interests, subcategories, and deal-breakers from the API
 - Handles loading states and error management
 - Provides a refetch function for manual updates
 - Exports a helper hook `useUserInterestIds()` that returns combined interest IDs
 
 **Usage:**
+
 ```typescript
 import { useUserPreferences } from '@/app/hooks/useUserPreferences';
 
 function MyComponent() {
   const { interests, subcategories, dealbreakers, loading, error } = useUserPreferences();
-  
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  
+
   return (
     <div>
       <p>Selected Interests: {interests.length}</p>
@@ -42,6 +44,7 @@ REST API endpoint that fetches the current authenticated user's preferences.
 **Endpoint:** `GET /api/user/preferences`
 
 **Returns:**
+
 ```json
 {
   "interests": [
@@ -60,6 +63,7 @@ REST API endpoint that fetches the current authenticated user's preferences.
 ```
 
 **Database Queries:**
+
 - Fetches from `user_interests` table
 - Fetches from `user_subcategories` table
 - Fetches from `user_dealbreakers` table
@@ -70,14 +74,17 @@ REST API endpoint that fetches the current authenticated user's preferences.
 Updated to support interest-based filtering.
 
 **New Query Parameter:**
+
 - `interest_ids`: Comma-separated list of interest/subcategory IDs to filter by
 
 **Example:**
+
 ```
 GET /api/businesses?limit=20&sort_by=total_rating&sort_order=desc&interest_ids=food-drink,beauty-wellness
 ```
 
 **Filtering Logic:**
+
 - Filters businesses to only show those that match the provided interest IDs
 - Can be combined with other filters (category, location, price_range, etc.)
 
@@ -86,6 +93,7 @@ GET /api/businesses?limit=20&sort_by=total_rating&sort_order=desc&interest_ids=f
 Updated to support interest-based filtering.
 
 **New Option:**
+
 ```typescript
 interface UseBusinessesOptions {
   // ... existing options ...
@@ -94,13 +102,14 @@ interface UseBusinessesOptions {
 ```
 
 **Usage:**
+
 ```typescript
 // Fetch businesses with interest filtering
 const { businesses } = useBusinesses({
   limit: 20,
-  sortBy: 'total_rating',
-  sortOrder: 'desc',
-  interestIds: ['food-drink', 'beauty-wellness']
+  sortBy: "total_rating",
+  sortOrder: "desc",
+  interestIds: ["food-drink", "beauty-wellness"],
 });
 ```
 
@@ -109,35 +118,36 @@ const { businesses } = useBusinesses({
 Now automatically filters businesses based on user's selected interests and subcategories.
 
 **Implementation:**
+
 - Calls `useUserPreferences()` internally
 - Extracts all interest and subcategory IDs
 - Passes them to `useBusinesses()` for filtering
 - Falls back to unfiltered results if user has no preferences
 
 **Before:**
+
 ```typescript
 export function useForYouBusinesses(limit: number = 10): UseBusinessesResult {
   return useBusinesses({
     limit,
-    sortBy: 'total_rating',
-    sortOrder: 'desc',
+    sortBy: "total_rating",
+    sortOrder: "desc",
   });
 }
 ```
 
 **After:**
+
 ```typescript
 export function useForYouBusinesses(limit: number = 10): UseBusinessesResult {
   const { interests, subcategories } = useUserPreferences();
-  
-  const interestIds = interests.map((i) => i.id).concat(
-    subcategories.map((s) => s.id)
-  );
+
+  const interestIds = interests.map((i) => i.id).concat(subcategories.map((s) => s.id));
 
   return useBusinesses({
     limit,
-    sortBy: 'total_rating',
-    sortOrder: 'desc',
+    sortBy: "total_rating",
+    sortOrder: "desc",
     interestIds: interestIds.length > 0 ? interestIds : undefined,
   });
 }
@@ -227,6 +237,7 @@ The implementation assumes businesses have associated interests/categories. The 
 To test the implementation:
 
 1. **Set User Preferences:**
+
    ```bash
    curl -X POST http://localhost:3000/api/user/onboarding \
      -H "Content-Type: application/json" \
@@ -237,11 +248,13 @@ To test the implementation:
    ```
 
 2. **Fetch User Preferences:**
+
    ```bash
    curl http://localhost:3000/api/user/preferences
    ```
 
 3. **Fetch Filtered Businesses:**
+
    ```bash
    curl "http://localhost:3000/api/businesses?interest_ids=food-drink,beauty-wellness&limit=20"
    ```
@@ -268,4 +281,3 @@ To test the implementation:
 - All endpoints require authentication (`getServerSupabase()` validates user session)
 - Users can only access their own preferences
 - Invalid or unauthorized requests return 401 Unauthorized
-

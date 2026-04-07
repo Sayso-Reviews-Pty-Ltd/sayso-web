@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { StatCard } from '@/components/atoms/StatCard';
+import React from "react";
+import { StatCard } from "@/components/atoms/StatCard";
 
 export interface Stat {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -16,15 +16,11 @@ export interface StatsGridProps {
   className?: string;
 }
 
-export const StatsGrid: React.FC<StatsGridProps> = ({
-  stats,
-  columns = 3,
-  className = '',
-}) => {
+export const StatsGrid: React.FC<StatsGridProps> = ({ stats, columns = 3, className = "" }) => {
   const gridCols = {
-    2: 'grid-cols-2',
-    3: 'grid-cols-3',
-    4: 'grid-cols-4',
+    2: "grid-cols-2",
+    3: "grid-cols-3",
+    4: "grid-cols-4",
   }[columns];
 
   return (

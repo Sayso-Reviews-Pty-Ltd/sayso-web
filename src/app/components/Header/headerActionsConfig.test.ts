@@ -1,8 +1,4 @@
-import {
-  DISCOVER_LINKS,
-  PRIMARY_LINKS,
-  getAllNavLinksForRole,
-} from "./headerActionsConfig";
+import { DISCOVER_LINKS, PRIMARY_LINKS, getAllNavLinksForRole } from "./headerActionsConfig";
 
 describe("getAllNavLinksForRole", () => {
   it("returns business-only links for business accounts", () => {

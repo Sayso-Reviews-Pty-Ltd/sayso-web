@@ -3,20 +3,20 @@
  * Defines the structure for filtering businesses/places
  */
 
-export type PriceRange = 'R' | 'RR' | 'RRR' | 'RRRR';
+export type PriceRange = "R" | "RR" | "RRR" | "RRRR";
 
 export type SortOption =
-  | 'relevance'    // Matches user interests (default)
-  | 'distance'     // Closest first
-  | 'rating'       // Highest rated first
-  | 'reviews'      // Most reviewed
-  | 'newest'       // Recently added
-  | 'trending';    // Popular now
+  | "relevance" // Matches user interests (default)
+  | "distance" // Closest first
+  | "rating" // Highest rated first
+  | "reviews" // Most reviewed
+  | "newest" // Recently added
+  | "trending"; // Popular now
 
 export type DistanceOption = 1 | 5 | 10 | 20; // kilometers
 
 export interface LocationFilter {
-  type: 'near_me' | 'coordinates' | 'address';
+  type: "near_me" | "coordinates" | "address";
   lat?: number;
   lng?: number;
   address?: string;
@@ -40,7 +40,7 @@ export interface HomeFilters {
   features?: string[]; // outdoor_seating, delivery, etc.
 
   // Quick filters (derived state, not stored)
-  quickFilter?: 'popular' | 'hidden_gems' | 'recent' | 'verified';
+  quickFilter?: "popular" | "hidden_gems" | "recent" | "verified";
 }
 
 export interface FilterState extends HomeFilters {
@@ -52,13 +52,13 @@ export interface FilterState extends HomeFilters {
 // Default filter values based on user's onboarding
 export const getDefaultFilters = (userInterests?: string[]): HomeFilters => ({
   location: {
-    type: 'near_me',
+    type: "near_me",
     radiusKm: 5,
   },
   categories: userInterests || [],
   minRating: 4.0,
-  sortBy: 'relevance',
-  priceRange: ['R', 'RR', 'RRR', 'RRRR'], // All price ranges by default
+  sortBy: "relevance",
+  priceRange: ["R", "RR", "RRR", "RRRR"], // All price ranges by default
   openNow: false,
   mustMeetDealbreakers: true, // Default to ON - respect user preferences
   subcategories: [],
@@ -73,8 +73,8 @@ export const countActiveFilters = (filters: HomeFilters, defaults: HomeFilters):
   if (filters.location.radiusKm !== defaults.location.radiusKm) count++;
 
   // Categories filtered (less than all interests)
-  if (filters.categories.length > 0 &&
-      filters.categories.length !== defaults.categories.length) count++;
+  if (filters.categories.length > 0 && filters.categories.length !== defaults.categories.length)
+    count++;
 
   // Rating filter changed
   if (filters.minRating !== defaults.minRating) count++;
@@ -103,22 +103,28 @@ export const countActiveFilters = (filters: HomeFilters, defaults: HomeFilters):
 // Filter chip labels for display
 export const getFilterLabel = (key: keyof HomeFilters, value: any): string => {
   switch (key) {
-    case 'location':
-      return value.radiusKm === 20 ? 'Near Me' : `${value.radiusKm} km`;
-    case 'minRating':
+    case "location":
+      return value.radiusKm === 20 ? "Near Me" : `${value.radiusKm} km`;
+    case "minRating":
       return `${value}+ ⭐`;
-    case 'priceRange':
-      return value.join('');
-    case 'openNow':
-      return 'Open Now';
-    case 'mustMeetDealbreakers':
-      return 'Meets Standards';
-    case 'sortBy':
-      return value === 'relevance' ? 'For You' :
-             value === 'distance' ? 'Nearby' :
-             value === 'rating' ? 'Top Rated' :
-             value === 'reviews' ? 'Popular' :
-             value === 'newest' ? 'New' : 'Trending';
+    case "priceRange":
+      return value.join("");
+    case "openNow":
+      return "Open Now";
+    case "mustMeetDealbreakers":
+      return "Meets Standards";
+    case "sortBy":
+      return value === "relevance"
+        ? "For You"
+        : value === "distance"
+          ? "Nearby"
+          : value === "rating"
+            ? "Top Rated"
+            : value === "reviews"
+              ? "Popular"
+              : value === "newest"
+                ? "New"
+                : "Trending";
     default:
       return String(value);
   }

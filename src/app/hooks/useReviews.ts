@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { invalidateBusinessPreview } from './useBusinessReviewPreview';
-import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
-import { useEmailVerification } from './useEmailVerification';
-import type { ReviewWithUser } from '../lib/types/database';
-import { swrConfig } from '../lib/swrConfig';
+import { useCallback, useState } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { invalidateBusinessPreview } from "./useBusinessReviewPreview";
+import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
+import { useEmailVerification } from "./useEmailVerification";
+import type { ReviewWithUser } from "../lib/types/database";
+import { swrConfig } from "../lib/swrConfig";
 interface ReviewFormData {
   business_id: string;
   rating: number;
@@ -29,7 +29,8 @@ const REVIEW_ERROR_MESSAGES: Record<string, string> = {
   CONTENT_TOO_LONG: "Your review is too long. Please keep it under 5000 characters.",
   TITLE_TOO_LONG: "Review title is too long. Please keep it under 100 characters.",
   VALIDATION_FAILED: "Please check your review and try again.",
-  CONTENT_MODERATION_FAILED: "Your review contains content that doesn't meet our guidelines. Please revise.",
+  CONTENT_MODERATION_FAILED:
+    "Your review contains content that doesn't meet our guidelines. Please revise.",
   BUSINESS_NOT_FOUND: "We couldn't find that business. Please try again.",
   EVENT_NOT_FOUND: "We couldn't find that event. It may have been removed.",
   SPECIAL_NOT_FOUND: "We couldn't find that special. It may have expired.",
@@ -43,7 +44,12 @@ const REVIEW_ERROR_MESSAGES: Record<string, string> = {
   SERVER_ERROR: "Something went wrong on our side. Please try again.",
 };
 
-function getReviewErrorMessage(result: { message?: string; code?: string; error?: string; details?: string }): string {
+function getReviewErrorMessage(result: {
+  message?: string;
+  code?: string;
+  error?: string;
+  details?: string;
+}): string {
   // Prefer explicit message from API
   if (result.message) return result.message;
   // Fall back to code mapping
@@ -51,7 +57,7 @@ function getReviewErrorMessage(result: { message?: string; code?: string; error?
     return REVIEW_ERROR_MESSAGES[result.code];
   }
   // Legacy error/details fields
-  if (result.details && typeof result.details === 'string') return result.details;
+  if (result.details && typeof result.details === "string") return result.details;
   if (result.error) return result.error;
   // Ultimate fallback
   return "An error occurred. Please try again.";
@@ -60,18 +66,18 @@ function getReviewErrorMessage(result: { message?: string; code?: string; error?
 async function fetchReviews([, businessId]: [string, string]): Promise<ReviewWithUser[]> {
   const response = await fetch(`/api/reviews?business_id=${businessId}&limit=50`);
   if (!response.ok) {
-    throw new Error('Failed to fetch reviews');
+    throw new Error("Failed to fetch reviews");
   }
   const result = await response.json();
   const rawReviews = result.reviews || [];
   return rawReviews.map((review: any) => {
-    const profile = Array.isArray(review.profile) ? review.profile[0] : (review.profile || {});
+    const profile = Array.isArray(review.profile) ? review.profile[0] : review.profile || {};
     const displayName = profile?.display_name || profile?.username;
     return {
       ...review,
       user: {
-        id: review.user_id || profile?.user_id || '',
-        name: review.user_id ? (displayName || 'Anonymous') : 'Anonymous',
+        id: review.user_id || profile?.user_id || "",
+        name: review.user_id ? displayName || "Anonymous" : "Anonymous",
         avatar_url: profile?.avatar_url || undefined,
       },
       profile,
@@ -80,19 +86,21 @@ async function fetchReviews([, businessId]: [string, string]): Promise<ReviewWit
 }
 
 export function useReviews(businessId?: string) {
-  const swrKey = businessId ? (['/api/reviews', businessId] as [string, string]) : null;
+  const swrKey = businessId ? (["/api/reviews", businessId] as [string, string]) : null;
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchReviews, swrConfig);
 
   const addOptimisticReview = (review: ReviewWithUser) => {
-    mutate(prev => [review, ...(prev ?? [])], { revalidate: false });
+    mutate((prev) => [review, ...(prev ?? [])], { revalidate: false });
   };
 
   const replaceOptimisticReview = (tempId: string, realReview: ReviewWithUser) => {
-    mutate(prev => prev?.map(r => r.id === tempId ? realReview : r) ?? [], { revalidate: false });
+    mutate((prev) => prev?.map((r) => (r.id === tempId ? realReview : r)) ?? [], {
+      revalidate: false,
+    });
   };
 
   const removeReview = (reviewId: string) => {
-    mutate(prev => prev?.filter(r => r.id !== reviewId) ?? [], { revalidate: false });
+    mutate((prev) => prev?.filter((r) => r.id !== reviewId) ?? [], { revalidate: false });
   };
 
   return {
@@ -113,14 +121,16 @@ export function useReviewSubmission() {
   const { showToast } = useToast();
   const { checkEmailVerification } = useEmailVerification();
   const showReviewSubmittedToast = useCallback(() => {
-    showToast('Review submitted', 'sage', 3000);
+    showToast("Review submitted", "sage", 3000);
   }, [showToast]);
 
-  const submitReview = async (reviewData: ReviewFormData): Promise<{ success: boolean; review?: any }> => {
+  const submitReview = async (
+    reviewData: ReviewFormData
+  ): Promise<{ success: boolean; review?: any }> => {
     // Wait for auth to finish loading (up to 2 seconds)
     let attempts = 0;
     while (isLoading && attempts < 4) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       attempts++;
     }
 
@@ -129,18 +139,21 @@ export function useReviewSubmission() {
     if (!currentUser) {
       // Try to get user from session directly
       try {
-        const { AuthService } = await import('../lib/auth');
+        const { AuthService } = await import("../lib/auth");
         currentUser = await AuthService.getCurrentUser();
-        console.log('Fetched user directly from session:', currentUser ? { id: currentUser.id, email: currentUser.email } : null);
+        console.log(
+          "Fetched user directly from session:",
+          currentUser ? { id: currentUser.id, email: currentUser.email } : null
+        );
       } catch (err) {
-        console.error('Error fetching current user:', err);
+        console.error("Error fetching current user:", err);
       }
     }
 
     // Check email verification if we have a user (guests can submit as Anonymous)
     if (currentUser && !currentUser.email_verified) {
-      if (!checkEmailVerification('submit reviews')) {
-        setError('You must verify your email to submit reviews');
+      if (!checkEmailVerification("submit reviews")) {
+        setError("You must verify your email to submit reviews");
         return { success: false };
       }
     }
@@ -151,31 +164,32 @@ export function useReviewSubmission() {
       setError(null);
 
       const formData = new FormData();
-      formData.append('business_id', reviewData.business_id);
-      formData.append('rating', reviewData.rating.toString());
+      formData.append("business_id", reviewData.business_id);
+      formData.append("rating", reviewData.rating.toString());
       if (reviewData.title) {
-        formData.append('title', reviewData.title);
+        formData.append("title", reviewData.title);
       }
-      formData.append('content', reviewData.content);
-      reviewData.tags.forEach(tag => formData.append('tags', tag));
+      formData.append("content", reviewData.content);
+      reviewData.tags.forEach((tag) => formData.append("tags", tag));
       if (reviewData.images?.length) {
-        const { ImageUploadService } = await import('../lib/services/imageUploadService');
+        const { ImageUploadService } = await import("../lib/services/imageUploadService");
         const compressedImages = await ImageUploadService.compressFilesForUpload(reviewData.images);
         compressedImages.forEach((image, index) => {
-          const fileName = image.name && image.name.trim() ? image.name : `photo_${Date.now()}_${index}.jpg`;
-          formData.append('images', image, fileName);
+          const fileName =
+            image.name && image.name.trim() ? image.name : `photo_${Date.now()}_${index}.jpg`;
+          formData.append("images", image, fileName);
         });
       }
 
       let anonymousId: string | null = null;
       if (!currentUser) {
-        const { getOrCreateAnonymousId } = await import('../lib/utils/anonymousClient');
+        const { getOrCreateAnonymousId } = await import("../lib/utils/anonymousClient");
         anonymousId = getOrCreateAnonymousId();
       }
 
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: anonymousId ? { 'x-anonymous-id': anonymousId } : undefined,
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: anonymousId ? { "x-anonymous-id": anonymousId } : undefined,
         body: formData,
       });
 
@@ -184,9 +198,9 @@ export function useReviewSubmission() {
         result = await response.json();
       } catch {
         // JSON parsing failed
-        const errorMessage = 'Something went wrong. Please try again.';
+        const errorMessage = "Something went wrong. Please try again.";
         setError(errorMessage);
-        showToast(errorMessage, 'sage');
+        showToast(errorMessage, "sage");
         return { success: false };
       }
 
@@ -194,8 +208,8 @@ export function useReviewSubmission() {
       if (!response.ok || result.success === false) {
         const errorMessage = getReviewErrorMessage(result);
         setError(errorMessage);
-        showToast(errorMessage, 'sage');
-        console.error('[Review Submit] Error:', result);
+        showToast(errorMessage, "sage");
+        console.error("[Review Submit] Error:", result);
         return { success: false };
       }
 
@@ -203,16 +217,16 @@ export function useReviewSubmission() {
 
       // Instantly prepend the new review to the SWR cache for this business
       if (createdReview) {
-        const reviewKey: [string, string] = ['/api/reviews', reviewData.business_id];
+        const reviewKey: [string, string] = ["/api/reviews", reviewData.business_id];
         const profile = Array.isArray(createdReview.profile)
           ? createdReview.profile[0]
-          : (createdReview.profile || {});
+          : createdReview.profile || {};
         const displayName = profile?.display_name || profile?.username;
         const normalised: ReviewWithUser = {
           ...createdReview,
           user: {
-            id: createdReview.user_id || profile?.user_id || '',
-            name: createdReview.user_id ? (displayName || 'Anonymous') : 'Anonymous',
+            id: createdReview.user_id || profile?.user_id || "",
+            name: createdReview.user_id ? displayName || "Anonymous" : "Anonymous",
             avatar_url: profile?.avatar_url || undefined,
           },
           profile,
@@ -227,31 +241,34 @@ export function useReviewSubmission() {
 
       // Revalidate all business feed caches so rating/review count propagates
       globalMutate(
-        (key: unknown) => Array.isArray(key) && typeof key[0] === 'string' && (key[0] as string).includes('/api/businesses'),
+        (key: unknown) =>
+          Array.isArray(key) &&
+          typeof key[0] === "string" &&
+          (key[0] as string).includes("/api/businesses"),
         undefined,
         { revalidate: true }
       );
 
       // Invalidate event reviews if this is an event review
       if ((reviewData as any).event_id) {
-        globalMutate(['/api/events/reviews', (reviewData as any).event_id]);
+        globalMutate(["/api/events/reviews", (reviewData as any).event_id]);
       }
 
       // Invalidate reviewer profile for the submitting user (stats/review counts change)
       if (currentUser?.id) {
-        globalMutate(['/api/reviewers', currentUser.id]);
+        globalMutate(["/api/reviewers", currentUser.id]);
       }
 
       // Invalidate top reviewers list (review_count + avg_rating_given changed)
       globalMutate(
-        (key: unknown) => Array.isArray(key) && key[0] === '/api/reviewers/top',
+        (key: unknown) => Array.isArray(key) && key[0] === "/api/reviewers/top",
         undefined,
         { revalidate: true }
       );
 
       // Invalidate recent reviews feed
       globalMutate(
-        (key: unknown) => Array.isArray(key) && key[0] === '/api/reviews/recent',
+        (key: unknown) => Array.isArray(key) && key[0] === "/api/reviews/recent",
         undefined,
         { revalidate: true }
       );
@@ -261,19 +278,23 @@ export function useReviewSubmission() {
 
       // Success! Trigger badge check so new badges are awarded and UI can show them
       if (currentUser?.id) {
-        fetch('/api/badges/check-and-award', { method: 'POST', credentials: 'include' })
+        fetch("/api/badges/check-and-award", { method: "POST", credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (data?.newBadges?.length > 0) {
               globalMutate(
                 (key: unknown) =>
-                  Array.isArray(key) && typeof key[0] === 'string' && (key[0] as string).includes('/api/badges/user'),
+                  Array.isArray(key) &&
+                  typeof key[0] === "string" &&
+                  (key[0] as string).includes("/api/badges/user"),
                 undefined,
                 { revalidate: true }
               );
               globalMutate(
                 (key: unknown) =>
-                  Array.isArray(key) && typeof key[0] === 'string' && (key[0] as string).includes('/api/user/reviews'),
+                  Array.isArray(key) &&
+                  typeof key[0] === "string" &&
+                  (key[0] as string).includes("/api/user/reviews"),
                 undefined,
                 { revalidate: true }
               );
@@ -289,10 +310,10 @@ export function useReviewSubmission() {
       }
       return { success: true, review: createdReview };
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to submit review';
+      const errorMessage = err instanceof Error ? err.message : "Failed to submit review";
       setError(errorMessage);
-      showToast(errorMessage, 'sage');
-      console.error('[Review Submit] Unexpected error:', err);
+      showToast(errorMessage, "sage");
+      console.error("[Review Submit] Unexpected error:", err);
       return { success: false };
     } finally {
       setSubmitting(false);
@@ -301,8 +322,8 @@ export function useReviewSubmission() {
 
   const deleteReview = async (reviewId: string): Promise<boolean> => {
     if (!user) {
-      setError('You must be logged in to delete a review');
-      showToast('Log in to delete review', 'sage');
+      setError("You must be logged in to delete a review");
+      showToast("Log in to delete review", "sage");
       return false;
     }
 
@@ -311,50 +332,54 @@ export function useReviewSubmission() {
       setError(null);
 
       const response = await fetch(`/api/reviews/${reviewId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to delete review');
+        throw new Error(result.error || "Failed to delete review");
       }
 
-      showToast('Review deleted', 'sage', 2000);
+      showToast("Review deleted", "sage", 2000);
       globalMutate(
         (key: unknown) =>
-          Array.isArray(key) && typeof key[0] === 'string' && (key[0] as string).includes('/api/user/reviews'),
+          Array.isArray(key) &&
+          typeof key[0] === "string" &&
+          (key[0] as string).includes("/api/user/reviews"),
         undefined,
         { revalidate: true }
       );
       globalMutate(
         (key: unknown) =>
-          Array.isArray(key) && typeof key[0] === 'string' && (key[0] as string).includes('/api/badges/user'),
+          Array.isArray(key) &&
+          typeof key[0] === "string" &&
+          (key[0] as string).includes("/api/badges/user"),
         undefined,
         { revalidate: true }
       );
       // Invalidate reviewer profile (review count changes)
       if (user?.id) {
-        globalMutate(['/api/reviewers', user.id]);
+        globalMutate(["/api/reviewers", user.id]);
       }
       // Invalidate recent reviews feed
       globalMutate(
-        (key: unknown) => Array.isArray(key) && key[0] === '/api/reviews/recent',
+        (key: unknown) => Array.isArray(key) && key[0] === "/api/reviews/recent",
         undefined,
         { revalidate: true }
       );
       // Invalidate top reviewers list (review_count + avg_rating_given changed)
       globalMutate(
-        (key: unknown) => Array.isArray(key) && key[0] === '/api/reviewers/top',
+        (key: unknown) => Array.isArray(key) && key[0] === "/api/reviewers/top",
         undefined,
         { revalidate: true }
       );
       return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete review';
+      const errorMessage = err instanceof Error ? err.message : "Failed to delete review";
       setError(errorMessage);
-      showToast(errorMessage, 'sage');
-      console.error('Error deleting review:', err);
+      showToast(errorMessage, "sage");
+      console.error("Error deleting review:", err);
       return false;
     } finally {
       setSubmitting(false);
@@ -363,7 +388,7 @@ export function useReviewSubmission() {
 
   const likeReview = async (reviewId: string): Promise<boolean | null> => {
     if (!user) {
-      showToast('Log in to like reviews', 'sage');
+      showToast("Log in to like reviews", "sage");
       return null;
     }
 
@@ -374,7 +399,7 @@ export function useReviewSubmission() {
       const isCurrentlyHelpful = statusData.helpful === true;
 
       // Toggle the vote
-      const method = isCurrentlyHelpful ? 'DELETE' : 'POST';
+      const method = isCurrentlyHelpful ? "DELETE" : "POST";
       const response = await fetch(`/api/reviews/${reviewId}/helpful`, {
         method,
       });
@@ -382,20 +407,16 @@ export function useReviewSubmission() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to toggle helpful vote');
+        throw new Error(result.error || "Failed to toggle helpful vote");
       }
 
       const newStatus = result.helpful === true;
-      showToast(
-        newStatus ? 'Marked helpful' : 'Vote removed',
-        'sage',
-        2000
-      );
+      showToast(newStatus ? "Marked helpful" : "Vote removed", "sage", 2000);
       return newStatus;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to like review';
-      showToast(errorMessage, 'sage');
-      console.error('Error liking review:', err);
+      const errorMessage = err instanceof Error ? err.message : "Failed to like review";
+      showToast(errorMessage, "sage");
+      console.error("Error liking review:", err);
       return null;
     }
   };
@@ -405,7 +426,7 @@ export function useReviewSubmission() {
     error,
     submitReview,
     deleteReview,
-    likeReview
+    likeReview,
   };
 }
 

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '../../../../lib/supabase/server';
-import { getCategoryLabelFromBusiness } from '../../../../utils/subcategoryPlaceholders';
-import { getInterestIdForSubcategory } from '../../../../lib/onboarding/subcategoryMapping';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "../../../../lib/supabase/server";
+import { getCategoryLabelFromBusiness } from "../../../../utils/subcategoryPlaceholders";
+import { getInterestIdForSubcategory } from "../../../../lib/onboarding/subcategoryMapping";
 
 const FETCH_TIMEOUT_MS = 1500;
-const CACHE_CONTROL = 'public, s-maxage=30, stale-while-revalidate=300';
+const CACHE_CONTROL = "public, s-maxage=30, stale-while-revalidate=300";
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -21,12 +21,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   });
 }
 
-function calculateDistanceKm(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
+function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371; // km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -45,28 +40,25 @@ function calculateDistanceKm(
  * Returns businesses similar to the target business
  * Uses weighted scoring based on category, subcategory, location, price, and ratings
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const start = Date.now();
   try {
     const { id: businessIdentifier } = await params;
 
-    if (!businessIdentifier || businessIdentifier.trim() === '') {
-      return NextResponse.json(
-        { error: 'Business ID or slug is required' },
-        { status: 400 }
-      );
+    if (!businessIdentifier || businessIdentifier.trim() === "") {
+      return NextResponse.json({ error: "Business ID or slug is required" }, { status: 400 });
     }
 
-    console.log('[API] GET /api/businesses/[id]/similar - Starting request for:', businessIdentifier);
+    console.log(
+      "[API] GET /api/businesses/[id]/similar - Starting request for:",
+      businessIdentifier
+    );
     const supabase = await getServerSupabase(req);
 
     // Parse query parameters
     const searchParams = req.nextUrl.searchParams;
-    const limit = parseInt(searchParams.get('limit') || '12', 10);
-    const radiusKm = parseFloat(searchParams.get('radius_km') || '50.0');
+    const limit = parseInt(searchParams.get("limit") || "12", 10);
+    const radiusKm = parseFloat(searchParams.get("radius_km") || "50.0");
 
     // Validate limit
     const validLimit = Math.min(Math.max(1, limit), 50); // Between 1 and 50
@@ -77,16 +69,16 @@ export async function GET(
 
     // Try slug first (using maybeSingle to avoid errors when not found)
     const { data: slugData, error: slugError } = await supabase
-      .from('businesses')
-      .select('id')
-      .eq('slug', businessIdentifier)
-      .eq('status', 'active')
-      .or('is_hidden.is.null,is_hidden.eq.false')
-      .or('is_system.is.null,is_system.eq.false')
+      .from("businesses")
+      .select("id")
+      .eq("slug", businessIdentifier)
+      .eq("status", "active")
+      .or("is_hidden.is.null,is_hidden.eq.false")
+      .or("is_system.is.null,is_system.eq.false")
       .maybeSingle();
 
     if (slugError) {
-      console.error('[API] Error checking slug:', slugError);
+      console.error("[API] Error checking slug:", slugError);
       // Continue to try ID lookup even if slug query fails
     } else if (slugData?.id) {
       targetBusinessId = slugData.id;
@@ -97,16 +89,16 @@ export async function GET(
       if (uuidRegex.test(businessIdentifier)) {
         // Check if business exists (using maybeSingle to avoid errors when not found)
         const { data: idData, error: idError } = await supabase
-          .from('businesses')
-          .select('id')
-          .eq('id', businessIdentifier)
-          .eq('status', 'active')
-          .or('is_hidden.is.null,is_hidden.eq.false')
-          .or('is_system.is.null,is_system.eq.false')
+          .from("businesses")
+          .select("id")
+          .eq("id", businessIdentifier)
+          .eq("status", "active")
+          .or("is_hidden.is.null,is_hidden.eq.false")
+          .or("is_system.is.null,is_system.eq.false")
           .maybeSingle();
 
         if (idError) {
-          console.error('[API] Error checking ID:', idError);
+          console.error("[API] Error checking ID:", idError);
         } else if (idData?.id) {
           targetBusinessId = businessIdentifier;
         }
@@ -114,85 +106,87 @@ export async function GET(
     }
 
     if (!targetBusinessId) {
-      console.log('[API] Business not found for identifier:', businessIdentifier);
-      return NextResponse.json(
-        { error: 'Business not found' },
-        { status: 404 }
-      );
+      console.log("[API] Business not found for identifier:", businessIdentifier);
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
     // Validate that targetBusinessId is a valid UUID before calling RPC
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(targetBusinessId)) {
-      console.error('[API] Invalid UUID format for targetBusinessId:', targetBusinessId);
-      return NextResponse.json(
-        { error: 'Invalid business identifier format' },
-        { status: 400 }
-      );
+      console.error("[API] Invalid UUID format for targetBusinessId:", targetBusinessId);
+      return NextResponse.json({ error: "Invalid business identifier format" }, { status: 400 });
     }
 
-    console.log('[API] Calling get_similar_businesses RPC with:', {
+    console.log("[API] Calling get_similar_businesses RPC with:", {
       targetBusinessId,
       limit: validLimit,
       radius_km: validRadius,
     });
 
     // Fetch target coords to compute distance client-side (RPC doesn't currently return distance).
-    const { data: targetCoords } = await withTimeout<{ data: { lat: number | null; lng: number | null } | null; error: unknown }>(
+    const { data: targetCoords } = await withTimeout<{
+      data: { lat: number | null; lng: number | null } | null;
+      error: unknown;
+    }>(
       supabase
-        .from('businesses')
-        .select('lat, lng')
-        .eq('id', targetBusinessId)
-        .or('is_hidden.is.null,is_hidden.eq.false')
-        .or('is_system.is.null,is_system.eq.false')
+        .from("businesses")
+        .select("lat, lng")
+        .eq("id", targetBusinessId)
+        .or("is_hidden.is.null,is_hidden.eq.false")
+        .or("is_system.is.null,is_system.eq.false")
         .maybeSingle() as any,
       FETCH_TIMEOUT_MS,
-      'similar:target-coords'
+      "similar:target-coords"
     );
 
     const targetLat = (targetCoords as any)?.lat as number | null | undefined;
     const targetLng = (targetCoords as any)?.lng as number | null | undefined;
 
     // Call the RPC function
-    const { data: similarBusinesses, error: rpcError } = await withTimeout<{ data: any[] | null; error: any }>(
-      supabase.rpc('get_similar_businesses', {
+    const { data: similarBusinesses, error: rpcError } = await withTimeout<{
+      data: any[] | null;
+      error: any;
+    }>(
+      supabase.rpc("get_similar_businesses", {
         p_target_business_id: targetBusinessId,
         p_limit: validLimit,
         p_radius_km: validRadius,
       }) as any,
       FETCH_TIMEOUT_MS,
-      'similar:rpc'
+      "similar:rpc"
     );
 
     if (rpcError) {
-      console.error('[API] Error calling get_similar_businesses RPC:', {
+      console.error("[API] Error calling get_similar_businesses RPC:", {
         code: rpcError.code,
         message: rpcError.message,
         details: rpcError.details,
         hint: rpcError.hint,
       });
-      
+
       // If RPC doesn't exist, return empty array (graceful degradation)
       if (
-        rpcError.code === '42883' || // function does not exist
-        rpcError.code === 'PGRST301' || // PostgREST: function not found
-        rpcError.message?.toLowerCase().includes('function') || 
-        rpcError.message?.toLowerCase().includes('does not exist') ||
-        rpcError.message?.toLowerCase().includes('could not find') ||
-        rpcError.message?.toLowerCase().includes('unknown function')
+        rpcError.code === "42883" || // function does not exist
+        rpcError.code === "PGRST301" || // PostgREST: function not found
+        rpcError.message?.toLowerCase().includes("function") ||
+        rpcError.message?.toLowerCase().includes("does not exist") ||
+        rpcError.message?.toLowerCase().includes("could not find") ||
+        rpcError.message?.toLowerCase().includes("unknown function")
       ) {
-        console.warn('[API] get_similar_businesses RPC function not found. Please run the migration: supabase/migrations/20250122_create_get_similar_businesses_function.sql');
+        console.warn(
+          "[API] get_similar_businesses RPC function not found. Please run the migration: supabase/migrations/20250122_create_get_similar_businesses_function.sql"
+        );
         const res = NextResponse.json({ businesses: [] });
-        res.headers.set('Cache-Control', CACHE_CONTROL);
-        res.headers.set('X-Query-Duration-MS', String(Date.now() - start));
+        res.headers.set("Cache-Control", CACHE_CONTROL);
+        res.headers.set("X-Query-Duration-MS", String(Date.now() - start));
         return res;
       }
 
       // In development, expose full error details for debugging
-      const isDev = process.env.NODE_ENV === 'development';
+      const isDev = process.env.NODE_ENV === "development";
       return NextResponse.json(
         {
-          error: 'Failed to fetch similar businesses',
+          error: "Failed to fetch similar businesses",
           details: rpcError.message,
           code: rpcError.code,
           ...(isDev && {
@@ -209,8 +203,8 @@ export async function GET(
       );
     }
 
-    const nonSystemBusinesses = (similarBusinesses || []).filter((business: any) => 
-      business?.is_system !== true && business?.is_hidden !== true
+    const nonSystemBusinesses = (similarBusinesses || []).filter(
+      (business: any) => business?.is_system !== true && business?.is_hidden !== true
     );
 
     if (nonSystemBusinesses.length === 0) {
@@ -226,12 +220,17 @@ export async function GET(
       const categorySlug = business.primary_subcategory_slug ?? business.category;
       const categoryLabel =
         business.primary_subcategory_label ??
-        getCategoryLabelFromBusiness({ ...business, category: categorySlug, category_label: business.primary_subcategory_label });
+        getCategoryLabelFromBusiness({
+          ...business,
+          category: categorySlug,
+          category_label: business.primary_subcategory_label,
+        });
 
       // Prioritize first uploaded image over image_url
-      const firstUploadedImage = business.uploaded_images && business.uploaded_images.length > 0 
-        ? business.uploaded_images[0] 
-        : null;
+      const firstUploadedImage =
+        business.uploaded_images && business.uploaded_images.length > 0
+          ? business.uploaded_images[0]
+          : null;
       const displayImage = firstUploadedImage || business.image_url;
 
       // Use slug for URL if available, fallback to ID
@@ -246,10 +245,10 @@ export async function GET(
       const latitude = (business.latitude ?? business.lat) as number | null | undefined;
       const longitude = (business.longitude ?? business.lng) as number | null | undefined;
       const distance_km =
-        typeof targetLat === 'number' &&
-        typeof targetLng === 'number' &&
-        typeof latitude === 'number' &&
-        typeof longitude === 'number'
+        typeof targetLat === "number" &&
+        typeof targetLng === "number" &&
+        typeof latitude === "number" &&
+        typeof longitude === "number"
           ? Math.round(calculateDistanceKm(targetLat, targetLng, latitude, longitude) * 10) / 10
           : undefined;
 
@@ -263,7 +262,7 @@ export async function GET(
         category_label: categoryLabel,
         sub_interest_id: categorySlug ?? undefined,
         subInterestId: categorySlug ?? undefined,
-        subInterestLabel: categoryLabel !== 'Miscellaneous' ? categoryLabel : undefined,
+        subInterestLabel: categoryLabel !== "Miscellaneous" ? categoryLabel : undefined,
         interestId,
         location: business.location,
         address: business.address || undefined,
@@ -277,14 +276,14 @@ export async function GET(
         badge: shouldShowBadge ? business.badge : undefined,
         href,
         verified: business.verified || false,
-        priceRange: business.price_range || '$$',
+        priceRange: business.price_range || "$$",
         hasRating,
         percentiles: business.percentiles
           ? {
               punctuality: business.percentiles.punctuality || 100,
               friendliness: business.percentiles.friendliness || 100,
               trustworthiness: business.percentiles.trustworthiness || 100,
-              'cost-effectiveness': business.percentiles['cost-effectiveness'] || 100,
+              "cost-effectiveness": business.percentiles["cost-effectiveness"] || 100,
             }
           : undefined,
         // Include similarity score for debugging/analytics (optional)
@@ -296,37 +295,39 @@ export async function GET(
     const response = NextResponse.json({
       businesses: transformedBusinesses,
     });
-    response.headers.set('Cache-Control', CACHE_CONTROL);
-    response.headers.set('X-Query-Duration-MS', String(Date.now() - start));
+    response.headers.set("Cache-Control", CACHE_CONTROL);
+    response.headers.set("X-Query-Duration-MS", String(Date.now() - start));
     return response;
   } catch (error: any) {
-    console.error('[API] Error in GET similar businesses:', {
+    console.error("[API] Error in GET similar businesses:", {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
       code: error?.code,
     });
-    
+
     // If it's an RPC-related error, try to return empty array gracefully
-    if (error?.message?.toLowerCase().includes('function') || 
-        error?.message?.toLowerCase().includes('rpc') ||
-        error?.code === '42883' ||
-        error?.code === 'PGRST301') {
-      console.warn('[API] RPC function error detected, returning empty array. Please run migration: supabase/migrations/20250122_create_get_similar_businesses_function.sql');
+    if (
+      error?.message?.toLowerCase().includes("function") ||
+      error?.message?.toLowerCase().includes("rpc") ||
+      error?.code === "42883" ||
+      error?.code === "PGRST301"
+    ) {
+      console.warn(
+        "[API] RPC function error detected, returning empty array. Please run migration: supabase/migrations/20250122_create_get_similar_businesses_function.sql"
+      );
       const res = NextResponse.json({ businesses: [] });
-      res.headers.set('Cache-Control', CACHE_CONTROL);
-      res.headers.set('X-Query-Duration-MS', String(Date.now() - start));
+      res.headers.set("Cache-Control", CACHE_CONTROL);
+      res.headers.set("X-Query-Duration-MS", String(Date.now() - start));
       return res;
     }
-    
+
     const res = NextResponse.json(
-      { error: 'Internal server error', details: error?.message || 'Unknown error' },
+      { error: "Internal server error", details: error?.message || "Unknown error" },
       { status: 500 }
     );
-    res.headers.set('Cache-Control', CACHE_CONTROL);
-    res.headers.set('X-Query-Duration-MS', String(Date.now() - start));
+    res.headers.set("Cache-Control", CACHE_CONTROL);
+    res.headers.set("X-Query-Duration-MS", String(Date.now() - start));
     return res;
   }
 }
-
-

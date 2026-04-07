@@ -31,20 +31,25 @@ ErrorPages/
 ## 📖 Documentation Files
 
 ### 1. **QUICK_REFERENCE.md**
+
 Quick lookups for developers while coding - error types table, props reference, common implementations, FAQ
 
 ### 2. **ERROR_DESIGN_SYSTEM.md**
+
 Complete design system guide - principles, colors, typography, spacing, component structure, animations
 
 ### 3. **IMPLEMENTATION_EXAMPLES.md**
+
 Practical code examples for all error types, error boundaries, advanced patterns, API integration
 
 ### 4. **MIGRATION_GUIDE.md**
+
 Details on what changed and refactoring - before/after, files modified, statistics, customization guide
 
 ## 🎨 Design System at a Glance
 
 ### Colors
+
 ```
 Primary:    Sage (#7D9B76)      - CTAs, accents, focus states
 Text:       Charcoal (#2D2D2D)  - Headings and body text
@@ -53,14 +58,14 @@ Background: Off-white (#E5E0E5) - Page background
 
 ## 🛠️ Error Types
 
-| Type | Use Case | Default CTA |
-|------|----------|------------|
-| **404** | Page not found | Go Home |
-| **401** | Authentication required | Go Home |
-| **403** | Access denied | Go Home |
-| **500** | Server error | Go Home |
-| **503** | Service unavailable | Check Status |
-| **error** | Generic/custom error | Go Home |
+| Type      | Use Case                | Default CTA  |
+| --------- | ----------------------- | ------------ |
+| **404**   | Page not found          | Go Home      |
+| **401**   | Authentication required | Go Home      |
+| **403**   | Access denied           | Go Home      |
+| **500**   | Server error            | Go Home      |
+| **503**   | Service unavailable     | Check Status |
+| **error** | Generic/custom error    | Go Home      |
 
 ## 📁 Source Files Location
 

@@ -1,13 +1,7 @@
 "use client";
 
 import DealBreakerCard from "./DealBreakerCard";
-import {
-  ShieldCheck,
-  Clock,
-  Smile,
-  BadgeDollarSign,
-  CheckCircle,
-} from "@/app/lib/icons";
+import { ShieldCheck, Clock, Smile, BadgeDollarSign, CheckCircle } from "@/app/lib/icons";
 
 interface DealBreaker {
   id: string;
@@ -25,16 +19,16 @@ interface DealBreakerGridProps {
 
 const iconMap = {
   "shield-checkmark": ShieldCheck,
-  "time": Clock,
-  "happy": Smile,
+  time: Clock,
+  happy: Smile,
   "cash-outline": BadgeDollarSign,
 };
 
-export default function DealBreakerGrid({ 
-  dealbreakers, 
-  selectedDealbreakers, 
+export default function DealBreakerGrid({
+  dealbreakers,
+  selectedDealbreakers,
   maxSelections,
-  onToggle 
+  onToggle,
 }: DealBreakerGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-6">

@@ -711,9 +711,7 @@ export function getBadgesByGroup(
 /**
  * Get all specialist badges for a specific category
  */
-export function getSpecialistBadgesByCategory(
-  categoryKey: string
-): BadgeMapping[] {
+export function getSpecialistBadgesByCategory(categoryKey: string): BadgeMapping[] {
   return Object.values(BADGE_MAPPINGS).filter(
     (b) => b.badgeGroup === "specialist" && b.categoryKey === categoryKey
   );

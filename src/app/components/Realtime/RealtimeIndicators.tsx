@@ -1,14 +1,14 @@
 "use client";
 
-import React from 'react';
-import { m, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { m, AnimatePresence } from "framer-motion";
 
 interface LiveIndicatorProps {
   isLive: boolean;
   className?: string;
 }
 
-export function LiveIndicator({ isLive, className = '' }: LiveIndicatorProps) {
+export function LiveIndicator({ isLive, className = "" }: LiveIndicatorProps) {
   if (!isLive) return null;
 
   return (
@@ -79,17 +79,9 @@ export function BadgeNotification({ badge, onClose }: BadgeNotificationProps) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white text-base mb-1">
-              🎉 Badge Earned!
-            </h3>
-            <p className="font-medium text-white/95 text-sm mb-0.5">
-              {badge.name}
-            </p>
-            {badge.description && (
-              <p className="text-white/80 text-xs">
-                {badge.description}
-              </p>
-            )}
+            <h3 className="font-semibold text-white text-base mb-1">🎉 Badge Earned!</h3>
+            <p className="font-medium text-white/95 text-sm mb-0.5">{badge.name}</p>
+            {badge.description && <p className="text-white/80 text-xs">{badge.description}</p>}
           </div>
           <button
             onClick={onClose}
@@ -97,7 +89,12 @@ export function BadgeNotification({ badge, onClose }: BadgeNotificationProps) {
             aria-label="Close notification"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -126,7 +123,12 @@ export function ReconnectingIndicator({ isReconnecting }: ReconnectingIndicatorP
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </m.div>
         <span>Reconnecting...</span>

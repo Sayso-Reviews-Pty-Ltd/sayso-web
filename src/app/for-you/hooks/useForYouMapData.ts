@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo } from 'react';
-import type { Business } from '../../components/BusinessCard/BusinessCard';
-import type { BusinessMapItem } from '../../components/maps/BusinessesMap';
-import { sortBusinessesByPriority } from '../../utils/businessPrioritization';
-import { getCategoryLabelFromBusiness } from '../../utils/subcategoryPlaceholders';
+import { useMemo } from "react";
+import type { Business } from "../../components/BusinessCard/BusinessCard";
+import type { BusinessMapItem } from "../../components/maps/BusinessesMap";
+import { sortBusinessesByPriority } from "../../utils/businessPrioritization";
+import { getCategoryLabelFromBusiness } from "../../utils/subcategoryPlaceholders";
 
 export function useForYouMapData(
   activeBusinesses: Business[],

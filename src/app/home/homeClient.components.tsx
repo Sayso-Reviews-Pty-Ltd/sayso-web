@@ -8,12 +8,9 @@ import EventsSpecialsSkeleton from "../components/EventsSpecials/EventsSpecialsS
 import HeroSkeleton from "../components/Hero/HeroSkeleton";
 import MobileHeroSkeleton from "../components/Hero/MobileHeroSkeleton";
 
-export const HeroCarousel = nextDynamic(
-  () => import("../components/Hero/HeroCarousel"),
-  {
-    loading: () => <HeroSkeleton />,
-  }
-);
+export const HeroCarousel = nextDynamic(() => import("../components/Hero/HeroCarousel"), {
+  loading: () => <HeroSkeleton />,
+});
 
 export const EventsSpecials = nextDynamic(
   () => import("../components/EventsSpecials/EventsSpecials"),

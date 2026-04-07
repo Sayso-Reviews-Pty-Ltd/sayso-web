@@ -52,7 +52,7 @@ const BusinessCardImage: React.FC<BusinessCardImageProps> = ({
             onError={onImageError}
             placeholder="blur"
             blurDataURL={BLUR_DATA_URL}
-            style={{ aspectRatio: '4/3' }}
+            style={{ aspectRatio: "4/3" }}
           />
           <div
             className="absolute inset-0 pointer-events-none card-overlay-fade motion-reduce:transition-none"

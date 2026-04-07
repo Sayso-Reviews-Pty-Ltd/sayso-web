@@ -69,9 +69,7 @@ export function hasValidHours(hours: unknown): boolean {
   return false;
 }
 
-export function calculateContactCompletenessScore(
-  business: ContactCompletenessCandidate
-): number {
+export function calculateContactCompletenessScore(business: ContactCompletenessCandidate): number {
   let score = 0;
   if (hasValidPhone(business.phone)) score += CONTACT_FIELD_WEIGHTS.phone;
   if (hasValidEmail(business.email)) score += CONTACT_FIELD_WEIGHTS.email;

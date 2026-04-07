@@ -19,6 +19,7 @@ KLIO uses **Supabase** (PostgreSQL) as its database backend with Row Level Secur
 ### User Management
 
 #### `profiles`
+
 User profile information linked to Supabase auth.
 
 ```sql
@@ -28,41 +29,43 @@ CREATE TABLE profiles (
   display_name TEXT,
   avatar_url TEXT,
   locale TEXT DEFAULT 'en',
-  
+
   -- Onboarding tracking
   onboarding_step TEXT DEFAULT 'interests',
   onboarding_complete BOOLEAN DEFAULT FALSE,
-  
+
   -- Interest counts (denormalized for performance)
   interests_count INTEGER DEFAULT 0,
   subcategories_count INTEGER DEFAULT 0,
   dealbreakers_count INTEGER DEFAULT 0,
-  
+
   -- Timestamps for interest updates
   last_interests_updated TIMESTAMPTZ,
   last_subcategories_updated TIMESTAMPTZ,
   last_dealbreakers_updated TIMESTAMPTZ,
-  
+
   -- Gamification
   is_top_reviewer BOOLEAN DEFAULT FALSE,
   reviews_count INTEGER DEFAULT 0,
   badges_count INTEGER DEFAULT 0,
-  
+
   -- User role (normal user or business owner)
   role TEXT DEFAULT 'user' CHECK (role IN ('user', 'business_owner', 'admin')),
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
 
 **Key Features:**
+
 - One-to-one relationship with `auth.users`
 - Denormalized counts for performance
 - Role-based access control
 - Soft audit trail with timestamps
 
 #### `user_interests`
+
 Stores user's selected interest categories.
 
 ```sql
@@ -75,6 +78,7 @@ CREATE TABLE user_interests (
 ```
 
 #### `user_subcategories`
+
 Stores user's selected subcategories within interests.
 
 ```sql
@@ -88,6 +92,7 @@ CREATE TABLE user_subcategories (
 ```
 
 #### `user_dealbreakers`
+
 Stores user's dealbreakers (things they want to avoid).
 
 ```sql
@@ -102,52 +107,53 @@ CREATE TABLE user_dealbreakers (
 ### Business Management
 
 #### `businesses`
+
 Main table for business listings.
 
 ```sql
 CREATE TABLE businesses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  
+
   -- Basic Information
   name TEXT NOT NULL,
   description TEXT,
   category TEXT NOT NULL,
   slug TEXT UNIQUE,
-  
+
   -- Location
   location TEXT NOT NULL,
   address TEXT,
   latitude DECIMAL(10, 8),
   longitude DECIMAL(11, 8),
-  
+
   -- Contact
   phone TEXT,
   email TEXT,
   website TEXT,
-  
+
   -- Images
   image_url TEXT,
   uploaded_image TEXT,
-  
+
   -- Business Details
   price_range TEXT DEFAULT '$$' CHECK (price_range IN ('$', '$$', '$$$', '$$$$')),
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'pending')),
   verified BOOLEAN DEFAULT false,
   badge TEXT,
-  
+
   -- Ownership
   owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  
+
   -- Data Source (for OSM integration)
   source TEXT,
   source_id TEXT,
-  
+
   -- Full-text search
   search_vector tsvector,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Constraints
   CONSTRAINT unique_source_business UNIQUE (source, source_id)
 );
@@ -163,6 +169,7 @@ CREATE INDEX idx_businesses_lat_lng ON businesses(latitude, longitude);
 ```
 
 **Key Features:**
+
 - Unique slug for URL-friendly identifiers
 - Full-text search support with tsvector
 - Source tracking for OSM data integration
@@ -170,22 +177,23 @@ CREATE INDEX idx_businesses_lat_lng ON businesses(latitude, longitude);
 - Owner relationship for business claiming
 
 #### `business_stats`
+
 Denormalized statistics for businesses (for performance).
 
 ```sql
 CREATE TABLE business_stats (
   business_id UUID PRIMARY KEY REFERENCES businesses(id) ON DELETE CASCADE,
-  
+
   -- Review aggregates
   total_reviews INTEGER DEFAULT 0,
   average_rating DECIMAL(3,2) DEFAULT 0.0 CHECK (average_rating >= 0 AND average_rating <= 5),
-  
+
   -- Rating distribution
   rating_distribution JSONB DEFAULT '{"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}'::jsonb,
-  
+
   -- Percentile scores for different criteria
   percentiles JSONB DEFAULT '{"service": 0, "price": 0, "ambience": 0}'::jsonb,
-  
+
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -195,12 +203,14 @@ CREATE INDEX idx_business_stats_reviews ON business_stats(total_reviews DESC);
 ```
 
 **Key Features:**
+
 - One-to-one with businesses
 - JSONB for flexible criteria storage
 - Automatically updated via triggers
 - Indexed for sorting/filtering
 
 #### `business_ownership_claims`
+
 Tracks business ownership claim requests.
 
 ```sql
@@ -208,20 +218,20 @@ CREATE TABLE business_ownership_claims (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   business_id UUID REFERENCES businesses(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Claim details
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   claim_type TEXT CHECK (claim_type IN ('owner', 'manager')),
-  
+
   -- Verification info
   verification_method TEXT,
   verification_data JSONB,
-  
+
   -- Admin notes
   admin_notes TEXT,
   reviewed_by UUID REFERENCES auth.users(id),
   reviewed_at TIMESTAMPTZ,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -230,6 +240,7 @@ CREATE TABLE business_ownership_claims (
 ### Reviews System
 
 #### `reviews`
+
 Customer reviews for businesses.
 
 ```sql
@@ -237,25 +248,25 @@ CREATE TABLE reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   business_id UUID REFERENCES businesses(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  
+
   -- Review content
   rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
   title TEXT,
   content TEXT NOT NULL,
-  
+
   -- Additional ratings
   service_rating INTEGER CHECK (service_rating >= 1 AND service_rating <= 5),
   price_rating INTEGER CHECK (price_rating >= 1 AND price_rating <= 5),
   ambience_rating INTEGER CHECK (ambience_rating >= 1 AND ambience_rating <= 5),
-  
+
   -- Metadata
   visit_date DATE,
   helpful_count INTEGER DEFAULT 0,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published', 'flagged', 'removed')),
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Prevent duplicate reviews
   CONSTRAINT unique_user_business_review UNIQUE (business_id, user_id)
 );
@@ -268,12 +279,14 @@ CREATE INDEX idx_reviews_created ON reviews(created_at DESC);
 ```
 
 **Key Features:**
+
 - One review per user per business
 - Multiple rating dimensions
 - Status workflow (draft → published → flagged → removed)
 - Helpful count for community feedback
 
 #### `review_images`
+
 Images attached to reviews.
 
 ```sql
@@ -316,6 +329,7 @@ reviews
 All tables have RLS enabled with policies:
 
 ### User Data Policies
+
 ```sql
 -- Users can only read/write their own data
 CREATE POLICY "Users manage own profile"
@@ -324,6 +338,7 @@ CREATE POLICY "Users manage own profile"
 ```
 
 ### Business Policies
+
 ```sql
 -- Anyone can read active businesses
 CREATE POLICY "Public read access"
@@ -337,6 +352,7 @@ CREATE POLICY "Owners update own business"
 ```
 
 ### Review Policies
+
 ```sql
 -- Anyone can read published reviews
 CREATE POLICY "Public read published reviews"
@@ -352,6 +368,7 @@ CREATE POLICY "Users create own reviews"
 ## Triggers & Functions
 
 ### Auto-update timestamps
+
 ```sql
 CREATE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -363,6 +380,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### Update search vector
+
 ```sql
 CREATE FUNCTION businesses_search_vector_update()
 RETURNS TRIGGER AS $$
@@ -377,6 +395,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### Update business stats
+
 ```sql
 CREATE FUNCTION update_business_stats()
 RETURNS TRIGGER AS $$
@@ -391,6 +410,7 @@ $$ LANGUAGE plpgsql;
 ## Performance Considerations
 
 ### Indexing Strategy
+
 1. **Primary Keys** - UUID with btree (default)
 2. **Foreign Keys** - Indexed for join performance
 3. **Sort Columns** - DESC indexes for pagination
@@ -398,11 +418,13 @@ $$ LANGUAGE plpgsql;
 5. **Location** - Spatial index for geoqueries
 
 ### Denormalization
+
 - Review counts in `business_stats`
 - Interest counts in `profiles`
 - Rating averages calculated once, not per query
 
 ### Query Optimization
+
 - Use `EXPLAIN ANALYZE` to verify index usage
 - Batch operations where possible
 - Limit result sets with pagination
@@ -411,6 +433,7 @@ $$ LANGUAGE plpgsql;
 ## Migration Strategy
 
 Migrations are organized in `src/app/lib/migrations/`:
+
 1. Core setup (profiles, auth)
 2. Business tables
 3. Review system
@@ -432,4 +455,3 @@ See [Migration README](../../src/app/lib/migrations/README.md) for details.
 - [ ] Caching layer (Redis) for frequently accessed data
 - [ ] Archive old data to reduce table sizes
 - [ ] Consider time-series DB for analytics data
-

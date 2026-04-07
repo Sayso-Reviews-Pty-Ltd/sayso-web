@@ -3,7 +3,7 @@
  * Business logic for user profile operations
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from "@supabase/supabase-js";
 import type {
   EnhancedProfile,
   UpdateProfilePayload,
@@ -12,12 +12,12 @@ import type {
   UserReview,
   PaginationParams,
   PrivacySettings,
-} from '../types/user';
+} from "../types/user";
 
 // Helper to safely parse JSONB fields
 function parseJsonbField<T>(value: any, defaultValue: T): T {
   if (!value) return defaultValue;
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     try {
       return JSON.parse(value);
     } catch {
@@ -30,9 +30,7 @@ function parseJsonbField<T>(value: any, defaultValue: T): T {
 /**
  * Get current user ID from Supabase auth
  */
-export async function getCurrentUserId(
-  supabase: SupabaseClient
-): Promise<string | null> {
+export async function getCurrentUserId(supabase: SupabaseClient): Promise<string | null> {
   const {
     data: { user },
     error,
@@ -49,14 +47,11 @@ export async function getCurrentUserId(
  * Touch the profile row so activity-dependent callers can record recency.
  * Some databases no longer have profiles.last_active_at, so we only bump updated_at.
  */
-export async function updateLastActive(
-  supabase: SupabaseClient,
-  userId: string
-): Promise<void> {
+export async function updateLastActive(supabase: SupabaseClient, userId: string): Promise<void> {
   await supabase
-    .from('profiles')
+    .from("profiles")
     .update({ updated_at: new Date().toISOString() })
-    .eq('user_id', userId);
+    .eq("user_id", userId);
 }
 
 /**
@@ -67,14 +62,14 @@ export async function getUserProfile(
   userId: string
 ): Promise<EnhancedProfile | null> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', userId)
+    .from("profiles")
+    .select("*")
+    .eq("user_id", userId)
     .single();
 
   if (error) {
     // Log the error for debugging
-    console.error('[getUserProfile] Error fetching profile:', {
+    console.error("[getUserProfile] Error fetching profile:", {
       userId,
       error: error.message,
       code: error.code,
@@ -84,7 +79,7 @@ export async function getUserProfile(
   }
 
   if (!data) {
-    console.warn('[getUserProfile] No profile data found for user:', userId);
+    console.warn("[getUserProfile] No profile data found for user:", userId);
     return null;
   }
 
@@ -130,9 +125,9 @@ export async function updateUserProfile(
   }
 
   const { data, error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .update(updateData)
-    .eq('user_id', userId)
+    .eq("user_id", userId)
     .select()
     .single();
 
@@ -155,13 +150,13 @@ export async function getUserStats(
   try {
     // Get profile timestamps from columns present in the current schema.
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('created_at, updated_at')
-      .eq('user_id', userId)
+      .from("profiles")
+      .select("created_at, updated_at")
+      .eq("user_id", userId)
       .single();
 
     if (profileError) {
-      console.error('[getUserStats] Error fetching profile:', {
+      console.error("[getUserStats] Error fetching profile:", {
         userId,
         error: profileError.message,
         code: profileError.code,
@@ -170,40 +165,46 @@ export async function getUserStats(
     }
 
     if (!profile) {
-      console.warn('[getUserStats] No profile found for user:', userId);
+      console.warn("[getUserStats] No profile found for user:", userId);
       return null;
     }
 
     // Try to get stats from user_stats table first (faster)
     let cachedStats = null;
     let statsError = null;
-    
+
     try {
-      const result = await supabase
-        .from('user_stats')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-      
+      const result = await supabase.from("user_stats").select("*").eq("user_id", userId).single();
+
       cachedStats = result.data;
       statsError = result.error;
-      
+
       // Check if error is because table doesn't exist (42P01) or no row found (PGRST116)
-      const isTableMissing = statsError?.code === '42P01' || statsError?.message?.includes('does not exist');
-      const isNoRowFound = statsError?.code === 'PGRST116';
-      
+      const isTableMissing =
+        statsError?.code === "42P01" || statsError?.message?.includes("does not exist");
+      const isNoRowFound = statsError?.code === "PGRST116";
+
       // If stats table exists and has data, use it
       if (!statsError && cachedStats) {
         // Compute extended fields for badge progress (not stored in user_stats cache)
         const [photoResult, categoryResult] = await Promise.allSettled([
-          supabase.from('reviews').select('id', { count: 'exact', head: true })
-            .eq('user_id', userId).not('photos', 'eq', '[]').not('photos', 'is', null),
-          supabase.from('reviews').select('primary_category').eq('user_id', userId).not('primary_category', 'is', null),
+          supabase
+            .from("reviews")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", userId)
+            .not("photos", "eq", "[]")
+            .not("photos", "is", null),
+          supabase
+            .from("reviews")
+            .select("primary_category")
+            .eq("user_id", userId)
+            .not("primary_category", "is", null),
         ]);
-        const photoCount = photoResult.status === 'fulfilled' ? (photoResult.value.count ?? 0) : 0;
-        const distinctCategories = categoryResult.status === 'fulfilled'
-          ? new Set((categoryResult.value.data ?? []).map((r: any) => r.primary_category)).size
-          : 0;
+        const photoCount = photoResult.status === "fulfilled" ? (photoResult.value.count ?? 0) : 0;
+        const distinctCategories =
+          categoryResult.status === "fulfilled"
+            ? new Set((categoryResult.value.data ?? []).map((r: any) => r.primary_category)).size
+            : 0;
 
         return {
           totalReviewsWritten: cachedStats.total_reviews_written || 0,
@@ -216,23 +217,23 @@ export async function getUserStats(
           distinctCategories,
         };
       }
-      
+
       // If table doesn't exist, silently fall through to compute on-demand
       if (isTableMissing) {
-        console.warn('[getUserStats] user_stats table does not exist, computing on-demand');
+        console.warn("[getUserStats] user_stats table does not exist, computing on-demand");
       } else if (isNoRowFound) {
         // Row doesn't exist yet - compute on-demand and optionally initialize
-        console.warn('[getUserStats] Stats row not found, computing on-demand');
+        console.warn("[getUserStats] Stats row not found, computing on-demand");
       } else if (statsError) {
         // Other error - log it but still fall through to compute on-demand
-        console.warn('[getUserStats] Error querying user_stats table, computing on-demand:', {
+        console.warn("[getUserStats] Error querying user_stats table, computing on-demand:", {
           error: statsError.message,
           code: statsError.code,
         });
       }
     } catch (err) {
       // Catch any unexpected errors when querying user_stats
-      console.warn('[getUserStats] Exception querying user_stats, computing on-demand:', err);
+      console.warn("[getUserStats] Exception querying user_stats, computing on-demand:", err);
     }
 
     // Fallback: Compute stats on-demand (for backwards compatibility or if table doesn't exist)
@@ -240,12 +241,12 @@ export async function getUserStats(
 
     // Get total reviews written
     const { count: totalReviews, error: reviewsError } = await supabase
-      .from('reviews')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
 
     if (reviewsError) {
-      console.error('[getUserStats] Error counting reviews:', {
+      console.error("[getUserStats] Error counting reviews:", {
         userId,
         error: reviewsError.message,
         code: reviewsError.code,
@@ -254,12 +255,12 @@ export async function getUserStats(
 
     // Get total helpful votes given
     const { count: totalHelpfulVotes, error: helpfulVotesError } = await supabase
-      .from('review_helpful_votes')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .from("review_helpful_votes")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
 
     if (helpfulVotesError) {
-      console.error('[getUserStats] Error counting helpful votes given:', {
+      console.error("[getUserStats] Error counting helpful votes given:", {
         userId,
         error: helpfulVotesError.message,
         code: helpfulVotesError.code,
@@ -268,12 +269,12 @@ export async function getUserStats(
 
     // Get total businesses saved
     const { count: totalSaved, error: savedError } = await supabase
-      .from('saved_businesses')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .from("saved_businesses")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
 
     if (savedError) {
-      console.error('[getUserStats] Error counting saved businesses:', {
+      console.error("[getUserStats] Error counting saved businesses:", {
         userId,
         error: savedError.message,
         code: savedError.code,
@@ -284,12 +285,12 @@ export async function getUserStats(
     let helpfulVotesReceived = 0;
     try {
       const { data: userReviews, error: userReviewsError } = await supabase
-        .from('reviews')
-        .select('id')
-        .eq('user_id', userId);
+        .from("reviews")
+        .select("id")
+        .eq("user_id", userId);
 
       if (userReviewsError) {
-        console.error('[getUserStats] Error fetching user reviews:', {
+        console.error("[getUserStats] Error fetching user reviews:", {
           userId,
           error: userReviewsError.message,
           code: userReviewsError.code,
@@ -297,12 +298,12 @@ export async function getUserStats(
       } else if (userReviews && userReviews.length > 0) {
         const reviewIds = userReviews.map((r) => r.id);
         const { count, error: helpfulVotesReceivedError } = await supabase
-          .from('review_helpful_votes')
-          .select('*', { count: 'exact', head: true })
-          .in('review_id', reviewIds);
-        
+          .from("review_helpful_votes")
+          .select("*", { count: "exact", head: true })
+          .in("review_id", reviewIds);
+
         if (helpfulVotesReceivedError) {
-          console.error('[getUserStats] Error counting helpful votes received:', {
+          console.error("[getUserStats] Error counting helpful votes received:", {
             userId,
             error: helpfulVotesReceivedError.message,
             code: helpfulVotesReceivedError.code,
@@ -312,25 +313,25 @@ export async function getUserStats(
         }
       }
     } catch (err) {
-      console.error('[getUserStats] Error calculating helpful votes received:', {
+      console.error("[getUserStats] Error calculating helpful votes received:", {
         userId,
-        error: err instanceof Error ? err.message : 'Unknown error',
+        error: err instanceof Error ? err.message : "Unknown error",
       });
     }
 
     // If stats table exists but was empty, try to initialize it now
     // Only try if we know the table exists (no 42P01 error)
-    if (statsError && statsError.code === 'PGRST116') {
+    if (statsError && statsError.code === "PGRST116") {
       // Table exists but no record found - try to create it
       try {
-        const { error: rpcError } = await supabase.rpc('update_user_stats', { p_user_id: userId });
+        const { error: rpcError } = await supabase.rpc("update_user_stats", { p_user_id: userId });
         if (rpcError) {
           // Function might not exist yet - that's okay
-          console.warn('[getUserStats] Failed to initialize stats via RPC:', rpcError.message);
+          console.warn("[getUserStats] Failed to initialize stats via RPC:", rpcError.message);
         }
       } catch (initError: any) {
         // Silently fail - will be created on next trigger or when migration runs
-        console.warn('[getUserStats] Exception initializing stats:', initError?.message);
+        console.warn("[getUserStats] Exception initializing stats:", initError?.message);
       }
     }
 
@@ -339,18 +340,18 @@ export async function getUserStats(
     let distinctCategories = 0;
     try {
       const { count: pCount } = await supabase
-        .from('reviews')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .not('photos', 'eq', '[]')
-        .not('photos', 'is', null);
+        .from("reviews")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .not("photos", "eq", "[]")
+        .not("photos", "is", null);
       photoCount = pCount ?? 0;
 
       const { data: catRows } = await supabase
-        .from('reviews')
-        .select('primary_category')
-        .eq('user_id', userId)
-        .not('primary_category', 'is', null);
+        .from("reviews")
+        .select("primary_category")
+        .eq("user_id", userId)
+        .not("primary_category", "is", null);
       distinctCategories = new Set((catRows ?? []).map((r: any) => r.primary_category)).size;
     } catch {
       // Non-critical — badge progress degrades gracefully
@@ -367,9 +368,9 @@ export async function getUserStats(
       distinctCategories,
     };
   } catch (error) {
-    console.error('[getUserStats] Unexpected error:', {
+    console.error("[getUserStats] Unexpected error:", {
       userId,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
       stack: error instanceof Error ? error.stack : undefined,
     });
     return null;
@@ -392,7 +393,7 @@ export async function getUserActivity(
 
   // Get reviews
   const { data: reviews, count: reviewsCount } = await supabase
-    .from('reviews')
+    .from("reviews")
     .select(
       `
       id,
@@ -403,17 +404,17 @@ export async function getUserActivity(
       created_at,
       businesses!inner(id, name, slug, image_url)
     `,
-      { count: 'exact' }
+      { count: "exact" }
     )
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
     .range(offset, offset + pageSize - 1);
 
   if (reviews) {
     reviews.forEach((review: any) => {
       activities.push({
         id: `review-${review.id}`,
-        type: 'REVIEW',
+        type: "REVIEW",
         createdAt: review.created_at,
         metadata: {
           reviewId: review.id,
@@ -436,7 +437,7 @@ export async function getUserActivity(
   let savedData: any[] = [];
   if (savedLimit > 0) {
     const { data: saved } = await supabase
-      .from('saved_businesses')
+      .from("saved_businesses")
       .select(
         `
         id,
@@ -444,8 +445,8 @@ export async function getUserActivity(
         businesses!inner(id, name, slug, image_url)
       `
       )
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .range(savedOffset, savedOffset + savedLimit - 1);
 
     if (saved) {
@@ -453,7 +454,7 @@ export async function getUserActivity(
       saved.forEach((save: any) => {
         activities.push({
           id: `save-${save.id}`,
-          type: 'SAVE',
+          type: "SAVE",
           createdAt: save.created_at,
           metadata: {
             businessId: save.businesses?.id,
@@ -467,33 +468,27 @@ export async function getUserActivity(
   }
 
   // Get helpful votes (if space remaining)
-  const votesOffset = Math.max(
-    0,
-    offset - (reviewsCount || 0) - (savedData.length || 0)
-  );
-  const votesLimit = Math.max(
-    0,
-    pageSize - (reviews?.length || 0) - (savedData.length || 0)
-  );
+  const votesOffset = Math.max(0, offset - (reviewsCount || 0) - (savedData.length || 0));
+  const votesLimit = Math.max(0, pageSize - (reviews?.length || 0) - (savedData.length || 0));
 
   if (votesLimit > 0) {
     const { data: votes } = await supabase
-      .from('review_helpful_votes')
+      .from("review_helpful_votes")
       .select(
         `
         created_at,
         reviews!inner(id, business_id, title, content, businesses!inner(id, name, slug, image_url))
       `
       )
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .range(votesOffset, votesOffset + votesLimit - 1);
 
     if (votes) {
       votes.forEach((vote: any) => {
         activities.push({
           id: `vote-${vote.reviews.id}`,
-          type: 'HELPFUL_VOTE',
+          type: "HELPFUL_VOTE",
           createdAt: vote.created_at,
           metadata: {
             reviewId: vote.reviews.id,
@@ -515,24 +510,18 @@ export async function getUserActivity(
 
   // Get total count across all activity types
   const [reviewsTotal, savedTotal, votesTotal] = await Promise.all([
+    supabase.from("reviews").select("*", { count: "exact", head: true }).eq("user_id", userId),
     supabase
-      .from('reviews')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId),
+      .from("saved_businesses")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId),
     supabase
-      .from('saved_businesses')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId),
-    supabase
-      .from('review_helpful_votes')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId),
+      .from("review_helpful_votes")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId),
   ]);
 
-  const total =
-    (reviewsTotal.count || 0) +
-    (savedTotal.count || 0) +
-    (votesTotal.count || 0);
+  const total = (reviewsTotal.count || 0) + (savedTotal.count || 0) + (votesTotal.count || 0);
 
   return {
     items: activities.slice(0, pageSize),
@@ -553,7 +542,7 @@ export async function getUserReviews(
   const offset = (page - 1) * pageSize;
 
   const { data, error, count } = await supabase
-    .from('reviews')
+    .from("reviews")
     .select(
       `
       id,
@@ -566,10 +555,10 @@ export async function getUserReviews(
       helpful_count,
       businesses!inner(id, name, slug, image_url)
     `,
-      { count: 'exact' }
+      { count: "exact" }
     )
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
     .range(offset, offset + pageSize - 1);
 
   if (error) {
@@ -601,4 +590,3 @@ export async function getUserReviews(
     total: count || 0,
   };
 }
-

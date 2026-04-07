@@ -3,19 +3,23 @@
  * Uses SWR with optimistic toggle.
  */
 
-'use client';
+"use client";
 
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { useAuth } from '../contexts/AuthContext';
-import { isOptimisticId, isValidUUID } from '../lib/utils/validation';
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { useAuth } from "../contexts/AuthContext";
+import { isOptimisticId, isValidUUID } from "../lib/utils/validation";
 
 interface HelpfulData {
   count: number;
   isHelpful: boolean;
 }
 
-async function fetchHelpfulData([, reviewId, userId]: [string, string, string | null]): Promise<HelpfulData> {
+async function fetchHelpfulData([, reviewId, userId]: [
+  string,
+  string,
+  string | null,
+]): Promise<HelpfulData> {
   const [countRes, statusRes] = await Promise.all([
     fetch(`/api/reviews/${reviewId}/helpful/count`),
     userId ? fetch(`/api/reviews/${reviewId}/helpful`) : Promise.resolve(null),
@@ -26,12 +30,12 @@ async function fetchHelpfulData([, reviewId, userId]: [string, string, string | 
 
   if (countRes.ok) {
     const data = await countRes.json();
-    if (typeof data.count === 'number') count = data.count;
+    if (typeof data.count === "number") count = data.count;
   }
 
   if (statusRes?.ok) {
     const data = await statusRes.json();
-    if (typeof data.helpful === 'boolean') isHelpful = data.helpful;
+    if (typeof data.helpful === "boolean") isHelpful = data.helpful;
   }
 
   return { count, isHelpful };
@@ -43,7 +47,7 @@ export function useReviewHelpful(reviewId: string, initialCount = 0) {
   const isSkipped = !reviewId || isOptimisticId(reviewId) || !isValidUUID(reviewId);
   const swrKey = isSkipped
     ? null
-    : (['/api/reviews/helpful', reviewId, user?.id ?? null] as [string, string, string | null]);
+    : (["/api/reviews/helpful", reviewId, user?.id ?? null] as [string, string, string | null]);
 
   const { data, isLoading, mutate } = useSWR(swrKey, fetchHelpfulData, {
     ...swrConfig,
@@ -63,7 +67,7 @@ export function useReviewHelpful(reviewId: string, initialCount = 0) {
     mutate(next, { revalidate: false });
 
     try {
-      const method = prev.isHelpful ? 'DELETE' : 'POST';
+      const method = prev.isHelpful ? "DELETE" : "POST";
       const res = await fetch(`/api/reviews/${reviewId}/helpful`, { method });
 
       if (!res.ok) {
@@ -75,17 +79,15 @@ export function useReviewHelpful(reviewId: string, initialCount = 0) {
       const countRes = await fetch(`/api/reviews/${reviewId}/helpful/count`);
       if (countRes.ok) {
         const countData = await countRes.json();
-        if (typeof countData.count === 'number') {
+        if (typeof countData.count === "number") {
           mutate({ ...next, count: countData.count }, { revalidate: false });
         }
       }
 
       // Invalidate top reviewers list (helpfulVotes changed for review author)
-      globalMutate(
-        (key: any) => Array.isArray(key) && key[0] === '/api/reviewers/top',
-        undefined,
-        { revalidate: true }
-      );
+      globalMutate((key: any) => Array.isArray(key) && key[0] === "/api/reviewers/top", undefined, {
+        revalidate: true,
+      });
     } catch {
       mutate(prev, { revalidate: false });
     }
@@ -101,5 +103,7 @@ export function useReviewHelpful(reviewId: string, initialCount = 0) {
 }
 
 export function invalidateReviewHelpful(reviewId: string) {
-  globalMutate((key: any) => Array.isArray(key) && key[0] === '/api/reviews/helpful' && key[1] === reviewId);
+  globalMutate(
+    (key: any) => Array.isArray(key) && key[0] === "/api/reviews/helpful" && key[1] === reviewId
+  );
 }

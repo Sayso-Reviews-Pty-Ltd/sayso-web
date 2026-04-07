@@ -2,18 +2,18 @@
 export const animations = {
   // Timing functions
   timing: {
-    linear: 'linear',
-    easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
-    easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
-    easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    linear: "linear",
+    easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+    easeOut: "cubic-bezier(0, 0, 0.2, 1)",
+    easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+    smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
   },
 
   // Durations
   duration: {
-    fast: '150ms',
-    normal: '300ms',
-    slow: '500ms',
+    fast: "150ms",
+    normal: "300ms",
+    slow: "500ms",
   },
 
   // Keyframes
@@ -84,19 +84,19 @@ export const animations = {
 
 // Animation classes
 export const animationClasses = {
-  fadeInUp: 'animate-[fadeInUp_0.6s_ease-out_forwards]',
-  slideInLeft: 'animate-[slideInLeft_0.6s_ease-out_forwards]',
-  slideInRight: 'animate-[slideInRight_0.6s_ease-out_forwards]',
-  scaleIn: 'animate-[scaleIn_0.8s_ease-out_forwards]',
-  spin: 'animate-spin',
-  pulse: 'animate-pulse',
+  fadeInUp: "animate-[fadeInUp_0.6s_ease-out_forwards]",
+  slideInLeft: "animate-[slideInLeft_0.6s_ease-out_forwards]",
+  slideInRight: "animate-[slideInRight_0.6s_ease-out_forwards]",
+  scaleIn: "animate-[scaleIn_0.8s_ease-out_forwards]",
+  spin: "animate-spin",
+  pulse: "animate-pulse",
 
   // Delays
-  delay100: 'animation-delay-[0.1s]',
-  delay200: 'animation-delay-[0.2s]',
-  delay300: 'animation-delay-[0.3s]',
-  delay400: 'animation-delay-[0.4s]',
-  delay700: 'animation-delay-[0.7s]',
+  delay100: "animation-delay-[0.1s]",
+  delay200: "animation-delay-[0.2s]",
+  delay300: "animation-delay-[0.3s]",
+  delay400: "animation-delay-[0.4s]",
+  delay700: "animation-delay-[0.7s]",
 } as const;
 
 // Reduced motion support

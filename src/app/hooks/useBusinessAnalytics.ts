@@ -2,10 +2,10 @@
  * Hook to fetch analytics data for a business from /api/businesses/${id}/analytics.
  */
 
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
 
 export type AnalyticsData = {
   viewsOverTime: { date: string; views: number }[];
@@ -18,18 +18,22 @@ export type AnalyticsData = {
   totalReviews: number;
 };
 
-async function fetchBusinessAnalytics([, businessId, days]: [string, string, number]): Promise<AnalyticsData> {
+async function fetchBusinessAnalytics([, businessId, days]: [
+  string,
+  string,
+  number,
+]): Promise<AnalyticsData> {
   const res = await fetch(`/api/businesses/${businessId}/analytics?days=${days}`);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error || 'Failed to load analytics');
+    throw new Error(err?.error || "Failed to load analytics");
   }
   return res.json();
 }
 
 export function useBusinessAnalytics(businessId: string | null | undefined, days = 30) {
   const swrKey = businessId
-    ? (['/api/businesses/analytics', businessId, days] as [string, string, number])
+    ? (["/api/businesses/analytics", businessId, days] as [string, string, number])
     : null;
 
   const { data, error, isLoading } = useSWR(swrKey, fetchBusinessAnalytics, {

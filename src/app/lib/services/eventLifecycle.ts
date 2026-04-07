@@ -5,7 +5,7 @@
  * This ensures events always show accurate future dates and expired events are removed.
  */
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export interface EventDateInfo {
   id: string;
@@ -42,7 +42,9 @@ export function isDatePast(dateString: string | null | undefined): boolean {
 
     const today = getTodayUTC();
     // Compare just the date portion (ignore time)
-    const dateOnly = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    const dateOnly = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    );
 
     return dateOnly < today;
   } catch {
@@ -61,7 +63,9 @@ export function isDateFutureOrToday(dateString: string | null | undefined): bool
     if (isNaN(date.getTime())) return false;
 
     const today = getTodayUTC();
-    const dateOnly = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    const dateOnly = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    );
 
     return dateOnly >= today;
   } catch {
@@ -82,7 +86,7 @@ export function extractAllDatesFromRawData(rawData: any): string[] {
   if (rawData.dates?.start?.dateTime) {
     dates.push(rawData.dates.start.dateTime);
   } else if (rawData.dates?.start?.localDate) {
-    dates.push(rawData.dates.start.localDate + 'T00:00:00Z');
+    dates.push(rawData.dates.start.localDate + "T00:00:00Z");
   }
 
   // Check for additional dates in _embedded.dates or similar structures
@@ -91,7 +95,7 @@ export function extractAllDatesFromRawData(rawData: any): string[] {
       if (dateObj.start?.dateTime) {
         dates.push(dateObj.start.dateTime);
       } else if (dateObj.start?.localDate) {
-        dates.push(dateObj.start.localDate + 'T00:00:00Z');
+        dates.push(dateObj.start.localDate + "T00:00:00Z");
       }
     }
   }
@@ -191,8 +195,8 @@ export async function runEventCleanup(supabase: SupabaseClient): Promise<Cleanup
   try {
     // Fetch all events
     const { data: events, error: fetchError } = await supabase
-      .from('ticketmaster_events')
-      .select('id, ticketmaster_id, start_date, end_date, raw_data');
+      .from("ticketmaster_events")
+      .select("id, ticketmaster_id, start_date, end_date, raw_data");
 
     if (fetchError) {
       result.errors.push(`Failed to fetch events: ${fetchError.message}`);
@@ -221,8 +225,7 @@ export async function runEventCleanup(supabase: SupabaseClient): Promise<Cleanup
       } else {
         // Check if dates need updating
         const needsUpdate =
-          event.start_date !== cleanedDates.startDate ||
-          event.end_date !== cleanedDates.endDate;
+          event.start_date !== cleanedDates.startDate || event.end_date !== cleanedDates.endDate;
 
         if (needsUpdate) {
           toUpdate.push({
@@ -237,13 +240,13 @@ export async function runEventCleanup(supabase: SupabaseClient): Promise<Cleanup
     // Batch update events with new date ranges
     for (const update of toUpdate) {
       const { error: updateError } = await supabase
-        .from('ticketmaster_events')
+        .from("ticketmaster_events")
         .update({
           start_date: update.start_date,
           end_date: update.end_date,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', update.id);
+        .eq("id", update.id);
 
       if (updateError) {
         result.errors.push(`Failed to update event ${update.id}: ${updateError.message}`);
@@ -255,9 +258,9 @@ export async function runEventCleanup(supabase: SupabaseClient): Promise<Cleanup
     // Delete fully expired events
     if (toDelete.length > 0) {
       const { error: deleteError } = await supabase
-        .from('ticketmaster_events')
+        .from("ticketmaster_events")
         .delete()
-        .in('id', toDelete);
+        .in("id", toDelete);
 
       if (deleteError) {
         result.errors.push(`Failed to delete expired events: ${deleteError.message}`);
@@ -277,12 +280,12 @@ export async function runEventCleanup(supabase: SupabaseClient): Promise<Cleanup
  * Filter events to only include those with future dates
  * Used when fetching events to ensure only valid events are returned
  */
-export function filterEventsToFuture<T extends { start_date?: string | null; end_date?: string | null }>(
-  events: T[]
-): T[] {
+export function filterEventsToFuture<
+  T extends { start_date?: string | null; end_date?: string | null },
+>(events: T[]): T[] {
   const today = getTodayUTC();
 
-  return events.filter(event => {
+  return events.filter((event) => {
     // Use end_date if available, otherwise use start_date
     const relevantDate = event.end_date || event.start_date;
 
@@ -292,7 +295,9 @@ export function filterEventsToFuture<T extends { start_date?: string | null; end
       const date = new Date(relevantDate);
       if (isNaN(date.getTime())) return false;
 
-      const dateOnly = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      const dateOnly = new Date(
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+      );
       return dateOnly >= today;
     } catch {
       return false;

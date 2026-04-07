@@ -9,6 +9,7 @@ This implementation adds comprehensive user profile enhancements to the review p
 **File:** `supabase/migrations/20250102_add_profile_enhancements.sql`
 
 ### New Columns Added to `profiles` table:
+
 - `bio` (TEXT) - User biography (max 2000 characters)
 - `location` (TEXT) - User location
 - `website_url` (TEXT) - User website URL (validated)
@@ -17,6 +18,7 @@ This implementation adds comprehensive user profile enhancements to the review p
 - `last_active_at` (TIMESTAMPTZ) - Last activity timestamp
 
 ### Features:
+
 - Constraints for data validation (URL format, bio length)
 - Indexes for performance
 - Trigger to auto-update `last_active_at` on profile updates
@@ -27,9 +29,11 @@ This implementation adds comprehensive user profile enhancements to the review p
 All endpoints follow the consistent `{ data, error }` response pattern and require authentication.
 
 ### 1. GET /api/user/profile
+
 **Purpose:** Get current user's full profile
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -58,9 +62,11 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 ```
 
 ### 2. PUT /api/user/profile
+
 **Purpose:** Update user profile fields
 
 **Request Body:**
+
 ```json
 {
   "bio": "string (max 2000 chars)",
@@ -76,9 +82,11 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 **Response:** Updated profile object
 
 ### 3. PUT /api/user/preferences
+
 **Purpose:** Update user preferences (interests, deal-breakers, privacy settings)
 
 **Request Body:**
+
 ```json
 {
   "interests": ["interest_id_1", "interest_id_2"],
@@ -94,9 +102,11 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 **Response:** Updated preferences object
 
 ### 4. GET /api/user/stats
+
 **Purpose:** Get user statistics
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -112,13 +122,16 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 ```
 
 ### 5. GET /api/user/activity
+
 **Purpose:** Get paginated user activity feed
 
 **Query Parameters:**
+
 - `page` (default: 1)
 - `pageSize` (default: 20, max: 100)
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -148,18 +161,22 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 ```
 
 **Activity Types:**
+
 - `REVIEW` - Review written
 - `SAVE` - Business saved
 - `HELPFUL_VOTE` - Helpful vote given
 
 ### 6. GET /api/user/reviews
+
 **Purpose:** Get paginated list of user reviews
 
 **Query Parameters:**
+
 - `page` (default: 1)
 - `pageSize` (default: 10, max: 100)
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -197,6 +214,7 @@ All endpoints follow the consistent `{ data, error }` response pattern and requi
 **File:** `src/app/lib/types/user.ts`
 
 Key types:
+
 - `EnhancedProfile` - Full profile with enhancements
 - `UserStats` - User statistics
 - `UserActivityItem` - Activity feed item
@@ -211,6 +229,7 @@ Key types:
 **File:** `src/app/lib/services/userService.ts`
 
 ### Functions:
+
 - `getCurrentUserId()` - Get authenticated user ID
 - `updateLastActive()` - Update last active timestamp
 - `getUserProfile()` - Get full user profile
@@ -224,6 +243,7 @@ Key types:
 **File:** `src/app/lib/utils/validation.ts`
 
 ### Functions:
+
 - `isValidUrl()` - Validate URL format
 - `isValidBio()` - Validate bio length
 - `isValidSocialLinks()` - Validate social links
@@ -232,6 +252,7 @@ Key types:
 ## Error Handling
 
 All endpoints return consistent error responses:
+
 ```json
 {
   "data": null,
@@ -243,6 +264,7 @@ All endpoints return consistent error responses:
 ```
 
 **HTTP Status Codes:**
+
 - `200` - Success
 - `400` - Validation error
 - `401` - Unauthorized
@@ -252,6 +274,7 @@ All endpoints return consistent error responses:
 ## Last Active Tracking
 
 The `last_active_at` field is automatically updated when users:
+
 - Get their profile (`GET /api/user/profile`)
 - Get their stats (`GET /api/user/stats`)
 - Get their activity (`GET /api/user/activity`)
@@ -261,6 +284,7 @@ The `last_active_at` field is automatically updated when users:
 ## Privacy Settings
 
 Privacy settings control what information is visible to others:
+
 - `showActivity` - Show activity feed
 - `showStats` - Show statistics
 - `showSavedBusinesses` - Show saved businesses
@@ -283,4 +307,3 @@ Currently, all endpoints return full data for the current user. The structure is
 2. Test each endpoint with authenticated requests
 3. Update frontend components to use the new endpoints
 4. Consider adding public profile endpoints for viewing other users' profiles (with privacy filtering)
-

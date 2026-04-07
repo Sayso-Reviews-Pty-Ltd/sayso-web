@@ -8,7 +8,9 @@ describe("Quicket category normalization", () => {
   it("maps known categories to the fixed taxonomy", () => {
     expect(normalizeQuicketCategory({ categoryNames: ["Live Music"] }).slug).toBe("music");
     expect(normalizeQuicketCategory({ categoryNames: ["Street Festival"] }).slug).toBe("festivals");
-    expect(normalizeQuicketCategory({ categoryNames: ["Business Networking"] }).slug).toBe("tech-business");
+    expect(normalizeQuicketCategory({ categoryNames: ["Business Networking"] }).slug).toBe(
+      "tech-business"
+    );
     expect(normalizeQuicketCategory({ categoryNames: ["Art Exhibition"] }).slug).toBe("arts");
     expect(normalizeQuicketCategory({ categoryNames: ["Wine Tasting"] }).slug).toBe("food-drink");
     expect(normalizeQuicketCategory({ categoryNames: ["Family Meetup"] }).slug).toBe("community");
@@ -44,13 +46,23 @@ describe("Quicket category normalization", () => {
   });
 
   it("classifies common Quicket category labels correctly", () => {
-    expect(normalizeQuicketCategory({ categoryNames: ["Business & Networking"] }).slug).toBe("tech-business");
-    expect(normalizeQuicketCategory({ categoryNames: ["Nightlife and Parties"] }).slug).toBe("music");
+    expect(normalizeQuicketCategory({ categoryNames: ["Business & Networking"] }).slug).toBe(
+      "tech-business"
+    );
+    expect(normalizeQuicketCategory({ categoryNames: ["Nightlife and Parties"] }).slug).toBe(
+      "music"
+    );
     expect(normalizeQuicketCategory({ categoryNames: ["Markets"] }).slug).toBe("food-drink");
     expect(normalizeQuicketCategory({ categoryNames: ["Arts & Culture"] }).slug).toBe("arts");
-    expect(normalizeQuicketCategory({ categoryNames: ["Business & Industry"] }).slug).toBe("tech-business");
-    expect(normalizeQuicketCategory({ categoryNames: ["Science & Technology"] }).slug).toBe("tech-business");
-    expect(normalizeQuicketCategory({ categoryNames: ["Holiday & Seasonal"] }).slug).toBe("festivals");
+    expect(normalizeQuicketCategory({ categoryNames: ["Business & Industry"] }).slug).toBe(
+      "tech-business"
+    );
+    expect(normalizeQuicketCategory({ categoryNames: ["Science & Technology"] }).slug).toBe(
+      "tech-business"
+    );
+    expect(normalizeQuicketCategory({ categoryNames: ["Holiday & Seasonal"] }).slug).toBe(
+      "festivals"
+    );
     expect(normalizeQuicketCategory({ categoryNames: ["Film & Media"] }).slug).toBe("arts");
   });
 
@@ -92,9 +104,9 @@ describe("Quicket category normalization", () => {
 
   it("chooses the strongest explicit category when multiple Quicket categories are present", () => {
     expect(normalizeQuicketCategory({ categoryNames: ["Community", "Music"] }).slug).toBe("music");
-    expect(normalizeQuicketCategory({ categoryNames: ["Community", "Business & Industry"] }).slug).toBe(
-      "tech-business"
-    );
+    expect(
+      normalizeQuicketCategory({ categoryNames: ["Community", "Business & Industry"] }).slug
+    ).toBe("tech-business");
   });
 });
 

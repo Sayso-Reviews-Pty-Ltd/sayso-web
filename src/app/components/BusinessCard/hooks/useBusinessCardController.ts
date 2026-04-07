@@ -43,8 +43,7 @@ export function useBusinessCardController({
 
   const isBusinessAccount = useMemo(() => {
     return (
-      user?.profile?.account_role === "business_owner" ||
-      user?.profile?.role === "business_owner"
+      user?.profile?.account_role === "business_owner" || user?.profile?.role === "business_owner"
     );
   }, [user?.profile?.account_role, user?.profile?.role]);
 

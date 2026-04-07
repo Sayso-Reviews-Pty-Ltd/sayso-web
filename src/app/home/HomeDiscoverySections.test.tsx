@@ -13,20 +13,14 @@ function renderSections(overrides: Partial<ComponentProps<typeof HomeDiscoverySe
       hasUser
       forYouLoading={false}
       forYouError={null}
-      forYouBusinesses={[
-        { id: "f1", name: "For You 1" } as any,
-      ]}
+      forYouBusinesses={[{ id: "f1", name: "For You 1" } as any]}
       trendingLoading={false}
       trendingError={null}
       hasTrendingBusinesses
-      trendingBusinesses={[
-        { id: "t1", name: "Trending 1" } as any,
-      ]}
+      trendingBusinesses={[{ id: "t1", name: "Trending 1" } as any]}
       featuredError={null}
       featuredLoading={false}
-      featuredByCategory={[
-        { id: "c1", category: "food" } as any,
-      ]}
+      featuredByCategory={[{ id: "c1", category: "food" } as any]}
       onRetryForYou={onRetryForYou}
       onRetryTrending={onRetryTrending}
       onRetryFeatured={onRetryFeatured}

@@ -75,7 +75,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (trimName.length < 2 || trimName.length > NAME_MAX) {
-    return NextResponse.json({ error: "Name must be between 2 and 100 characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Name must be between 2 and 100 characters." },
+      { status: 400 }
+    );
   }
 
   if (trimEmail.length > EMAIL_MAX || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimEmail)) {
@@ -89,7 +92,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const resolvedReason = typeof reason === "string" && ALLOWED_REASONS.has(reason) ? reason : "other";
+  const resolvedReason =
+    typeof reason === "string" && ALLOWED_REASONS.has(reason) ? reason : "other";
 
   const apiKey = process.env.NEXT_POSTMARK_API_KEY;
   if (!apiKey) {
@@ -133,7 +137,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err) {
     const postmarkErr = err as { message?: string; statusCode?: number; ErrorCode?: number };
-    console.error("Postmark error:", JSON.stringify({ message: postmarkErr?.message, statusCode: postmarkErr?.statusCode, ErrorCode: postmarkErr?.ErrorCode }));
-    return NextResponse.json({ error: "Failed to send message. Please try again." }, { status: 500 });
+    console.error(
+      "Postmark error:",
+      JSON.stringify({
+        message: postmarkErr?.message,
+        statusCode: postmarkErr?.statusCode,
+        ErrorCode: postmarkErr?.ErrorCode,
+      })
+    );
+    return NextResponse.json(
+      { error: "Failed to send message. Please try again." },
+      { status: 500 }
+    );
   }
 }

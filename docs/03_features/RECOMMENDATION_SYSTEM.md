@@ -9,11 +9,13 @@ The recommendation system uses user selections from onboarding (interests, subca
 ### 1. Data Collection During Onboarding
 
 During onboarding, users select:
+
 - **Interests**: Main categories (e.g., "Food & Drink", "Beauty & Wellness")
 - **Subcategories**: Specific sub-interests (e.g., "Restaurants", "Gyms")
 - **Deal-breakers**: Preferences to exclude (e.g., "Value for Money")
 
 This data is stored in:
+
 - `user_interests` table
 - `user_subcategories` table
 - `user_dealbreakers` table
@@ -21,6 +23,7 @@ This data is stored in:
 ### 2. Automatic Preference Fetching
 
 The `/api/businesses` endpoint automatically:
+
 - Detects if a user is authenticated
 - Fetches their interests, subcategories, and deal-breakers from the database
 - Uses these preferences to personalize results
@@ -55,6 +58,7 @@ The system uses a sophisticated SQL function `recommend_personalized_businesses`
 ### 4. Diversity Enforcement
 
 The system ensures variety by:
+
 - Limiting to 4 businesses per subcategory
 - Ranking within each subcategory
 - Mixing different types of businesses
@@ -62,15 +66,18 @@ The system ensures variety by:
 ### 5. Where Recommendations Are Used
 
 #### Home Page (`/home`)
+
 - **"For You" section**: Uses `useForYouBusinesses()` hook
 - **All businesses**: Uses `feedStrategy: "mixed"` for personalized results
 
 #### For You Page (`/for-you`)
+
 - Entire page uses personalized recommendations
 - Automatically filters by user interests and subcategories
 - Respects deal-breakers
 
 #### Explore Page (`/explore`)
+
 - Can use personalized recommendations when `feedStrategy: "mixed"` is set
 - Falls back to standard listing if no preferences available
 
@@ -82,7 +89,7 @@ When a user is authenticated, the API automatically uses their preferences:
 
 ```typescript
 // No need to pass interest_ids - API fetches them automatically
-const response = await fetch('/api/businesses?feed_strategy=mixed&limit=20');
+const response = await fetch("/api/businesses?feed_strategy=mixed&limit=20");
 ```
 
 ### Manual Override
@@ -91,7 +98,7 @@ You can still override preferences by passing explicit filters:
 
 ```typescript
 // Query params take precedence over user preferences
-const response = await fetch('/api/businesses?interest_ids=food-drink,beauty-wellness');
+const response = await fetch("/api/businesses?interest_ids=food-drink,beauty-wellness");
 ```
 
 ### Feed Strategies
@@ -102,27 +109,35 @@ const response = await fetch('/api/businesses?interest_ids=food-drink,beauty-wel
 ## Hooks
 
 ### `useForYouBusinesses(limit)`
+
 Fetches personalized businesses for the "For You" section:
+
 - Automatically uses user preferences
 - Applies deal-breakers
 - Uses mixed feed strategy
 
 ### `useBusinesses(options)`
+
 General hook for fetching businesses:
+
 - Can use `feedStrategy: "mixed"` for personalization
 - Automatically benefits from API-level personalization when authenticated
 
 ### `useUserPreferences()`
+
 Fetches user's interests, subcategories, and deal-breakers:
+
 - Used by hooks to pass preferences to API
 - Now optional since API fetches automatically
 
 ## Database Functions
 
 ### `recommend_personalized_businesses`
+
 Located in: `src/app/lib/migrations/005_functions/004_recommend_personalized_businesses.sql`
 
 Parameters:
+
 - `p_user_sub_interest_ids`: Array of subcategory IDs
 - `p_user_interest_ids`: Array of interest IDs
 - `p_limit`: Maximum number of results
@@ -132,6 +147,7 @@ Parameters:
 - `p_min_rating`: Minimum rating filter (optional)
 
 Returns:
+
 - Businesses with `personalization_score` and `diversity_rank`
 - Sorted by personalization score
 
@@ -146,10 +162,10 @@ Returns:
 ## Future Enhancements
 
 Potential improvements:
+
 - Machine learning-based recommendations
 - Collaborative filtering (users with similar interests)
 - Time-based recommendations (time of day, day of week)
 - Seasonal recommendations
 - A/B testing different recommendation algorithms
 - User feedback loop (thumbs up/down to improve recommendations)
-

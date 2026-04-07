@@ -112,13 +112,13 @@ Leaderboard: featuredBusinessesFromAPI = featuredBusinesses → BusinessOfMonthL
 
 ## 6. Findings and recommendations
 
-| Area | Finding |
-|------|--------|
-| **Single source** | One API and one hook feed both Home and Leaderboard; no duplicate fetch for “businesses of the month”. |
-| **Category label** | API and RPC/fallbacks now provide `category_label`; card uses it via `getCategoryLabelFromBusiness(business)`. |
-| **Error handling** | On featured API failure, hook clears the list and sets error; Home shows an error block. No retry or “last good” data. |
-| **Loading state** | Home uses `allBusinessesLoading` for the Community Highlights skeleton, not `featuredLoading`. While featured is loading, the section can render with an empty list. |
-| **Leaderboard** | Featured businesses are loaded only when the businesses tab is active (`shouldFetchBusinesses`). |
+| Area               | Finding                                                                                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Single source**  | One API and one hook feed both Home and Leaderboard; no duplicate fetch for “businesses of the month”.                                                               |
+| **Category label** | API and RPC/fallbacks now provide `category_label`; card uses it via `getCategoryLabelFromBusiness(business)`.                                                       |
+| **Error handling** | On featured API failure, hook clears the list and sets error; Home shows an error block. No retry or “last good” data.                                               |
+| **Loading state**  | Home uses `allBusinessesLoading` for the Community Highlights skeleton, not `featuredLoading`. While featured is loading, the section can render with an empty list. |
+| **Leaderboard**    | Featured businesses are loaded only when the businesses tab is active (`shouldFetchBusinesses`).                                                                     |
 
 **Optional improvements:**
 
@@ -130,11 +130,11 @@ Leaderboard: featuredBusinessesFromAPI = featuredBusinesses → BusinessOfMonthL
 
 ## 7. Quick reference
 
-| What | Where |
-|------|--------|
-| API | `GET /api/featured` → `src/app/api/featured/route.ts` |
-| RPC | `get_featured_businesses(p_region, p_limit, p_seed)` → migration `20260206_featured_rpc_category_label.sql` |
-| Hook | `useFeaturedBusinesses` → `src/app/hooks/useFeaturedBusinesses.ts` |
-| Home | `featuredByCategory` → `CommunityHighlights` → `BusinessOfTheMonthCard` |
-| Leaderboard | `featuredBusinessesFromAPI` → `BusinessOfMonthLeaderboard` → podium + list |
-| Types | `FeaturedBusiness` (hook), `BusinessOfTheMonth` (community types) |
+| What        | Where                                                                                                       |
+| ----------- | ----------------------------------------------------------------------------------------------------------- |
+| API         | `GET /api/featured` → `src/app/api/featured/route.ts`                                                       |
+| RPC         | `get_featured_businesses(p_region, p_limit, p_seed)` → migration `20260206_featured_rpc_category_label.sql` |
+| Hook        | `useFeaturedBusinesses` → `src/app/hooks/useFeaturedBusinesses.ts`                                          |
+| Home        | `featuredByCategory` → `CommunityHighlights` → `BusinessOfTheMonthCard`                                     |
+| Leaderboard | `featuredBusinessesFromAPI` → `BusinessOfMonthLeaderboard` → podium + list                                  |
+| Types       | `FeaturedBusiness` (hook), `BusinessOfTheMonth` (community types)                                           |

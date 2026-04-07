@@ -5,7 +5,11 @@ import { m } from "framer-motion";
 import { Star, Trophy, MapPin, ImageIcon } from "@/app/lib/icons";
 import Image from "next/image";
 import { BusinessOfTheMonth } from "../../types/community";
-import { getCategoryPlaceholder, getCategoryPlaceholderFromLabels, isPlaceholderImage } from "../../utils/categoryToPngMapping";
+import {
+  getCategoryPlaceholder,
+  getCategoryPlaceholderFromLabels,
+  isPlaceholderImage,
+} from "../../utils/categoryToPngMapping";
 import { getCategorySlugFromBusiness } from "../../utils/subcategoryPlaceholders";
 
 interface BusinessLeaderboardItemProps {
@@ -37,36 +41,45 @@ function BusinessLeaderboardItem({ business, index, rank }: BusinessLeaderboardI
     const uploadedImages = (business as any).uploaded_images;
     if (uploadedImages && Array.isArray(uploadedImages) && uploadedImages.length > 0) {
       const firstImageUrl = uploadedImages[0];
-      if (firstImageUrl &&
-        typeof firstImageUrl === 'string' &&
-        firstImageUrl.trim() !== '' &&
-        !isPlaceholderImage(firstImageUrl)) {
+      if (
+        firstImageUrl &&
+        typeof firstImageUrl === "string" &&
+        firstImageUrl.trim() !== "" &&
+        !isPlaceholderImage(firstImageUrl)
+      ) {
         return { image: firstImageUrl, isPlaceholder: false };
       }
     }
 
     const imageUrl = (business as any).image_url;
-    if (imageUrl &&
-      typeof imageUrl === 'string' &&
-      imageUrl.trim() !== '' &&
-      !isPlaceholderImage(imageUrl)) {
+    if (
+      imageUrl &&
+      typeof imageUrl === "string" &&
+      imageUrl.trim() !== "" &&
+      !isPlaceholderImage(imageUrl)
+    ) {
       return { image: imageUrl, isPlaceholder: false };
     }
 
-    if (business.image &&
-      typeof business.image === 'string' &&
-      business.image.trim() !== '' &&
-      !isPlaceholderImage(business.image)) {
+    if (
+      business.image &&
+      typeof business.image === "string" &&
+      business.image.trim() !== "" &&
+      !isPlaceholderImage(business.image)
+    ) {
       return { image: business.image, isPlaceholder: false };
     }
 
-    const placeholder = getCategoryPlaceholderFromLabels([
-      (business as any).subInterestId,
-      (business as any).subInterestLabel,
-      business.category,
-      categoryKey,
-      (business as any).badge
-    ], (business as any).interestId);
+    const placeholder = getCategoryPlaceholderFromLabels(
+      [
+        (business as any).subInterestId,
+        (business as any).subInterestLabel,
+        business.category,
+        categoryKey,
+        (business as any).badge,
+      ],
+      (business as any).interestId
+    );
     return { image: placeholder, isPlaceholder: true };
   }, [
     business.image,
@@ -100,7 +113,9 @@ function BusinessLeaderboardItem({ business, index, rank }: BusinessLeaderboardI
     >
       <div className="flex items-center justify-between p-3 sm:p-4">
         <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-          <div className={`w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${getBadgeStyles()} rounded-full flex items-center justify-center font-urbanist text-caption sm:text-body-sm font-600 shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex-shrink-0 border-none`}>
+          <div
+            className={`w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${getBadgeStyles()} rounded-full flex items-center justify-center font-urbanist text-caption sm:text-body-sm font-600 shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex-shrink-0 border-none`}
+          >
             {rank <= 3 ? <Trophy className="w-3 h-3 sm:w-4 sm:h-4" /> : rank}
           </div>
           <div className="w-12 h-12 sm:w-14 sm:h-14 relative rounded-lg overflow-hidden border-2 border-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] ring-2 ring-white/50 flex-shrink-0">
@@ -117,16 +132,20 @@ function BusinessLeaderboardItem({ business, index, rank }: BusinessLeaderboardI
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center"
-                style={{ backgroundColor: '#E5E0E5' }}
+                style={{ backgroundColor: "#E5E0E5" }}
               >
                 <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-charcoal/20" aria-hidden="true" />
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-urbanist text-body-sm sm:text-body font-600 text-charcoal truncate">{business.name}</div>
+            <div className="font-urbanist text-body-sm sm:text-body font-600 text-charcoal truncate">
+              {business.name}
+            </div>
             <div className="font-urbanist text-caption sm:text-body-sm text-charcoal/60 flex items-center gap-1 flex-wrap">
-              <span className="font-500 truncate max-w-[120px] sm:max-w-none">{business.category}</span>
+              <span className="font-500 truncate max-w-[120px] sm:max-w-none">
+                {business.category}
+              </span>
               <span className="text-charcoal/60 hidden sm:inline">•</span>
               <span className="hidden sm:flex items-center gap-0.5 truncate">
                 <MapPin className="w-3 h-3 flex-shrink-0" />
@@ -138,9 +157,13 @@ function BusinessLeaderboardItem({ business, index, rank }: BusinessLeaderboardI
         <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
           <div className="bg-gradient-to-br from-off-white via-off-white to-off-white/90 backdrop-blur-xl px-2 sm:px-3 py-1 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] border-none flex items-center gap-1">
             <Star className="w-3 h-3 sm:w-4 sm:h-4 text-coral fill-coral" />
-            <span className="font-urbanist text-caption sm:text-body-sm font-600 text-charcoal">{business.reviewCount > 0 ? business.rating : "New"}</span>
+            <span className="font-urbanist text-caption sm:text-body-sm font-600 text-charcoal">
+              {business.reviewCount > 0 ? business.rating : "New"}
+            </span>
           </div>
-          <span className="font-urbanist text-caption sm:text-body-sm text-charcoal/70 whitespace-nowrap">{business.reviewCount > 0 ? `${business.reviewCount} reviews` : "No reviews yet"}</span>
+          <span className="font-urbanist text-caption sm:text-body-sm text-charcoal/70 whitespace-nowrap">
+            {business.reviewCount > 0 ? `${business.reviewCount} reviews` : "No reviews yet"}
+          </span>
         </div>
       </div>
     </m.div>

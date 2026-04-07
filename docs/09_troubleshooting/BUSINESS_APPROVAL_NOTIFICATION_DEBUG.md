@@ -1,6 +1,7 @@
 ## Business Approval Notification Debugging Guide
 
 ### Issue
+
 Notifications are not being created when a business gets approved by an admin.
 
 ### Potential Root Causes
@@ -48,9 +49,10 @@ Notifications are not being created when a business gets approved by an admin.
 #### Step 4: Verify business has owner_id
 
 Run this in Supabase SQL Editor (replace `BUSINESS_ID` with actual ID):
+
 ```sql
-SELECT id, name, owner_id, status 
-FROM businesses 
+SELECT id, name, owner_id, status
+FROM businesses
 WHERE id = 'BUSINESS_ID';
 ```
 
@@ -61,11 +63,13 @@ If `owner_id` is NULL, notifications can't be sent. You need to assign an owner 
 If the function doesn't exist, you need to run the migration:
 
 **Option A: Through Supabase Dashboard**
+
 1. Go to Supabase Dashboard → SQL Editor
 2. Copy the entire contents of: `supabase/migrations/20260217_add_badge_and_helpful_notification_types.sql`
 3. Paste and run it
 
 **Option B: Through Supabase CLI** (if you have it set up)
+
 ```bash
 supabase db push
 ```
@@ -76,11 +80,11 @@ Check if your notifications table accepts the `business_approved` type:
 
 ```sql
 -- Check the constraint on the type column
-SELECT 
+SELECT
   conname,
-  pg_get_constraintdef(oid) 
-FROM pg_constraint 
-WHERE conrelid = 'notifications'::regclass 
+  pg_get_constraintdef(oid)
+FROM pg_constraint
+WHERE conrelid = 'notifications'::regclass
   AND contype = 'c';
 ```
 
@@ -105,6 +109,7 @@ The approval endpoint has been enhanced with detailed logging at:
 `src/app/api/admin/businesses/[id]/approve/route.ts` (lines 137-162)
 
 Now when you approve a business, you'll see:
+
 - What owner_id, business_id, and business_name are being used
 - Detailed RPC error information if the call fails
 - Success confirmation if notification is created
@@ -124,21 +129,25 @@ Now when you approve a business, you'll see:
 ### Common Issues & Solutions
 
 **Issue: Function not found error (code 42883)**
+
 - **Solution**: Run the migration file to create the function
 
 **Issue: "No owner_id found for business"**
+
 - **Solution**: Assign ownership before approving:
   ```sql
-  UPDATE businesses 
-  SET owner_id = 'USER_UUID_HERE' 
+  UPDATE businesses
+  SET owner_id = 'USER_UUID_HERE'
   WHERE id = 'BUSINESS_ID_HERE';
   ```
 
 **Issue: Notifications created but not showing**
+
 - Check notifications page displays `business_approved` type correctly
 - Verify user_id in notification matches the business owner
 - Check if notification context is loading correctly
 
 **Issue: Permission denied on RPC call**
+
 - Ensure service role client is being used (not user client)
 - Check RLS policies on notifications table

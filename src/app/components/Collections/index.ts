@@ -1,1 +1,1 @@
-export { default as CollectionsSection } from './CollectionsSection';
+export { default as CollectionsSection } from "./CollectionsSection";

@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServiceSupabase } from '@/app/lib/admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getServiceSupabase } from "@/app/lib/admin";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-type PushDispatchStatus = 'sent' | 'failed' | 'invalid_token';
+type PushDispatchStatus = "sent" | "failed" | "invalid_token";
 
 interface TokenRow {
   id: string;
   user_id: string;
   expo_push_token: string;
-  platform: 'ios' | 'android';
+  platform: "ios" | "android";
 }
 
 interface NotificationRow {
@@ -28,12 +28,12 @@ interface DeliveryAttemptResult {
   providerResponse: unknown;
 }
 
-const EXPO_PUSH_API_URL = 'https://exp.host/--/api/v2/push/send';
+const EXPO_PUSH_API_URL = "https://exp.host/--/api/v2/push/send";
 
 function isDispatchAuthorized(req: NextRequest): boolean {
   const configuredSecret = process.env.PUSH_DISPATCH_SECRET || process.env.CRON_SECRET;
   if (!configuredSecret) return false;
-  const authHeader = req.headers.get('authorization') || '';
+  const authHeader = req.headers.get("authorization") || "";
   return authHeader === `Bearer ${configuredSecret}`;
 }
 
@@ -52,7 +52,7 @@ async function sendExpoPushMessage(
     to: token.expo_push_token,
     title: notification.title,
     body: notification.message,
-    sound: 'default',
+    sound: "default",
     data: {
       link: notification.link,
       notificationId: notification.id,
@@ -61,10 +61,10 @@ async function sendExpoPushMessage(
   };
 
   const response = await fetch(EXPO_PUSH_API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      "Content-Type": "application/json",
+      Accept: "application/json",
       ...(expoAccessToken ? { Authorization: `Bearer ${expoAccessToken}` } : {}),
     },
     body: JSON.stringify(payload),
@@ -72,11 +72,11 @@ async function sendExpoPushMessage(
 
   const json = await response
     .json()
-    .catch(() => ({ error: 'non_json_response', status: response.status }));
+    .catch(() => ({ error: "non_json_response", status: response.status }));
 
   if (!response.ok) {
     return {
-      status: 'failed',
+      status: "failed",
       providerResponse: { status: response.status, body: json },
     };
   }
@@ -84,15 +84,15 @@ async function sendExpoPushMessage(
   const status = (json as any)?.data?.status;
   const detailsError = (json as any)?.data?.details?.error;
 
-  if (status === 'ok') {
-    return { status: 'sent', providerResponse: json };
+  if (status === "ok") {
+    return { status: "sent", providerResponse: json };
   }
 
-  if (status === 'error' && detailsError === 'DeviceNotRegistered') {
-    return { status: 'invalid_token', providerResponse: json };
+  if (status === "error" && detailsError === "DeviceNotRegistered") {
+    return { status: "invalid_token", providerResponse: json };
   }
 
-  return { status: 'failed', providerResponse: json };
+  return { status: "failed", providerResponse: json };
 }
 
 /**
@@ -115,30 +115,27 @@ export async function GET(req: NextRequest) {
 async function handleDispatch(req: NextRequest) {
   try {
     if (!isDispatchAuthorized(req)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
-    const maxTokens = normalizeNumber(searchParams.get('maxTokens'), 500, 1, 2000);
-    const maxNotifications = normalizeNumber(searchParams.get('maxNotifications'), 500, 1, 2000);
-    const lookbackHours = normalizeNumber(searchParams.get('lookbackHours'), 24, 1, 168);
+    const maxTokens = normalizeNumber(searchParams.get("maxTokens"), 500, 1, 2000);
+    const maxNotifications = normalizeNumber(searchParams.get("maxNotifications"), 500, 1, 2000);
+    const lookbackHours = normalizeNumber(searchParams.get("lookbackHours"), 24, 1, 168);
     const lookbackSince = new Date(Date.now() - lookbackHours * 60 * 60 * 1000).toISOString();
 
     const service = getServiceSupabase();
 
     const { data: activeTokens, error: tokensError } = await (service as any)
-      .from('mobile_push_tokens')
-      .select('id, user_id, expo_push_token, platform')
-      .is('disabled_at', null)
-      .order('last_seen_at', { ascending: false })
+      .from("mobile_push_tokens")
+      .select("id, user_id, expo_push_token, platform")
+      .is("disabled_at", null)
+      .order("last_seen_at", { ascending: false })
       .limit(maxTokens);
 
     if (tokensError) {
-      console.error('[PushDispatch] Failed to fetch active tokens:', tokensError);
-      return NextResponse.json(
-        { error: 'Failed to fetch push tokens' },
-        { status: 500 }
-      );
+      console.error("[PushDispatch] Failed to fetch active tokens:", tokensError);
+      return NextResponse.json({ error: "Failed to fetch push tokens" }, { status: 500 });
     }
 
     const tokens = (activeTokens || []) as TokenRow[];
@@ -159,19 +156,16 @@ async function handleDispatch(req: NextRequest) {
     const userIds = [...new Set(tokens.map((token) => token.user_id))];
 
     const { data: notifications, error: notificationsError } = await (service as any)
-      .from('notifications')
-      .select('id, user_id, title, message, link, type, created_at')
-      .in('user_id', userIds)
-      .gte('created_at', lookbackSince)
-      .order('created_at', { ascending: true })
+      .from("notifications")
+      .select("id, user_id, title, message, link, type, created_at")
+      .in("user_id", userIds)
+      .gte("created_at", lookbackSince)
+      .order("created_at", { ascending: true })
       .limit(maxNotifications);
 
     if (notificationsError) {
-      console.error('[PushDispatch] Failed to fetch notifications:', notificationsError);
-      return NextResponse.json(
-        { error: 'Failed to fetch notifications' },
-        { status: 500 }
-      );
+      console.error("[PushDispatch] Failed to fetch notifications:", notificationsError);
+      return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
     }
 
     const notificationRows = (notifications || []) as NotificationRow[];
@@ -193,17 +187,14 @@ async function handleDispatch(req: NextRequest) {
     const tokenIds = tokens.map((t) => t.id);
 
     const { data: existingLogs, error: logsError } = await (service as any)
-      .from('push_delivery_logs')
-      .select('notification_id, token_id')
-      .in('notification_id', notificationIds)
-      .in('token_id', tokenIds);
+      .from("push_delivery_logs")
+      .select("notification_id, token_id")
+      .in("notification_id", notificationIds)
+      .in("token_id", tokenIds);
 
     if (logsError) {
-      console.error('[PushDispatch] Failed to fetch delivery logs:', logsError);
-      return NextResponse.json(
-        { error: 'Failed to fetch delivery logs' },
-        { status: 500 }
-      );
+      console.error("[PushDispatch] Failed to fetch delivery logs:", logsError);
+      return NextResponse.json({ error: "Failed to fetch delivery logs" }, { status: 500 });
     }
 
     const existingPairs = new Set(
@@ -257,9 +248,9 @@ async function handleDispatch(req: NextRequest) {
     for (const pair of pendingPairs) {
       const result = await sendExpoPushMessage(pair.token, pair.notification);
 
-      if (result.status === 'sent') sent += 1;
-      if (result.status === 'failed') failed += 1;
-      if (result.status === 'invalid_token') {
+      if (result.status === "sent") sent += 1;
+      if (result.status === "failed") failed += 1;
+      if (result.status === "invalid_token") {
         invalidTokens += 1;
         tokenIdsToDisable.add(pair.token.id);
       }
@@ -275,25 +266,25 @@ async function handleDispatch(req: NextRequest) {
 
     if (deliveryRows.length > 0) {
       const { error: upsertError } = await (service as any)
-        .from('push_delivery_logs')
-        .upsert(deliveryRows, { onConflict: 'notification_id,token_id' });
+        .from("push_delivery_logs")
+        .upsert(deliveryRows, { onConflict: "notification_id,token_id" });
 
       if (upsertError) {
-        console.error('[PushDispatch] Failed to store delivery logs:', upsertError);
+        console.error("[PushDispatch] Failed to store delivery logs:", upsertError);
       }
     }
 
     if (tokenIdsToDisable.size > 0) {
       const { error: disableError } = await (service as any)
-        .from('mobile_push_tokens')
+        .from("mobile_push_tokens")
         .update({
           disabled_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .in('id', Array.from(tokenIdsToDisable));
+        .in("id", Array.from(tokenIdsToDisable));
 
       if (disableError) {
-        console.error('[PushDispatch] Failed to disable invalid tokens:', disableError);
+        console.error("[PushDispatch] Failed to disable invalid tokens:", disableError);
       }
     }
 
@@ -309,7 +300,7 @@ async function handleDispatch(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[PushDispatch] Unexpected error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("[PushDispatch] Unexpected error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

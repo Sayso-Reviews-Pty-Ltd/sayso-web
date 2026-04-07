@@ -49,18 +49,16 @@ export default function SearchResultsPanel({
     () =>
       results.some(
         (business) =>
-          typeof business.lat === "number" && Number.isFinite(business.lat) &&
-          typeof business.lng === "number" && Number.isFinite(business.lng)
+          typeof business.lat === "number" &&
+          Number.isFinite(business.lat) &&
+          typeof business.lng === "number" &&
+          Number.isFinite(business.lng)
       ),
     [results]
   );
 
-
   return (
-    <div
-      className="relative w-full transition-opacity duration-300 ease-in-out"
-      aria-live="polite"
-    >
+    <div className="relative w-full transition-opacity duration-300 ease-in-out" aria-live="polite">
       <LocationPromptBanner hasCoordinateBusinesses={hasCoordinateBusinesses} />
       <div className="rounded-[20px] border border-white/[0.12] bg-off-white/80 shadow-inner p-6 sm:p-8 backdrop-blur-xl">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -68,9 +66,7 @@ export default function SearchResultsPanel({
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-charcoal/60">
               Search Mode
             </p>
-            <h2 className="text-2xl font-semibold text-charcoal">
-              Results for "{query}"
-            </h2>
+            <h2 className="text-2xl font-semibold text-charcoal">Results for "{query}"</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {hasFilters && (
@@ -79,7 +75,9 @@ export default function SearchResultsPanel({
                 onClick={onResetFilters}
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: filterEase }}
+                transition={
+                  prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: filterEase }
+                }
                 whileHover={prefersReducedMotion ? undefined : { y: -1 }}
                 whileTap={prefersReducedMotion ? undefined : { y: 0, scale: 0.99 }}
                 className="text-sm text-charcoal/80 hover:text-charcoal underline underline-offset-4 decoration-1 font-600 transition-colors duration-200"
@@ -125,10 +123,7 @@ export default function SearchResultsPanel({
         {loading && (
           <ul className="list-none mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {skeletonItems.map((item) => (
-              <li
-                key={item}
-                className="h-56 w-full animate-pulse rounded-2xl bg-slate-200/60"
-              />
+              <li key={item} className="h-56 w-full animate-pulse rounded-2xl bg-slate-200/60" />
             ))}
           </ul>
         )}

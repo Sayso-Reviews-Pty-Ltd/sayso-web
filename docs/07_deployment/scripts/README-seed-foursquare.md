@@ -5,11 +5,13 @@ This script seeds businesses from the Foursquare API into your database, automat
 ## Setup
 
 1. **Install tsx** (if not already installed):
+
    ```bash
    npm install -D tsx
    ```
 
 2. **Set up environment variables** in your `.env` file (all secrets are stored here):
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -26,11 +28,13 @@ This script seeds businesses from the Foursquare API into your database, automat
 ## Usage
 
 Run the seeding script:
+
 ```bash
 npm run seed:fsq
 ```
 
 Or directly with tsx:
+
 ```bash
 npx tsx scripts/seed-foursquare-businesses.ts
 ```
@@ -71,6 +75,7 @@ Edit `SUBCATEGORY_CONFIGS` in `scripts/seed-foursquare-businesses.ts`:
 ## Current Subcategories
 
 The script includes mappings for:
+
 - **Food & Drink**: Coffee shops, Restaurants, Bars, Fast Food, Fine Dining
 - **Beauty & Wellness**: Gyms, Spas, Hair Salons, Nail Salons, Wellness Centers
 - **Professional Services**: Plumbers, Electricians, Legal Services
@@ -84,6 +89,7 @@ The script includes mappings for:
 The script uses GPT-5.1 (when `OPENAI_API_KEY` is provided) to enrich business data:
 
 ### What GPT Does:
+
 - ✅ **Address Inference**: Fills missing addresses based on business name + location
 - ✅ **Category Refinement**: Improves broad Foursquare categories (e.g., "Café, Coffee Shop" → "Coffee Shop")
 - ✅ **Location Cleaning**: Converts messy locations ("Cape Town Ward 115" → "Woodstock, Cape Town")
@@ -92,12 +98,14 @@ The script uses GPT-5.1 (when `OPENAI_API_KEY` is provided) to enrich business d
 - ✅ **Description Generation**: Creates authentic South African-style descriptions
 
 ### What GPT Doesn't Do:
+
 - ❌ Exact addresses (only "most likely" when missing)
 - ❌ Phone numbers
 - ❌ Opening hours
 - ❌ Legal/regulated attributes
 
 ### Safety:
+
 - GPT only fills missing data or cleans messy data
 - Returns `null` if unsure (never guesses)
 - Falls back gracefully if GPT is unavailable
@@ -110,4 +118,3 @@ The script uses GPT-5.1 (when `OPENAI_API_KEY` is provided) to enrich business d
 - Idempotent: Uses `source='foursquare'` + `source_id` for upserts (won't create duplicates)
 - Photos: Only sets `image_url` if a Foursquare photo is available (doesn't touch `uploaded_image`)
 - GPT enrichment: Optional but recommended for best data quality
-

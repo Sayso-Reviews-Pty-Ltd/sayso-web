@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/app/lib/supabase/server';
-import { cachedJsonResponse, CachePresets } from '@/app/lib/utils/httpCache';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSupabase } from "@/app/lib/supabase/server";
+import { cachedJsonResponse, CachePresets } from "@/app/lib/utils/httpCache";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/leaderboard
@@ -18,24 +18,22 @@ export async function GET(req: NextRequest) {
   try {
     const supabase = await getServerSupabase();
     const { searchParams } = new URL(req.url);
-    
-    const limit = parseInt(searchParams.get('limit') || '50', 10);
-    const sortBy = searchParams.get('sortBy') || 'reviews';
+
+    const limit = parseInt(searchParams.get("limit") || "50", 10);
+    const sortBy = searchParams.get("sortBy") || "reviews";
 
     // Use a more efficient approach: get user stats from reviews and profiles
     // First, get all users who have written reviews
-    const { data: reviewsData, error: reviewsError } = await supabase
-      .from('reviews')
-      .select(`
+    const { data: reviewsData, error: reviewsError } = await supabase.from("reviews").select(`
         user_id,
         rating,
         id
       `);
 
     if (reviewsError) {
-      console.error('[Leaderboard API] Error fetching reviews:', reviewsError);
+      console.error("[Leaderboard API] Error fetching reviews:", reviewsError);
       return NextResponse.json(
-        { error: 'Failed to fetch leaderboard data', details: reviewsError.message },
+        { error: "Failed to fetch leaderboard data", details: reviewsError.message },
         { status: 500 }
       );
     }
@@ -45,15 +43,18 @@ export async function GET(req: NextRequest) {
     }
 
     // Aggregate review stats by user
-    const userReviewStats = new Map<string, {
-      reviews: number;
-      total_rating: number;
-      review_ids: string[];
-    }>();
+    const userReviewStats = new Map<
+      string,
+      {
+        reviews: number;
+        total_rating: number;
+        review_ids: string[];
+      }
+    >();
 
     for (const review of reviewsData) {
       if (!review.user_id) continue;
-      
+
       if (!userReviewStats.has(review.user_id)) {
         userReviewStats.set(review.user_id, {
           reviews: 0,
@@ -71,9 +72,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Get helpful votes for all reviews
-    const allReviewIds = Array.from(userReviewStats.values())
-      .flatMap(stats => stats.review_ids);
-    
+    const allReviewIds = Array.from(userReviewStats.values()).flatMap((stats) => stats.review_ids);
+
     let helpfulVotesMap = new Map<string, number>();
     if (allReviewIds.length > 0) {
       // Query in batches to avoid URL length limits
@@ -81,16 +81,13 @@ export async function GET(req: NextRequest) {
       for (let i = 0; i < allReviewIds.length; i += batchSize) {
         const batch = allReviewIds.slice(i, i + batchSize);
         const { data: votesData } = await supabase
-          .from('review_helpful_votes')
-          .select('review_id')
-          .in('review_id', batch);
+          .from("review_helpful_votes")
+          .select("review_id")
+          .in("review_id", batch);
 
         if (votesData) {
           for (const vote of votesData) {
-            helpfulVotesMap.set(
-              vote.review_id,
-              (helpfulVotesMap.get(vote.review_id) || 0) + 1
-            );
+            helpfulVotesMap.set(vote.review_id, (helpfulVotesMap.get(vote.review_id) || 0) + 1);
           }
         }
       }
@@ -99,12 +96,12 @@ export async function GET(req: NextRequest) {
     // Get user profiles
     const userIds = Array.from(userReviewStats.keys());
     const { data: profilesData, error: profilesError } = await supabase
-      .from('profiles')
-      .select('user_id, username, display_name, avatar_url, is_top_reviewer')
-      .in('user_id', userIds);
+      .from("profiles")
+      .select("user_id, username, display_name, avatar_url, is_top_reviewer")
+      .in("user_id", userIds);
 
     if (profilesError) {
-      console.warn('[Leaderboard API] Error fetching profiles:', profilesError);
+      console.warn("[Leaderboard API] Error fetching profiles:", profilesError);
     }
 
     const profilesMap = new Map<string, any>();
@@ -136,7 +133,7 @@ export async function GET(req: NextRequest) {
 
     // Sort based on sortBy parameter
     switch (sortBy) {
-      case 'helpful_votes':
+      case "helpful_votes":
         leaderboardData.sort((a, b) => {
           if (b.helpful_votes_received !== a.helpful_votes_received) {
             return b.helpful_votes_received - a.helpful_votes_received;
@@ -144,7 +141,7 @@ export async function GET(req: NextRequest) {
           return b.reviews - a.reviews;
         });
         break;
-      case 'rating':
+      case "rating":
         leaderboardData.sort((a, b) => {
           if (b.average_rating !== a.average_rating) {
             return b.average_rating - a.average_rating;
@@ -152,7 +149,7 @@ export async function GET(req: NextRequest) {
           return b.reviews - a.reviews;
         });
         break;
-      case 'reviews':
+      case "reviews":
       default:
         leaderboardData.sort((a, b) => {
           if (b.reviews !== a.reviews) {
@@ -168,15 +165,17 @@ export async function GET(req: NextRequest) {
 
     // Format response to match LeaderboardUser interface
     const formattedLeaderboard = limitedData.map((user, index) => {
-      const displayName = user.display_name || user.username || 'Anonymous';
-      const avatarSeedName = user.display_name || user.username || 'User';
-      const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarSeedName)}&background=random&color=fff&size=128`;
-      
+      const displayName = user.display_name || user.username || "Anonymous";
+      const avatarSeedName = user.display_name || user.username || "User";
+      const avatar =
+        user.avatar_url ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarSeedName)}&background=random&color=fff&size=128`;
+
       // Assign badges for top 3
       let badge: string | undefined;
-      if (index === 0) badge = '🥇';
-      else if (index === 1) badge = '🥈';
-      else if (index === 2) badge = '🥉';
+      if (index === 0) badge = "🥇";
+      else if (index === 1) badge = "🥈";
+      else if (index === 2) badge = "🥉";
 
       return {
         rank: index + 1,
@@ -195,11 +194,10 @@ export async function GET(req: NextRequest) {
       CachePresets.api(300)
     );
   } catch (error: any) {
-    console.error('[Leaderboard API] Unexpected error:', error);
+    console.error("[Leaderboard API] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error?.message },
+      { error: "Internal server error", message: error?.message },
       { status: 500 }
     );
   }
 }
-

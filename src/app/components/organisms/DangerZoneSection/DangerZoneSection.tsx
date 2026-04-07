@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { Trash2 } from "@/app/lib/icons";
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { DangerAction } from '@/components/molecules/DangerAction';
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { DangerAction } from "@/components/molecules/DangerAction";
 
 export interface DangerZoneSectionProps {
   onDeactivate: () => void;
@@ -42,4 +42,3 @@ export const DangerZoneSection: React.FC<DangerZoneSectionProps> = ({
     </SettingsCard>
   );
 };
-

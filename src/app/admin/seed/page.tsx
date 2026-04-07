@@ -15,7 +15,10 @@ import {
   Trash2,
   Upload,
 } from "@/app/lib/icons";
-import { CANONICAL_SUBCATEGORY_SLUGS, SUBCATEGORY_SLUG_TO_LABEL } from "../../utils/subcategoryPlaceholders";
+import {
+  CANONICAL_SUBCATEGORY_SLUGS,
+  SUBCATEGORY_SLUG_TO_LABEL,
+} from "../../utils/subcategoryPlaceholders";
 
 const FONT = "'Urbanist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
@@ -254,7 +257,10 @@ export default function SeedPage() {
 
       setSeedRows(filteredRows);
       resetResults();
-      setToast({ type: "success", message: `Loaded ${filteredRows.length} row(s) from ${file.name}.` });
+      setToast({
+        type: "success",
+        message: `Loaded ${filteredRows.length} row(s) from ${file.name}.`,
+      });
     } catch (error: any) {
       setToast({ type: "error", message: error?.message || "Failed to parse file." });
     } finally {
@@ -354,7 +360,9 @@ export default function SeedPage() {
     for (const row of failedRows) {
       const name = toDisplayValue(row.raw.name || row.parsed?.name || "");
       const location = toDisplayValue(row.raw.location || row.parsed?.location || "");
-      const slug = toDisplayValue(row.raw.primary_subcategory_slug || row.parsed?.primary_subcategory_slug || "");
+      const slug = toDisplayValue(
+        row.raw.primary_subcategory_slug || row.parsed?.primary_subcategory_slug || ""
+      );
 
       const values = [
         String(row.rowNumber),
@@ -390,7 +398,9 @@ export default function SeedPage() {
   };
 
   const handleManualRowChange = (index: number, field: keyof ManualRow, value: string) => {
-    setManualRows((prev) => prev.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
+    setManualRows((prev) =>
+      prev.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row))
+    );
   };
 
   const handleRemoveManualRow = (index: number) => {
@@ -427,7 +437,10 @@ export default function SeedPage() {
       .filter(Boolean) as Array<{ index: number; query: string }>;
 
     if (pending.length === 0) {
-      setToast({ type: "info", message: "All rows already have coordinates (or missing address/location)." });
+      setToast({
+        type: "info",
+        message: "All rows already have coordinates (or missing address/location).",
+      });
       return;
     }
 
@@ -453,11 +466,18 @@ export default function SeedPage() {
           const result = results[index];
           const source = batch[index];
           if (!source || !result?.success) continue;
-          updatedRows[source.index] = { ...updatedRows[source.index], lat: result.lat, lng: result.lng };
+          updatedRows[source.index] = {
+            ...updatedRows[source.index],
+            lat: result.lat,
+            lng: result.lng,
+          };
         }
 
         setSeedRows([...updatedRows]);
-        setGeocodeProgress({ current: Math.min(i + batch.length, pending.length), total: pending.length });
+        setGeocodeProgress({
+          current: Math.min(i + batch.length, pending.length),
+          total: pending.length,
+        });
       }
 
       resetResults();
@@ -515,7 +535,9 @@ export default function SeedPage() {
             type="button"
             onClick={() => setActiveTab("upload")}
             className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-              activeTab === "upload" ? "bg-white text-card-bg" : "bg-white/10 text-white hover:bg-white/20"
+              activeTab === "upload"
+                ? "bg-white text-card-bg"
+                : "bg-white/10 text-white hover:bg-white/20"
             }`}
             style={{ fontFamily: FONT }}
           >
@@ -526,7 +548,9 @@ export default function SeedPage() {
             type="button"
             onClick={() => setActiveTab("manual")}
             className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-              activeTab === "manual" ? "bg-white text-card-bg" : "bg-white/10 text-white hover:bg-white/20"
+              activeTab === "manual"
+                ? "bg-white text-card-bg"
+                : "bg-white/10 text-white hover:bg-white/20"
             }`}
             style={{ fontFamily: FONT }}
           >
@@ -542,34 +566,89 @@ export default function SeedPage() {
             <label className="inline-flex items-center gap-1.5 rounded-xl bg-navbar-bg text-white px-4 py-2.5 text-sm font-semibold font-urbanist cursor-pointer hover:bg-navbar-bg/90 transition-colors">
               <Upload className="w-4 h-4" />
               {isParsing ? "Parsing…" : "Upload .xlsx / .csv"}
-              <input type="file" accept=".xlsx,.csv" className="hidden" disabled={isParsing} onChange={handleFileChange} />
+              <input
+                type="file"
+                accept=".xlsx,.csv"
+                className="hidden"
+                disabled={isParsing}
+                onChange={handleFileChange}
+              />
             </label>
 
             <label className="inline-flex items-center gap-2 text-sm text-charcoal/70 font-urbanist px-2 cursor-pointer select-none">
-              <input type="checkbox" checked={allowDuplicates} onChange={(event) => setAllowDuplicates(event.target.checked)} className="rounded border-charcoal/30" />
+              <input
+                type="checkbox"
+                checked={allowDuplicates}
+                onChange={(event) => setAllowDuplicates(event.target.checked)}
+                className="rounded border-charcoal/30"
+              />
               Allow duplicates
             </label>
 
             <div className="w-px h-6 bg-charcoal/10 mx-1" />
 
-            <button type="button" onClick={handleValidate} disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0} className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium">
-              {isValidating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+            <button
+              type="button"
+              onClick={handleValidate}
+              disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium"
+            >
+              {isValidating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4" />
+              )}
               Validate
             </button>
 
-            <button type="button" onClick={() => handleInsert("all")} disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0} className="inline-flex items-center gap-1.5 rounded-xl bg-sage text-white px-4 py-2.5 text-sm font-semibold font-urbanist hover:bg-sage/90 disabled:opacity-40 transition-colors">
-              {isInserting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />} Insert All
+            <button
+              type="button"
+              onClick={() => handleInsert("all")}
+              disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-sage text-white px-4 py-2.5 text-sm font-semibold font-urbanist hover:bg-sage/90 disabled:opacity-40 transition-colors"
+            >
+              {isInserting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Database className="w-4 h-4" />
+              )}{" "}
+              Insert All
             </button>
 
-            <button type="button" onClick={() => handleInsert("valid_only")} disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0} className="inline-flex items-center gap-1.5 rounded-xl border border-sage/30 bg-sage/8 px-4 py-2.5 text-sm font-semibold font-urbanist text-sage hover:bg-sage/15 disabled:opacity-40 transition-colors">
-              {isInserting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Insert Valid Only
+            <button
+              type="button"
+              onClick={() => handleInsert("valid_only")}
+              disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-sage/30 bg-sage/8 px-4 py-2.5 text-sm font-semibold font-urbanist text-sage hover:bg-sage/15 disabled:opacity-40 transition-colors"
+            >
+              {isInserting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4" />
+              )}{" "}
+              Insert Valid Only
             </button>
 
-            <button type="button" onClick={handleGenerateCoordinates} disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0} className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium">
-              {isGeocoding ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPinned className="w-4 h-4" />} Geocode
+            <button
+              type="button"
+              onClick={handleGenerateCoordinates}
+              disabled={isValidating || isInserting || isGeocoding || seedRows.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium"
+            >
+              {isGeocoding ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <MapPinned className="w-4 h-4" />
+              )}{" "}
+              Geocode
             </button>
 
-            <button type="button" onClick={handleDownloadErrorReport} disabled={!validation} className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium">
+            <button
+              type="button"
+              onClick={handleDownloadErrorReport}
+              disabled={!validation}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-charcoal/15 bg-white px-4 py-2.5 text-sm font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] disabled:opacity-40 transition-colors shadow-premium"
+            >
               <Download className="w-4 h-4" /> Error Report
             </button>
           </div>
@@ -587,57 +666,280 @@ export default function SeedPage() {
           <div className="rounded-2xl border border-charcoal/10 bg-white shadow-premium p-5">
             <h2 className="font-urbanist text-base font-semibold text-charcoal mb-4">Single Add</h2>
             <div className="grid gap-3 sm:grid-cols-3">
-              <input value={singleRow.name} onChange={(event) => setSingleRow((prev) => ({ ...prev, name: event.target.value }))} placeholder="Name *" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.location} onChange={(event) => setSingleRow((prev) => ({ ...prev, location: event.target.value }))} placeholder="Location *" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <select value={singleRow.primary_subcategory_slug} onChange={(event) => setSingleRow((prev) => ({ ...prev, primary_subcategory_slug: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
+              <input
+                value={singleRow.name}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, name: event.target.value }))
+                }
+                placeholder="Name *"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.location}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, location: event.target.value }))
+                }
+                placeholder="Location *"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <select
+                value={singleRow.primary_subcategory_slug}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({
+                    ...prev,
+                    primary_subcategory_slug: event.target.value,
+                  }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
                 <option value="">Select Subcategory *</option>
                 {CANONICAL_SUBCATEGORY_SLUGS.map((slug) => (
-                  <option key={slug} value={slug}>{SUBCATEGORY_SLUG_TO_LABEL[slug]}</option>
+                  <option key={slug} value={slug}>
+                    {SUBCATEGORY_SLUG_TO_LABEL[slug]}
+                  </option>
                 ))}
               </select>
-              <select value={singleRow.primary_category_slug} onChange={(event) => setSingleRow((prev) => ({ ...prev, primary_category_slug: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
+              <select
+                value={singleRow.primary_category_slug}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, primary_category_slug: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
                 <option value="">Primary Category (optional)</option>
                 {PRIMARY_CATEGORY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
                 ))}
               </select>
-              <input value={singleRow.slug} onChange={(event) => setSingleRow((prev) => ({ ...prev, slug: event.target.value }))} placeholder="Slug (optional, auto-generated)" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.category_raw} onChange={(event) => setSingleRow((prev) => ({ ...prev, category_raw: event.target.value }))} placeholder="Category Raw (optional)" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.address} onChange={(event) => setSingleRow((prev) => ({ ...prev, address: event.target.value }))} placeholder="Address" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.description} onChange={(event) => setSingleRow((prev) => ({ ...prev, description: event.target.value }))} placeholder="Description" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.phone} onChange={(event) => setSingleRow((prev) => ({ ...prev, phone: event.target.value }))} placeholder="Phone" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.email} onChange={(event) => setSingleRow((prev) => ({ ...prev, email: event.target.value }))} placeholder="Email" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.website} onChange={(event) => setSingleRow((prev) => ({ ...prev, website: event.target.value }))} placeholder="Website" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.image_url} onChange={(event) => setSingleRow((prev) => ({ ...prev, image_url: event.target.value }))} placeholder="Image URL" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.badge} onChange={(event) => setSingleRow((prev) => ({ ...prev, badge: event.target.value }))} placeholder="Badge" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.owner_id} onChange={(event) => setSingleRow((prev) => ({ ...prev, owner_id: event.target.value }))} placeholder="Owner ID (UUID, optional)" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <select value={singleRow.verified} onChange={(event) => setSingleRow((prev) => ({ ...prev, verified: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="">verified (optional)</option><option value="true">TRUE</option><option value="false">FALSE</option>
+              <input
+                value={singleRow.slug}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, slug: event.target.value }))
+                }
+                placeholder="Slug (optional, auto-generated)"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.category_raw}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, category_raw: event.target.value }))
+                }
+                placeholder="Category Raw (optional)"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.address}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, address: event.target.value }))
+                }
+                placeholder="Address"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.description}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, description: event.target.value }))
+                }
+                placeholder="Description"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.phone}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, phone: event.target.value }))
+                }
+                placeholder="Phone"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.email}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, email: event.target.value }))
+                }
+                placeholder="Email"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.website}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, website: event.target.value }))
+                }
+                placeholder="Website"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.image_url}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, image_url: event.target.value }))
+                }
+                placeholder="Image URL"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.badge}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, badge: event.target.value }))
+                }
+                placeholder="Badge"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.owner_id}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, owner_id: event.target.value }))
+                }
+                placeholder="Owner ID (UUID, optional)"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <select
+                value={singleRow.verified}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, verified: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="">verified (optional)</option>
+                <option value="true">TRUE</option>
+                <option value="false">FALSE</option>
               </select>
-              <select value={singleRow.is_hidden} onChange={(event) => setSingleRow((prev) => ({ ...prev, is_hidden: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="">is_hidden (optional)</option><option value="true">TRUE</option><option value="false">FALSE</option>
+              <select
+                value={singleRow.is_hidden}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, is_hidden: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="">is_hidden (optional)</option>
+                <option value="true">TRUE</option>
+                <option value="false">FALSE</option>
               </select>
-              <select value={singleRow.is_system} onChange={(event) => setSingleRow((prev) => ({ ...prev, is_system: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="">is_system (optional)</option><option value="true">TRUE</option><option value="false">FALSE</option>
+              <select
+                value={singleRow.is_system}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, is_system: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="">is_system (optional)</option>
+                <option value="true">TRUE</option>
+                <option value="false">FALSE</option>
               </select>
-              <select value={singleRow.is_chain} onChange={(event) => setSingleRow((prev) => ({ ...prev, is_chain: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="">is_chain (optional)</option><option value="true">TRUE</option><option value="false">FALSE</option>
+              <select
+                value={singleRow.is_chain}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, is_chain: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="">is_chain (optional)</option>
+                <option value="true">TRUE</option>
+                <option value="false">FALSE</option>
               </select>
-              <input value={singleRow.source} onChange={(event) => setSingleRow((prev) => ({ ...prev, source: event.target.value }))} placeholder="Source" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.source_id} onChange={(event) => setSingleRow((prev) => ({ ...prev, source_id: event.target.value }))} placeholder="Source ID" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.lat} onChange={(event) => setSingleRow((prev) => ({ ...prev, lat: event.target.value }))} placeholder="Lat" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.lng} onChange={(event) => setSingleRow((prev) => ({ ...prev, lng: event.target.value }))} placeholder="Lng" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <select value={singleRow.price_range} onChange={(event) => setSingleRow((prev) => ({ ...prev, price_range: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="$">$</option><option value="$$">$$</option><option value="$$$">$$$</option><option value="$$$$">$$$$</option>
+              <input
+                value={singleRow.source}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, source: event.target.value }))
+                }
+                placeholder="Source"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.source_id}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, source_id: event.target.value }))
+                }
+                placeholder="Source ID"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.lat}
+                onChange={(event) => setSingleRow((prev) => ({ ...prev, lat: event.target.value }))}
+                placeholder="Lat"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.lng}
+                onChange={(event) => setSingleRow((prev) => ({ ...prev, lng: event.target.value }))}
+                placeholder="Lng"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <select
+                value={singleRow.price_range}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, price_range: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="$">$</option>
+                <option value="$$">$$</option>
+                <option value="$$$">$$$</option>
+                <option value="$$$$">$$$$</option>
               </select>
-              <select value={singleRow.status} onChange={(event) => setSingleRow((prev) => ({ ...prev, status: event.target.value }))} className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }}>
-                <option value="active">active</option><option value="inactive">inactive</option><option value="pending">pending</option><option value="pending_approval">pending_approval</option><option value="rejected">rejected</option>
+              <select
+                value={singleRow.status}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, status: event.target.value }))
+                }
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              >
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+                <option value="pending">pending</option>
+                <option value="pending_approval">pending_approval</option>
+                <option value="rejected">rejected</option>
               </select>
-              <input value={singleRow.rejection_reason} onChange={(event) => setSingleRow((prev) => ({ ...prev, rejection_reason: event.target.value }))} placeholder="Rejection Reason (if rejected)" className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm" style={{ fontFamily: FONT }} />
-              <input value={singleRow.hours} onChange={(event) => setSingleRow((prev) => ({ ...prev, hours: event.target.value }))} placeholder='Hours JSON, e.g. {"monday":"09:00-17:00"}' className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm sm:col-span-3" style={{ fontFamily: FONT }} />
+              <input
+                value={singleRow.rejection_reason}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, rejection_reason: event.target.value }))
+                }
+                placeholder="Rejection Reason (if rejected)"
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm"
+                style={{ fontFamily: FONT }}
+              />
+              <input
+                value={singleRow.hours}
+                onChange={(event) =>
+                  setSingleRow((prev) => ({ ...prev, hours: event.target.value }))
+                }
+                placeholder='Hours JSON, e.g. {"monday":"09:00-17:00"}'
+                className="rounded-lg border border-charcoal/20 px-3 py-2 text-sm sm:col-span-3"
+                style={{ fontFamily: FONT }}
+              />
             </div>
             <div className="mt-3">
-              <button type="button" onClick={handleAddSingleRow} className="inline-flex items-center gap-1.5 rounded-full bg-card-bg text-white px-4 py-2 text-sm font-semibold hover:bg-card-bg/90" style={{ fontFamily: FONT }}>
+              <button
+                type="button"
+                onClick={handleAddSingleRow}
+                className="inline-flex items-center gap-1.5 rounded-full bg-card-bg text-white px-4 py-2 text-sm font-semibold hover:bg-card-bg/90"
+                style={{ fontFamily: FONT }}
+              >
                 <Plus className="w-4 h-4" /> Add Single Row
               </button>
             </div>
@@ -645,10 +947,24 @@ export default function SeedPage() {
 
           <div className="rounded-2xl border border-charcoal/10 bg-white shadow-premium p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-urbanist text-base font-semibold text-charcoal">Multi-row Queue</h2>
+              <h2 className="font-urbanist text-base font-semibold text-charcoal">
+                Multi-row Queue
+              </h2>
               <div className="flex gap-2">
-                <button type="button" onClick={handleAddBlankManualRow} className="inline-flex items-center gap-1 rounded-xl border border-charcoal/15 px-3 py-1.5 text-xs font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] shadow-premium"><Plus className="w-3.5 h-3.5" /> Add Row</button>
-                <button type="button" onClick={handleLoadManualRows} className="inline-flex items-center gap-1 rounded-xl bg-navbar-bg text-white px-3 py-1.5 text-xs font-semibold font-urbanist hover:bg-navbar-bg/90">Use Manual Rows</button>
+                <button
+                  type="button"
+                  onClick={handleAddBlankManualRow}
+                  className="inline-flex items-center gap-1 rounded-xl border border-charcoal/15 px-3 py-1.5 text-xs font-semibold font-urbanist text-charcoal hover:bg-charcoal/[0.03] shadow-premium"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Row
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLoadManualRows}
+                  className="inline-flex items-center gap-1 rounded-xl bg-navbar-bg text-white px-3 py-1.5 text-xs font-semibold font-urbanist hover:bg-navbar-bg/90"
+                >
+                  Use Manual Rows
+                </button>
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -671,40 +987,136 @@ export default function SeedPage() {
                 <tbody>
                   {manualRows.map((row, index) => (
                     <tr key={`manual-row-${index}`} className="border-b border-charcoal/5">
-                      <td className="px-2 py-2"><input value={row.name} onChange={(event) => handleManualRowChange(index, "name", event.target.value)} className="w-40 rounded border border-charcoal/20 px-2 py-1" /></td>
-                      <td className="px-2 py-2"><input value={row.location} onChange={(event) => handleManualRowChange(index, "location", event.target.value)} className="w-36 rounded border border-charcoal/20 px-2 py-1" /></td>
                       <td className="px-2 py-2">
-                        <select value={row.primary_subcategory_slug} onChange={(event) => handleManualRowChange(index, "primary_subcategory_slug", event.target.value)} className="w-44 rounded border border-charcoal/20 px-2 py-1">
+                        <input
+                          value={row.name}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "name", event.target.value)
+                          }
+                          className="w-40 rounded border border-charcoal/20 px-2 py-1"
+                        />
+                      </td>
+                      <td className="px-2 py-2">
+                        <input
+                          value={row.location}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "location", event.target.value)
+                          }
+                          className="w-36 rounded border border-charcoal/20 px-2 py-1"
+                        />
+                      </td>
+                      <td className="px-2 py-2">
+                        <select
+                          value={row.primary_subcategory_slug}
+                          onChange={(event) =>
+                            handleManualRowChange(
+                              index,
+                              "primary_subcategory_slug",
+                              event.target.value
+                            )
+                          }
+                          className="w-44 rounded border border-charcoal/20 px-2 py-1"
+                        >
                           <option value="">Select...</option>
                           {CANONICAL_SUBCATEGORY_SLUGS.map((slug) => (
-                            <option key={slug} value={slug}>{SUBCATEGORY_SLUG_TO_LABEL[slug]}</option>
+                            <option key={slug} value={slug}>
+                              {SUBCATEGORY_SLUG_TO_LABEL[slug]}
+                            </option>
                           ))}
                         </select>
                       </td>
                       <td className="px-2 py-2">
-                        <select value={row.primary_category_slug} onChange={(event) => handleManualRowChange(index, "primary_category_slug", event.target.value)} className="w-48 rounded border border-charcoal/20 px-2 py-1">
+                        <select
+                          value={row.primary_category_slug}
+                          onChange={(event) =>
+                            handleManualRowChange(
+                              index,
+                              "primary_category_slug",
+                              event.target.value
+                            )
+                          }
+                          className="w-48 rounded border border-charcoal/20 px-2 py-1"
+                        >
                           <option value="">Select...</option>
                           {PRIMARY_CATEGORY_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
                           ))}
                         </select>
                       </td>
-                      <td className="px-2 py-2"><input value={row.category_raw} onChange={(event) => handleManualRowChange(index, "category_raw", event.target.value)} className="w-36 rounded border border-charcoal/20 px-2 py-1" placeholder="Category Raw" /></td>
                       <td className="px-2 py-2">
-                        <select value={row.price_range} onChange={(event) => handleManualRowChange(index, "price_range", event.target.value)} className="rounded border border-charcoal/20 px-2 py-1">
-                          <option value="$">$</option><option value="$$">$$</option><option value="$$$">$$$</option><option value="$$$$">$$$$</option>
+                        <input
+                          value={row.category_raw}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "category_raw", event.target.value)
+                          }
+                          className="w-36 rounded border border-charcoal/20 px-2 py-1"
+                          placeholder="Category Raw"
+                        />
+                      </td>
+                      <td className="px-2 py-2">
+                        <select
+                          value={row.price_range}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "price_range", event.target.value)
+                          }
+                          className="rounded border border-charcoal/20 px-2 py-1"
+                        >
+                          <option value="$">$</option>
+                          <option value="$$">$$</option>
+                          <option value="$$$">$$$</option>
+                          <option value="$$$$">$$$$</option>
                         </select>
                       </td>
                       <td className="px-2 py-2">
-                        <select value={row.status} onChange={(event) => handleManualRowChange(index, "status", event.target.value)} className="rounded border border-charcoal/20 px-2 py-1">
-                          <option value="active">active</option><option value="inactive">inactive</option><option value="pending">pending</option><option value="pending_approval">pending_approval</option><option value="rejected">rejected</option>
+                        <select
+                          value={row.status}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "status", event.target.value)
+                          }
+                          className="rounded border border-charcoal/20 px-2 py-1"
+                        >
+                          <option value="active">active</option>
+                          <option value="inactive">inactive</option>
+                          <option value="pending">pending</option>
+                          <option value="pending_approval">pending_approval</option>
+                          <option value="rejected">rejected</option>
                         </select>
                       </td>
-                      <td className="px-2 py-2"><input value={row.address} onChange={(event) => handleManualRowChange(index, "address", event.target.value)} className="w-48 rounded border border-charcoal/20 px-2 py-1" /></td>
-                      <td className="px-2 py-2"><input value={row.source} onChange={(event) => handleManualRowChange(index, "source", event.target.value)} className="w-24 rounded border border-charcoal/20 px-2 py-1" /></td>
-                      <td className="px-2 py-2"><input value={row.source_id} onChange={(event) => handleManualRowChange(index, "source_id", event.target.value)} className="w-28 rounded border border-charcoal/20 px-2 py-1" /></td>
+                      <td className="px-2 py-2">
+                        <input
+                          value={row.address}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "address", event.target.value)
+                          }
+                          className="w-48 rounded border border-charcoal/20 px-2 py-1"
+                        />
+                      </td>
+                      <td className="px-2 py-2">
+                        <input
+                          value={row.source}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "source", event.target.value)
+                          }
+                          className="w-24 rounded border border-charcoal/20 px-2 py-1"
+                        />
+                      </td>
+                      <td className="px-2 py-2">
+                        <input
+                          value={row.source_id}
+                          onChange={(event) =>
+                            handleManualRowChange(index, "source_id", event.target.value)
+                          }
+                          className="w-28 rounded border border-charcoal/20 px-2 py-1"
+                        />
+                      </td>
                       <td className="px-2 py-2 text-right">
-                        <button type="button" onClick={() => handleRemoveManualRow(index)} className="inline-flex items-center justify-center rounded-full p-1 text-red-600 hover:bg-red-50">
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveManualRow(index)}
+                          className="inline-flex items-center justify-center rounded-full p-1 text-red-600 hover:bg-red-50"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -724,9 +1136,19 @@ export default function SeedPage() {
           </span>
           {validation && (
             <>
-              <span className="inline-flex items-center rounded-xl bg-sage/10 px-3 py-1 text-xs font-semibold font-urbanist text-sage">✓ {validation.summary.validRows} valid</span>
-              {validation.summary.invalidRows > 0 && <span className="inline-flex items-center rounded-xl bg-red-50 px-3 py-1 text-xs font-semibold font-urbanist text-red-700">✕ {validation.summary.invalidRows} invalid</span>}
-              {validation.summary.duplicateRows > 0 && <span className="inline-flex items-center rounded-xl bg-amber-50 px-3 py-1 text-xs font-semibold font-urbanist text-amber-700">⚠ {validation.summary.duplicateRows} duplicates</span>}
+              <span className="inline-flex items-center rounded-xl bg-sage/10 px-3 py-1 text-xs font-semibold font-urbanist text-sage">
+                ✓ {validation.summary.validRows} valid
+              </span>
+              {validation.summary.invalidRows > 0 && (
+                <span className="inline-flex items-center rounded-xl bg-red-50 px-3 py-1 text-xs font-semibold font-urbanist text-red-700">
+                  ✕ {validation.summary.invalidRows} invalid
+                </span>
+              )}
+              {validation.summary.duplicateRows > 0 && (
+                <span className="inline-flex items-center rounded-xl bg-amber-50 px-3 py-1 text-xs font-semibold font-urbanist text-amber-700">
+                  ⚠ {validation.summary.duplicateRows} duplicates
+                </span>
+              )}
             </>
           )}
           {insertResult && (
@@ -740,21 +1162,42 @@ export default function SeedPage() {
           <table className="min-w-full text-sm">
             <thead>
               <tr className="border-b border-charcoal/8 bg-charcoal/[0.025] text-left">
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Row</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Name</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Location</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Subcategory</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Price</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Source</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Coords</th>
-                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Validation</th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Row
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Location
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Subcategory
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Price
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Source
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Coords
+                </th>
+                <th className="px-4 py-3 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                  Validation
+                </th>
               </tr>
             </thead>
             <tbody>
               {previewRows.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-16 text-center font-urbanist text-sm text-charcoal/35">
+                  <td
+                    colSpan={9}
+                    className="px-4 py-16 text-center font-urbanist text-sm text-charcoal/35"
+                  >
                     No rows loaded — upload a file or use Manual Entry above.
                   </td>
                 </tr>
@@ -768,7 +1211,8 @@ export default function SeedPage() {
                 const parsed = validated?.parsed;
                 const name = parsed?.name || toDisplayValue(row.name);
                 const location = parsed?.location || toDisplayValue(row.location);
-                const subcategory = parsed?.primary_subcategory_slug || toDisplayValue(row.primary_subcategory_slug);
+                const subcategory =
+                  parsed?.primary_subcategory_slug || toDisplayValue(row.primary_subcategory_slug);
                 const price = parsed?.price_range || toDisplayValue(row.price_range || "$$");
                 const status = parsed?.status || toDisplayValue(row.status || "active");
                 const source = parsed?.source || toDisplayValue(row.source);
@@ -778,24 +1222,49 @@ export default function SeedPage() {
                 const coords = lat !== null && lng !== null ? `${lat}, ${lng}` : "-";
 
                 return (
-                  <tr key={`preview-row-${rowNumber}`} className={`border-b border-charcoal/5 transition-colors ${hasErrors ? "bg-red-50/60" : hasWarnings ? "bg-amber-50/50" : "hover:bg-charcoal/[0.015]"}`}>
-                    <td className="px-4 py-3 font-urbanist text-xs text-charcoal/40 tabular-nums">{rowNumber}</td>
-                    <td className="px-4 py-3 font-urbanist font-medium text-charcoal">{name || <span className="text-charcoal/25">—</span>}</td>
-                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/70">{location || <span className="text-charcoal/25">—</span>}</td>
-                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/70">{subcategory || <span className="text-charcoal/25">—</span>}</td>
-                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/60">{price || "—"}</td>
+                  <tr
+                    key={`preview-row-${rowNumber}`}
+                    className={`border-b border-charcoal/5 transition-colors ${hasErrors ? "bg-red-50/60" : hasWarnings ? "bg-amber-50/50" : "hover:bg-charcoal/[0.015]"}`}
+                  >
+                    <td className="px-4 py-3 font-urbanist text-xs text-charcoal/40 tabular-nums">
+                      {rowNumber}
+                    </td>
+                    <td className="px-4 py-3 font-urbanist font-medium text-charcoal">
+                      {name || <span className="text-charcoal/25">—</span>}
+                    </td>
+                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/70">
+                      {location || <span className="text-charcoal/25">—</span>}
+                    </td>
+                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/70">
+                      {subcategory || <span className="text-charcoal/25">—</span>}
+                    </td>
+                    <td className="px-4 py-3 font-urbanist text-sm text-charcoal/60">
+                      {price || "—"}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium font-urbanist ${status === "active" ? "bg-sage/10 text-sage" : "bg-charcoal/8 text-charcoal/60"}`}>
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium font-urbanist ${status === "active" ? "bg-sage/10 text-sage" : "bg-charcoal/8 text-charcoal/60"}`}
+                      >
                         {status || "—"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-urbanist text-xs text-charcoal/50">{source && sourceId ? `${source}:${sourceId}` : <span className="text-charcoal/25">—</span>}</td>
+                    <td className="px-4 py-3 font-urbanist text-xs text-charcoal/50">
+                      {source && sourceId ? (
+                        `${source}:${sourceId}`
+                      ) : (
+                        <span className="text-charcoal/25">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 font-urbanist text-xs text-charcoal/50">{coords}</td>
                     <td className="px-4 py-3">
-                      {!validated && <span className="font-urbanist text-xs text-charcoal/30">—</span>}
+                      {!validated && (
+                        <span className="font-urbanist text-xs text-charcoal/30">—</span>
+                      )}
                       {validated && hasErrors && (
                         <div className="font-urbanist text-xs text-red-700">
-                          <div className="inline-flex items-center gap-1 font-semibold mb-0.5"><AlertTriangle className="w-3 h-3" /> Invalid</div>
+                          <div className="inline-flex items-center gap-1 font-semibold mb-0.5">
+                            <AlertTriangle className="w-3 h-3" /> Invalid
+                          </div>
                           <p className="text-red-600/80">{validated.errors.join("; ")}</p>
                         </div>
                       )}

@@ -1,19 +1,15 @@
-import type { Metadata } from 'next';
-import { generateSEOMetadata } from '../lib/utils/seoMetadata';
+import type { Metadata } from "next";
+import { generateSEOMetadata } from "../lib/utils/seoMetadata";
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: 'Verify your email | Sayso',
-  description: 'Verify your Sayso account email to continue using features securely.',
-  url: '/verify-email',
+  title: "Verify your email | Sayso",
+  description: "Verify your Sayso account email to continue using features securely.",
+  url: "/verify-email",
   noindex: true,
   nofollow: true,
-  type: 'website',
+  type: "website",
 });
 
-export default function VerifyEmailLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function VerifyEmailLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

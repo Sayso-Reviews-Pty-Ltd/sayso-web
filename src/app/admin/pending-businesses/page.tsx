@@ -42,11 +42,16 @@ export default function AdminPendingBusinessesPage() {
     setError(null);
     fetch("/api/admin/businesses/pending")
       .then((res) => {
-        if (res.status === 403) { router.replace("/"); return null; }
+        if (res.status === 403) {
+          router.replace("/");
+          return null;
+        }
         if (!res.ok) throw new Error("Failed to load pending businesses");
         return res.json();
       })
-      .then((data) => { if (data?.businesses) setBusinesses(data.businesses); })
+      .then((data) => {
+        if (data?.businesses) setBusinesses(data.businesses);
+      })
       .catch((err) => setError(err.message || "Something went wrong"))
       .finally(() => setLoading(false));
   }, [router]);
@@ -97,9 +102,7 @@ export default function AdminPendingBusinessesPage() {
           <p className="font-urbanist text-base font-semibold text-charcoal/70">
             All clear — no pending businesses
           </p>
-          <p className="font-urbanist text-sm text-charcoal/40">
-            New submissions will appear here
-          </p>
+          <p className="font-urbanist text-sm text-charcoal/40">New submissions will appear here</p>
         </div>
       )}
 
@@ -110,10 +113,18 @@ export default function AdminPendingBusinessesPage() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-charcoal/8 bg-charcoal/[0.025]">
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Business</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Category</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Submitted by</th>
-                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">Submitted</th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Business
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Submitted by
+                  </th>
+                  <th className="px-5 py-3.5 font-urbanist font-semibold text-charcoal/60 text-xs uppercase tracking-wider">
+                    Submitted
+                  </th>
                   <th className="px-5 py-3.5 w-28" />
                 </tr>
               </thead>
@@ -154,7 +165,9 @@ export default function AdminPendingBusinessesPage() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-1.5 text-charcoal/50">
                         <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-                        <span className="font-urbanist text-sm">{timeAgo(b.created_at) ?? formatDate(b.created_at)}</span>
+                        <span className="font-urbanist text-sm">
+                          {timeAgo(b.created_at) ?? formatDate(b.created_at)}
+                        </span>
                       </div>
                     </td>
                     <td className="px-5 py-4 text-right" onClick={(e) => e.stopPropagation()}>
@@ -186,7 +199,9 @@ export default function AdminPendingBusinessesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-urbanist font-semibold text-charcoal truncate">{b.name}</p>
-                    {b.location && <p className="font-urbanist text-xs text-charcoal/45">{b.location}</p>}
+                    {b.location && (
+                      <p className="font-urbanist text-xs text-charcoal/45">{b.location}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">

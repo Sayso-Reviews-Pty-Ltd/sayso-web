@@ -116,15 +116,13 @@ export default function PageTransitionProvider({ children }: PageTransitionProvi
       isTransitioning,
       setTransitioning: setIsTransitioning,
     }),
-    [isTransitioning],
+    [isTransitioning]
   );
 
   return (
     <PageTransitionContext.Provider value={value}>
       <div className="min-h-[100dvh] w-full" data-page-transition={isTransitioning ? "1" : "0"}>
-        <div className="relative min-h-[100dvh] w-full overflow-x-clip">
-          {children}
-        </div>
+        <div className="relative min-h-[100dvh] w-full overflow-x-clip">{children}</div>
       </div>
     </PageTransitionContext.Provider>
   );

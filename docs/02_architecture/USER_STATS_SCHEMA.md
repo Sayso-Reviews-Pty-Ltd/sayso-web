@@ -4,12 +4,12 @@
 
 ```typescript
 export interface UserStats {
-  totalReviewsWritten: number;        // Count of reviews written by user
-  totalHelpfulVotesGiven: number;     // Count of helpful votes user has given to others
-  totalBusinessesSaved: number;       // Count of businesses user has saved
-  accountCreationDate: string;        // ISO timestamp from profiles.created_at
-  lastActiveDate: string;             // ISO timestamp from profiles.last_active_at (or created_at if null)
-  helpfulVotesReceived: number;       // Count of helpful votes received on user's reviews
+  totalReviewsWritten: number; // Count of reviews written by user
+  totalHelpfulVotesGiven: number; // Count of helpful votes user has given to others
+  totalBusinessesSaved: number; // Count of businesses user has saved
+  accountCreationDate: string; // ISO timestamp from profiles.created_at
+  lastActiveDate: string; // ISO timestamp from profiles.last_active_at (or created_at if null)
+  helpfulVotesReceived: number; // Count of helpful votes received on user's reviews
 }
 ```
 
@@ -18,64 +18,76 @@ export interface UserStats {
 User stats are **computed/aggregated** from the following database tables:
 
 ### 1. `profiles` table
+
 **Fields used:**
+
 - `id` (UUID) - User ID (primary key)
 - `created_at` (TIMESTAMPTZ) - Account creation date
 - `last_active_at` (TIMESTAMPTZ) - Last active timestamp
 
 **Query:**
+
 ```sql
-SELECT created_at, last_active_at 
-FROM profiles 
+SELECT created_at, last_active_at
+FROM profiles
 WHERE id = :userId;
 ```
 
 ### 2. `reviews` table
+
 **Fields used:**
+
 - `user_id` (UUID) - Foreign key to auth.users(id)
 - `id` (UUID) - Review ID (used for helpful votes calculation)
 
 **Queries:**
+
 ```sql
 -- Count total reviews written
-SELECT COUNT(*) 
-FROM reviews 
+SELECT COUNT(*)
+FROM reviews
 WHERE user_id = :userId;
 
 -- Get review IDs for helpful votes calculation
-SELECT id 
-FROM reviews 
+SELECT id
+FROM reviews
 WHERE user_id = :userId;
 ```
 
 ### 3. `review_helpful_votes` table
+
 **Fields used:**
+
 - `user_id` (UUID) - User who gave the helpful vote
 - `review_id` (UUID) - Review that received the vote
 
 **Queries:**
+
 ```sql
 -- Count helpful votes given by user
-SELECT COUNT(*) 
-FROM review_helpful_votes 
+SELECT COUNT(*)
+FROM review_helpful_votes
 WHERE user_id = :userId;
 
 -- Count helpful votes received on user's reviews
-SELECT COUNT(*) 
-FROM review_helpful_votes 
+SELECT COUNT(*)
+FROM review_helpful_votes
 WHERE review_id IN (
   SELECT id FROM reviews WHERE user_id = :userId
 );
 ```
 
 ### 4. `saved_businesses` table
+
 **Fields used:**
+
 - `user_id` (UUID) - User who saved the business
 
 **Query:**
+
 ```sql
-SELECT COUNT(*) 
-FROM saved_businesses 
+SELECT COUNT(*)
+FROM saved_businesses
 WHERE user_id = :userId;
 ```
 
@@ -96,6 +108,7 @@ The `getUserStats` function in `src/app/lib/services/userService.ts`:
 **GET** `/api/user/stats`
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -111,6 +124,7 @@ The `getUserStats` function in `src/app/lib/services/userService.ts`:
 ```
 
 **Error Response:**
+
 ```json
 {
   "data": null,
@@ -128,4 +142,3 @@ The `getUserStats` function in `src/app/lib/services/userService.ts`:
 - The function handles errors gracefully and returns `null` if profile is not found
 - Individual query failures are logged but don't stop the entire operation
 - Default values of `0` are used if any count query fails
-

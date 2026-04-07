@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withUser } from '@/app/api/_lib/withAuth';
-import {
-  getUserStats,
-  updateLastActive,
-} from '@/app/lib/services/userService';
-import type { ApiResponse, UserStats } from '@/app/lib/types/user';
+import { NextRequest, NextResponse } from "next/server";
+import { withUser } from "@/app/api/_lib/withAuth";
+import { getUserStats, updateLastActive } from "@/app/lib/services/userService";
+import type { ApiResponse, UserStats } from "@/app/lib/types/user";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/user/stats
@@ -19,7 +16,7 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
     try {
       await updateLastActive(supabase, userId);
     } catch (lastActiveError: any) {
-      console.warn('[Stats API] Failed to update last active:', lastActiveError?.message);
+      console.warn("[Stats API] Failed to update last active:", lastActiveError?.message);
       // Continue even if this fails
     }
 
@@ -27,7 +24,7 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
 
     // If stats is null, return default stats (user might not have any activity yet)
     if (!stats) {
-      console.warn('[Stats API] getUserStats returned null, returning default stats');
+      console.warn("[Stats API] getUserStats returned null, returning default stats");
       const defaultStats: UserStats = {
         totalReviewsWritten: 0,
         totalHelpfulVotesGiven: 0,
@@ -47,7 +44,7 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
       error: null,
     });
   } catch (error: any) {
-    console.error('[Stats API] Unexpected error:', {
+    console.error("[Stats API] Unexpected error:", {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
@@ -56,8 +53,8 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
       {
         data: null,
         error: {
-          message: error?.message || 'Internal server error',
-          code: 'INTERNAL_ERROR',
+          message: error?.message || "Internal server error",
+          code: "INTERNAL_ERROR",
           details: error?.stack || String(error),
         },
       },
@@ -65,4 +62,3 @@ export const GET = withUser(async (_req: NextRequest, { user, supabase }) => {
     );
   }
 });
-

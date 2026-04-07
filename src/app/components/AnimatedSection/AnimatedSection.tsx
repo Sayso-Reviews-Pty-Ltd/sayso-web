@@ -37,9 +37,7 @@ export default function AnimatedSection({
     ? { opacity: 0 }
     : { opacity: 0, y: 40, x: isEven ? -40 : 40 };
 
-  const whileInView = prefersReducedMotion
-    ? { opacity: 1 }
-    : { opacity: 1, y: 0, x: 0 };
+  const whileInView = prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, x: 0 };
 
   return (
     <m.section
@@ -57,4 +55,3 @@ export default function AnimatedSection({
     </m.section>
   );
 }
-

@@ -2,14 +2,7 @@
 
 import useSWR from "swr";
 import Link from "next/link";
-import {
-  Store,
-  FileCheck,
-  Database,
-  Flag,
-  ArrowRight,
-  Activity,
-} from "@/app/lib/icons";
+import { Store, FileCheck, Database, Flag, ArrowRight, Activity } from "@/app/lib/icons";
 
 type SectionKey = "pending-businesses" | "claims" | "flagged-reviews" | "seed";
 
@@ -68,11 +61,21 @@ const CARDS: {
 const fetcher = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null));
 
 export default function AdminDashboardPage() {
-  const { data: bizData } = useSWR("/api/admin/businesses/pending", fetcher, { revalidateOnFocus: false });
-  const { data: claimsData } = useSWR("/api/admin/claims?status=pending,under_review&limit=100", fetcher, { revalidateOnFocus: false });
-  const { data: flagsData } = useSWR("/api/admin/flags?status=pending&limit=1", fetcher, { revalidateOnFocus: false });
+  const { data: bizData } = useSWR("/api/admin/businesses/pending", fetcher, {
+    revalidateOnFocus: false,
+  });
+  const { data: claimsData } = useSWR(
+    "/api/admin/claims?status=pending,under_review&limit=100",
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const { data: flagsData } = useSWR("/api/admin/flags?status=pending&limit=1", fetcher, {
+    revalidateOnFocus: false,
+  });
 
-  const pendingBusinessCount: number | null = bizData?.businesses ? bizData.businesses.length : null;
+  const pendingBusinessCount: number | null = bizData?.businesses
+    ? bizData.businesses.length
+    : null;
   const pendingClaimCount: number | null = claimsData?.claims ? claimsData.claims.length : null;
   const pendingFlagCount: number | null = flagsData?.total != null ? flagsData.total : null;
 
@@ -96,9 +99,7 @@ export default function AdminDashboardPage() {
             Dashboard
           </h1>
         </div>
-        <p className="font-urbanist text-sm text-charcoal/55 ml-7">
-          Sayso platform administration
-        </p>
+        <p className="font-urbanist text-sm text-charcoal/55 ml-7">Sayso platform administration</p>
       </div>
 
       {/* Stats bar */}
@@ -108,7 +109,9 @@ export default function AdminDashboardPage() {
             Awaiting Review
           </p>
           <p className="font-urbanist text-3xl font-bold text-charcoal tabular-nums">
-            {pendingBusinessCount == null && pendingClaimCount == null && pendingFlagCount == null ? (
+            {pendingBusinessCount == null &&
+            pendingClaimCount == null &&
+            pendingFlagCount == null ? (
               <span className="text-charcoal/25 text-xl animate-pulse">—</span>
             ) : (
               totalPending
@@ -174,7 +177,9 @@ export default function AdminDashboardPage() {
               className={`group relative flex flex-col gap-4 p-5 rounded-2xl bg-white border border-charcoal/10 shadow-premium transition-all duration-200 hover:shadow-premiumHover ${card.accentClass}`}
             >
               <div className="flex items-start justify-between">
-                <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
+                <div
+                  className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}
+                >
                   <Icon className={`w-5 h-5 ${card.iconColor}`} />
                 </div>
                 {hasAlert && (

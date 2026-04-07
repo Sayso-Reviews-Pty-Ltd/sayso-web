@@ -1,12 +1,15 @@
 # Fix: RLS Policy Error for business_images Storage
 
 ## Error
+
 ```
 StorageApiError: new row violates row-level security policy
 ```
 
 ## Cause
+
 The RLS policies for the `business_images` storage bucket are either:
+
 1. Using the wrong bucket name (`business-images` instead of `business_images`)
 2. Too restrictive and blocking uploads during business creation
 
@@ -52,8 +55,8 @@ USING (
     )
     OR
     (storage.foldername(name))[1] IN (
-      SELECT business_id::text 
-      FROM business_owners 
+      SELECT business_id::text
+      FROM business_owners
       WHERE user_id = auth.uid()
     )
   )
@@ -66,8 +69,8 @@ WITH CHECK (
     )
     OR
     (storage.foldername(name))[1] IN (
-      SELECT business_id::text 
-      FROM business_owners 
+      SELECT business_id::text
+      FROM business_owners
       WHERE user_id = auth.uid()
     )
   )
@@ -85,8 +88,8 @@ USING (
     )
     OR
     (storage.foldername(name))[1] IN (
-      SELECT business_id::text 
-      FROM business_owners 
+      SELECT business_id::text
+      FROM business_owners
       WHERE user_id = auth.uid()
     )
   )
@@ -99,14 +102,14 @@ Check that policies are created correctly:
 
 ```sql
 -- Check policies exist
-SELECT 
+SELECT
   policyname,
   cmd,
   roles,
   qual,
   with_check
-FROM pg_policies 
-WHERE schemaname = 'storage' 
+FROM pg_policies
+WHERE schemaname = 'storage'
   AND tablename = 'objects'
   AND policyname LIKE '%business%';
 ```
@@ -117,8 +120,8 @@ Make sure your bucket is named exactly `business_images` (with underscore):
 
 ```sql
 -- Check bucket exists
-SELECT id, name, public 
-FROM storage.buckets 
+SELECT id, name, public
+FROM storage.buckets
 WHERE id = 'business_images';
 ```
 
@@ -131,11 +134,13 @@ WHERE id = 'business_images';
 ## Why This Happens
 
 During business creation:
+
 1. Business record is created
 2. `business_owners` record is created
 3. Images are uploaded
 
 The RLS policy was checking ownership, but during the upload step, the ownership check might fail if:
+
 - The `business_owners` record hasn't been committed yet
 - The policy is checking the wrong table
 - The bucket name mismatch causes the policy to not match
@@ -149,8 +154,8 @@ The RLS policy was checking ownership, but during the upload step, the ownership
 ## Security Note
 
 The INSERT policy allows any authenticated user to upload to the bucket. This is safe because:
+
 - Application code validates ownership before allowing uploads
 - UPDATE and DELETE policies still enforce ownership
 - Public read access is controlled separately
 - Storage paths are organized by business_id, making cleanup easy
-

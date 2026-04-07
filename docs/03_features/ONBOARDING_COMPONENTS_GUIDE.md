@@ -1,27 +1,32 @@
 # Onboarding Components - Usage Guide
 
 ## Overview
+
 The onboarding system has been componentized into smaller, reusable, manageable pieces. Each component has a single responsibility and can be composed together.
 
 ## Component Hierarchy
 
 ### Base Components (Lowest Level)
+
 - **OnboardingCard** - Styled container with glass-morphism effect
 - **OnboardingButton** - Multi-state button with loading indicators
 - **OnboardingBackButton** - Simple back navigation button
 - **OnboardingItemCard** - Selectable item card with visual feedback
 
 ### Layout Components
+
 - **OnboardingLayout** - Page wrapper with step indicator, animations, back button
 - **OnboardingProgressIndicator** - Step progress bar with labels
 - **OnboardingActionBar** - Container for action buttons
 
 ### Information Components
+
 - **OnboardingStepHeader** - Title, description, subtitle display
 - **OnboardingSelectionInfo** - Shows count, min/max, selection status
 - **OnboardingErrorBanner** - Error message display with icon
 
 ### Grid Component
+
 - **OnboardingItemGrid** - Responsive grid layout for items (1-4 columns)
 
 ---
@@ -103,9 +108,7 @@ function SubcategoriesContent() {
 
       {groups.map((group) => (
         <div key={group.interestId} className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            {group.interestName}
-          </h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">{group.interestName}</h2>
 
           <OnboardingItemGrid columns={2} gap="md">
             {group.items.map((item) => (
@@ -120,10 +123,7 @@ function SubcategoriesContent() {
         </div>
       ))}
 
-      <OnboardingSelectionInfo
-        selectedCount={selected.length}
-        maxSelections={10}
-      />
+      <OnboardingSelectionInfo selectedCount={selected.length} maxSelections={10} />
 
       <OnboardingErrorBanner error={error} />
 
@@ -182,79 +182,86 @@ function CompleteContent() {
 ## Component Props Reference
 
 ### OnboardingStepHeader
+
 ```tsx
 interface OnboardingStepHeaderProps {
-  title: string;                    // Main heading
-  description?: string;             // Description text
-  subtitle?: string;                // Subheading (e.g., "Step 1 of 4")
-  children?: ReactNode;             // Additional content
-  className?: string;               // Extra CSS classes
+  title: string; // Main heading
+  description?: string; // Description text
+  subtitle?: string; // Subheading (e.g., "Step 1 of 4")
+  children?: ReactNode; // Additional content
+  className?: string; // Extra CSS classes
 }
 ```
 
 ### OnboardingSelectionInfo
+
 ```tsx
 interface OnboardingSelectionInfoProps {
-  selectedCount: number;            // Number of selected items
-  minSelections?: number;           // Minimum required
-  maxSelections?: number;           // Maximum allowed
-  singular?: string;                // Singular form (default: "item")
-  plural?: string;                  // Plural form (default: "items")
-  children?: ReactNode;             // Additional content
+  selectedCount: number; // Number of selected items
+  minSelections?: number; // Minimum required
+  maxSelections?: number; // Maximum allowed
+  singular?: string; // Singular form (default: "item")
+  plural?: string; // Plural form (default: "items")
+  children?: ReactNode; // Additional content
   className?: string;
 }
 ```
 
 ### OnboardingItemCard
+
 ```tsx
 interface OnboardingItemCardProps {
-  children?: ReactNode;             // Custom content
-  isSelected?: boolean;             // Selection state
-  onClick?: () => void;             // Click handler
-  disabled?: boolean;               // Disabled state
-  animated?: boolean;               // Hover animation
-  shaking?: boolean;                // Shake animation
-  icon?: ReactNode;                 // Icon element
-  label?: string;                   // Item label
-  description?: string;             // Item description
+  children?: ReactNode; // Custom content
+  isSelected?: boolean; // Selection state
+  onClick?: () => void; // Click handler
+  disabled?: boolean; // Disabled state
+  animated?: boolean; // Hover animation
+  shaking?: boolean; // Shake animation
+  icon?: ReactNode; // Icon element
+  label?: string; // Item label
+  description?: string; // Item description
   className?: string;
 }
 ```
 
 ### OnboardingItemGrid
+
 ```tsx
 interface OnboardingItemGridProps {
-  children: ReactNode;              // Grid items
-  columns?: number;                 // 1-4 columns (default: 2)
-  gap?: "sm" | "md" | "lg";        // Spacing (default: "md")
+  children: ReactNode; // Grid items
+  columns?: number; // 1-4 columns (default: 2)
+  gap?: "sm" | "md" | "lg"; // Spacing (default: "md")
   className?: string;
 }
 ```
 
 ### OnboardingActionBar
+
 ```tsx
 interface OnboardingActionBarProps {
-  children: ReactNode;              // Action buttons
+  children: ReactNode; // Action buttons
   align?: "left" | "center" | "right"; // Button alignment
   className?: string;
 }
 ```
 
 ### OnboardingErrorBanner
+
 ```tsx
 interface OnboardingErrorBannerProps {
-  error: Error | string | null;    // Error to display
+  error: Error | string | null; // Error to display
   className?: string;
 }
 ```
 
 ### OnboardingProgressIndicator
+
 ```tsx
 interface OnboardingProgressIndicatorProps {
-  currentStep: number;              // Current step (1-based)
-  totalSteps: number;               // Total steps
-  showLabels?: boolean;             // Show step labels
-  labels?: string[];                // Step label texts
+  currentStep: number; // Current step (1-based)
+  totalSteps: number; // Total steps
+  showLabels?: boolean; // Show step labels
+  labels?: string[]; // Step label texts
   className?: string;
 }
 ```
@@ -264,15 +271,15 @@ interface OnboardingProgressIndicatorProps {
 ## Migration Examples
 
 ### Before (Old Pattern)
+
 ```tsx
 <div className="bg-red-50 border border-red-200 rounded-[20px] p-4 text-center mb-4">
-  <p className="text-sm font-semibold text-red-600">
-    {error.message}
-  </p>
+  <p className="text-sm font-semibold text-red-600">{error.message}</p>
 </div>
 ```
 
 ### After (New Pattern)
+
 ```tsx
 <OnboardingErrorBanner error={error} className="mb-4" />
 ```
@@ -306,6 +313,7 @@ interface OnboardingProgressIndicatorProps {
 ## CSS Classes Reference
 
 The components use these utility classes:
+
 - `animate-fade-in-up` - Fade in with upward movement
 - `delay-100`, `delay-200` - Animation delays
 - `animate-shake` - Shake animation (for max reached)
@@ -378,7 +386,13 @@ function YourPageContent() {
 
 export default function YourPage() {
   return (
-    <Suspense fallback={<OnboardingLayout step={YOUR_STEP} backHref="/previous-step"><Loader /></OnboardingLayout>}>
+    <Suspense
+      fallback={
+        <OnboardingLayout step={YOUR_STEP} backHref="/previous-step">
+          <Loader />
+        </OnboardingLayout>
+      }
+    >
       <YourPageContent />
     </Suspense>
   );

@@ -25,56 +25,64 @@ const businessCollections: BusinessCollection[] = [
     name: "Ocean View Dental Studio",
     category: "Dental Care",
     location: "Sea Point",
-    description: "Modern dental care with stunning ocean views. State-of-the-art equipment and gentle treatments.",
-    imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&h=400&fit=crop&crop=center",
+    description:
+      "Modern dental care with stunning ocean views. State-of-the-art equipment and gentle treatments.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&h=400&fit=crop&crop=center",
     rating: 4.9,
     reviewCount: 127,
     isSponsored: true,
     promotionalText: "New patients get 20% off first consultation",
     ctaText: "Book Appointment",
-    ctaLink: "/business/1"
+    ctaLink: "/business/1",
   },
   {
     id: 2,
     name: "The Artisan Table",
     category: "Fine Dining",
     location: "V&A Waterfront",
-    description: "Farm-to-table cuisine featuring the best of South African ingredients with international flair.",
-    imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop&crop=center",
+    description:
+      "Farm-to-table cuisine featuring the best of South African ingredients with international flair.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop&crop=center",
     rating: 4.8,
     reviewCount: 89,
     isSponsored: true,
     promotionalText: "Try our new tasting menu this month",
     ctaText: "Make Reservation",
-    ctaLink: "/business/2"
+    ctaLink: "/business/2",
   },
   {
     id: 3,
     name: "Roasted Coffee Co.",
     category: "Coffee Shop",
     location: "Observatory",
-    description: "Locally roasted, ethically sourced coffee beans. Perfect for remote work with free WiFi.",
-    imageUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&h=400&fit=crop&crop=center",
+    description:
+      "Locally roasted, ethically sourced coffee beans. Perfect for remote work with free WiFi.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&h=400&fit=crop&crop=center",
     rating: 4.7,
     reviewCount: 156,
     isSponsored: false,
     ctaText: "Visit Us",
-    ctaLink: "/business/3"
+    ctaLink: "/business/3",
   },
   {
     id: 4,
     name: "Wellness Springs Spa",
     category: "Wellness & Spa",
     location: "Constantia",
-    description: "Holistic wellness treatments in a tranquil setting. Massage therapy, facials, and meditation.",
-    imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center",
+    description:
+      "Holistic wellness treatments in a tranquil setting. Massage therapy, facials, and meditation.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center",
     rating: 4.9,
     reviewCount: 78,
     isSponsored: true,
     promotionalText: "Book a couples massage and save 15%",
     ctaText: "Book Treatment",
-    ctaLink: "/business/4"
-  }
+    ctaLink: "/business/4",
+  },
 ];
 
 export default function CollectionsSection() {
@@ -87,7 +95,7 @@ export default function CollectionsSection() {
     const timer = setTimeout(() => {
       businessCollections.forEach((_, index) => {
         setTimeout(() => {
-          setVisibleCards(prev => [...prev, index]);
+          setVisibleCards((prev) => [...prev, index]);
         }, index * 150);
       });
     }, 300);
@@ -100,7 +108,7 @@ export default function CollectionsSection() {
       <Star
         key={i}
         className={`w-4 h-4 ${
-          i < Math.floor(rating) ? 'text-coral fill-coral' : 'text-charcoal/20'
+          i < Math.floor(rating) ? "text-coral fill-coral" : "text-charcoal/20"
         }`}
       />
     ));
@@ -130,11 +138,11 @@ export default function CollectionsSection() {
               key={business.id}
               className={`group relative bg-off-white   rounded-lg shadow-sm hover:shadow-xl border border-charcoal/5 overflow-hidden transition-all duration-500 hover:scale-[1.02] ${
                 visibleCards.includes(index)
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-8'
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
               }`}
               style={{
-                transitionDelay: `${index * 100}ms`
+                transitionDelay: `${index * 100}ms`,
               }}
             >
               {/* Sponsored Badge */}
@@ -180,9 +188,7 @@ export default function CollectionsSection() {
                     <span className="text-charcoal/30">•</span>
                     <div className="flex items-center space-x-1">
                       <MapPin className="w-3 h-3 text-charcoal/60" />
-                      <span className="text-sm text-charcoal/60">
-                        {business.location}
-                      </span>
+                      <span className="text-sm text-charcoal/60">{business.location}</span>
                     </div>
                   </div>
                 </div>

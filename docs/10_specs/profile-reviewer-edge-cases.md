@@ -4,11 +4,11 @@
 
 The app has two distinct profile experiences:
 
-| Route | Purpose | Auth | API | Data Shown |
-|-------|---------|------|-----|------------|
-| `/profile` | **Own profile** (personal dashboard) | Required | `/api/user/profile`, `/api/user/stats`, etc. | Full profile, saved businesses, own reviews, badges, Edit button |
-| `/reviewer/[id]` | **Public reviewer profile** (any user) | Optional | `/api/reviewers/[id]` | Reviews, badges, stats – no saved businesses, no edit |
-| `/profile/[username]` | Server redirect | N/A | Server-side lookup | Redirects to `/reviewer/[user_id]` |
+| Route                 | Purpose                                | Auth     | API                                          | Data Shown                                                       |
+| --------------------- | -------------------------------------- | -------- | -------------------------------------------- | ---------------------------------------------------------------- |
+| `/profile`            | **Own profile** (personal dashboard)   | Required | `/api/user/profile`, `/api/user/stats`, etc. | Full profile, saved businesses, own reviews, badges, Edit button |
+| `/reviewer/[id]`      | **Public reviewer profile** (any user) | Optional | `/api/reviewers/[id]`                        | Reviews, badges, stats – no saved businesses, no edit            |
+| `/profile/[username]` | Server redirect                        | N/A      | Server-side lookup                           | Redirects to `/reviewer/[user_id]`                               |
 
 ---
 
@@ -45,11 +45,13 @@ flowchart TB
 **Scenario:** User has `account_role: 'business_owner'` and has written reviews.
 
 **Own POV:**
+
 - Visiting `/profile` → middleware redirects to `/my-businesses`. They never see the personal profile UI.
 - Visiting `/reviewer/{own-id}` → works. They see their public reviewer profile (reviews, badges). No Edit, no saved businesses. Same as any other visitor.
 - **UX gap:** No way to reach the “own profile” experience from nav when in business mode. Header links to `/profile` → redirect.
 
 **Other User POV:**
+
 - Clicks on this user’s ReviewerCard or leaderboard link → goes to `/reviewer/{id}`.
 - Sees their reviews, badges, stats. No indication they’re a business owner.
 
@@ -60,10 +62,12 @@ flowchart TB
 **Scenario:** User has `role: 'both'` and can switch between Personal and Business.
 
 **When `account_role: 'user'`:**
+
 - `/profile` → allowed. They see full personal profile.
 - `/reviewer/{own-id}` → allowed. Same public view as anyone else.
 
 **When `account_role: 'business_owner'`:**
+
 - `/profile` → redirect to `/my-businesses`.
 - To see personal profile: must switch to Personal via RoleSwitcher, then go to `/profile`.
 
@@ -134,10 +138,12 @@ flowchart TB
 ### 8. Privacy: Own Profile vs Reviewer Profile
 
 **Own profile (`/profile`):**
+
 - Shows saved businesses (if any).
 - Can hide sections via `privacy_settings` (e.g. `showSavedBusinesses`).
 
 **Reviewer profile (`/reviewer/[id]`):**
+
 - Does not expose saved businesses.
 - No privacy toggles – it’s a fixed public view.
 - Reviews and badges are always shown.
@@ -158,25 +164,25 @@ flowchart TB
 
 ### 10. Links to Profiles Across the App
 
-| Source | Link | Notes |
-|--------|------|-------|
-| ReviewerCard (own) | `/profile` | Business owner → redirect to `/my-businesses` |
-| ReviewerCard (other) | `/reviewer/{id}` | Works |
-| LeaderboardUser | `/reviewer/{user.id}` | Always reviewer page |
-| Header nav | `/profile` | Business owner → redirect |
-| Achievements | `/profile` | Business owner → redirect |
-| Sitemap | `/profile/{username}` | Redirects to `/reviewer/{id}` |
+| Source               | Link                  | Notes                                         |
+| -------------------- | --------------------- | --------------------------------------------- |
+| ReviewerCard (own)   | `/profile`            | Business owner → redirect to `/my-businesses` |
+| ReviewerCard (other) | `/reviewer/{id}`      | Works                                         |
+| LeaderboardUser      | `/reviewer/{user.id}` | Always reviewer page                          |
+| Header nav           | `/profile`            | Business owner → redirect                     |
+| Achievements         | `/profile`            | Business owner → redirect                     |
+| Sitemap              | `/profile/{username}` | Redirects to `/reviewer/{id}`                 |
 
 ---
 
 ## Summary: What Each User Sees
 
-| Actor | `/profile` | `/reviewer/{id}` (other) | `/reviewer/{id}` (self) |
-|-------|------------|---------------------------|--------------------------|
-| Guest | Redirect to /login | Full public view | N/A (not logged in) |
-| Personal user | Full personal profile | Full public view | Public view (no edit) |
-| Business owner | Redirect to /my-businesses | Full public view | Public view only |
-| Business owner (role=both, switched to Personal) | Full personal profile | Full public view | Public view (no edit) |
+| Actor                                            | `/profile`                 | `/reviewer/{id}` (other) | `/reviewer/{id}` (self) |
+| ------------------------------------------------ | -------------------------- | ------------------------ | ----------------------- |
+| Guest                                            | Redirect to /login         | Full public view         | N/A (not logged in)     |
+| Personal user                                    | Full personal profile      | Full public view         | Public view (no edit)   |
+| Business owner                                   | Redirect to /my-businesses | Full public view         | Public view only        |
+| Business owner (role=both, switched to Personal) | Full personal profile      | Full public view         | Public view (no edit)   |
 
 ---
 

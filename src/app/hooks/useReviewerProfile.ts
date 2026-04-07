@@ -3,12 +3,12 @@
  * Uses SWR for caching, deduplication, and realtime invalidation.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { getBrowserSupabase } from '../lib/supabase/client';
+import { useEffect, useState } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { getBrowserSupabase } from "../lib/supabase/client";
 
 async function fetchReviewerProfile([, reviewerId]: [string, string]): Promise<any> {
   const response = await fetch(`/api/reviewers/${reviewerId}`);
@@ -24,7 +24,7 @@ async function fetchReviewerProfile([, reviewerId]: [string, string]): Promise<a
 }
 
 export function useReviewerProfile(reviewerId: string | null | undefined) {
-  const swrKey = reviewerId ? (['/api/reviewers', reviewerId] as [string, string]) : null;
+  const swrKey = reviewerId ? (["/api/reviewers", reviewerId] as [string, string]) : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchReviewerProfile, {
     ...swrConfig,
@@ -35,10 +35,10 @@ export function useReviewerProfile(reviewerId: string | null | undefined) {
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   // Realtime: throttled refetch on reviews/badges changes
@@ -60,10 +60,10 @@ export function useReviewerProfile(reviewerId: string | null | undefined) {
     };
 
     const handleStatus = (status: string) => {
-      if (status === 'SUBSCRIBED') {
+      if (status === "SUBSCRIBED") {
         subscribedCount++;
         if (subscribedCount >= 2) setIsRealtimeConnected(true);
-      } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+      } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
         subscribedCount = Math.max(0, subscribedCount - 1);
         setIsRealtimeConnected(false);
       }
@@ -71,22 +71,30 @@ export function useReviewerProfile(reviewerId: string | null | undefined) {
 
     const reviewsChannel = supabase
       .channel(`reviewer-reviews-swr-${reviewerId}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'reviews',
-        filter: `user_id=eq.${reviewerId}`,
-      }, throttledRefresh)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "reviews",
+          filter: `user_id=eq.${reviewerId}`,
+        },
+        throttledRefresh
+      )
       .subscribe(handleStatus);
 
     const badgesChannel = supabase
       .channel(`reviewer-badges-swr-${reviewerId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'user_badges',
-        filter: `user_id=eq.${reviewerId}`,
-      }, throttledRefresh)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "user_badges",
+          filter: `user_id=eq.${reviewerId}`,
+        },
+        throttledRefresh
+      )
       .subscribe(handleStatus);
 
     return () => {
@@ -112,5 +120,5 @@ export function useReviewerProfile(reviewerId: string | null | undefined) {
  * Globally invalidate a reviewer's cached profile.
  */
 export function invalidateReviewerProfile(reviewerId: string) {
-  globalMutate(['/api/reviewers', reviewerId]);
+  globalMutate(["/api/reviewers", reviewerId]);
 }

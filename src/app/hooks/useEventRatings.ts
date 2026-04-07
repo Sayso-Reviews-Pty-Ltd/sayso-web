@@ -1,12 +1,12 @@
 /**
  * SWR hook for event ratings (average + count) with realtime invalidation.
  */
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { getBrowserSupabase } from '../lib/supabase/client';
+import { useEffect } from "react";
+import useSWR, { mutate as globalMutate } from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { getBrowserSupabase } from "../lib/supabase/client";
 
 type EventRatingResponse = {
   rating: number;
@@ -26,9 +26,9 @@ async function fetchEventRatings([, eventId]: [string, string]): Promise<EventRa
 export function useEventRatings(
   eventId: string | null | undefined,
   fallbackRating = 0,
-  fallbackTotalReviews = 0,
+  fallbackTotalReviews = 0
 ) {
-  const swrKey = eventId ? (['/api/events/ratings', eventId] as [string, string]) : null;
+  const swrKey = eventId ? (["/api/events/ratings", eventId] as [string, string]) : null;
 
   const { data, error, isLoading, mutate } = useSWR<EventRatingResponse>(
     swrKey,
@@ -44,10 +44,10 @@ export function useEventRatings(
   useEffect(() => {
     if (!swrKey) return;
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') mutate();
+      if (document.visibilityState === "visible") mutate();
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [swrKey, mutate]);
 
   // Realtime: listen to event_reviews table for this event and mutate ratings
@@ -56,14 +56,18 @@ export function useEventRatings(
     const supabase = getBrowserSupabase();
     const channel = supabase
       .channel(`event-ratings-${eventId}-${Date.now()}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'event_reviews',
-        filter: `event_id=eq.${eventId}`,
-      }, () => {
-        mutate();
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "event_reviews",
+          filter: `event_id=eq.${eventId}`,
+        },
+        () => {
+          mutate();
+        }
+      )
       .subscribe();
 
     return () => {
@@ -81,5 +85,5 @@ export function useEventRatings(
 }
 
 export function invalidateEventRatings(eventId: string) {
-  globalMutate(['/api/events/ratings', eventId]);
+  globalMutate(["/api/events/ratings", eventId]);
 }

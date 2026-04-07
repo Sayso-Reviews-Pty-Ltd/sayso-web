@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { Variants } from 'framer-motion';
+import { useMemo } from "react";
+import { Variants } from "framer-motion";
 
-export type AnimationDirection = 'top' | 'bottom' | 'left' | 'right' | 'scale';
+export type AnimationDirection = "top" | "bottom" | "left" | "right" | "scale";
 
 export interface StaggeredAnimationConfig {
   delay?: number;
@@ -14,7 +14,7 @@ export interface StaggeredAnimationConfig {
 
 /**
  * Hook for creating staggered entrance animations with bubbly dance effect
- * 
+ *
  * @param index - The index of the element in the staggered sequence
  * @param config - Animation configuration
  * @returns Framer Motion variants for the element
@@ -26,7 +26,7 @@ export function useStaggeredAnimation(
   const {
     delay = 0.02, // Ultra-tight delay for subtle, premium stagger
     duration = 0.4, // Refined duration for elegant, smooth motion
-    direction = 'bottom',
+    direction = "bottom",
     distance = 12, // Minimal distance for subtle, premium movement
   } = config;
 
@@ -34,7 +34,7 @@ export function useStaggeredAnimation(
     const baseDelay = index * delay;
     // Premium spring config: ultra-smooth, refined motion
     const springConfig = {
-      type: 'spring' as const,
+      type: "spring" as const,
       stiffness: 200,
       damping: 30,
       mass: 0.8,
@@ -44,15 +44,15 @@ export function useStaggeredAnimation(
     const getInitialPosition = () => {
       const subtleDistance = distance * 0.4; // Ultra-minimal distance for premium subtlety
       switch (direction) {
-        case 'top':
+        case "top":
           return { y: -subtleDistance, x: 0, scale: 0.98 };
-        case 'bottom':
+        case "bottom":
           return { y: subtleDistance, x: 0, scale: 0.98 };
-        case 'left':
+        case "left":
           return { x: -subtleDistance, y: 0, scale: 0.98 };
-        case 'right':
+        case "right":
           return { x: subtleDistance, y: 0, scale: 0.98 };
-        case 'scale':
+        case "scale":
           return { scale: 0.96, y: subtleDistance * 0.3 };
         default:
           return { y: subtleDistance, x: 0, scale: 0.98 };
@@ -84,7 +84,7 @@ export function useStaggeredAnimation(
         y: 0,
         scale: 1,
         transition: {
-          type: 'spring',
+          type: "spring",
           stiffness: 200,
           damping: 30,
           mass: 0.8,
@@ -97,7 +97,7 @@ export function useStaggeredAnimation(
         y: 0,
         scale: [1, 1.02, 0.99, 1.01, 1], // Much more subtle scale variation
         transition: {
-          type: 'keyframes',
+          type: "keyframes",
           times: [0, 0.25, 0.5, 0.75, 1],
           duration: 0.8,
           ease: [0.16, 1, 0.3, 1], // Premium easing
@@ -111,24 +111,27 @@ export function useStaggeredAnimation(
  * Hook for creating page-level animation variants with subtle premium effect
  */
 export function usePageAnimation(): Variants {
-  return useMemo(() => ({
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.02, // Ultra-tight stagger for premium, cohesive feel
-        delayChildren: 0.02, // Minimal delay for immediate, smooth appearance
-        ease: [0.16, 1, 0.3, 1], // Premium cubic bezier for smooth, refined motion
+  return useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.02, // Ultra-tight stagger for premium, cohesive feel
+          delayChildren: 0.02, // Minimal delay for immediate, smooth appearance
+          ease: [0.16, 1, 0.3, 1], // Premium cubic bezier for smooth, refined motion
+        },
       },
-    },
-  }), []);
+    }),
+    []
+  );
 }
 
 /**
  * Get a random direction for variety in animations
  */
 export function getRandomDirection(): AnimationDirection {
-  const directions: AnimationDirection[] = ['top', 'bottom', 'left', 'right', 'scale'];
+  const directions: AnimationDirection[] = ["top", "bottom", "left", "right", "scale"];
   return directions[Math.floor(Math.random() * directions.length)];
 }
 
@@ -136,7 +139,6 @@ export function getRandomDirection(): AnimationDirection {
  * Get direction based on index for predictable patterns
  */
 export function getDirectionByIndex(index: number): AnimationDirection {
-  const directions: AnimationDirection[] = ['top', 'right', 'bottom', 'left', 'scale'];
+  const directions: AnimationDirection[] = ["top", "right", "bottom", "left", "scale"];
   return directions[index % directions.length];
 }
-

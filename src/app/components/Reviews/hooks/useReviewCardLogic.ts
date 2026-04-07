@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import type { ReviewWithUser } from '../../../lib/types/database';
-import type { AuthUser } from '../../../lib/types/database';
+import { useEffect, useState } from "react";
+import type { ReviewWithUser } from "../../../lib/types/database";
+import type { AuthUser } from "../../../lib/types/database";
 
 export function useReviewOwnerCheck(review: ReviewWithUser, user: AuthUser | null): boolean {
   if (!user) return false;
@@ -10,12 +10,12 @@ export function useReviewOwnerCheck(review: ReviewWithUser, user: AuthUser | nul
   if (user.id === review.user?.id) return true;
   if (user.email && review.user?.email && user.email === review.user.email) return true;
 
-  const userIdentifier = user.email && user.profile?.display_name
-    ? `${user.email}:${user.profile.display_name}`
-    : null;
-  const reviewIdentifier = review.user?.email && review.user?.display_name
-    ? `${review.user.email}:${review.user.display_name}`
-    : null;
+  const userIdentifier =
+    user.email && user.profile?.display_name ? `${user.email}:${user.profile.display_name}` : null;
+  const reviewIdentifier =
+    review.user?.email && review.user?.display_name
+      ? `${review.user.email}:${review.user.display_name}`
+      : null;
   if (userIdentifier && reviewIdentifier && userIdentifier === reviewIdentifier) return true;
 
   return false;
@@ -47,7 +47,7 @@ export function useReviewFlagStatus(
           setIsFlagged(Boolean(data?.flagged));
         }
       } catch (error) {
-        console.error('Error checking review flag status:', error);
+        console.error("Error checking review flag status:", error);
       } finally {
         if (!cancelled) {
           setIsChecking(false);

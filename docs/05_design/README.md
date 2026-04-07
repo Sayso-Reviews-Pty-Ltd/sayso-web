@@ -20,7 +20,7 @@ The Blabbr Design System provides a unified set of design tokens, components, an
 The design system is part of the Blabbr codebase. Import components directly:
 
 ```tsx
-import { Button, Input, Card, Typography } from '@/app/design-system';
+import { Button, Input, Card, Typography } from "@/app/design-system";
 ```
 
 ## 🎨 Design Tokens
@@ -29,40 +29,40 @@ import { Button, Input, Card, Typography } from '@/app/design-system';
 
 ```tsx
 // Primary colors
-sage-500    // Main sage (#749176)
-coral-500   // Main coral (#d67469)
+sage - 500; // Main sage (#749176)
+coral - 500; // Main coral (#d67469)
 
 // Neutrals
-charcoal-500  // Main text (#404040)
-off-white-100 // Main background (#fafafa)
+charcoal - 500; // Main text (#404040)
+off - white - 100; // Main background (#fafafa)
 
 // Semantic colors
-success-500   // Success states
-error-500     // Error states
-warning-500   // Warning states
-info-500      // Info states
+success - 500; // Success states
+error - 500; // Error states
+warning - 500; // Warning states
+info - 500; // Info states
 ```
 
 ### Typography
 
 ```tsx
 // Display sizes (mobile-first)
-display-lg    // 34px - Hero headings
-display-md    // 28px - Page headings
+display - lg; // 34px - Hero headings
+display - md; // 28px - Page headings
 
 // Heading sizes
-heading-lg    // 22px - Section headings
-heading-md    // 20px - Subsection headings
-heading-sm    // 18px - Small headings
+heading - lg; // 22px - Section headings
+heading - md; // 20px - Subsection headings
+heading - sm; // 18px - Small headings
 
 // Body sizes
-body-lg       // 17px - Large body text
-body-md       // 16px - Regular body text
-body-sm       // 14px - Small text
+body - lg; // 17px - Large body text
+body - md; // 16px - Regular body text
+body - sm; // 14px - Small text
 
 // Utility sizes
-footnote      // 13px - Footnotes
-caption       // 12px - Captions
+footnote; // 13px - Footnotes
+caption; // 12px - Captions
 ```
 
 ### Spacing
@@ -70,12 +70,12 @@ caption       // 12px - Captions
 Based on a 4px grid system:
 
 ```tsx
-1  // 4px   - Micro spacing
-2  // 8px   - Tight spacing
-3  // 12px  - Small spacing
-4  // 16px  - Base spacing
-6  // 24px  - Large spacing
-8  // 32px  - Section spacing
+1; // 4px   - Micro spacing
+2; // 8px   - Tight spacing
+3; // 12px  - Small spacing
+4; // 16px  - Base spacing
+6; // 24px  - Large spacing
+8; // 32px  - Section spacing
 ```
 
 ## 🧩 Components
@@ -104,6 +104,7 @@ import { Button } from '@/app/design-system';
 ```
 
 **Props:**
+
 - `variant`: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
 - `size`: 'sm' | 'md' | 'lg'
 - `loading`: boolean
@@ -136,6 +137,7 @@ import { Input } from '@/app/design-system';
 ```
 
 **Props:**
+
 - `label`: string
 - `error` | `success` | `helperText`: string
 - `size`: 'sm' | 'md' | 'lg'
@@ -148,20 +150,19 @@ import { Input } from '@/app/design-system';
 Flexible card component for content containers.
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent } from '@/app/design-system';
+import { Card, CardHeader, CardTitle, CardContent } from "@/app/design-system";
 
 // Basic usage
 <Card variant="elevated" hoverable premium>
   <CardHeader>
     <CardTitle>Business Name</CardTitle>
   </CardHeader>
-  <CardContent>
-    Card content goes here
-  </CardContent>
-</Card>
+  <CardContent>Card content goes here</CardContent>
+</Card>;
 ```
 
 **Props:**
+
 - `variant`: 'default' | 'elevated' | 'outlined' | 'ghost'
 - `size`: 'sm' | 'md' | 'lg'
 - `hoverable`: boolean
@@ -195,17 +196,12 @@ import { Typography, Heading, Text } from '@/app/design-system';
 Accessible toast notifications for user feedback.
 
 ```tsx
-import { Toast, ToastContainer } from '@/app/design-system';
+import { Toast, ToastContainer } from "@/app/design-system";
 
 // Basic usage
-<Toast
-  variant="success"
-  title="Success!"
-  open={showToast}
-  onDismiss={() => setShowToast(false)}
->
+<Toast variant="success" title="Success!" open={showToast} onDismiss={() => setShowToast(false)}>
   Your changes have been saved.
-</Toast>
+</Toast>;
 ```
 
 ## 🎯 Usage Guidelines
@@ -255,10 +251,10 @@ Replace ad-hoc components with design system imports:
 
 ```tsx
 // Before
-import Button from '../components/Button/Button';
+import Button from "../components/Button/Button";
 
 // After
-import { Button } from '@/app/design-system';
+import { Button } from "@/app/design-system";
 ```
 
 ### Phase 2: Update Props
@@ -279,10 +275,10 @@ Replace hardcoded colors with tokens:
 
 ```tsx
 // Before
-className="text-[#749176] bg-[#f2e3da]"
+className = "text-[#749176] bg-[#f2e3da]";
 
 // After
-className="text-sage-500  bg-off-white  -200"
+className = "text-sage-500  bg-off-white  -200";
 ```
 
 ### Phase 4: Typography Migration
@@ -346,6 +342,7 @@ Typography automatically scales on larger screens:
 ### Bundle Size
 
 The design system adds approximately:
+
 - Core tokens: ~2KB
 - Base components: ~5KB per component
 - Full system: ~15KB (gzipped)
@@ -367,8 +364,8 @@ The design system adds approximately:
  * COMPONENT_NAME - BLABBR DESIGN SYSTEM
  */
 
-import React, { forwardRef } from 'react';
-import { cn } from '../utils/cn';
+import React, { forwardRef } from "react";
+import { cn } from "../utils/cn";
 
 export interface ComponentProps extends React.HTMLAttributes<HTMLElement> {
   // Component-specific props
@@ -383,19 +380,11 @@ const componentVariants = {
   },
 } as const;
 
-export const Component = forwardRef<HTMLElement, ComponentProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <element
-        ref={ref}
-        className={cn(componentVariants.base, className)}
-        {...props}
-      />
-    );
-  }
-);
+export const Component = forwardRef<HTMLElement, ComponentProps>(({ className, ...props }, ref) => {
+  return <element ref={ref} className={cn(componentVariants.base, className)} {...props} />;
+});
 
-Component.displayName = 'Component';
+Component.displayName = "Component";
 
 export default Component;
 ```
@@ -405,6 +394,7 @@ export default Component;
 ### Design System Team
 
 For questions or contributions, contact:
+
 - Design System Lead: [Email]
 - Frontend Architecture: [Email]
 - Accessibility Specialist: [Email]
@@ -420,6 +410,7 @@ For questions or contributions, contact:
 ## 📋 Changelog
 
 ### v1.0.0 (Current)
+
 - ✨ Initial design system implementation
 - 🎨 Complete design token system
 - 🧩 Core component library (Button, Input, Card, Typography, Toast)

@@ -3,21 +3,21 @@
  * Wraps BusinessOwnershipService.getBusinessesForOwner with SWR.
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useSWR from 'swr';
-import { swrConfig } from '../lib/swrConfig';
-import { BusinessOwnershipService } from '../lib/services/businessOwnershipService';
-import { businessUpdateEvents } from '../lib/utils/businessUpdateEvents';
-import type { Business } from '../lib/types/database';
+import { useEffect } from "react";
+import useSWR from "swr";
+import { swrConfig } from "../lib/swrConfig";
+import { BusinessOwnershipService } from "../lib/services/businessOwnershipService";
+import { businessUpdateEvents } from "../lib/utils/businessUpdateEvents";
+import type { Business } from "../lib/types/database";
 
 async function fetchOwnerBusinesses([, userId]: [string, string]): Promise<Business[]> {
   return BusinessOwnershipService.getBusinessesForOwner(userId);
 }
 
 export function useOwnerBusinessesList(userId: string | null | undefined) {
-  const swrKey = userId ? (['/api/owner-businesses', userId] as [string, string]) : null;
+  const swrKey = userId ? (["/api/owner-businesses", userId] as [string, string]) : null;
 
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetchOwnerBusinesses, {
     ...swrConfig,

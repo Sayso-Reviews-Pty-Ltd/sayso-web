@@ -59,7 +59,11 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
 }) => {
   // Wave configuration based on variant (matches Loader exactly for 'subtle')
   const waveConfig = useMemo(() => {
-    if (waveAmplitudePx !== undefined || waveDurationMs !== undefined || waveStaggerMs !== undefined) {
+    if (
+      waveAmplitudePx !== undefined ||
+      waveDurationMs !== undefined ||
+      waveStaggerMs !== undefined
+    ) {
       // Custom values override variant
       return {
         amplitude: waveAmplitudePx ?? 5,
@@ -97,11 +101,10 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const waveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const waveCompletionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Determine if scroll trigger should be enabled
-  const shouldEnableScrollTrigger = enableScrollTrigger !== undefined 
-    ? enableScrollTrigger 
-    : !triggerOnTypingComplete;
+  const shouldEnableScrollTrigger =
+    enableScrollTrigger !== undefined ? enableScrollTrigger : !triggerOnTypingComplete;
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -131,18 +134,24 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
 
   // Trigger wave automatically after typing completes (for onboarding)
   useEffect(() => {
-    if (triggerOnTypingComplete && isTypingComplete && !prefersReducedMotion && !waveHasCompleted && !disableWave) {
+    if (
+      triggerOnTypingComplete &&
+      isTypingComplete &&
+      !prefersReducedMotion &&
+      !waveHasCompleted &&
+      !disableWave
+    ) {
       // Trigger wave immediately after typing completes
       setShouldWave(true);
       // Calculate total wave duration: base duration + stagger for last letter
       // The last letter starts animating at (text.length - 1) * stagger, then takes duration to complete
-      const totalWaveDuration = duration + ((text.length - 1) * stagger);
+      const totalWaveDuration = duration + (text.length - 1) * stagger;
       // Mark wave as completed after it finishes
       waveTimeoutRef.current = setTimeout(() => {
         setShouldWave(false);
         setWaveHasCompleted(true);
       }, totalWaveDuration);
-      
+
       return () => {
         if (waveTimeoutRef.current) {
           clearTimeout(waveTimeoutRef.current);
@@ -154,7 +163,16 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
         clearTimeout(waveTimeoutRef.current);
       }
     };
-  }, [triggerOnTypingComplete, isTypingComplete, prefersReducedMotion, waveHasCompleted, duration, stagger, text.length, disableWave]);
+  }, [
+    triggerOnTypingComplete,
+    isTypingComplete,
+    prefersReducedMotion,
+    waveHasCompleted,
+    duration,
+    stagger,
+    text.length,
+    disableWave,
+  ]);
 
   // Scroll detection - trigger typing and wave on scroll (for home page)
   useEffect(() => {
@@ -164,7 +182,7 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
       if (elementRef.current) {
         const rect = elementRef.current.getBoundingClientRect();
         const isInView = rect.top < window.innerHeight && rect.bottom > 0;
-        
+
         // Start typing when element is in view and user scrolls
         if (isInView && !hasStartedTyping) {
           setHasStartedTyping(true);
@@ -189,7 +207,7 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
             setIsScrolling(false);
             // Calculate total wave duration: base duration + stagger for last letter
             // The last letter starts animating at (text.length - 1) * stagger, then takes duration to complete
-            const totalWaveDuration = duration + ((text.length - 1) * stagger);
+            const totalWaveDuration = duration + (text.length - 1) * stagger;
             // Stop wave after it completes one full iteration and mark as completed
             waveCompletionTimeoutRef.current = setTimeout(() => {
               setShouldWave(false);
@@ -247,7 +265,16 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
         observer.disconnect();
       }
     };
-  }, [prefersReducedMotion, hasStartedTyping, shouldEnableScrollTrigger, isTypingComplete, waveHasCompleted, duration, stagger, text.length]);
+  }, [
+    prefersReducedMotion,
+    hasStartedTyping,
+    shouldEnableScrollTrigger,
+    isTypingComplete,
+    waveHasCompleted,
+    duration,
+    stagger,
+    text.length,
+  ]);
 
   // Split text into characters (preserve spaces)
   const characters = useMemo(() => {
@@ -335,13 +362,10 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
           ...(style || {}),
         }}
       >
-        <span
-          ref={elementRef}
-          className="inline"
-          style={{ fontFamily: "inherit" }}
-        >
+        <span ref={elementRef} className="inline" style={{ fontFamily: "inherit" }}>
           {wordGroups.map((group, groupIndex) => {
-            const shouldAnimate = isTypingComplete && !prefersReducedMotion && shouldWave && !disableWave;
+            const shouldAnimate =
+              isTypingComplete && !prefersReducedMotion && shouldWave && !disableWave;
             return (
               // Each word is inline-block + nowrap so the browser treats it as
               // an atomic unit — line breaks only occur at spaces, never mid-word.
@@ -370,7 +394,8 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
                         animationName: shouldAnimate ? animationName : "none",
                         animationDuration: shouldAnimate ? `${duration}ms` : "0ms",
                         animationTimingFunction: shouldAnimate ? "ease-in-out" : "ease",
-                        animationIterationCount: shouldAnimate && loopWave ? "infinite" : shouldAnimate ? "1" : "0",
+                        animationIterationCount:
+                          shouldAnimate && loopWave ? "infinite" : shouldAnimate ? "1" : "0",
                         animationDelay: shouldAnimate ? `${globalIndex * stagger}ms` : "0ms",
                         animationFillMode: shouldAnimate ? "both" : "none",
                         willChange: shouldAnimate ? "transform" : "auto",
@@ -392,4 +417,3 @@ export const WavyTypedTitle: React.FC<WavyTypedTitleProps> = ({
 };
 
 export default WavyTypedTitle;
-

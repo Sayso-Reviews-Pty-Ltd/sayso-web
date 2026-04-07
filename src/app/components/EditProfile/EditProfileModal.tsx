@@ -8,7 +8,11 @@ import { EditProfileForm } from "./parts/EditProfileForm";
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { username: string; displayName: string; avatarFile: File | null }) => Promise<void>;
+  onSave: (data: {
+    username: string;
+    displayName: string;
+    avatarFile: File | null;
+  }) => Promise<void>;
   currentUsername: string;
   currentDisplayName: string | null;
   currentAvatarUrl: string | null;
@@ -99,7 +103,9 @@ export function EditProfileModal({
     // Username validation: alphanumeric, underscore, hyphen, 3-20 chars
     const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
     if (!usernameRegex.test(username.trim())) {
-      setError("Username must be 3-20 characters and contain only letters, numbers, underscores, and hyphens");
+      setError(
+        "Username must be 3-20 characters and contain only letters, numbers, underscores, and hyphens"
+      );
       return;
     }
 
@@ -120,10 +126,17 @@ export function EditProfileModal({
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: authStyles }} />
-      <Dialog open={isOpen} onOpenChange={(open) => { if (!open && !saving) onClose(); }}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open && !saving) onClose();
+        }}
+      >
         <DialogContent className="max-w-lg p-0 gap-0 bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 border-none max-h-[90vh] overflow-y-auto">
           <DialogTitle className="sr-only">Edit Profile</DialogTitle>
-          <DialogDescription className="sr-only">Update your username, display name, and profile picture</DialogDescription>
+          <DialogDescription className="sr-only">
+            Update your username, display name, and profile picture
+          </DialogDescription>
           <EditProfileForm
             username={username}
             displayName={displayName}
@@ -132,7 +145,10 @@ export function EditProfileModal({
             saving={saving}
             error={error}
             fileInputRef={fileInputRef}
-            onUsernameChange={(value) => { setUsername(value); setError(null); }}
+            onUsernameChange={(value) => {
+              setUsername(value);
+              setError(null);
+            }}
             onDisplayNameChange={setDisplayName}
             onFileSelect={handleFileSelect}
             onRemoveAvatar={handleRemoveAvatar}

@@ -15,8 +15,8 @@ This folder contains documentation related to React components, frontend archite
 ## Adding New Frontend Documentation
 
 When documenting frontend components or features:
+
 1. Create a descriptive filename using `kebab-case` (e.g., `component-architecture.md`)
 2. Include component hierarchy, props, and usage examples
 3. Document state management and data flow
 4. Update this README with a brief description
-

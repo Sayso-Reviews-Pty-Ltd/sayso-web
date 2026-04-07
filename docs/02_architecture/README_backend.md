@@ -17,8 +17,8 @@ This folder contains documentation related to backend services, cron jobs, and s
 ## Adding New Backend Documentation
 
 When documenting backend services or jobs:
+
 1. Create a descriptive filename using `kebab-case` (e.g., `service-implementation.md`)
 2. Include service architecture, API contracts, and configuration
 3. Document cron job schedules and dependencies
 4. Update this README with a brief description
-

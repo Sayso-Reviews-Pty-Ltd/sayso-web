@@ -15,16 +15,19 @@ src/components/
 ## Design Principles
 
 ### 1. Consistency
+
 - Use design tokens for colors, spacing, typography
 - Follow established patterns throughout the app
 - Maintain consistent component APIs
 
 ### 2. Reusability
+
 - Build generic, composable components
 - Avoid page-specific logic in shared components
 - Use props for configuration, not hardcoded values
 
 ### 3. Accessibility
+
 - Semantic HTML elements
 - Proper ARIA labels and roles
 - Keyboard navigation support
@@ -32,6 +35,7 @@ src/components/
 - Screen reader friendly
 
 ### 4. Performance
+
 - Optimize re-renders with React.memo
 - Use CSS for animations
 - Lazy load heavy components
@@ -44,21 +48,21 @@ src/components/
 ```typescript
 const colors = {
   // Primary
-  coral: '#FF6B6B',
-  sage: '#8FBC8F',
-  cream: '#FFF8E7',
-  charcoal: '#2D2D2D',
-  
+  coral: "#FF6B6B",
+  sage: "#8FBC8F",
+  cream: "#FFF8E7",
+  charcoal: "#2D2D2D",
+
   // Secondary
-  'off-white': '#F8F9FA',
-  'light-gray': '#E9ECEF',
-  'medium-gray': '#6C757D',
-  
+  "off-white": "#F8F9FA",
+  "light-gray": "#E9ECEF",
+  "medium-gray": "#6C757D",
+
   // Status
-  success: '#28A745',
-  warning: '#FFC107',
-  error: '#DC3545',
-  info: '#17A2B8',
+  success: "#28A745",
+  warning: "#FFC107",
+  error: "#DC3545",
+  info: "#17A2B8",
 };
 ```
 
@@ -67,21 +71,21 @@ const colors = {
 ```typescript
 const typography = {
   fontFamily: {
-    sans: 'Inter, system-ui, sans-serif',
-    display: 'Poppins, sans-serif',
+    sans: "Inter, system-ui, sans-serif",
+    display: "Poppins, sans-serif",
   },
-  
+
   fontSize: {
-    xs: '0.75rem',    // 12px
-    sm: '0.875rem',   // 14px
-    base: '1rem',     // 16px
-    lg: '1.125rem',   // 18px
-    xl: '1.25rem',    // 20px
-    '2xl': '1.5rem',  // 24px
-    '3xl': '1.875rem',// 30px
-    '4xl': '2.25rem', // 36px
+    xs: "0.75rem", // 12px
+    sm: "0.875rem", // 14px
+    base: "1rem", // 16px
+    lg: "1.125rem", // 18px
+    xl: "1.25rem", // 20px
+    "2xl": "1.5rem", // 24px
+    "3xl": "1.875rem", // 30px
+    "4xl": "2.25rem", // 36px
   },
-  
+
   fontWeight: {
     normal: 400,
     medium: 500,
@@ -95,17 +99,17 @@ const typography = {
 
 ```typescript
 const spacing = {
-  0: '0',
-  1: '0.25rem',  // 4px
-  2: '0.5rem',   // 8px
-  3: '0.75rem',  // 12px
-  4: '1rem',     // 16px
-  5: '1.25rem',  // 20px
-  6: '1.5rem',   // 24px
-  8: '2rem',     // 32px
-  10: '2.5rem',  // 40px
-  12: '3rem',    // 48px
-  16: '4rem',    // 64px
+  0: "0",
+  1: "0.25rem", // 4px
+  2: "0.5rem", // 8px
+  3: "0.75rem", // 12px
+  4: "1rem", // 16px
+  5: "1.25rem", // 20px
+  6: "1.5rem", // 24px
+  8: "2rem", // 32px
+  10: "2.5rem", // 40px
+  12: "3rem", // 48px
+  16: "4rem", // 64px
 };
 ```
 
@@ -113,14 +117,14 @@ const spacing = {
 
 ```typescript
 const borderRadius = {
-  none: '0',
-  sm: '0.25rem',   // 4px
-  DEFAULT: '0.5rem', // 8px
-  md: '0.75rem',   // 12px
-  lg: '1rem',      // 16px
-  xl: '1.5rem',    // 24px
-  '2xl': '2rem',   // 32px
-  full: '9999px',
+  none: "0",
+  sm: "0.25rem", // 4px
+  DEFAULT: "0.5rem", // 8px
+  md: "0.75rem", // 12px
+  lg: "1rem", // 16px
+  xl: "1.5rem", // 24px
+  "2xl": "2rem", // 32px
+  full: "9999px",
 };
 ```
 
@@ -131,6 +135,7 @@ const borderRadius = {
 **Purpose:** Basic building blocks that can't be broken down further.
 
 **Examples:**
+
 - Button
 - Input
 - Label
@@ -140,12 +145,14 @@ const borderRadius = {
 - Spinner
 
 **Guidelines:**
+
 - Single responsibility
 - No dependencies on other components
 - Highly reusable
 - Accept styling props
 
 **Example:**
+
 ```typescript
 // src/components/atoms/Button/Button.tsx
 interface ButtonProps {
@@ -182,6 +189,7 @@ export const Button: React.FC<ButtonProps> = ({
 **Purpose:** Simple combinations of atoms that work together.
 
 **Examples:**
+
 - FormField (Label + Input + Error)
 - SearchBar (Input + Button)
 - Card (Image + Title + Description)
@@ -189,12 +197,14 @@ export const Button: React.FC<ButtonProps> = ({
 - PriceDisplay (Icon + Text + Badge)
 
 **Guidelines:**
+
 - Combine 2-5 atoms
 - Single clear purpose
 - Reusable across contexts
 - Minimal business logic
 
 **Example:**
+
 ```typescript
 // src/components/molecules/FormField/FormField.tsx
 interface FormFieldProps {
@@ -223,6 +233,7 @@ export const FormField: React.FC<FormFieldProps> = ({
 **Purpose:** Complex UI sections made of molecules and atoms.
 
 **Examples:**
+
 - Header (Logo + Navigation + User Menu)
 - BusinessCard (Image + Details + Actions)
 - ReviewList (Multiple ReviewCards)
@@ -230,12 +241,14 @@ export const FormField: React.FC<FormFieldProps> = ({
 - Footer (Links + Social + Newsletter)
 
 **Guidelines:**
+
 - Feature-specific but reusable
 - May contain business logic
 - Composed of molecules and atoms
 - Self-contained functionality
 
 **Example:**
+
 ```typescript
 // src/components/organisms/BusinessCard/BusinessCard.tsx
 interface BusinessCardProps {
@@ -275,11 +288,13 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({
 **Purpose:** Page-level layouts that define structure.
 
 **Examples:**
+
 - MainLayout (Header + Content + Footer)
 - AuthLayout (Centered form with background)
 - DashboardLayout (Sidebar + Main content)
 
 **Guidelines:**
+
 - Define page structure
 - Handle responsive layouts
 - Manage global UI state
@@ -407,20 +422,36 @@ See [Animation Guide](ANIMATION_GUIDE.md) for detailed animation documentation.
 ```css
 /* Fade in */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Slide up */
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Scale in */
 @keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 ```
 
@@ -430,11 +461,11 @@ See [Animation Guide](ANIMATION_GUIDE.md) for detailed animation documentation.
 
 ```typescript
 const breakpoints = {
-  sm: '640px',   // Mobile landscape
-  md: '768px',   // Tablet
-  lg: '1024px',  // Desktop
-  xl: '1280px',  // Large desktop
-  '2xl': '1536px', // Extra large
+  sm: "640px", // Mobile landscape
+  md: "768px", // Tablet
+  lg: "1024px", // Desktop
+  xl: "1280px", // Large desktop
+  "2xl": "1536px", // Extra large
 };
 ```
 
@@ -467,6 +498,7 @@ const breakpoints = {
 ## Accessibility Guidelines
 
 ### Semantic HTML
+
 ```tsx
 // Good
 <button onClick={handleClick}>Click me</button>
@@ -476,6 +508,7 @@ const breakpoints = {
 ```
 
 ### ARIA Labels
+
 ```tsx
 <button aria-label="Close modal" onClick={handleClose}>
   <XIcon />
@@ -483,13 +516,14 @@ const breakpoints = {
 ```
 
 ### Keyboard Navigation
+
 ```tsx
 <div
   role="button"
   tabIndex={0}
   onClick={handleClick}
   onKeyPress={(e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       handleClick();
     }
   }}
@@ -499,6 +533,7 @@ const breakpoints = {
 ```
 
 ### Focus Management
+
 ```tsx
 const inputRef = useRef<HTMLInputElement>(null);
 
@@ -506,12 +541,13 @@ useEffect(() => {
   inputRef.current?.focus();
 }, []);
 
-<input ref={inputRef} />
+<input ref={inputRef} />;
 ```
 
 ## Best Practices
 
 ### Do's ✅
+
 - Use semantic HTML
 - Follow established patterns
 - Make components accessible
@@ -521,6 +557,7 @@ useEffect(() => {
 - Use TypeScript for type safety
 
 ### Don'ts ❌
+
 - Don't hardcode values
 - Don't mix concerns
 - Don't skip accessibility
@@ -561,4 +598,3 @@ describe('Button', () => {
 - [React Component Patterns](https://react.dev/learn/thinking-in-react)
 - [Web Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-

@@ -1,3 +1,2 @@
-export { ProfileSettingsSection } from './ProfileSettingsSection';
-export type { ProfileSettingsSectionProps } from './ProfileSettingsSection';
-
+export { ProfileSettingsSection } from "./ProfileSettingsSection";
+export type { ProfileSettingsSectionProps } from "./ProfileSettingsSection";

@@ -11,28 +11,30 @@
 ```typescript
 // Step 1: Upload file to Supabase Storage bucket
 const { error: uploadError } = await supabase.storage
-    .from(STORAGE_BUCKETS.BUSINESS_IMAGES)  // 'business_images' bucket
-    .upload(filePath, image, {
-        contentType: image.type,
-    });
+  .from(STORAGE_BUCKETS.BUSINESS_IMAGES) // 'business_images' bucket
+  .upload(filePath, image, {
+    contentType: image.type,
+  });
 
 // Step 2: Get public URL from storage
-const { data: { publicUrl } } = supabase.storage
-    .from(STORAGE_BUCKETS.BUSINESS_IMAGES)
-    .getPublicUrl(filePath);
+const {
+  data: { publicUrl },
+} = supabase.storage.from(STORAGE_BUCKETS.BUSINESS_IMAGES).getPublicUrl(filePath);
 
 // Step 3: Save public URL to database
-uploadedUrls.push(publicUrl);  // This is a Supabase Storage public URL
+uploadedUrls.push(publicUrl); // This is a Supabase Storage public URL
 ```
 
 ### 2. URL Format
 
 Supabase Storage `getPublicUrl()` returns URLs in this format:
+
 ```
 https://[project-ref].supabase.co/storage/v1/object/public/business_images/[businessId]/[filename]
 ```
 
 **Example:**
+
 ```
 https://abcdefghijklmnop.supabase.co/storage/v1/object/public/business_images/abc123/abc123_0_1234567890.jpg
 ```
@@ -42,6 +44,7 @@ https://abcdefghijklmnop.supabase.co/storage/v1/object/public/business_images/ab
 The public URLs are saved to the `uploaded_images` TEXT[] array via:
 
 **Option A: RPC Function (Preferred - Atomic)**
+
 ```sql
 SELECT append_business_images(
     p_business_id := 'business-id',
@@ -50,8 +53,9 @@ SELECT append_business_images(
 ```
 
 **Option B: Direct Update (Fallback)**
+
 ```sql
-UPDATE businesses 
+UPDATE businesses
 SET uploaded_images = ARRAY['https://...supabase.co/storage/v1/object/public/business_images/...']
 WHERE id = 'business-id';
 ```
@@ -59,16 +63,19 @@ WHERE id = 'business-id';
 ## Verification Points
 
 ### ✅ Bucket Configuration
+
 - **Bucket Name:** `business_images` (with underscore)
 - **Location:** `src/app/lib/utils/storageBucketConfig.ts`
 - **Constant:** `STORAGE_BUCKETS.BUSINESS_IMAGES = 'business_images'`
 
 ### ✅ URL Generation
+
 - **Method:** `supabase.storage.from('business_images').getPublicUrl(filePath)`
 - **Returns:** Full public URL string
 - **Format:** `https://[project].supabase.co/storage/v1/object/public/business_images/[path]`
 
 ### ✅ Database Storage
+
 - **Column:** `businesses.uploaded_images` (TEXT[])
 - **Content:** Array of public URL strings
 - **Function:** `append_business_images()` RPC function
@@ -93,6 +100,7 @@ extractStoragePath(url: string): string | null
 ## Test Coverage
 
 The test suite (`__tests__/api/add-business-flow.test.ts`) verifies:
+
 - ✅ Business creation with images
 - ✅ Image URL storage in database
 - ✅ RPC function for atomic updates
@@ -105,6 +113,7 @@ The test suite (`__tests__/api/add-business-flow.test.ts`) verifies:
 ### ⚠️ Bucket Name Consistency
 
 **Note:** There's a discrepancy in naming conventions:
+
 - **Code uses:** `business_images` (underscore) - ✅ Correct
 - **Some docs mention:** `business-images` (hyphen) - ⚠️ Outdated
 
@@ -126,6 +135,7 @@ The test suite (`__tests__/api/add-business-flow.test.ts`) verifies:
 ## Conclusion
 
 **✅ VERIFIED:** The URLs saved in `businesses.uploaded_images` are:
+
 1. Public URLs from Supabase Storage
 2. Generated via `getPublicUrl()` method
 3. Stored directly in the database array
@@ -133,4 +143,3 @@ The test suite (`__tests__/api/add-business-flow.test.ts`) verifies:
 5. CDN-optimized and permanent (as long as file exists)
 
 The implementation is correct and follows Supabase Storage best practices.
-

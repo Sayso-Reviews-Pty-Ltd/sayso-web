@@ -1,23 +1,29 @@
 # Role-Based Access Control Implementation Summary
 
 ## Overview
+
 Implemented comprehensive role-based account type system that distinguishes between **Personal Users** and **Business Owners** with automatic redirects, access restrictions, and role-specific navigation.
 
 ## Architecture
 
 ### 1. **Account Type Model**
+
 - Uses existing `role` column in `profiles` table
 - Values: `'user'` (personal) | `'business_owner'` (business)
 - Default: `'user'`
 - Set during signup via auth metadata `accountType` parameter
 
 ### 2. **Type System Updates**
+
 **File**: `src/app/lib/types/database.ts`
+
 - Extended `Profile` interface with `role?: 'user' | 'business_owner' | 'admin'`
 - Extended `SignUpData` interface with optional `accountType: 'user' | 'business_owner'`
 
 ### 3. **Database Migrations**
+
 **File**: `supabase/migrations/20260120_update_handle_new_user_for_account_type.sql`
+
 - Updated `handle_new_user()` trigger to read `accountType` from auth metadata
 - Sets profile role during account creation based on signup selection
 - Falls back to `'user'` if no account type specified
@@ -27,24 +33,30 @@ Implemented comprehensive role-based account type system that distinguishes betw
 ### 4. **Authentication Flows**
 
 #### 4a. **Signup (Registration)**
+
 **File**: `src/app/register/page.tsx`
+
 - Added account type toggle UI: "Personal User" vs "Business Owner"
 - Default: "Personal User"
 - UI uses button-based selection with visual feedback
 - Passes `accountType` to registration
 
 **File**: `src/app/lib/auth.ts` (AuthService.signUp)
+
 - Accepts optional `accountType` parameter
 - Includes `accountType` in auth metadata during signup
 - Defaults to `'user'` if not provided
 
 **File**: `src/app/contexts/AuthContext.tsx` (register method)
+
 - Accepts `accountType` parameter
 - Passes to `AuthService.signUp`
 - No duplicate auth flows - uses same signup for both types
 
 #### 4b. **Login & Redirects**
+
 **File**: `src/app/contexts/AuthContext.tsx` (login method)
+
 - **Personal Users** (`role === 'user'`):
   - After verification → `/home`
   - During onboarding → Normal flow (`/interests`, `/subcategories`, `/deal-breakers`)
@@ -53,55 +65,68 @@ Implemented comprehensive role-based account type system that distinguishes betw
   - If onboarding incomplete → `/for-businesses` (skip personal onboarding)
 
 ### 5. **Middleware Access Control**
+
 **File**: `src/middleware.ts`
 
 #### Profile Data Fetch
+
 - Single DB read includes `role` column
 - Avoids duplicate queries, uses cached data throughout middleware
 
 #### Role-Based Route Enforcement
+
 **Business-Only Routes** (require `role === 'business_owner'`):
+
 - `/for-businesses`
 - `/owners/*`
 - `/business/[id]/edit`
 
 **Personal Onboarding Routes** (blocked for business owners):
+
 - `/interests`
 - `/subcategories`
 - `/deal-breakers`
 
 **Personal User Routes** (blocked for business owners):
+
 - `/for-you`
 - `/profile` (shared, but personal-focused)
 - `/saved`
 - `/my-businesses` (personal user version)
 
 #### Redirect Logic
+
 - Business user accessing personal route → redirect to `/for-businesses`
 - Personal user accessing business route → redirect to `/home`
 - Unauthenticated → redirect to `/onboarding` or `/login?redirect=...`
 
 ### 6. **Navigation & UI**
+
 **File**: `src/app/components/Header/Header.tsx`
 
 #### Role-Aware Navigation
+
 ```typescript
-const userRole = user?.profile?.role || 'user';
-const isBusinessAccountUser = userRole === 'business_owner';
+const userRole = user?.profile?.role || "user";
+const isBusinessAccountUser = userRole === "business_owner";
 ```
 
 #### Menu Items by Role
+
 **Business Users see:**
+
 - `/for-businesses` - "For Businesses"
 - `/my-businesses` - "My Businesses"
 - `/profile` - "Profile"
 
 **Personal Users see:**
+
 - `/dm` - "Messages"
 - `/saved` - "Saved"
 - `/profile` - "Profile"
 
 #### Features
+
 - Conditional rendering based on `isBusinessAccountUser`
 - Lock indicators for guest users
 - Dynamic menu construction
@@ -110,6 +135,7 @@ const isBusinessAccountUser = userRole === 'business_owner';
 ## Flow Diagrams
 
 ### Personal User Flow
+
 ```
 Register (accountType='user')
     ↓ [verify email]
@@ -133,6 +159,7 @@ Register (accountType='user')
 ```
 
 ### Business Owner Flow
+
 ```
 Register (accountType='business_owner')
     ↓ [verify email]
@@ -150,6 +177,7 @@ Register (accountType='business_owner')
 ## Security Considerations
 
 ### Multi-Layer Enforcement
+
 1. **Auth Role Level** ✓
    - Roles set during signup in auth metadata
    - Profile role persists in database
@@ -165,12 +193,14 @@ Register (accountType='business_owner')
    - Users don't see inaccessible navigation
 
 ### No Duplicate Flows
+
 - Single signup flow with role selection
 - Single login flow with role-based redirects
 - One authentication service for both account types
 - Role determined at auth time, not post-signup
 
 ### RLS Policies
+
 - Existing RLS policies continue to work
 - Profile `role` field can be used in new policies
 - Business access checks already in place (useRequireBusinessOwner hook)
@@ -189,6 +219,7 @@ Register (accountType='business_owner')
 ## Testing Checklist
 
 ### Personal User Flow
+
 - [ ] Sign up as personal user
 - [ ] Receives email verification
 - [ ] Completes onboarding steps
@@ -198,6 +229,7 @@ Register (accountType='business_owner')
 - [ ] Blocked routes redirect to /home
 
 ### Business Owner Flow
+
 - [ ] Sign up as business owner
 - [ ] Receives email verification
 - [ ] Redirects directly to /for-businesses (skips onboarding)
@@ -207,12 +239,14 @@ Register (accountType='business_owner')
 - [ ] Blocked routes redirect to /for-businesses
 
 ### Login Flows
+
 - [ ] Personal user login → /home
 - [ ] Business user login → /for-businesses
 - [ ] Incomplete personal onboarding → next step
 - [ ] Incomplete business onboarding → /for-businesses
 
 ### Navigation
+
 - [ ] Personal user sees personal menu items
 - [ ] Business user sees business menu items
 - [ ] Header correctly hides role-inappropriate items

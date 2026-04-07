@@ -9,6 +9,7 @@
 ## Architecture Overview
 
 ### Component Structure
+
 - **Main Wrapper:** `ProfileContent()` function component
 - **Skeleton Loaders:** 4 separate skeleton components for loading states
 - **Exported Page:** Wrapped with `withUserCheck` HOC
@@ -19,22 +20,26 @@
 ## State Management (31 State Variables)
 
 ### Profile & Auth
+
 - `isEditOpen` - Edit profile modal visibility
 - `username`, `displayName` - Profile name fields
 - `avatarFile`, `avatarKey` - Avatar upload/cache busting
 - `imgError` - Avatar image load error
 
 ### Loading States
+
 - `profileLoading` - Enhanced profile fetch
 - `statsLoading` - User stats fetch
 - `reviewsLoading` - User reviews fetch
 - `achievementsLoading` - Badges/achievements fetch
 
 ### Saving & Errors
+
 - `saving` - Profile update in progress
 - `error` - General profile update error
 
 ### Review Management
+
 - `userReviews[]` - Array of user's reviews
 - `reviewToDelete` - Review ID pending deletion
 - `reviewToEdit` - Review being edited
@@ -43,6 +48,7 @@
 - `deleteError` - Review deletion error
 
 ### Account Actions
+
 - `isDeleteAccountDialogOpen` - Delete account confirmation
 - `isDeletingAccount` - Account deletion in progress
 - `deleteAccountError` - Account deletion error
@@ -51,11 +57,13 @@
 - `deactivateError` - Account deactivation error
 
 ### Data Storage
+
 - `enhancedProfile` - Extended profile data from API
 - `userStats` - Computed user statistics
 - `achievements[]` - Earned badges/achievements
 
 ### Refs
+
 - `refreshTriggerRef` - Track visibility changes for data refresh
 
 ---
@@ -63,35 +71,42 @@
 ## Data Fetching (Multiple useEffect Hooks)
 
 ### 1. Visibility Change Handler
+
 **Purpose:** Refetch all data when user returns to page
+
 - Listens to `visibilitychange` event
 - Triggers simultaneous reload of: profile, stats, reviews, achievements, saved items
 - Sets all loading states to true
 
 ### 2. Enhanced Profile Fetch
+
 - **Endpoint:** `/api/user/profile`
 - **Triggers:** On mount, when `user?.id` changes
-- **Error Handling:** 
+- **Error Handling:**
   - 401: Early return (not authenticated)
   - 404: Profile doesn't exist yet (graceful)
   - Other: Logs warning, continues with null data
 - **Stores:** Bio, location, website, social links, privacy settings
 
 ### 3. User Stats Fetch
+
 - **Endpoint:** `/api/user/stats`
 - **Triggers:** On mount, when `user?.id` changes
 - **Stores:** Reviews count, saved count, helpful votes, creation date
 
 ### 4. Reviews Fetch
+
 - **Logic:** Via `useReviewSubmission` hook
 - **Stores:** User's written reviews with edit/delete capability
 
 ### 5. Achievements/Badges Fetch
+
 - **Endpoint:** `/api/badges/user?user_id={userId}`
 - **Transforms:** Badge data to `UserAchievement` interface
 - **Stores:** Earned badges with timestamps
 
 ### 6. Saved Items Fetch
+
 - **Via Context:** `useSavedItems()` context provider
 - **Maintains:** List of saved businesses
 
@@ -100,9 +115,10 @@
 ## Key Capabilities
 
 ### Profile Editing
+
 - **Modal:** `EditProfileModal` component
 - **Fields:** Username, display name, bio, location, website, social links, avatar
-- **Avatar Upload:** 
+- **Avatar Upload:**
   - Validates max 5MB file size
   - Uploads to Supabase Storage (`avatars` bucket)
   - Gets public URL
@@ -110,13 +126,15 @@
   - Deletes old avatar after upload
 
 ### Review Management
+
 - **Display:** `ReviewsList` organism component
-- **Actions:** 
+- **Actions:**
   - Edit: Navigate to review edit page with review ID
   - Delete: Confirmation dialog → API call → local state update
   - Refetch achievements after deletion (badge eligibility may change)
 
 ### Stats Display
+
 - **Grid:** 4-column layout showing:
   - Total reviews written (via `userReviews.length` or `userStats`)
   - Badges earned (via `achievements.length`)
@@ -124,21 +142,24 @@
   - Helpful votes received (via `userStats.helpfulVotesReceived`)
 
 ### Account Actions
+
 - **Log Out:** Via `logout()` from AuthContext
-- **Delete Account:** 
+- **Delete Account:**
   - Confirmation dialog with warning
   - API call: `DELETE /api/user/delete-account`
   - Cascades deletion of all businesses and related data
   - Redirects to `/onboarding` on success
-- **Deactivate Account:** 
+- **Deactivate Account:**
   - Separate action from deletion
   - Endpoint: `POST /api/user/deactivate-account` (exists but behavior not fully shown)
 
 ### Achievement Display
+
 - **Component:** `AchievementsList` organism
 - **Data:** Earned badges with names, descriptions, icons, categories
 
 ### Saved Businesses Display
+
 - **Component:** `SavedBusinessRow` for each saved item
 - **Source:** `SavedItemsContext`
 - **Count:** Primary from context, fallback to `userStats`
@@ -148,6 +169,7 @@
 ## Data Flows & Computations
 
 ### Derived Values (useMemo-like)
+
 ```
 displayLabel = display_name || username || email_prefix || "Your Profile"
 profileLocation = enhanced_location || profile_location || locale
@@ -160,6 +182,7 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 ```
 
 ### Data Source Precedence
+
 - **Reviews:** Live array preferred, then stats fallback
 - **Achievements:** Live array only
 - **Saved:** Context preferred, then stats fallback
@@ -184,18 +207,21 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 ## Loading & Error Handling
 
 ### Skeleton States
+
 - Profile header skeleton
 - Stats grid skeleton (4 placeholders)
 - Achievements skeleton
 - Reviews skeleton
 
 ### Error Display
+
 - Edit profile errors: In modal toast
 - Review deletion errors: In-page alert
 - Account deletion errors: In confirmation dialog
 - API fetch failures: Logged, graceful degradation
 
 ### Retry Logic
+
 - Visibility change triggers full refetch
 - Manual refresh not explicitly shown (relies on visibility)
 - Component re-mounts on auth state change
@@ -205,6 +231,7 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 ## Performance Considerations
 
 ### Potential Issues
+
 1. **31 State Variables:** High re-render frequency
 2. **Multiple Independent Fetches:** 5+ parallel API calls on mount
 3. **No Memoization:** No `useMemo`/`useCallback` visible
@@ -213,6 +240,7 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 6. **Visibility Handler:** Triggers 4-5 simultaneous refetches when user returns
 
 ### Data Fetching Gaps
+
 - No caching between fetches
 - No request deduplication
 - All fetches use `cache: 'no-store'`
@@ -223,15 +251,18 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 ## Dependencies
 
 ### Contexts
+
 - `useAuth()` - User, updateUser, logout
 - `useSavedItems()` - savedItems list
 - `useRouter()` - Navigation
 - `usePageTitle()` - Page title setting
 
 ### Hooks
+
 - `useReviewSubmission()` - Delete review logic
 
 ### Components
+
 - `EditProfileModal` - Edit profile UI
 - `ReviewsList` - Reviews display
 - `AchievementsList` - Badges display
@@ -241,6 +272,7 @@ memberSinceLabel = userStats.accountCreationDate || profile.created_at
 - `Footer` - Page footer
 
 ### Libraries
+
 - Framer Motion - Animations
 - Lucide React - Icons
 - Next Image - Optimized images
@@ -274,15 +306,18 @@ interface UserAchievement { ... }   // achievement_id, earned_at, achievements
 ## Integration Points
 
 ### With Settings Page
+
 - Account deletion moved to `/settings` for clarity
 - Profile page now primarily for viewing/editing public profile
 - Logout action could stay in both locations
 
 ### With Business Routes
+
 - Business owners see this as personal profile
 - May conflict with business dashboard
 
 ### With Header
+
 - Profile icon in navbar links to this page
 - Active state highlighting when on `/profile`
 

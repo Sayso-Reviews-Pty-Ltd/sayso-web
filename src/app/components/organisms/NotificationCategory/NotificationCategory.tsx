@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { SettingsCard } from '@/components/atoms/SettingsCard';
-import { NotificationToggleItem } from '@/components/molecules/NotificationToggleItem';
+import React from "react";
+import { SettingsCard } from "@/components/atoms/SettingsCard";
+import { NotificationToggleItem } from "@/components/molecules/NotificationToggleItem";
 
 export interface NotificationItem {
   key: string;
@@ -14,7 +14,7 @@ export interface NotificationItem {
 export interface NotificationCategoryProps {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   title: string;
-  iconColor?: 'coral' | 'sage';
+  iconColor?: "coral" | "sage";
   notifications: NotificationItem[];
   onToggle: (key: string) => void;
   withBlur?: boolean;
@@ -23,7 +23,7 @@ export interface NotificationCategoryProps {
 export const NotificationCategory: React.FC<NotificationCategoryProps> = ({
   icon,
   title,
-  iconColor = 'coral',
+  iconColor = "coral",
   notifications,
   onToggle,
   withBlur = false,
@@ -33,12 +33,12 @@ export const NotificationCategory: React.FC<NotificationCategoryProps> = ({
       icon={icon}
       title={title}
       iconColor={iconColor}
-      className={withBlur ? 'relative overflow-hidden' : ''}
+      className={withBlur ? "relative overflow-hidden" : ""}
     >
       {withBlur && (
         <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-coral/10 to-transparent rounded-full blur-lg" />
       )}
-      <div className={withBlur ? 'relative z-10 space-y-4' : 'space-y-4'}>
+      <div className={withBlur ? "relative z-10 space-y-4" : "space-y-4"}>
         {notifications.map((notification) => (
           <NotificationToggleItem
             key={notification.key}
@@ -52,4 +52,3 @@ export const NotificationCategory: React.FC<NotificationCategoryProps> = ({
     </SettingsCard>
   );
 };
-

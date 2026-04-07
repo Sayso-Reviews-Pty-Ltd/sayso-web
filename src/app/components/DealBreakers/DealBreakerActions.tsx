@@ -9,11 +9,11 @@ interface DealBreakerActionsProps {
   onComplete: () => void;
 }
 
-export default function DealBreakerActions({ 
-  canProceed, 
-  isNavigating, 
-  selectedCount, 
-  onComplete
+export default function DealBreakerActions({
+  canProceed,
+  isNavigating,
+  selectedCount,
+  onComplete,
 }: DealBreakerActionsProps) {
   return (
     <div className="pt-2">

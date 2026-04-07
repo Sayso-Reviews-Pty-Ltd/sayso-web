@@ -32,9 +32,7 @@ async function createBusiness(
     businessType: "physical",
     location: "9 garnet road lansdowne cape town",
     priceRange: "$$",
-    ...Object.fromEntries(
-      Object.entries(overrides).map(([k, v]) => [k, String(v)])
-    ),
+    ...Object.fromEntries(Object.entries(overrides).map(([k, v]) => [k, String(v)])),
   };
   return request.post(`${baseURL}/api/businesses`, {
     multipart: payload,
@@ -61,7 +59,9 @@ test.describe("Duplicate business name prevention", () => {
     const res2 = await createBusiness(request, { name: uniqueName });
     expect(res2.status()).toBe(409);
     const body = await res2.json();
-    expect(body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS").toBe(true);
+    expect(
+      body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS"
+    ).toBe(true);
     expect(body.message ?? body.error).toMatch(/already exists|name already exists/i);
   });
 
@@ -76,7 +76,9 @@ test.describe("Duplicate business name prevention", () => {
     const res2 = await createBusiness(request, { name: uniqueName.toLowerCase() });
     expect(res2.status()).toBe(409);
     const body = await res2.json();
-    expect(body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS").toBe(true);
+    expect(
+      body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS"
+    ).toBe(true);
   });
 
   test("creating same name with extra spaces fails", async ({ page, request }) => {
@@ -90,7 +92,9 @@ test.describe("Duplicate business name prevention", () => {
     const res2 = await createBusiness(request, { name: `  ${uniqueName}  ` });
     expect(res2.status()).toBe(409);
     const body = await res2.json();
-    expect(body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS").toBe(true);
+    expect(
+      body.error === "BUSINESS_ALREADY_EXISTS" || body.code === "BUSINESS_ALREADY_EXISTS"
+    ).toBe(true);
   });
 
   test("creating same name marked as chain succeeds", async ({ page, request }) => {
@@ -107,7 +111,10 @@ test.describe("Duplicate business name prevention", () => {
     expect(body.business?.id).toBeDefined();
   });
 
-  test("check-name API returns available: false for duplicate non-chain", async ({ page, request }) => {
+  test("check-name API returns available: false for duplicate non-chain", async ({
+    page,
+    request,
+  }) => {
     test.setTimeout(60000);
     await loginAsBusiness(page);
 
@@ -123,7 +130,10 @@ test.describe("Duplicate business name prevention", () => {
     expect(checkBody.available).toBe(false);
   });
 
-  test("check-name API returns available: true for chain with same name", async ({ page, request }) => {
+  test("check-name API returns available: true for chain with same name", async ({
+    page,
+    request,
+  }) => {
     test.setTimeout(60000);
     await loginAsBusiness(page);
 

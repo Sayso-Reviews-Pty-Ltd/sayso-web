@@ -1,2 +1,1 @@
-export { NotificationsSection } from './NotificationsSection';
-
+export { NotificationsSection } from "./NotificationsSection";

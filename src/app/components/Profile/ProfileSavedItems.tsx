@@ -14,10 +14,6 @@ export function ProfileSavedItems({ savedBusinesses }: ProfileSavedItemsProps) {
   }
 
   return (
-    <SavedBusinessRow
-      title="Saved Businesses"
-      businesses={savedBusinesses}
-      showCount={true}
-    />
+    <SavedBusinessRow title="Saved Businesses" businesses={savedBusinesses} showCount={true} />
   );
 }

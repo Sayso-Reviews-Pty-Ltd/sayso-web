@@ -38,15 +38,32 @@ test.describe("Business disapproval flow", () => {
     // --- 1. Log in as business account ---
     await page.goto(`${baseURL}/login`);
     await page.getByRole("textbox", { name: /email/i }).click();
-    await page.getByRole("textbox", { name: /email/i }).pressSequentially(businessEmail, { delay: 30 });
+    await page
+      .getByRole("textbox", { name: /email/i })
+      .pressSequentially(businessEmail, { delay: 30 });
     await page.getByRole("textbox", { name: /password/i }).click();
-    await page.getByRole("textbox", { name: /password/i }).pressSequentially(businessPassword, { delay: 30 });
+    await page
+      .getByRole("textbox", { name: /password/i })
+      .pressSequentially(businessPassword, { delay: 30 });
     await expect(page.getByRole("button", { name: "Sign in" })).toBeEnabled({ timeout: 10000 });
     await page.getByRole("button", { name: "Sign in" }).click();
-    await page.waitForURL((url) => !url.pathname.endsWith("/login"), { timeout: 20000 }).catch(async () => {
-      const err = await page.getByRole("alert").textContent().catch(() => "") || await page.locator("[class*='error']").first().textContent().catch(() => "");
-      throw new Error(`Business login failed (still on /login). ${err || "Check E2E_BUSINESS_ACCOUNT_EMAIL and E2E_BUSINESS_ACCOUNT_PASSWORD."}`);
-    });
+    await page
+      .waitForURL((url) => !url.pathname.endsWith("/login"), { timeout: 20000 })
+      .catch(async () => {
+        const err =
+          (await page
+            .getByRole("alert")
+            .textContent()
+            .catch(() => "")) ||
+          (await page
+            .locator("[class*='error']")
+            .first()
+            .textContent()
+            .catch(() => ""));
+        throw new Error(
+          `Business login failed (still on /login). ${err || "Check E2E_BUSINESS_ACCOUNT_EMAIL and E2E_BUSINESS_ACCOUNT_PASSWORD."}`
+        );
+      });
 
     // --- 2. Create a new business ---
     await page.goto(`${baseURL}/add-business`);
@@ -54,29 +71,52 @@ test.describe("Business disapproval flow", () => {
 
     await page.getByPlaceholder("Enter business name").fill(uniqueName);
     await page.getByPlaceholder("Select a main category").click();
-    await page.getByText(/food|restaurant|shop|shopping/i).first().click();
+    await page
+      .getByText(/food|restaurant|shop|shopping/i)
+      .first()
+      .click();
     await page.getByPlaceholder(/Select a subcategory|Select main category first/i).click();
-    await page.getByText(/shop|store|retail/i).first().click();
+    await page
+      .getByText(/shop|store|retail/i)
+      .first()
+      .click();
     await page.locator('input[name="location"]').fill("Cape Town");
 
     await page.getByRole("button", { name: /submit|create|add business|save|next/i }).click();
 
-    await expect(
-      page.getByText(/submitted for review|submitted for approval/i)
-    ).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/submitted for review|submitted for approval/i)).toBeVisible({
+      timeout: 15000,
+    });
 
     // --- 3. Log in as admin ---
     await page.goto(`${baseURL}/login`);
     await page.getByRole("textbox", { name: /email/i }).click();
-    await page.getByRole("textbox", { name: /email/i }).pressSequentially(adminEmail, { delay: 30 });
+    await page
+      .getByRole("textbox", { name: /email/i })
+      .pressSequentially(adminEmail, { delay: 30 });
     await page.getByRole("textbox", { name: /password/i }).click();
-    await page.getByRole("textbox", { name: /password/i }).pressSequentially(adminPassword, { delay: 30 });
+    await page
+      .getByRole("textbox", { name: /password/i })
+      .pressSequentially(adminPassword, { delay: 30 });
     await expect(page.getByRole("button", { name: "Sign in" })).toBeEnabled({ timeout: 10000 });
     await page.getByRole("button", { name: "Sign in" }).click();
-    await page.waitForURL((url) => !url.pathname.endsWith("/login"), { timeout: 20000 }).catch(async () => {
-      const err = await page.getByRole("alert").textContent().catch(() => "") || await page.locator("[class*='error']").first().textContent().catch(() => "");
-      throw new Error(`Admin login failed (still on /login). ${err || "Check E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD."}`);
-    });
+    await page
+      .waitForURL((url) => !url.pathname.endsWith("/login"), { timeout: 20000 })
+      .catch(async () => {
+        const err =
+          (await page
+            .getByRole("alert")
+            .textContent()
+            .catch(() => "")) ||
+          (await page
+            .locator("[class*='error']")
+            .first()
+            .textContent()
+            .catch(() => ""));
+        throw new Error(
+          `Admin login failed (still on /login). ${err || "Check E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD."}`
+        );
+      });
 
     // --- 4. Admin: Pending list shows business; click Review to open review page ---
     await page.goto(`${baseURL}/admin/pending-businesses`);
@@ -102,18 +142,33 @@ test.describe("Business disapproval flow", () => {
     const listRes = await request.get(`${baseURL}/api/businesses?limit=100`);
     expect(listRes.ok()).toBeTruthy();
     const listData = await listRes.json();
-    const list = listData?.businesses ?? listData?.data ?? (Array.isArray(listData) ? listData : []);
+    const list =
+      listData?.businesses ?? listData?.data ?? (Array.isArray(listData) ? listData : []);
     const names = (list as { name?: string }[]).map((b) => b.name || "");
     expect(names.some((n) => n.includes("E2E Disapprove"))).toBe(false);
 
     // --- 6. Direct detail URL: 404 or "not available" ---
-    const slug = uniqueName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    const slug = uniqueName
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]/g, "");
     const detailApiRes = await request.get(`${baseURL}/api/businesses/${slug}`);
     expect(detailApiRes.status()).toBe(404);
 
     await page.goto(`${baseURL}/business/${slug}`);
-    const notFound = await page.getByText(/not found|not available|doesn't exist|404/i).isVisible().catch(() => false);
-    const is404 = page.url().includes("404") || (await page.title()).toLowerCase().includes("not found");
-    expect(notFound || is404 || (await page.getByRole("heading", { name: /not found|error/i }).isVisible().catch(() => false))).toBeTruthy();
+    const notFound = await page
+      .getByText(/not found|not available|doesn't exist|404/i)
+      .isVisible()
+      .catch(() => false);
+    const is404 =
+      page.url().includes("404") || (await page.title()).toLowerCase().includes("not found");
+    expect(
+      notFound ||
+        is404 ||
+        (await page
+          .getByRole("heading", { name: /not found|error/i })
+          .isVisible()
+          .catch(() => false))
+    ).toBeTruthy();
   });
 });

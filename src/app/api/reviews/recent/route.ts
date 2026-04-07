@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { cachedJsonResponse, CachePresets } from '@/app/lib/utils/httpCache';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { cachedJsonResponse, CachePresets } from "@/app/lib/utils/httpCache";
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * GET /api/reviews/recent?limit=10
@@ -13,12 +13,12 @@ export const runtime = 'nodejs';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const requestedLimit = parseInt(searchParams.get('limit') || '10', 10);
+    const requestedLimit = parseInt(searchParams.get("limit") || "10", 10);
     const limit = Math.min(20, Math.max(10, Number.isNaN(requestedLimit) ? 10 : requestedLimit));
 
     // Validate environment variables
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.warn('[Recent Reviews] Missing Supabase credentials');
+      console.warn("[Recent Reviews] Missing Supabase credentials");
       return NextResponse.json({ ok: true, reviews: [], total: 0 });
     }
 
@@ -29,8 +29,8 @@ export async function GET(req: Request) {
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     );
 
@@ -39,8 +39,9 @@ export async function GET(req: Request) {
 
     // Slim query: only fields needed for UI; no review_images (fetched separately, capped to 2 per review)
     const { data, error } = await supabase
-      .from('reviews')
-      .select(`
+      .from("reviews")
+      .select(
+        `
         id,
         rating,
         content,
@@ -60,21 +61,22 @@ export async function GET(req: Request) {
           primary_category_slug,
           primary_subcategory_slug
         )
-      `)
-      .order('created_at', { ascending: false })
+      `
+      )
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) {
-      console.warn('[Recent Reviews] Full query failed, trying simple query:', error.message);
+      console.warn("[Recent Reviews] Full query failed, trying simple query:", error.message);
 
       const { data: simpleData, error: simpleError } = await supabase
-        .from('reviews')
-        .select('id, rating, content, created_at, helpful_count, tags, user_id, business_id')
-        .order('created_at', { ascending: false })
+        .from("reviews")
+        .select("id, rating, content, created_at, helpful_count, tags, user_id, business_id")
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       if (simpleError) {
-        console.error('[Recent Reviews] Simple query also failed:', simpleError);
+        console.error("[Recent Reviews] Simple query also failed:", simpleError);
         return NextResponse.json({ ok: true, reviews: [], total: 0 });
       }
 
@@ -88,10 +90,10 @@ export async function GET(req: Request) {
     let imagesByReviewId: Record<string, string[]> = {};
     if (reviewIds.length > 0) {
       const { data: imageRows } = await supabase
-        .from('review_images')
-        .select('review_id, image_url, created_at')
-        .in('review_id', reviewIds)
-        .order('created_at', { ascending: true });
+        .from("review_images")
+        .select("review_id, image_url, created_at")
+        .in("review_id", reviewIds)
+        .order("created_at", { ascending: true });
 
       if (imageRows?.length) {
         const map: Record<string, string[]> = {};
@@ -108,16 +110,16 @@ export async function GET(req: Request) {
     const transformedReviews = (reviews || []).map((review: any) => {
       const profile = review.profiles;
       const business = review.businesses;
-      const displayName = profile?.display_name || 'Anonymous';
+      const displayName = profile?.display_name || "Anonymous";
 
       return {
         id: review.id,
         rating: review.rating,
         reviewText: review.content,
-        date: new Date(review.created_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+        date: new Date(review.created_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         }),
         likes: review.helpful_count || 0,
         tags: review.tags || [],
@@ -126,14 +128,16 @@ export async function GET(req: Request) {
           id: profile?.user_id || review.user_id,
           name: displayName,
           username: profile?.username,
-          profilePicture: profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`,
+          profilePicture:
+            profile?.avatar_url ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`,
           reviewCount: 0,
           rating: 4.5,
-          location: 'Cape Town'
+          location: "Cape Town",
         },
-        businessName: business?.name || 'Unknown Business',
-        businessType: business?.primary_category_slug || 'Local Business',
-        businessId: business?.id || review.business_id
+        businessName: business?.name || "Unknown Business",
+        businessType: business?.primary_category_slug || "Local Business",
+        businessId: business?.id || review.business_id,
       };
     });
 
@@ -141,11 +145,10 @@ export async function GET(req: Request) {
       { ok: true, reviews: transformedReviews, total: transformedReviews.length },
       CachePresets.reviews()
     );
-
   } catch (error: any) {
-    console.error('[Recent Reviews] Unexpected error:', error);
+    console.error("[Recent Reviews] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch recent reviews', message: error.message },
+      { error: "Failed to fetch recent reviews", message: error.message },
       { status: 500 }
     );
   }

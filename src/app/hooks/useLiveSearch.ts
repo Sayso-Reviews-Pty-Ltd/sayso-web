@@ -164,7 +164,7 @@ export function useLiveSearch({ initialQuery = "", debounceMs = 300 }: UseLiveSe
     setQuery,
     debouncedQuery,
     loading: swrKey ? isLoading : false,
-    error: error ? (error as Error).message : data?.error ?? null,
+    error: error ? (error as Error).message : (data?.error ?? null),
     results: swrKey ? (data?.results ?? []) : [],
     reviewerResults: swrKey ? (data?.reviewerResults ?? []) : [],
     eventResults: swrKey ? (data?.eventResults ?? []) : [],

@@ -131,6 +131,8 @@ describe("HomeClient search mode", () => {
 
     expect(mockSetDistanceKm).toHaveBeenCalledWith(3);
     expect(mockSetMinRating).toHaveBeenCalledWith(4.5);
-    expect(screen.getByText('No matches found for "pizza". Try adjusting your spelling or filters.')).toBeInTheDocument();
+    expect(
+      screen.getByText('No matches found for "pizza". Try adjusting your spelling or filters.')
+    ).toBeInTheDocument();
   });
 });

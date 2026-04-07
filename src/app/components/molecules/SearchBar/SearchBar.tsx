@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Input } from '@/components/atoms/Input';
-import { IconSearch, IconX } from '@/components/atoms/Icon';
+import React, { useState } from "react";
+import { Input } from "@/components/atoms/Input";
+import { IconSearch, IconX } from "@/components/atoms/Icon";
 
 export interface SearchBarProps {
   placeholder?: string;
@@ -14,14 +14,14 @@ export interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
-  placeholder = 'Search...',
+  placeholder = "Search...",
   value: controlledValue,
   onChange,
   onSearch,
   onClear,
-  className = '',
+  className = "",
 }) => {
-  const [internalValue, setInternalValue] = useState('');
+  const [internalValue, setInternalValue] = useState("");
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : internalValue;
 
@@ -34,16 +34,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onSearch?.(value);
     }
   };
 
   const handleClear = () => {
     if (!isControlled) {
-      setInternalValue('');
+      setInternalValue("");
     }
-    onChange?.('');
+    onChange?.("");
     onClear?.();
   };
 

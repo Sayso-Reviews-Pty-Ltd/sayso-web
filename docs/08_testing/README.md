@@ -69,17 +69,18 @@ __test-utils__/             # Test utilities
 **Location**: `__tests__/services/`, `__tests__/hooks/`
 
 **Example**:
-```typescript
-import { describe, it, expect } from 'vitest';
-import { calculatePersonalizationScore } from '@/app/lib/services/personalizationService';
 
-describe('PersonalizationService', () => {
-  it('should calculate interest match score', () => {
-    const business = createBusiness({ interest_id: 'food-drink' });
-    const preferences = { interestIds: ['food-drink'], subcategoryIds: [], dealbreakerIds: [] };
-    
+```typescript
+import { describe, it, expect } from "vitest";
+import { calculatePersonalizationScore } from "@/app/lib/services/personalizationService";
+
+describe("PersonalizationService", () => {
+  it("should calculate interest match score", () => {
+    const business = createBusiness({ interest_id: "food-drink" });
+    const preferences = { interestIds: ["food-drink"], subcategoryIds: [], dealbreakerIds: [] };
+
     const score = calculatePersonalizationScore(business, preferences);
-    
+
     expect(score.breakdown.interestMatch).toBe(15);
   });
 });
@@ -90,6 +91,7 @@ describe('PersonalizationService', () => {
 **Location**: `__tests__/components/`
 
 **Example**:
+
 ```typescript
 import { render, screen } from '@testing-library/react';
 import SimilarBusinesses from '@/app/components/SimilarBusinesses/SimilarBusinesses';
@@ -103,7 +105,7 @@ describe('SimilarBusinesses', () => {
         location="Cape Town"
       />
     );
-    
+
     expect(screen.queryByText('business-1')).not.toBeInTheDocument();
   });
 });
@@ -114,9 +116,10 @@ describe('SimilarBusinesses', () => {
 **Location**: `__tests__/integration/`
 
 **Example**:
+
 ```typescript
-describe('Review Flow Integration', () => {
-  it('should pre-fill form when editing a review', async () => {
+describe("Review Flow Integration", () => {
+  it("should pre-fill form when editing a review", async () => {
     // Test complete flow from API to UI
   });
 });
@@ -127,14 +130,15 @@ describe('Review Flow Integration', () => {
 **Location**: `e2e/`
 
 **Example**:
-```typescript
-import { test, expect } from '@playwright/test';
 
-test('should create a new review', async ({ page }) => {
-  await page.goto('/business/test-business-123');
-  await page.click('text=Write a Review');
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("should create a new review", async ({ page }) => {
+  await page.goto("/business/test-business-123");
+  await page.click("text=Write a Review");
   // ... fill form and submit
-  await expect(page.locator('text=Great experience!')).toBeVisible();
+  await expect(page.locator("text=Great experience!")).toBeVisible();
 });
 ```
 
@@ -145,14 +149,14 @@ test('should create a new review', async ({ page }) => {
 Create test data easily:
 
 ```typescript
-import { createBusiness, createBusinessArray } from '@/__test-utils__/factories/businessFactory';
-import { createUser } from '@/__test-utils__/factories/userFactory';
-import { createReview } from '@/__test-utils__/factories/reviewFactory';
+import { createBusiness, createBusinessArray } from "@/__test-utils__/factories/businessFactory";
+import { createUser } from "@/__test-utils__/factories/userFactory";
+import { createReview } from "@/__test-utils__/factories/reviewFactory";
 
-const business = createBusiness({ category: 'Restaurant', average_rating: 4.5 });
+const business = createBusiness({ category: "Restaurant", average_rating: 4.5 });
 const businesses = createBusinessArray(10);
-const user = createUser({ interests: ['food-drink'] });
-const review = createReview({ rating: 5, business_id: 'business-1' });
+const user = createUser({ interests: ["food-drink"] });
+const review = createReview({ rating: 5, business_id: "business-1" });
 ```
 
 ### Mocks
@@ -160,11 +164,11 @@ const review = createReview({ rating: 5, business_id: 'business-1' });
 Mock Supabase and Next.js:
 
 ```typescript
-import { createMockSupabaseClient } from '@/__test-utils__/mocks/supabase';
-import { mockUseRouter } from '@/__test-utils__/mocks/next-router';
+import { createMockSupabaseClient } from "@/__test-utils__/mocks/supabase";
+import { mockUseRouter } from "@/__test-utils__/mocks/next-router";
 
 const mockSupabase = createMockSupabaseClient();
-mockSupabase.setMockData('businesses', [business1, business2]);
+mockSupabase.setMockData("businesses", [business1, business2]);
 ```
 
 ### Helpers
@@ -189,6 +193,7 @@ const file = createMockFile('test.jpg', 1024, 'image/jpeg');
 - **Critical paths**: 100% coverage (auth, payments, data validation)
 
 View coverage report:
+
 ```bash
 npm run test:coverage
 open coverage/lcov-report/index.html
@@ -197,6 +202,7 @@ open coverage/lcov-report/index.html
 ## CI/CD
 
 Tests run automatically on:
+
 - Every pull request
 - Every push to `main` or `develop`
 
@@ -214,14 +220,17 @@ See `.github/workflows/test.yml` for configuration.
 ## Troubleshooting
 
 ### Tests failing with "Cannot find module"
+
 - Ensure all dependencies are installed: `npm install`
 - Check import paths match your project structure
 
 ### E2E tests timing out
+
 - Increase timeout in `playwright.config.ts`
 - Check if dev server is running: `npm run dev`
 
 ### Mock not working
+
 - Ensure mocks are set up in `jest.setup.js` or `vitest.setup.ts`
 - Check mock is imported before the module being tested
 
@@ -231,4 +240,3 @@ See `.github/workflows/test.yml` for configuration.
 - [React Testing Library](https://testing-library.com/react)
 - [Playwright Documentation](https://playwright.dev/)
 - [Vitest Documentation](https://vitest.dev/)
-

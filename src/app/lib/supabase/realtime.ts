@@ -3,8 +3,8 @@
 import { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { getBrowserSupabase } from "./client";
 
-export type ChannelStatus = 'subscribed' | 'timed_out' | 'closed' | 'channel_error';
-type SupabaseChannelStatus = 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR';
+export type ChannelStatus = "subscribed" | "timed_out" | "closed" | "channel_error";
+type SupabaseChannelStatus = "SUBSCRIBED" | "TIMED_OUT" | "CLOSED" | "CHANNEL_ERROR";
 
 // Reuse a single browser client so channels can be tracked/removed reliably.
 const supabaseClient = getBrowserSupabase();
@@ -13,14 +13,14 @@ const supabaseClient = getBrowserSupabase();
 const channelRegistry = new Map<string, RealtimeChannel>();
 
 const statusMap: Record<SupabaseChannelStatus, ChannelStatus> = {
-  SUBSCRIBED: 'subscribed',
-  TIMED_OUT: 'timed_out',
-  CLOSED: 'closed',
-  CHANNEL_ERROR: 'channel_error',
+  SUBSCRIBED: "subscribed",
+  TIMED_OUT: "timed_out",
+  CLOSED: "closed",
+  CHANNEL_ERROR: "channel_error",
 };
 
 const mapStatus = (status: SupabaseChannelStatus | string): ChannelStatus =>
-  statusMap[status as SupabaseChannelStatus] ?? 'channel_error';
+  statusMap[status as SupabaseChannelStatus] ?? "channel_error";
 
 const rememberChannel = (name: string, channel: RealtimeChannel) => {
   channelRegistry.set(name, channel);
@@ -43,7 +43,10 @@ const removeChannelFromRegistry = (channel: RealtimeChannel | null) => {
   }
 };
 
-const createChannel = (channelName: string, options?: Parameters<typeof supabaseClient.channel>[1]) => {
+const createChannel = (
+  channelName: string,
+  options?: Parameters<typeof supabaseClient.channel>[1]
+) => {
   const existing = channelRegistry.get(channelName);
   if (existing) {
     // Prevent duplicate live channels with the same name.
@@ -67,13 +70,13 @@ export interface RealtimeChannelConfig {
  */
 export function createBusinessChannel(
   businessId: string,
-  config?: Omit<RealtimeChannelConfig, 'channelName'>
+  config?: Omit<RealtimeChannelConfig, "channelName">
 ) {
   const channelName = `business-${businessId}`;
   const channel = createChannel(channelName, {
     config: {
       broadcast: { self: false },
-      presence: { key: '' },
+      presence: { key: "" },
     },
   });
 
@@ -81,8 +84,8 @@ export function createBusinessChannel(
     const mapped = mapStatus(status);
     config?.onStatusChange?.(mapped);
     if (err && config?.onError) config.onError(err);
-    if (status === 'CHANNEL_ERROR' && !err && config?.onError) {
-      config.onError(new Error('Realtime channel error'));
+    if (status === "CHANNEL_ERROR" && !err && config?.onError) {
+      config.onError(new Error("Realtime channel error"));
     }
   });
 
@@ -94,13 +97,13 @@ export function createBusinessChannel(
  */
 export function createUserChannel(
   userId: string,
-  config?: Omit<RealtimeChannelConfig, 'channelName'>
+  config?: Omit<RealtimeChannelConfig, "channelName">
 ) {
   const channelName = `user-${userId}`;
   const channel = createChannel(channelName, {
     config: {
       broadcast: { self: false },
-      presence: { key: '' },
+      presence: { key: "" },
     },
   });
 
@@ -108,8 +111,8 @@ export function createUserChannel(
     const mapped = mapStatus(status);
     config?.onStatusChange?.(mapped);
     if (err && config?.onError) config.onError(err);
-    if (status === 'CHANNEL_ERROR' && !err && config?.onError) {
-      config.onError(new Error('Realtime channel error'));
+    if (status === "CHANNEL_ERROR" && !err && config?.onError) {
+      config.onError(new Error("Realtime channel error"));
     }
   });
 
@@ -130,31 +133,31 @@ export function subscribeToReviews(
 
   channel
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'reviews',
+        event: "INSERT",
+        schema: "public",
+        table: "reviews",
         filter: `business_id=eq.${businessId}`,
       },
       onInsert
     )
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'reviews',
+        event: "UPDATE",
+        schema: "public",
+        table: "reviews",
         filter: `business_id=eq.${businessId}`,
       },
       onUpdate
     )
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'reviews',
+        event: "DELETE",
+        schema: "public",
+        table: "reviews",
         filter: `business_id=eq.${businessId}`,
       },
       onDelete
@@ -178,10 +181,7 @@ export function subscribeToHelpfulVotes(
 
   const shouldHandle = (payload: RealtimePostgresChangesPayload<any>) => {
     if (!reviewIds || reviewIds.length === 0) return true;
-    const candidateId =
-      (payload.new as any)?.review_id ??
-      (payload.old as any)?.review_id ??
-      null;
+    const candidateId = (payload.new as any)?.review_id ?? (payload.old as any)?.review_id ?? null;
     return candidateId ? reviewIds.includes(candidateId) : false;
   };
 
@@ -193,20 +193,20 @@ export function subscribeToHelpfulVotes(
   // Limit to the events that actually change counts to reduce noise.
   channel
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'review_helpful_votes',
+        event: "INSERT",
+        schema: "public",
+        table: "review_helpful_votes",
       },
       filteredHandler
     )
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'review_helpful_votes',
+        event: "DELETE",
+        schema: "public",
+        table: "review_helpful_votes",
       },
       filteredHandler
     )
@@ -227,11 +227,11 @@ export function subscribeToUserBadges(
 
   channel
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'user_badges',
+        event: "INSERT",
+        schema: "public",
+        table: "user_badges",
         filter: `user_id=eq.${userId}`,
       },
       onInsert
@@ -253,11 +253,11 @@ export function subscribeToBusinessStats(
 
   channel
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'business_stats',
+        event: "UPDATE",
+        schema: "public",
+        table: "business_stats",
         filter: `business_id=eq.${businessId}`,
       },
       onUpdate
@@ -296,12 +296,12 @@ export function createDebouncedHandler<T>(
   delay: number = 300
 ): (data: T) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  
+
   return (data: T) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    
+
     timeoutId = setTimeout(() => {
       handler(data);
       timeoutId = null;

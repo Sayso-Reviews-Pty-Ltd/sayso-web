@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface MobileContainerProps {
   children: React.ReactNode;
@@ -10,8 +10,8 @@ interface MobileContainerProps {
 
 export default function MobileContainer({
   children,
-  className = '',
-  fullScreen = false
+  className = "",
+  fullScreen = false,
 }: MobileContainerProps) {
   const [isIOS, setIsIOS] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,15 +32,13 @@ export default function MobileContainer({
   // Only apply mobile-specific classes after hydration to prevent mismatch
   const containerClasses = [
     className,
-    isMounted && isMobile ? 'mobile-vh-fix mobile-scroll-container' : '',
-    isMounted && isIOS ? 'ios-minimal-ui' : '',
-    isMounted && fullScreen && isMobile ? 'ios-fullscreen' : '',
-    'mobile-interaction', // Always add mobile interaction optimizations
-  ].filter(Boolean).join(' ');
+    isMounted && isMobile ? "mobile-vh-fix mobile-scroll-container" : "",
+    isMounted && isIOS ? "ios-minimal-ui" : "",
+    isMounted && fullScreen && isMobile ? "ios-fullscreen" : "",
+    "mobile-interaction", // Always add mobile interaction optimizations
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  return (
-    <div className={containerClasses}>
-      {children}
-    </div>
-  );
+  return <div className={containerClasses}>{children}</div>;
 }

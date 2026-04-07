@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useCallback, useMemo, useEffect, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useAuth } from "./AuthContext";
 import { useToast } from "./ToastContext";
@@ -25,7 +33,7 @@ interface SavedItemsProviderProps {
 }
 
 async function fetchSavedBusinessIds([url]: [string, string]): Promise<string[]> {
-  const response = await fetch(url, { credentials: 'include' });
+  const response = await fetch(url, { credentials: "include" });
   if (!response.ok) {
     if (response.status === 401) return [];
     throw new Error(`Failed to fetch saved items (${response.status})`);
@@ -43,9 +51,9 @@ export function SavedItemsProvider({ children }: SavedItemsProviderProps) {
   const { data, isLoading, mutate } = useSWR(swrKey, fetchSavedBusinessIds, {
     ...swrConfig,
     onError: (err) => {
-      const msg = err?.message || '';
-      if (!msg.includes('401')) {
-        console.warn('Error fetching saved items (non-critical):', msg);
+      const msg = err?.message || "";
+      if (!msg.includes("401")) {
+        console.warn("Error fetching saved items (non-critical):", msg);
       }
     },
     keepPreviousData: true,
@@ -59,28 +67,38 @@ export function SavedItemsProvider({ children }: SavedItemsProviderProps) {
     const supabase = supabaseRef.current;
     const channel = supabase
       .channel(`saved-businesses-${user.id}-${Date.now()}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'saved_businesses',
-        filter: `user_id=eq.${user.id}`,
-      }, (payload) => {
-        const businessId = (payload.new as any)?.business_id;
-        if (!businessId) return;
-        mutate(prev => (prev?.includes(businessId) ? prev : [...(prev ?? []), businessId]), { revalidate: false });
-        globalMutate(['/api/user/saved', user.id]);
-      })
-      .on('postgres_changes', {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'saved_businesses',
-        filter: `user_id=eq.${user.id}`,
-      }, (payload) => {
-        const businessId = (payload.old as any)?.business_id;
-        if (!businessId) return;
-        mutate(prev => prev?.filter(id => id !== businessId) ?? [], { revalidate: false });
-        globalMutate(['/api/user/saved', user.id]);
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "saved_businesses",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const businessId = (payload.new as any)?.business_id;
+          if (!businessId) return;
+          mutate((prev) => (prev?.includes(businessId) ? prev : [...(prev ?? []), businessId]), {
+            revalidate: false,
+          });
+          globalMutate(["/api/user/saved", user.id]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "saved_businesses",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const businessId = (payload.old as any)?.business_id;
+          if (!businessId) return;
+          mutate((prev) => prev?.filter((id) => id !== businessId) ?? [], { revalidate: false });
+          globalMutate(["/api/user/saved", user.id]);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -88,116 +106,142 @@ export function SavedItemsProvider({ children }: SavedItemsProviderProps) {
     };
   }, [user?.id, mutate]);
 
-  const addSavedItem = useCallback(async (itemId: string): Promise<boolean> => {
-    if (!user) {
-      showToast('Please log in to save businesses', 'sage', 3000);
-      return false;
-    }
+  const addSavedItem = useCallback(
+    async (itemId: string): Promise<boolean> => {
+      if (!user) {
+        showToast("Please log in to save businesses", "sage", 3000);
+        return false;
+      }
 
-    // Optimistic add
-    mutate(prev => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), { revalidate: false });
-
-    try {
-      const response = await fetch('/api/saved/businesses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ business_id: itemId }),
+      // Optimistic add
+      mutate((prev) => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), {
+        revalidate: false,
       });
 
-      if (!response.ok) {
-        let errorMessage = 'Failed to save business';
-        try {
-          const error = await response.json();
-          errorMessage = error.error || error.details || error.message || errorMessage;
-          if (
-            error.code === '42P01' || error.code === '42501' ||
-            errorMessage.toLowerCase().includes('relation') ||
-            errorMessage.toLowerCase().includes('does not exist') ||
-            errorMessage.toLowerCase().includes('permission denied') ||
-            errorMessage.toLowerCase().includes('row-level security')
-          ) {
-            errorMessage = 'Saved businesses feature is not available. Please contact support.';
+      try {
+        const response = await fetch("/api/saved/businesses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ business_id: itemId }),
+        });
+
+        if (!response.ok) {
+          let errorMessage = "Failed to save business";
+          try {
+            const error = await response.json();
+            errorMessage = error.error || error.details || error.message || errorMessage;
+            if (
+              error.code === "42P01" ||
+              error.code === "42501" ||
+              errorMessage.toLowerCase().includes("relation") ||
+              errorMessage.toLowerCase().includes("does not exist") ||
+              errorMessage.toLowerCase().includes("permission denied") ||
+              errorMessage.toLowerCase().includes("row-level security")
+            ) {
+              errorMessage = "Saved businesses feature is not available. Please contact support.";
+            }
+          } catch {
+            errorMessage = `Failed to save business (${response.status})`;
           }
-        } catch {
-          errorMessage = `Failed to save business (${response.status})`;
+          // Roll back
+          mutate((prev) => prev?.filter((id) => id !== itemId) ?? [], { revalidate: false });
+          showToast(errorMessage, "sage", 4000);
+          return false;
         }
+
+        showToast("✨ Business saved! Check your saved items to view it.", "success", 4500);
+        mutate(); // background revalidation
+        // Invalidate saved/page.tsx full list
+        if (user?.id) globalMutate(["/api/user/saved", user.id]);
+        return true;
+      } catch (error) {
+        console.error("Error saving business:", error);
         // Roll back
-        mutate(prev => prev?.filter(id => id !== itemId) ?? [], { revalidate: false });
-        showToast(errorMessage, 'sage', 4000);
+        mutate((prev) => prev?.filter((id) => id !== itemId) ?? [], { revalidate: false });
+        showToast("Failed to save business. Please try again.", "sage", 3000);
         return false;
       }
+    },
+    [user, showToast, mutate]
+  );
 
-      showToast('✨ Business saved! Check your saved items to view it.', 'success', 4500);
-      mutate(); // background revalidation
-      // Invalidate saved/page.tsx full list
-      if (user?.id) globalMutate(['/api/user/saved', user.id]);
-      return true;
-    } catch (error) {
-      console.error('Error saving business:', error);
-      // Roll back
-      mutate(prev => prev?.filter(id => id !== itemId) ?? [], { revalidate: false });
-      showToast('Failed to save business. Please try again.', 'sage', 3000);
-      return false;
-    }
-  }, [user, showToast, mutate]);
+  const removeSavedItem = useCallback(
+    async (itemId: string): Promise<boolean> => {
+      if (!user) return false;
 
-  const removeSavedItem = useCallback(async (itemId: string): Promise<boolean> => {
-    if (!user) return false;
+      // Optimistic remove
+      mutate((prev) => prev?.filter((id) => id !== itemId) ?? [], { revalidate: false });
 
-    // Optimistic remove
-    mutate(prev => prev?.filter(id => id !== itemId) ?? [], { revalidate: false });
+      try {
+        const response = await fetch(`/api/saved/businesses/${itemId}`, {
+          method: "DELETE",
+        });
 
-    try {
-      const response = await fetch(`/api/saved/businesses/${itemId}`, {
-        method: 'DELETE',
-      });
+        if (!response.ok) {
+          const error = await response.json();
+          // Roll back
+          mutate((prev) => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), {
+            revalidate: false,
+          });
+          showToast(error.error || "Failed to unsave business", "sage", 3000);
+          return false;
+        }
 
-      if (!response.ok) {
-        const error = await response.json();
+        showToast("Business removed from saved", "success", 3000);
+        mutate(); // background revalidation
+        // Invalidate saved/page.tsx full list
+        if (user?.id) globalMutate(["/api/user/saved", user.id]);
+        return true;
+      } catch (error) {
+        console.error("Error unsaving business:", error);
         // Roll back
-        mutate(prev => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), { revalidate: false });
-        showToast(error.error || 'Failed to unsave business', 'sage', 3000);
+        mutate((prev) => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), {
+          revalidate: false,
+        });
+        showToast("Failed to unsave business. Please try again.", "sage", 3000);
         return false;
       }
-
-      showToast('Business removed from saved', 'success', 3000);
-      mutate(); // background revalidation
-      // Invalidate saved/page.tsx full list
-      if (user?.id) globalMutate(['/api/user/saved', user.id]);
-      return true;
-    } catch (error) {
-      console.error('Error unsaving business:', error);
-      // Roll back
-      mutate(prev => (prev?.includes(itemId) ? prev : [...(prev ?? []), itemId]), { revalidate: false });
-      showToast('Failed to unsave business. Please try again.', 'sage', 3000);
-      return false;
-    }
-  }, [user, showToast, mutate]);
+    },
+    [user, showToast, mutate]
+  );
 
   const isItemSaved = useCallback((itemId: string) => savedItems.includes(itemId), [savedItems]);
 
-  const toggleSavedItem = useCallback(async (itemId: string): Promise<boolean> => {
-    return isItemSaved(itemId) ? removeSavedItem(itemId) : addSavedItem(itemId);
-  }, [isItemSaved, removeSavedItem, addSavedItem]);
+  const toggleSavedItem = useCallback(
+    async (itemId: string): Promise<boolean> => {
+      return isItemSaved(itemId) ? removeSavedItem(itemId) : addSavedItem(itemId);
+    },
+    [isItemSaved, removeSavedItem, addSavedItem]
+  );
 
   const savedCount = useMemo(() => savedItems.length, [savedItems]);
 
-  const value: SavedItemsContextType = useMemo(() => ({
-    savedItems,
-    savedCount,
-    isLoading,
-    addSavedItem,
-    removeSavedItem,
-    isItemSaved,
-    toggleSavedItem,
-    refetch: async () => { await mutate(); },
-  }), [savedItems, savedCount, isLoading, addSavedItem, removeSavedItem, isItemSaved, toggleSavedItem, mutate]);
-
-  return (
-    <SavedItemsContext.Provider value={value}>
-      {children}
-    </SavedItemsContext.Provider>
+  const value: SavedItemsContextType = useMemo(
+    () => ({
+      savedItems,
+      savedCount,
+      isLoading,
+      addSavedItem,
+      removeSavedItem,
+      isItemSaved,
+      toggleSavedItem,
+      refetch: async () => {
+        await mutate();
+      },
+    }),
+    [
+      savedItems,
+      savedCount,
+      isLoading,
+      addSavedItem,
+      removeSavedItem,
+      isItemSaved,
+      toggleSavedItem,
+      mutate,
+    ]
   );
+
+  return <SavedItemsContext.Provider value={value}>{children}</SavedItemsContext.Provider>;
 }
 
 export function useSavedItems() {

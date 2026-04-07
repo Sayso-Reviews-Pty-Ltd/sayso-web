@@ -5,11 +5,13 @@ This guide explains how to manually trigger the Ticketmaster events fetch cron j
 ## Prerequisites
 
 1. **Next.js dev server running**: Make sure your development server is running
+
    ```bash
    npm run dev
    ```
 
 2. **Environment variables set**: Ensure your `.env.local` or `.env` file has:
+
    ```env
    TICKETMASTER_API_KEY=your_api_key_here
    CRON_SECRET=your_secret_here  # Optional but recommended
@@ -88,12 +90,12 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/cron/fetch-events?city=Cape To
 
 The API endpoint accepts these query parameters:
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `city` | string | "Cape Town" | City to fetch events for |
-| `size` | number | 20 | Number of events to fetch per page |
-| `page` | number | 0 | Page number (for pagination) |
-| `keyword` | string | - | Search keyword (optional) |
+| Parameter | Type   | Default     | Description                        |
+| --------- | ------ | ----------- | ---------------------------------- |
+| `city`    | string | "Cape Town" | City to fetch events for           |
+| `size`    | number | 20          | Number of events to fetch per page |
+| `page`    | number | 0           | Page number (for pagination)       |
+| `keyword` | string | -           | Search keyword (optional)          |
 
 ## Expected Response
 
@@ -164,13 +166,13 @@ After running the cron job, you can verify events were stored:
 SELECT COUNT(*) FROM ticketmaster_events;
 
 -- View recent events
-SELECT title, city, start_date, segment 
-FROM ticketmaster_events 
-ORDER BY last_fetched_at DESC 
+SELECT title, city, start_date, segment
+FROM ticketmaster_events
+ORDER BY last_fetched_at DESC
 LIMIT 10;
 
 -- Check last fetch time
-SELECT MAX(last_fetched_at) as last_fetch 
+SELECT MAX(last_fetched_at) as last_fetch
 FROM ticketmaster_events;
 ```
 
@@ -195,13 +197,13 @@ npm install --save-dev node-cron
 Create `scripts/local-cron.js`:
 
 ```javascript
-const cron = require('node-cron');
-const { exec } = require('child_process');
+const cron = require("node-cron");
+const { exec } = require("child_process");
 
 // Run every 6 hours (same as production)
-cron.schedule('0 */6 * * *', () => {
-  console.log('Running scheduled events fetch...');
-  exec('node scripts/fetch-events.js', (error, stdout, stderr) => {
+cron.schedule("0 */6 * * *", () => {
+  console.log("Running scheduled events fetch...");
+  exec("node scripts/fetch-events.js", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error: ${error.message}`);
       return;
@@ -214,8 +216,8 @@ cron.schedule('0 */6 * * *', () => {
   });
 });
 
-console.log('Local cron job started. Will run every 6 hours.');
-console.log('Press Ctrl+C to stop.');
+console.log("Local cron job started. Will run every 6 hours.");
+console.log("Press Ctrl+C to stop.");
 ```
 
 ### Run the cron
@@ -231,4 +233,3 @@ node scripts/local-cron.js
 - Once events are fetched, they'll appear on your `/events-specials` page
 - The cron job will run automatically every 6 hours in production (via Vercel Cron)
 - You can manually trigger it anytime using the methods above
-

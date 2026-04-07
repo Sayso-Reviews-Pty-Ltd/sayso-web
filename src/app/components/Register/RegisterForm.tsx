@@ -36,8 +36,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       length: false,
       uppercase: false,
       lowercase: false,
-      number: false
-    }
+      number: false,
+    },
   });
 
   const [mounted, setMounted] = useState(false);
@@ -63,8 +63,18 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   };
 
   // Hydration-safe disabled state
-  const isFormDisabled = mounted ? (submitting || isLoading) : false;
-  const isSubmitDisabled = mounted ? (submitting || isLoading || !consent || passwordStrength.score < 3 || !username || !email || !password || !validateUsername(username) || !validateEmail(email)) : true;
+  const isFormDisabled = mounted ? submitting || isLoading : false;
+  const isSubmitDisabled = mounted
+    ? submitting ||
+      isLoading ||
+      !consent ||
+      passwordStrength.score < 3 ||
+      !username ||
+      !email ||
+      !password ||
+      !validateUsername(username) ||
+      !validateEmail(email)
+    : true;
 
   const containerRef = useRef(null);
 
@@ -73,12 +83,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     const updateOnlineStatus = () => setIsOnline(navigator.onLine);
 
     updateOnlineStatus();
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
 
     return () => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
     };
   }, []);
 
@@ -99,7 +109,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           lowercase: false,
           number: false,
         },
-        color: ""
+        color: "",
       };
     }
 
@@ -140,7 +150,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     if (!username) return "Username is required";
     if (username.length < 3) return "Username must be at least 3 characters";
     if (username.length > 20) return "Username must be less than 20 characters";
-    if (!validateUsername(username)) return "Username can only contain letters, numbers, and underscores";
+    if (!validateUsername(username))
+      return "Username can only contain letters, numbers, and underscores";
     return "";
   };
 
@@ -193,21 +204,21 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       // Enhanced validation
       if (!username?.trim() || !email?.trim() || !password?.trim()) {
         setError("Please fill in all fields");
-        showToast("Please fill in all fields", 'sage', 3000);
+        showToast("Please fill in all fields", "sage", 3000);
         setSubmitting(false);
         return;
       }
 
       if (!validateUsername(username.trim())) {
         setError("Please enter a valid username");
-        showToast("Please enter a valid username", 'sage', 3000);
+        showToast("Please enter a valid username", "sage", 3000);
         setSubmitting(false);
         return;
       }
 
       if (!validateEmail(email.trim())) {
         setError("Please enter a valid email address");
-        showToast("Please enter a valid email address", 'sage', 3000);
+        showToast("Please enter a valid email address", "sage", 3000);
         setSubmitting(false);
         return;
       }
@@ -215,7 +226,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       // Check consent
       if (!consent) {
         setError("Please accept the Terms and Privacy Policy");
-        showToast("Please accept the Terms and Privacy Policy", 'sage', 3000);
+        showToast("Please accept the Terms and Privacy Policy", "sage", 3000);
         setSubmitting(false);
         return;
       }
@@ -223,7 +234,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       const passwordError = validatePassword(password);
       if (passwordError) {
         setError(passwordError);
-        showToast(passwordError, 'sage', 4000);
+        showToast(passwordError, "sage", 4000);
         setSubmitting(false);
         return;
       }
@@ -232,7 +243,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       const strength = checkPasswordStrength(password);
       if (strength.score < 3) {
         setError("Please create a stronger password");
-        showToast("Please create a stronger password", 'sage', 3000);
+        showToast("Please create a stronger password", "sage", 3000);
         setSubmitting(false);
         return;
       }
@@ -240,7 +251,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       // Check offline status
       if (!isOnline) {
         setError("You're offline. Please check your connection and try again.");
-        showToast("You're offline. Please check your connection and try again.", 'sage', 4000);
+        showToast("You're offline. Please check your connection and try again.", "sage", 4000);
         setSubmitting(false);
         return;
       }
@@ -260,62 +271,67 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
             length: false,
             uppercase: false,
             lowercase: false,
-            number: false
-          }
+            number: false,
+          },
         });
 
         // Show success toast with celebration
-        showToast("🎉 Welcome to sayso! Your account has been created successfully!", 'success', 4000);
+        showToast(
+          "🎉 Welcome to sayso! Your account has been created successfully!",
+          "success",
+          4000
+        );
 
         // Navigate to interests page after short delay
         setTimeout(() => {
-          showToast("Let's personalize your experience! 🌟", 'info', 2000);
+          showToast("Let's personalize your experience! 🌟", "info", 2000);
           onSuccess();
         }, 1500);
       } else {
         // Handle registration failure
         let userMessage = "Something went wrong during registration. Please try again.";
         if (authError) {
-          const err = typeof authError === 'string' ? authError : JSON.stringify(authError);
+          const err = typeof authError === "string" ? authError : JSON.stringify(authError);
           // Map known error patterns to friendly messages
-          if (err.includes('fetch') || err.includes('network')) {
+          if (err.includes("fetch") || err.includes("network")) {
             userMessage = "Network error — please try again.";
           } else if (
-            err.toLowerCase().includes('already in use') ||
-            err.toLowerCase().includes('already registered') ||
-            err.toLowerCase().includes('already exists') ||
-            err.toLowerCase().includes('email already') ||
-            err.toLowerCase().includes('already taken')
+            err.toLowerCase().includes("already in use") ||
+            err.toLowerCase().includes("already registered") ||
+            err.toLowerCase().includes("already exists") ||
+            err.toLowerCase().includes("email already") ||
+            err.toLowerCase().includes("already taken")
           ) {
             userMessage = "Email already in use. Please try logging in or use a different email.";
-          } else if (err.toLowerCase().includes('password')) {
+          } else if (err.toLowerCase().includes("password")) {
             userMessage = "Password does not meet requirements.";
-          } else if (err.trim() === '' || err === '{}' || err === 'null' || err === 'undefined') {
+          } else if (err.trim() === "" || err === "{}" || err === "null" || err === "undefined") {
             userMessage = "Something went wrong during registration. Please try again.";
           } else {
             // Fallback: show a simplified message
-            userMessage = err.length < 60 ? err : "Something went wrong during registration. Please try again.";
+            userMessage =
+              err.length < 60 ? err : "Something went wrong during registration. Please try again.";
           }
           // Log full error for debugging
-          console.error('Registration error (auth):', authError);
+          console.error("Registration error (auth):", authError);
         } else {
           // No error object, fallback
-          console.error('Registration error: missing error object');
+          console.error("Registration error: missing error object");
         }
         setError(userMessage);
-        showToast(userMessage, 'sage', 4000);
+        showToast(userMessage, "sage", 4000);
       }
     } catch (error: unknown) {
       // Always log full error for debugging
-      console.error('Registration error (exception):', error);
+      console.error("Registration error (exception):", error);
       let userMessage = "Something went wrong during registration. Please try again.";
       if (error instanceof Error) {
-        if (error.message && error.message.length < 60 && error.message.trim() !== '') {
+        if (error.message && error.message.length < 60 && error.message.trim() !== "") {
           userMessage = error.message;
         }
       }
       setError(userMessage);
-      showToast(userMessage, 'sage', 4000);
+      showToast(userMessage, "sage", 4000);
     } finally {
       setSubmitting(false);
     }
@@ -327,41 +343,41 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {/* Username Field */}
       <FormField
-          type="text"
-          placeholder="Choose a username"
-          value={username}
+        type="text"
+        placeholder="Choose a username"
+        value={username}
         onChange={handleUsernameChange}
-          onBlur={() => setUsernameTouched(true)}
+        onBlur={() => setUsernameTouched(true)}
         error={getUsernameError()}
         isValid={!getUsernameError()}
         touched={usernameTouched}
-          disabled={isFormDisabled}
-        />
+        disabled={isFormDisabled}
+      />
 
       {/* Email Field */}
       <FormField
-          type="email"
-          placeholder="you@example.com"
-          value={email}
+        type="email"
+        placeholder="you@example.com"
+        value={email}
         onChange={handleEmailChange}
-          onBlur={() => setEmailTouched(true)}
+        onBlur={() => setEmailTouched(true)}
         error={getEmailError()}
         isValid={!getEmailError()}
         touched={emailTouched}
-          disabled={isFormDisabled}
-        />
+        disabled={isFormDisabled}
+      />
 
       {/* Password Field */}
       <FormField
         type="password"
-          placeholder="Create a strong password"
-          value={password}
+        placeholder="Create a strong password"
+        value={password}
         onChange={handlePasswordChange}
-          onBlur={() => setPasswordTouched(true)}
+        onBlur={() => setPasswordTouched(true)}
         error={getPasswordError()}
         isValid={passwordStrength.score >= 3}
         touched={passwordTouched}
-          disabled={isFormDisabled}
+        disabled={isFormDisabled}
         showPassword={showPassword}
         onTogglePassword={() => setShowPassword(!showPassword)}
       />

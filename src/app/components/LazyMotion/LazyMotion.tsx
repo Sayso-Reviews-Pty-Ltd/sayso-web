@@ -1,23 +1,23 @@
 // Lazy-loaded Framer Motion components for better performance
 "use client";
 
-import dynamic from 'next/dynamic';
-import { Suspense, ReactNode } from 'react';
+import dynamic from "next/dynamic";
+import { Suspense, ReactNode } from "react";
 
 // Lazy load motion components
 export const LazyMotionDiv = dynamic(
-  () => import('framer-motion').then(mod => ({ default: mod.motion.div })),
+  () => import("framer-motion").then((mod) => ({ default: mod.motion.div })),
   {
     ssr: false,
-    loading: () => <div className="opacity-0" />
+    loading: () => <div className="opacity-0" />,
   }
 );
 
 export const LazyMotionButton = dynamic(
-  () => import('framer-motion').then(mod => ({ default: mod.motion.button })),
+  () => import("framer-motion").then((mod) => ({ default: mod.motion.button })),
   {
     ssr: false,
-    loading: () => <button className="opacity-0" />
+    loading: () => <button className="opacity-0" />,
   }
 );
 
@@ -37,7 +37,7 @@ export function LazyMotionWrapper({ children, fallback }: LazyMotionWrapperProps
 
 // Preload motion when user interacts
 export const preloadMotion = () => {
-  if (typeof window !== 'undefined') {
-    import('framer-motion');
+  if (typeof window !== "undefined") {
+    import("framer-motion");
   }
 };

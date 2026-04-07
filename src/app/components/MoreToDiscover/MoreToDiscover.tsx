@@ -18,26 +18,29 @@ const discoverCards: DiscoverCard[] = [
     id: 1,
     title: "Find a Store",
     subtitle: "Discover local businesses and services near you",
-    imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&crop=center",
+    imageUrl:
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&crop=center",
     ctaText: "Our Store",
-    ctaLink: "/search"
+    ctaLink: "/search",
   },
   {
     id: 2,
     title: "From Our Blog",
     subtitle: "Latest insights and stories from the local community",
-    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop&crop=center",
+    imageUrl:
+      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop&crop=center",
     ctaText: "Our Store",
-    ctaLink: "/blog"
+    ctaLink: "/blog",
   },
   {
     id: 3,
     title: "Our Story",
     subtitle: "Learn about our mission to connect communities",
-    imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
+    imageUrl:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
     ctaText: "Our Store",
-    ctaLink: "/about"
-  }
+    ctaLink: "/about",
+  },
 ];
 
 export default function MoreToDiscover() {
@@ -50,7 +53,7 @@ export default function MoreToDiscover() {
     const timer = setTimeout(() => {
       discoverCards.forEach((_, index) => {
         setTimeout(() => {
-          setVisibleCards(prev => [...prev, index]);
+          setVisibleCards((prev) => [...prev, index]);
         }, index * 150);
       });
     }, 300);
@@ -76,11 +79,11 @@ export default function MoreToDiscover() {
               href={card.ctaLink}
               className={`block relative bg-off-white  rounded-lg overflow-hidden transition-all duration-500 hover:shadow-lg cursor-pointer ${
                 visibleCards.includes(index)
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-8'
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
               }`}
               style={{
-                transitionDelay: `${index * 100}ms`
+                transitionDelay: `${index * 100}ms`,
               }}
             >
               {/* Card Image */}
@@ -96,13 +99,9 @@ export default function MoreToDiscover() {
 
               {/* Card Content */}
               <div className="p-6 text-center">
-                <h3 className="font-urbanist text-xl font-700 text-charcoal mb-3">
-                  {card.title}
-                </h3>
+                <h3 className="font-urbanist text-xl font-700 text-charcoal mb-3">{card.title}</h3>
 
-                <p className="text-charcoal/70 text-sm leading-relaxed mb-6">
-                  {card.subtitle}
-                </p>
+                <p className="text-charcoal/70 text-sm leading-relaxed mb-6">{card.subtitle}</p>
 
                 {/* CTA Text */}
                 <div className="inline-flex items-center text-charcoal font-urbanist text-sm font-600">

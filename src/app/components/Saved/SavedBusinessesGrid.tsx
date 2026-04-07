@@ -14,21 +14,23 @@ function SavedBusinessesGrid({ savedBusinesses }: SavedBusinessesGridProps) {
 
   // Get unique categories
   const categories = useMemo(() => {
-    const cats = ["All", ...new Set(savedBusinesses.map(b => b.category))];
+    const cats = ["All", ...new Set(savedBusinesses.map((b) => b.category))];
     return cats;
   }, [savedBusinesses]);
 
   // Filter businesses by category
   const filteredBusinesses = useMemo(() => {
     if (selectedCategory === "All") return savedBusinesses;
-    return savedBusinesses.filter(b => b.category === selectedCategory);
+    return savedBusinesses.filter((b) => b.category === selectedCategory);
   }, [savedBusinesses, selectedCategory]);
   const hasCoordinateBusinesses = useMemo(
     () =>
       filteredBusinesses.some(
         (business) =>
-          typeof business.lat === "number" && Number.isFinite(business.lat) &&
-          typeof business.lng === "number" && Number.isFinite(business.lng)
+          typeof business.lat === "number" &&
+          Number.isFinite(business.lat) &&
+          typeof business.lng === "number" &&
+          Number.isFinite(business.lng)
       ),
     [filteredBusinesses]
   );
@@ -66,16 +68,17 @@ function SavedBusinessesGrid({ savedBusinesses }: SavedBusinessesGridProps) {
               className={`
                 px-4 py-2 rounded-full font-urbanist text-sm font-500 whitespace-nowrap
                 transition-all duration-300 flex-shrink-0
-                ${selectedCategory === category
-                  ? "bg-gradient-to-r from-sage to-sage/80 text-white scale-105 border border-white/30"
-                  : "bg-charcoal/5 text-charcoal/70 hover:bg-charcoal/10 hover:text-charcoal"
+                ${
+                  selectedCategory === category
+                    ? "bg-gradient-to-r from-sage to-sage/80 text-white scale-105 border border-white/30"
+                    : "bg-charcoal/5 text-charcoal/70 hover:bg-charcoal/10 hover:text-charcoal"
                 }
               `}
             >
               {category}
               {category !== "All" && (
                 <span className="ml-2 text-sm sm:text-xs opacity-70">
-                  ({savedBusinesses.filter(b => b.category === category).length})
+                  ({savedBusinesses.filter((b) => b.category === category).length})
                 </span>
               )}
             </button>

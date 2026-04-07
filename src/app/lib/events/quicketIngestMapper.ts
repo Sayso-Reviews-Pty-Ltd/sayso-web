@@ -1,4 +1,7 @@
-import { normalizeQuicketCategory, type QuicketCategorySlug } from "@/app/lib/events/quicketCategory";
+import {
+  normalizeQuicketCategory,
+  type QuicketCategorySlug,
+} from "@/app/lib/events/quicketCategory";
 
 export interface QuicketVenue {
   id?: number;
@@ -137,10 +140,10 @@ function buildDedupeKey(title: string, startDate: string, location: string | nul
 function buildLocation(
   venue?: string | null,
   city?: string | null,
-  country?: string | null,
+  country?: string | null
 ): string | null {
   const parts = [venue, city, country].filter(
-    (part): part is string => typeof part === "string" && part.trim().length > 0,
+    (part): part is string => typeof part === "string" && part.trim().length > 0
   );
   return parts.length > 0 ? parts.join(" \u2022 ") : null;
 }
@@ -182,7 +185,9 @@ function buildDescription(event: QuicketEvent): string | null {
 
   const categories = event.categories
     ?.map((category) => category.name)
-    .filter((name): name is string => !!name && name.trim().length > 0 && name.toLowerCase() !== "other");
+    .filter(
+      (name): name is string => !!name && name.trim().length > 0 && name.toLowerCase() !== "other"
+    );
 
   if (categories?.length) return categories.join(" \u00b7 ");
 
@@ -217,7 +222,7 @@ export function getTicketStats(tickets: QuicketTicket[] | null | undefined): {
     .filter((price): price is number => isFiniteNumber(price) && price > 0);
 
   const availableTickets = nonDonationTickets.filter(
-    (ticket) => ticket.soldOut !== true && ticket.provisionallySoldOut !== true,
+    (ticket) => ticket.soldOut !== true && ticket.provisionallySoldOut !== true
   );
 
   const availablePricedTickets = availableTickets
@@ -225,7 +230,7 @@ export function getTicketStats(tickets: QuicketTicket[] | null | undefined): {
     .filter((price): price is number => isFiniteNumber(price) && price > 0);
 
   const soldOutCount = nonDonationTickets.filter(
-    (ticket) => ticket.soldOut === true || ticket.provisionallySoldOut === true,
+    (ticket) => ticket.soldOut === true || ticket.provisionallySoldOut === true
   ).length;
 
   const availabilityStatus: "sold_out" | "limited" | null =
@@ -244,7 +249,7 @@ export function mapEvent(
   baseEvent: QuicketEvent,
   detailEvent: QuicketEvent | null,
   businessId: string,
-  userId: string,
+  userId: string
 ): EventRow | null {
   const merged = mergeEvents(baseEvent, detailEvent);
   const title = merged.name?.trim();
@@ -269,7 +274,11 @@ export function mapEvent(
     created_by: userId,
     start_date: startDate,
     end_date: toIso(merged.endDate),
-    location: buildLocation(merged.venue?.name, merged.locality?.levelThree, merged.locality?.levelOne),
+    location: buildLocation(
+      merged.venue?.name,
+      merged.locality?.levelThree,
+      merged.locality?.levelOne
+    ),
     description: buildDescription(merged),
     icon: "quicket",
     image: normalizeImageUrl(merged.imageUrl),
@@ -328,7 +337,8 @@ export function consolidate(rows: EventRow[]): EventRow[] {
       continue;
     }
 
-    if (new Date(row.start_date) < new Date(existing.start_date)) existing.start_date = row.start_date;
+    if (new Date(row.start_date) < new Date(existing.start_date))
+      existing.start_date = row.start_date;
 
     if (row.end_date && existing.end_date && new Date(row.end_date) > new Date(existing.end_date)) {
       existing.end_date = row.end_date;
@@ -336,34 +346,42 @@ export function consolidate(rows: EventRow[]): EventRow[] {
       existing.end_date = row.end_date;
     }
 
-    if (row.description && (!existing.description || row.description.length > existing.description.length)) {
+    if (
+      row.description &&
+      (!existing.description || row.description.length > existing.description.length)
+    ) {
       existing.description = row.description;
     }
 
     if (
-      row.event_description
-      && (!existing.event_description || row.event_description.length > existing.event_description.length)
+      row.event_description &&
+      (!existing.event_description ||
+        row.event_description.length > existing.event_description.length)
     ) {
       existing.event_description = row.event_description;
     }
 
     if (row.image && !existing.image) existing.image = row.image;
-    if (row.event_image_url && !existing.event_image_url) existing.event_image_url = row.event_image_url;
+    if (row.event_image_url && !existing.event_image_url)
+      existing.event_image_url = row.event_image_url;
     if (row.booking_url && !existing.booking_url) existing.booking_url = row.booking_url;
     if (row.event_url && !existing.event_url) existing.event_url = row.event_url;
 
-    if (row.price != null && (existing.price == null || row.price < existing.price)) existing.price = row.price;
+    if (row.price != null && (existing.price == null || row.price < existing.price))
+      existing.price = row.price;
 
     if (row.minimum_ticket_price != null) {
-      existing.minimum_ticket_price = existing.minimum_ticket_price == null
-        ? row.minimum_ticket_price
-        : Math.min(existing.minimum_ticket_price, row.minimum_ticket_price);
+      existing.minimum_ticket_price =
+        existing.minimum_ticket_price == null
+          ? row.minimum_ticket_price
+          : Math.min(existing.minimum_ticket_price, row.minimum_ticket_price);
     }
 
     if (row.maximum_ticket_price != null) {
-      existing.maximum_ticket_price = existing.maximum_ticket_price == null
-        ? row.maximum_ticket_price
-        : Math.max(existing.maximum_ticket_price, row.maximum_ticket_price);
+      existing.maximum_ticket_price =
+        existing.maximum_ticket_price == null
+          ? row.maximum_ticket_price
+          : Math.max(existing.maximum_ticket_price, row.maximum_ticket_price);
     }
 
     if (existing.tickets_available_boolean == null) {
@@ -378,70 +396,88 @@ export function consolidate(rows: EventRow[]): EventRow[] {
       existing.availability_status = "limited";
     }
 
-    if (!existing.quicket_event_id && row.quicket_event_id) existing.quicket_event_id = row.quicket_event_id;
+    if (!existing.quicket_event_id && row.quicket_event_id)
+      existing.quicket_event_id = row.quicket_event_id;
     if (!existing.event_name && row.event_name) existing.event_name = row.event_name;
 
     if (!existing.event_start_date && row.event_start_date) {
       existing.event_start_date = row.event_start_date;
     } else if (existing.event_start_date && row.event_start_date) {
-      existing.event_start_date = new Date(row.event_start_date) < new Date(existing.event_start_date)
-        ? row.event_start_date
-        : existing.event_start_date;
+      existing.event_start_date =
+        new Date(row.event_start_date) < new Date(existing.event_start_date)
+          ? row.event_start_date
+          : existing.event_start_date;
     }
 
     if (!existing.event_end_date && row.event_end_date) {
       existing.event_end_date = row.event_end_date;
     } else if (existing.event_end_date && row.event_end_date) {
-      existing.event_end_date = new Date(row.event_end_date) > new Date(existing.event_end_date)
-        ? row.event_end_date
-        : existing.event_end_date;
+      existing.event_end_date =
+        new Date(row.event_end_date) > new Date(existing.event_end_date)
+          ? row.event_end_date
+          : existing.event_end_date;
     }
 
     if (!existing.event_created_at && row.event_created_at) {
       existing.event_created_at = row.event_created_at;
     } else if (existing.event_created_at && row.event_created_at) {
-      existing.event_created_at = new Date(row.event_created_at) < new Date(existing.event_created_at)
-        ? row.event_created_at
-        : existing.event_created_at;
+      existing.event_created_at =
+        new Date(row.event_created_at) < new Date(existing.event_created_at)
+          ? row.event_created_at
+          : existing.event_created_at;
     }
 
     if (!existing.event_last_modified && row.event_last_modified) {
       existing.event_last_modified = row.event_last_modified;
     } else if (existing.event_last_modified && row.event_last_modified) {
-      existing.event_last_modified = new Date(row.event_last_modified) > new Date(existing.event_last_modified)
-        ? row.event_last_modified
-        : existing.event_last_modified;
+      existing.event_last_modified =
+        new Date(row.event_last_modified) > new Date(existing.event_last_modified)
+          ? row.event_last_modified
+          : existing.event_last_modified;
     }
 
     if (!existing.venue_id && row.venue_id) existing.venue_id = row.venue_id;
     if (!existing.venue_name && row.venue_name) existing.venue_name = row.venue_name;
-    if (!existing.venue_address_line1 && row.venue_address_line1) existing.venue_address_line1 = row.venue_address_line1;
-    if (!existing.venue_address_line2 && row.venue_address_line2) existing.venue_address_line2 = row.venue_address_line2;
-    if (existing.venue_latitude == null && row.venue_latitude != null) existing.venue_latitude = row.venue_latitude;
-    if (existing.venue_longitude == null && row.venue_longitude != null) existing.venue_longitude = row.venue_longitude;
+    if (!existing.venue_address_line1 && row.venue_address_line1)
+      existing.venue_address_line1 = row.venue_address_line1;
+    if (!existing.venue_address_line2 && row.venue_address_line2)
+      existing.venue_address_line2 = row.venue_address_line2;
+    if (existing.venue_latitude == null && row.venue_latitude != null)
+      existing.venue_latitude = row.venue_latitude;
+    if (existing.venue_longitude == null && row.venue_longitude != null)
+      existing.venue_longitude = row.venue_longitude;
 
-    if (!existing.locality_level_one && row.locality_level_one) existing.locality_level_one = row.locality_level_one;
-    if (!existing.locality_level_two && row.locality_level_two) existing.locality_level_two = row.locality_level_two;
-    if (!existing.locality_level_three && row.locality_level_three) existing.locality_level_three = row.locality_level_three;
+    if (!existing.locality_level_one && row.locality_level_one)
+      existing.locality_level_one = row.locality_level_one;
+    if (!existing.locality_level_two && row.locality_level_two)
+      existing.locality_level_two = row.locality_level_two;
+    if (!existing.locality_level_three && row.locality_level_three)
+      existing.locality_level_three = row.locality_level_three;
 
     if (!existing.organiser_id && row.organiser_id) existing.organiser_id = row.organiser_id;
-    if (!existing.organiser_name && row.organiser_name) existing.organiser_name = row.organiser_name;
-    if (!existing.organiser_phone && row.organiser_phone) existing.organiser_phone = row.organiser_phone;
-    if (!existing.organiser_mobile && row.organiser_mobile) existing.organiser_mobile = row.organiser_mobile;
+    if (!existing.organiser_name && row.organiser_name)
+      existing.organiser_name = row.organiser_name;
+    if (!existing.organiser_phone && row.organiser_phone)
+      existing.organiser_phone = row.organiser_phone;
+    if (!existing.organiser_mobile && row.organiser_mobile)
+      existing.organiser_mobile = row.organiser_mobile;
     if (!existing.organiser_facebook_url && row.organiser_facebook_url) {
       existing.organiser_facebook_url = row.organiser_facebook_url;
     }
     if (!existing.organiser_twitter_handle && row.organiser_twitter_handle) {
       existing.organiser_twitter_handle = row.organiser_twitter_handle;
     }
-    if (!existing.organiser_hashtag && row.organiser_hashtag) existing.organiser_hashtag = row.organiser_hashtag;
-    if (!existing.organiser_page_url && row.organiser_page_url) existing.organiser_page_url = row.organiser_page_url;
+    if (!existing.organiser_hashtag && row.organiser_hashtag)
+      existing.organiser_hashtag = row.organiser_hashtag;
+    if (!existing.organiser_page_url && row.organiser_page_url)
+      existing.organiser_page_url = row.organiser_page_url;
 
     if (!existing.quicket_categories_json && row.quicket_categories_json) {
       existing.quicket_categories_json = row.quicket_categories_json;
     }
     if (!existing.tickets_json && row.tickets_json) existing.tickets_json = row.tickets_json;
-    if (!existing.schedules_json && row.schedules_json) existing.schedules_json = row.schedules_json;
+    if (!existing.schedules_json && row.schedules_json)
+      existing.schedules_json = row.schedules_json;
   }
 
   return Array.from(deduped.values());

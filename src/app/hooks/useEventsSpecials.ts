@@ -3,13 +3,13 @@
  * Uses useSWRInfinite for correct multi-page accumulation and revalidation.
  */
 
-'use client';
+"use client";
 
-import { useCallback, useMemo } from 'react';
-import useSWRInfinite from 'swr/infinite';
-import { swrConfig } from '../lib/swrConfig';
-import type { Event } from '../lib/types/Event';
-import type { QuicketCategorySlug } from '../lib/events/quicketCategory';
+import { useCallback, useMemo } from "react";
+import useSWRInfinite from "swr/infinite";
+import { swrConfig } from "../lib/swrConfig";
+import type { Event } from "../lib/types/Event";
+import type { QuicketCategorySlug } from "../lib/events/quicketCategory";
 
 const ITEMS_PER_PAGE = 20;
 const REQUEST_TIMEOUT_MS = 12_000;
@@ -21,13 +21,21 @@ interface EventsPage {
   selectedCategory: QuicketCategorySlug | null;
 }
 
-function buildUrl(filter: string, search: string, offset: number, category: QuicketCategorySlug | null): string {
-  const url = new URL('/api/events-and-specials', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-  url.searchParams.set('limit', String(ITEMS_PER_PAGE));
-  url.searchParams.set('offset', String(offset));
-  if (filter !== 'all') url.searchParams.set('type', filter);
-  if (search.trim()) url.searchParams.set('search', search.trim());
-  if (category) url.searchParams.set('category', category);
+function buildUrl(
+  filter: string,
+  search: string,
+  offset: number,
+  category: QuicketCategorySlug | null
+): string {
+  const url = new URL(
+    "/api/events-and-specials",
+    typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"
+  );
+  url.searchParams.set("limit", String(ITEMS_PER_PAGE));
+  url.searchParams.set("offset", String(offset));
+  if (filter !== "all") url.searchParams.set("type", filter);
+  if (search.trim()) url.searchParams.set("search", search.trim());
+  if (category) url.searchParams.set("category", category);
   return url.toString();
 }
 
@@ -54,12 +62,16 @@ async function fetchEventsPage({
       items: Array.isArray(data?.items) ? (data.items as Event[]) : [],
       count: Number(data?.count || 0),
       categoryBuckets: Array.isArray(data?.categoryBuckets)
-        ? (data.categoryBuckets as Array<{ slug: QuicketCategorySlug; label: string; count: number }>)
+        ? (data.categoryBuckets as Array<{
+            slug: QuicketCategorySlug;
+            label: string;
+            count: number;
+          }>)
         : [],
       selectedCategory: (data?.selectedCategory as QuicketCategorySlug | null) ?? null,
     };
   } catch (err: any) {
-    if (err?.name === 'AbortError') throw new Error('Request timed out. Please try again.');
+    if (err?.name === "AbortError") throw new Error("Request timed out. Please try again.");
     throw err;
   } finally {
     clearTimeout(timeoutId);
@@ -81,22 +93,23 @@ export function useEventsSpecials(
     [filter, search, category]
   );
 
-  const { data: pages, error, isLoading, isValidating, setSize, size, mutate } = useSWRInfinite(
-    getKey,
-    fetchEventsPage,
-    {
-      ...swrConfig,
-      dedupingInterval: 30_000,
-      revalidateOnMount: true,
-      revalidateFirstPage: false,
-      persistSize: false,
-    }
-  );
+  const {
+    data: pages,
+    error,
+    isLoading,
+    isValidating,
+    setSize,
+    size,
+    mutate,
+  } = useSWRInfinite(getKey, fetchEventsPage, {
+    ...swrConfig,
+    dedupingInterval: 30_000,
+    revalidateOnMount: true,
+    revalidateFirstPage: false,
+    persistSize: false,
+  });
 
-  const items = useMemo<Event[]>(
-    () => (pages ?? []).flatMap((p) => p.items),
-    [pages]
-  );
+  const items = useMemo<Event[]>(() => (pages ?? []).flatMap((p) => p.items), [pages]);
 
   const count = pages?.[0]?.count ?? 0;
   const categoryBuckets = pages?.[0]?.categoryBuckets ?? [];

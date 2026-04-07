@@ -17,9 +17,7 @@ export default function OnboardingCard({ children, className = "" }: OnboardingC
         onboarding-card ${className}
       `}
     >
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }

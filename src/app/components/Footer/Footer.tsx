@@ -18,9 +18,9 @@ export default function Footer() {
   const [currentYear, setCurrentYear] = useState<number>(2025);
   const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
-  const [subscribeStatus, setSubscribeStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
   const [subscribeMessage, setSubscribeMessage] = useState<string>("");
   const { showToast } = useToast();
 
@@ -43,9 +43,10 @@ export default function Footer() {
         body: JSON.stringify({ email: trimmed, source: "footer" }),
       });
 
-      const json = (await res.json().catch(() => null)) as
-        | { ok?: boolean; message?: string }
-        | null;
+      const json = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        message?: string;
+      } | null;
 
       if (!res.ok || !json?.ok) {
         setSubscribeStatus("error");
@@ -67,7 +68,12 @@ export default function Footer() {
         const timeLeft = end - Date.now();
         if (timeLeft <= 0) return clearInterval(interval);
         const count = 40 * (timeLeft / duration);
-        confetti({ ...defaults, particleCount: count, origin: { x: 0.2 + Math.random() * 0.6, y: 0.9 }, colors: ['#7D9B76', '#E88D67', '#FFFFFF', '#FFD700'] });
+        confetti({
+          ...defaults,
+          particleCount: count,
+          origin: { x: 0.2 + Math.random() * 0.6, y: 0.9 },
+          colors: ["#7D9B76", "#E88D67", "#FFFFFF", "#FFD700"],
+        });
       }, 200);
     } catch {
       setSubscribeStatus("error");
@@ -80,7 +86,6 @@ export default function Footer() {
     if (!v) return false;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   };
-
 
   const linkSections = [
     {
@@ -106,9 +111,7 @@ export default function Footer() {
     },
     {
       title: "Company",
-      links: [
-        { name: "Contact", href: "/contact" },
-      ],
+      links: [{ name: "Contact", href: "/contact" }],
     },
     {
       title: "Legal",
@@ -128,8 +131,8 @@ export default function Footer() {
   ];
 
   const linkColumns = [
-    [linkSections[0]],                  // merged nav links (no heading)
-    [linkSections[1]],                  // Business
+    [linkSections[0]], // merged nav links (no heading)
+    [linkSections[1]], // Business
     [linkSections[2], linkSections[3]], // Company + Legal
   ];
 
@@ -152,16 +155,15 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-charcoal/6 bg-navbar-bg text-off-white">
-
       <div className="relative mx-auto w-full max-w-[2000px] px-4 sm:px-6 lg:px-8">
         <div className="border-t border-white/10 py-10 sm:py-12">
-
-          <div
-            className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1fr] gap-10 lg:gap-8 items-start"
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1fr] gap-10 lg:gap-8 items-start">
             {/* Brand */}
             <div className="flex flex-col items-start gap-4 text-left">
-              <Link href="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity">
+              <Link
+                href="/"
+                className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity"
+              >
                 <Image
                   src="/logos/logo.png"
                   alt="Sayso logo"
@@ -183,7 +185,7 @@ export default function Footer() {
                 className="flex flex-col gap-8"
               >
                 {column.map((section) => (
-                    <div key={section.title || "nav"} className="flex flex-col gap-2">
+                  <div key={section.title || "nav"} className="flex flex-col gap-2">
                     {section.title && (
                       <p className="font-urbanist text-sm text-off-white font-700">
                         {section.title}
@@ -201,17 +203,19 @@ export default function Footer() {
                         </li>
                       ))}
                     </ul>
-                    </div>
+                  </div>
                 ))}
               </nav>
             ))}
 
             {/* Download App CTA */}
             <div className="flex flex-col gap-2">
-              <p className="font-urbanist text-sm text-off-white font-700">
-                Get The App
-              </p>
-              <div className="flex flex-row flex-wrap lg:flex-col gap-3" role="group" aria-label="App download badges">
+              <p className="font-urbanist text-sm text-off-white font-700">Get The App</p>
+              <div
+                className="flex flex-row flex-wrap lg:flex-col gap-3"
+                role="group"
+                aria-label="App download badges"
+              >
                 {appDownloadBadges.map((badge) => {
                   if (badge.href) {
                     return (
@@ -254,9 +258,7 @@ export default function Footer() {
                   );
                 })}
               </div>
-              <p className="font-urbanist text-[11px] sm:text-xs text-off-white/70">
-                Coming soon
-              </p>
+              <p className="font-urbanist text-[11px] sm:text-xs text-off-white/70">Coming soon</p>
             </div>
           </div>
 
@@ -276,13 +278,12 @@ export default function Footer() {
               </div>
               <div />
               <p className="font-urbanist text-[11px] sm:text-xs text-off-white/80 text-center sm:text-right">
-                &copy; {mounted ? currentYear : 2026} Sayso Reviews (Pty) Ltd 
+                &copy; {mounted ? currentYear : 2026} Sayso Reviews (Pty) Ltd
               </p>
             </div>
           </div>
         </div>
       </div>
-
     </footer>
   );
 }

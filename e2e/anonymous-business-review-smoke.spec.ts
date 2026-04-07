@@ -5,10 +5,7 @@ import { test, expect } from "@playwright/test";
  * Ensures POST /api/reviews accepts anonymous submissions and returns success.
  */
 test.describe("Anonymous business review smoke test", () => {
-  test("unauthenticated user can submit a business review", async ({
-    page,
-    request,
-  }) => {
+  test("unauthenticated user can submit a business review", async ({ page, request }) => {
     test.setTimeout(60000);
 
     const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000";
@@ -20,9 +17,7 @@ test.describe("Anonymous business review smoke test", () => {
     // Don't fill login form — we stay anonymous
 
     // 2. Fetch one active business to review (public API)
-    const listRes = await request.get(
-      `${baseURL}/api/businesses?limit=1`
-    );
+    const listRes = await request.get(`${baseURL}/api/businesses?limit=1`);
     if (!listRes.ok()) {
       test.skip(true, "Could not fetch businesses list (API not available or no businesses)");
       return;
@@ -42,7 +37,9 @@ test.describe("Anonymous business review smoke test", () => {
     await expect(page).toHaveURL(new RegExp(`/business/${businessIdentifier}/review`));
 
     // Wait for the form to be visible (business loaded)
-    await page.getByRole("heading", { name: /Write a Review/i }).waitFor({ state: "visible", timeout: 15000 });
+    await page
+      .getByRole("heading", { name: /Write a Review/i })
+      .waitFor({ state: "visible", timeout: 15000 });
 
     // 4. Select a rating (click 5 stars)
     const fiveStar = page.getByRole("button", { name: /Rate 5 stars/i });
@@ -60,12 +57,19 @@ test.describe("Anonymous business review smoke test", () => {
 
     // 7. Expect success: toast or redirect to business page
     await Promise.race([
-      page.getByText(/Review submitted successfully|created successfully/i).waitFor({ state: "visible", timeout: 15000 }),
-      page.waitForURL(new RegExp(`/business/${businessIdentifier}(?:/)?(?:\\?|$)`), { timeout: 15000 }),
+      page
+        .getByText(/Review submitted successfully|created successfully/i)
+        .waitFor({ state: "visible", timeout: 15000 }),
+      page.waitForURL(new RegExp(`/business/${businessIdentifier}(?:/)?(?:\\?|$)`), {
+        timeout: 15000,
+      }),
     ]).then(() => {});
 
     const url = page.url();
-    const hasSuccessToast = await page.getByText(/Review submitted successfully|created successfully/i).isVisible().catch(() => false);
+    const hasSuccessToast = await page
+      .getByText(/Review submitted successfully|created successfully/i)
+      .isVisible()
+      .catch(() => false);
     const hasRedirectedToBusiness = /\/business\/[^/]+(?:\/?\?|$)/.test(url);
 
     expect(hasSuccessToast || hasRedirectedToBusiness).toBeTruthy();

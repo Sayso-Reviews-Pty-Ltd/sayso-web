@@ -5,6 +5,7 @@ This guide will help you get up and running with KLIO in your local development 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - **Node.js** (v18 or higher)
 - **npm** or **yarn** package manager
 - **Git** for version control
@@ -100,26 +101,31 @@ KLIO/
 ## Key Features to Explore
 
 ### 1. User Authentication
+
 - Sign up and login at `/login` or `/signup`
 - Test the onboarding flow with interests selection
 
 ### 2. Business Discovery
+
 - Browse businesses by category on the home page
 - Search for specific businesses
 - View detailed business pages
 
 ### 3. Reviews System
+
 - Leave reviews for businesses (requires authentication)
 - Upload photos with reviews
 - Rate businesses on multiple criteria
 
 ### 4. Business Management (For Business Owners)
+
 - Claim a business at `/claim-business`
 - Manage your business at `/manage-business`
 - Edit business details
 - Respond to reviews
 
 ### 5. Admin Features
+
 - Seed database with businesses at `/admin/seed`
 - View system analytics
 
@@ -204,4 +210,3 @@ yarn type-check
 - Look at example implementations in existing pages/components
 
 Happy coding! 🚀
-

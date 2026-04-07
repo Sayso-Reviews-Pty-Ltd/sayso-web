@@ -18,7 +18,7 @@ Recommendations to harden Sayso for production, based on a review of the codebas
   Guard or remove in production:
   - `/test-auth`, `/test-supabase`, `/test/onboarding-performance`
   - `/api/test/*`, `/api/debug/*`  
-  Use `NODE_ENV === 'production'` or a feature flag and return 404 for these routes in prod.
+    Use `NODE_ENV === 'production'` or a feature flag and return 404 for these routes in prod.
 
 ### 1.2 API protection
 
@@ -83,15 +83,15 @@ Recommendations to harden Sayso for production, based on a review of the codebas
 
 ### 3.2 Further improvements
 
-- **Database**  
+- **Database**
   - Review slow queries (Supabase dashboard or logs); add indexes for hot paths (e.g. businesses by location/category, reviews by business, notifications by user).
   - Use connection pooling (e.g. Supabase pooler) if you see connection pressure.
 
-- **Caching**  
+- **Caching**
   - Consider short-lived caching (e.g. Redis or Vercel KV) for hot read APIs (trending, featured, leaderboard) with invalidation on writes.
   - Keep cache TTLs and invalidation simple to avoid stale data.
 
-- **Bundle**  
+- **Bundle**
   - Run `ANALYZE=true` builds periodically; trim large dependencies or lazy-load below-the-fold or route-specific code.
 
 ---
@@ -142,14 +142,14 @@ Recommendations to harden Sayso for production, based on a review of the codebas
 
 ## 6. Quick wins (high impact, low effort)
 
-| Area        | Action |
-|------------|--------|
-| Security   | Add global security headers in `next.config.ts`. |
-| Security   | Return 404 for `/api/test/*` and `/api/debug/*` (and test pages) when `NODE_ENV === 'production'`. |
-| Reliability | Add `app/error.tsx` and `app/global-error.tsx`. |
-| Reliability | Add `GET /api/health` (and optionally `/api/health/ready`). |
-| Config     | Add build-time check for required production env vars. |
-| Secrets    | Move auth rate-limit config to server-only env vars (no `NEXT_PUBLIC_`). |
+| Area        | Action                                                                                             |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| Security    | Add global security headers in `next.config.ts`.                                                   |
+| Security    | Return 404 for `/api/test/*` and `/api/debug/*` (and test pages) when `NODE_ENV === 'production'`. |
+| Reliability | Add `app/error.tsx` and `app/global-error.tsx`.                                                    |
+| Reliability | Add `GET /api/health` (and optionally `/api/health/ready`).                                        |
+| Config      | Add build-time check for required production env vars.                                             |
+| Secrets     | Move auth rate-limit config to server-only env vars (no `NEXT_PUBLIC_`).                           |
 
 ---
 

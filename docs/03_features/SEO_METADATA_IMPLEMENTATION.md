@@ -5,6 +5,7 @@ This document outlines the SEO metadata implementation to prevent duplicate page
 ## Overview
 
 All pages now have proper SEO metadata including:
+
 - Unique titles and descriptions
 - Canonical URLs to prevent duplicate content
 - Open Graph tags for social sharing
@@ -16,11 +17,13 @@ All pages now have proper SEO metadata including:
 Canonical tags are set on all pages to prevent duplicate content issues:
 
 ### Root Page (`/`)
+
 - **Canonical**: Points to `/home`
 - **Robots**: `noindex` (since it redirects)
 - **Action**: Server-side redirect to `/home`
 
 ### Main Pages
+
 - `/home` - Canonical: `/home`
 - `/explore` - Canonical: `/explore`
 - `/for-you` - Canonical: `/for-you`
@@ -30,12 +33,14 @@ Canonical tags are set on all pages to prevent duplicate content issues:
 - `/deal-breakers` - Canonical: `/deal-breakers`
 
 ### Dynamic Pages
+
 - `/business/[slug]` - Canonical: `/business/[slug]` (uses slug, not ID)
 - `/event/[id]` - Canonical: `/event/[id]`
 - `/special/[id]` - Canonical: `/special/[id]`
 - `/reviewer/[id]` - Canonical: `/reviewer/[id]` (noindex)
 
 ### Protected Pages (noindex)
+
 - `/profile` - Canonical: `/profile` (noindex)
 - `/saved` - Canonical: `/saved` (noindex)
 - `/login` - Canonical: `/login` (noindex)
@@ -46,16 +51,19 @@ Canonical tags are set on all pages to prevent duplicate content issues:
 ## Duplicate Content Prevention
 
 ### 1. Root Page Redirect
+
 - Root page (`/`) uses server-side redirect to `/home`
 - Prevents duplicate content between `/` and `/home`
 - Canonical tag points to `/home`
 
 ### 2. Business Pages
+
 - Uses slug-based URLs for SEO-friendly URLs
 - Automatic redirect from ID-based URLs to slug-based URLs
 - Canonical tag always uses slug URL
 
 ### 3. URL Normalization
+
 - All trailing slashes handled consistently
 - Query parameters don't create duplicate content
 - Case-sensitive URLs handled properly
@@ -63,6 +71,7 @@ Canonical tags are set on all pages to prevent duplicate content issues:
 ## Metadata Structure
 
 All pages use the `generateSEOMetadata` utility which provides:
+
 - Consistent title format: `{Page Title} | sayso`
 - Unique descriptions per page
 - Proper Open Graph tags
@@ -81,6 +90,7 @@ All pages use the `generateSEOMetadata` utility which provides:
 ## Testing
 
 To verify no duplicate pages:
+
 1. Check all pages have unique canonical URLs
 2. Verify root page redirects properly
 3. Ensure business pages use slugs in canonical tags
@@ -97,5 +107,4 @@ To verify no duplicate pages:
 
 ---
 
-*Last Updated: SEO metadata implementation complete*
-
+_Last Updated: SEO metadata implementation complete_

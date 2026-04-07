@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { getBadgeMapping, getBadgePngPath } from '../../../lib/badgeMappings';
-import { isTopContributor } from '../../../lib/topContributor';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { getBadgeMapping, getBadgePngPath } from "../../../lib/badgeMappings";
+import { isTopContributor } from "../../../lib/topContributor";
 
-const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '');
+const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "");
 
 /**
  * Ensure avatar_url is always a fully-qualified HTTPS URL.
@@ -15,11 +15,11 @@ const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/,
  *     e.g. "user-id/avatar-123.jpg"  →  https://…supabase.co/storage/v1/object/public/avatars/user-id/avatar-123.jpg
  */
 function resolveAvatarUrl(avatarUrl: string | null | undefined, seedName: string): string {
-  if (avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))) {
+  if (avatarUrl && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))) {
     return avatarUrl;
   }
   if (avatarUrl && SUPABASE_URL) {
-    const storagePath = avatarUrl.startsWith('avatars/') ? avatarUrl : `avatars/${avatarUrl}`;
+    const storagePath = avatarUrl.startsWith("avatars/") ? avatarUrl : `avatars/${avatarUrl}`;
     return `${SUPABASE_URL}/storage/v1/object/public/${storagePath}`;
   }
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(seedName)}&background=random&color=fff&size=128`;
@@ -33,11 +33,11 @@ function resolveAvatarUrl(avatarUrl: string | null | undefined, seedName: string
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '12');
+    const limit = parseInt(searchParams.get("limit") || "12");
 
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.warn('[Top Reviewers] Missing Supabase credentials');
-      return NextResponse.json({ ok: true, reviewers: [], total: 0, mode: 'stage1' });
+      console.warn("[Top Reviewers] Missing Supabase credentials");
+      return NextResponse.json({ ok: true, reviewers: [], total: 0, mode: "stage1" });
     }
 
     // Use service role client for public queries
@@ -47,8 +47,8 @@ export async function GET(req: Request) {
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     );
 
@@ -56,23 +56,32 @@ export async function GET(req: Request) {
     const LONG_REVIEW_CHARS = 240;
 
     const { data: reviewRows, error: reviewError } = await supabase
-      .from('reviews')
-      .select('id, user_id, rating, content, created_at')
-      .order('created_at', { ascending: false })
+      .from("reviews")
+      .select("id, user_id, rating, content, created_at")
+      .order("created_at", { ascending: false })
       .limit(REVIEW_POOL_SIZE);
 
     if (reviewError) {
-      console.error('[Top Reviewers] Error fetching reviews:', reviewError);
+      console.error("[Top Reviewers] Error fetching reviews:", reviewError);
       return NextResponse.json({ error: reviewError.message }, { status: 500 });
     }
 
     const reviews = Array.isArray(reviewRows) ? reviewRows : [];
     if (reviews.length === 0) {
-      return NextResponse.json({ ok: true, reviewers: [], total: 0, mode: 'stage1' });
+      return NextResponse.json({ ok: true, reviewers: [], total: 0, mode: "stage1" });
     }
 
     const reviewIds: string[] = [];
-    const userStats = new Map<string, { count: number; ratingSum: number; hasLong: boolean; hasPhoto: boolean; helpfulReceived: number }>();
+    const userStats = new Map<
+      string,
+      {
+        count: number;
+        ratingSum: number;
+        hasLong: boolean;
+        hasPhoto: boolean;
+        helpfulReceived: number;
+      }
+    >();
     const reviewIdToUserId = new Map<string, string>();
     for (const r of reviews) {
       if (!r?.user_id) continue;
@@ -81,12 +90,18 @@ export async function GET(req: Request) {
         reviewIdToUserId.set(r.id, r.user_id);
       }
       if (!userStats.has(r.user_id)) {
-        userStats.set(r.user_id, { count: 0, ratingSum: 0, hasLong: false, hasPhoto: false, helpfulReceived: 0 });
+        userStats.set(r.user_id, {
+          count: 0,
+          ratingSum: 0,
+          hasLong: false,
+          hasPhoto: false,
+          helpfulReceived: 0,
+        });
       }
       const stats = userStats.get(r.user_id)!;
       stats.count += 1;
       stats.ratingSum += Number(r.rating || 0);
-      const content = typeof r.content === 'string' ? r.content : '';
+      const content = typeof r.content === "string" ? r.content : "";
       if (content.trim().length > LONG_REVIEW_CHARS) stats.hasLong = true;
     }
 
@@ -96,15 +111,17 @@ export async function GET(req: Request) {
       for (let i = 0; i < reviewIds.length; i += batchSize) {
         const batch = reviewIds.slice(i, i + batchSize);
         const { data: imageRows, error: imageError } = await supabase
-          .from('review_images')
-          .select('review_id')
-          .in('review_id', batch);
+          .from("review_images")
+          .select("review_id")
+          .in("review_id", batch);
         if (imageError) {
           // Non-fatal; some environments may not have this table
-          console.warn('[Top Reviewers] Error fetching review_images:', imageError.message);
+          console.warn("[Top Reviewers] Error fetching review_images:", imageError.message);
           break;
         }
-        const reviewsWithImages = new Set((imageRows || []).map((x: any) => x.review_id).filter(Boolean));
+        const reviewsWithImages = new Set(
+          (imageRows || []).map((x: any) => x.review_id).filter(Boolean)
+        );
         if (reviewsWithImages.size === 0) continue;
         for (const reviewId of reviewsWithImages) {
           const userId = reviewIdToUserId.get(reviewId);
@@ -121,11 +138,11 @@ export async function GET(req: Request) {
       for (let i = 0; i < reviewIds.length; i += batchSize) {
         const batch = reviewIds.slice(i, i + batchSize);
         const { data: voteRows, error: voteError } = await supabase
-          .from('review_helpful_votes')
-          .select('review_id')
-          .in('review_id', batch);
+          .from("review_helpful_votes")
+          .select("review_id")
+          .in("review_id", batch);
         if (voteError) {
-          console.warn('[Top Reviewers] Error fetching helpful votes:', voteError.message);
+          console.warn("[Top Reviewers] Error fetching helpful votes:", voteError.message);
           break;
         }
         for (const v of voteRows || []) {
@@ -139,12 +156,12 @@ export async function GET(req: Request) {
 
     const userIds = Array.from(userStats.keys());
     const { data: profileRows, error: profileError } = await supabase
-      .from('profiles')
-      .select('user_id, username, display_name, avatar_url, is_top_reviewer, badges_count')
-      .in('user_id', userIds);
+      .from("profiles")
+      .select("user_id, username, display_name, avatar_url, is_top_reviewer, badges_count")
+      .in("user_id", userIds);
 
     if (profileError) {
-      console.warn('[Top Reviewers] Error fetching profiles:', profileError.message);
+      console.warn("[Top Reviewers] Error fetching profiles:", profileError.message);
     }
 
     const profileById = new Map<string, any>();
@@ -153,26 +170,29 @@ export async function GET(req: Request) {
     }
 
     // Batch-fetch earned badges for all reviewers (two queries to avoid PostgREST join issues)
-    const badgesByUserId = new Map<string, Array<{ id: string; name: string; icon_path?: string; badge_group?: string }>>();
+    const badgesByUserId = new Map<
+      string,
+      Array<{ id: string; name: string; icon_path?: string; badge_group?: string }>
+    >();
     try {
       // 1. Get user_id -> badge_id mappings
       const { data: userBadgeRows, error: ubError } = await supabase
-        .from('user_badges')
-        .select('user_id, badge_id')
-        .in('user_id', userIds);
+        .from("user_badges")
+        .select("user_id, badge_id")
+        .in("user_id", userIds);
 
       if (ubError) {
-        console.warn('[Top Reviewers] Error fetching user_badges:', ubError.message);
+        console.warn("[Top Reviewers] Error fetching user_badges:", ubError.message);
       } else if (userBadgeRows && userBadgeRows.length > 0) {
         // 2. Fetch badge definitions for all referenced badge IDs
         const badgeIds = [...new Set(userBadgeRows.map((r: any) => r.badge_id).filter(Boolean))];
         const { data: badgeRows, error: bError } = await supabase
-          .from('badges')
-          .select('id, name, icon_name, badge_group')
-          .in('id', badgeIds);
+          .from("badges")
+          .select("id, name, icon_name, badge_group")
+          .in("id", badgeIds);
 
         if (bError) {
-          console.warn('[Top Reviewers] Error fetching badges:', bError.message);
+          console.warn("[Top Reviewers] Error fetching badges:", bError.message);
         } else {
           // Build a lookup by badge ID
           const badgeLookup = new Map<string, any>();
@@ -200,7 +220,7 @@ export async function GET(req: Request) {
         }
       }
     } catch (badgeErr) {
-      console.warn('[Top Reviewers] Badge fetch failed (non-fatal):', badgeErr);
+      console.warn("[Top Reviewers] Badge fetch failed (non-fatal):", badgeErr);
     }
 
     // Cold-start friendly contributor score:
@@ -221,8 +241,8 @@ export async function GET(req: Request) {
           (hasBadge ? 2 : 0);
 
         const avgRating = stats.count > 0 ? stats.ratingSum / stats.count : 0;
-        const displayName = profile.display_name || profile.username || 'Anonymous';
-        const avatarSeedName = profile.display_name || profile.username || 'User';
+        const displayName = profile.display_name || profile.username || "Anonymous";
+        const avatarSeedName = profile.display_name || profile.username || "User";
 
         return {
           id: userId,
@@ -230,13 +250,14 @@ export async function GET(req: Request) {
           username: profile.username,
           profilePicture: resolveAvatarUrl(profile.avatar_url, avatarSeedName),
           reviewCount: stats.count,
-          avgRatingGiven: stats.count > 0 ? Math.round((stats.ratingSum / stats.count) * 10) / 10 : null,
+          avgRatingGiven:
+            stats.count > 0 ? Math.round((stats.ratingSum / stats.count) * 10) / 10 : null,
           helpfulVotes: stats.helpfulReceived,
           rating: Math.round(avgRating * 10) / 10,
-          badge: profile.is_top_reviewer ? ('top' as const) : undefined,
+          badge: profile.is_top_reviewer ? ("top" as const) : undefined,
           badgesCount,
           badges: badgesByUserId.get(userId) || [],
-          location: 'Cape Town',
+          location: "Cape Town",
           _score: score,
           _tie: Math.round(avgRating * 100) + stats.count * 10 + (stats.hasPhoto ? 1 : 0),
         };
@@ -254,10 +275,12 @@ export async function GET(req: Request) {
       return isTopContributor(r.reviewCount, stats?.helpfulReceived ?? 0);
     });
 
-    const reviewersWithRatings = eligible.slice(0, Math.max(0, limit)).map(({ _score, _tie, ...rest }) => rest);
+    const reviewersWithRatings = eligible
+      .slice(0, Math.max(0, limit))
+      .map(({ _score, _tie, ...rest }) => rest);
     const uniqueContributors = userIds.length;
     const totalReviewsSeen = reviews.length;
-    const mode = uniqueContributors < 25 || totalReviewsSeen < 200 ? 'stage1' : 'normal';
+    const mode = uniqueContributors < 25 || totalReviewsSeen < 200 ? "stage1" : "normal";
 
     return NextResponse.json({
       ok: true,
@@ -277,11 +300,10 @@ export async function GET(req: Request) {
         },
       },
     });
-
   } catch (error: any) {
-    console.error('[Top Reviewers] Unexpected error:', error);
+    console.error("[Top Reviewers] Unexpected error:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch top reviewers', message: error.message },
+      { error: "Failed to fetch top reviewers", message: error.message },
       { status: 500 }
     );
   }
