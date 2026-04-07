@@ -16,8 +16,10 @@ export const POST = withAdmin(async (req: NextRequest, { user, service, params }
   }
 
   const body = await req.json().catch(() => ({}) as any);
-  const reason: string = (body?.reason ?? body?.rejection_reason ?? "")?.toString?.() ?? "";
-  const adminNotes: string | null = body?.admin_notes ?? body?.adminNotes ?? null ?? null;
+  const reason: string = String(body?.reason ?? body?.rejection_reason ?? "");
+  const adminNotesValue = body?.admin_notes ?? body?.adminNotes;
+  const adminNotes: string | null =
+    adminNotesValue === undefined || adminNotesValue === null ? null : String(adminNotesValue);
 
   const { data: claim, error: claimError } = await service
     .from("business_claims")

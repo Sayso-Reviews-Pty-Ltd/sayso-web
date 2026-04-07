@@ -67,6 +67,17 @@ export function PerformanceProvider({ children }: { children: ReactNode }) {
   }));
 
   useEffect(() => {
+    type NetworkConnection = {
+      effectiveType?: string;
+      addEventListener?: (type: string, listener: () => void) => void;
+      removeEventListener?: (type: string, listener: () => void) => void;
+    };
+    const navWithConnection = navigator as Navigator & {
+      connection?: NetworkConnection;
+      mozConnection?: NetworkConnection;
+      webkitConnection?: NetworkConnection;
+    };
+
     // Update performance config based on environment and user preferences
     const networkQuality = getNetworkQuality();
     const prefersReducedMotion = getPrefersReducedMotion();
@@ -81,9 +92,10 @@ export function PerformanceProvider({ children }: { children: ReactNode }) {
     }));
 
     // Listen for network changes
-    // @ts-ignore
     const connection =
-      navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      navWithConnection.connection ||
+      navWithConnection.mozConnection ||
+      navWithConnection.webkitConnection;
 
     if (connection) {
       const handleChange = () => {
