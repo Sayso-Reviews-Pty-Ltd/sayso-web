@@ -185,8 +185,8 @@ export default function BusinessProfilePage() {
 
               <div className="pt-2">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-                  <div className="lg:col-span-2 space-y-3 sm:space-y-6 lg:space-y-8">
-                    <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden border-none backdrop-blur-xl shadow-md animate-pulse">
+                  <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+                    <div className="relative w-full h-[50vh] sm:h-auto sm:aspect-[16/9] lg:aspect-[21/9] bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-none overflow-hidden border-none backdrop-blur-xl shadow-md animate-pulse">
                       <div className="absolute right-3 sm:right-4 top-3 sm:top-4 z-20 h-6 sm:h-8 w-14 sm:w-16 rounded-full bg-off-white/40" />
                       <div className="absolute left-3 sm:left-4 top-3 sm:top-4 z-20 h-6 sm:h-8 w-20 sm:w-24 rounded-full bg-card-bg/30" />
                       <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -199,9 +199,9 @@ export default function BusinessProfilePage() {
                       </div>
                     </div>
 
-                    <div className="space-y-2 sm:space-y-3 px-1 sm:px-2">
+                    <div className="space-y-3 px-1 sm:px-2">
                       <Skeleton className="h-6 sm:h-10 w-3/4 bg-charcoal/10 rounded-lg" />
-                      <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="flex items-center gap-3">
                         <Skeleton className="h-4 sm:h-5 w-16 sm:w-20 bg-charcoal/5 rounded" />
                         <Skeleton className="h-4 sm:h-5 w-24 sm:w-32 bg-charcoal/5 rounded" />
                       </div>
@@ -228,7 +228,7 @@ export default function BusinessProfilePage() {
 
                     <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
                       <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 bg-white/30 rounded mb-3 sm:mb-4" />
-                      <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                         {Array.from({ length: 6 }).map((_, i) => (
                           <div
                             key={i}
@@ -251,7 +251,7 @@ export default function BusinessProfilePage() {
                       <div className="space-y-3">
                         {[1, 2, 3].map((i) => (
                           <div key={i} className="flex items-center gap-2.5">
-                            <Skeleton className="w-8 h-8 rounded-full bg-white/20" />
+                            <Skeleton className="w-6 h-6 rounded-full bg-white/20" />
                             <Skeleton className="h-4 w-28 bg-white/30 rounded" />
                           </div>
                         ))}
@@ -259,7 +259,7 @@ export default function BusinessProfilePage() {
                     </div>
                   </div>
 
-                  <div className="space-y-3 sm:space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6">
                       <div className="space-y-3 sm:space-y-4">
                         <Skeleton className="h-10 sm:h-12 w-full bg-card-bg/40 rounded-full" />
@@ -314,7 +314,7 @@ export default function BusinessProfilePage() {
             <div className="text-center mb-4 sm:mb-6">
               <Skeleton className="h-6 sm:h-7 w-36 sm:w-48 bg-charcoal/10 rounded-lg mx-auto" />
             </div>
-            <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-8">
+            <div className="bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8">
               <div className="space-y-4 sm:space-y-6">
                 {[1, 2].map((i) => (
                   <div

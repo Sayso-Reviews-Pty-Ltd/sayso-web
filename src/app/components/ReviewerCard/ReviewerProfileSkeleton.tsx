@@ -68,7 +68,7 @@ export default function ReviewerProfileSkeleton() {
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className={`${cardClass} p-4`}>
                       <div className="flex items-center gap-2 mb-2">
-                        <Skeleton className="h-8 w-8 rounded-full bg-charcoal/10 flex-shrink-0" />
+                        <Skeleton className="h-8 w-8 rounded-full bg-off-white/70 flex-shrink-0" />
                         <Skeleton className="h-3.5 w-12 sm:w-14 bg-charcoal/8 rounded" />
                       </div>
                       <Skeleton className="h-7 w-12 sm:w-16 bg-charcoal/10 rounded mb-1" />
@@ -82,7 +82,7 @@ export default function ReviewerProfileSkeleton() {
                   {/* Header row: icon + title | See More — matches ReviewerBadgesSection */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="h-8 w-8 rounded-full bg-charcoal/10 flex-shrink-0" />
+                      <Skeleton className="h-8 w-8 rounded-full bg-off-white/70 flex-shrink-0" />
                       <Skeleton className="h-4 w-40 sm:w-52 bg-charcoal/10 rounded" />
                     </div>
                   </div>
@@ -102,7 +102,10 @@ export default function ReviewerProfileSkeleton() {
                 </section>
 
                 {/* ── Reviews section ── */}
-                <section className={`${cardClass} p-6 sm:p-8`} aria-hidden="true">
+                <section
+                  className="bg-card-bg backdrop-blur-xl border-none rounded-[12px] shadow-md p-6 sm:p-8"
+                  aria-hidden="true"
+                >
                   <Skeleton className="h-5 w-36 sm:w-44 bg-charcoal/10 rounded mb-6" />
                   <div className="space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (

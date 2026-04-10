@@ -21,7 +21,7 @@ function SkeletonCard({
 }) {
   return (
     <div
-      className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-3 sm:p-6 ${className}`}
+      className={`bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 backdrop-blur-xl border-none rounded-[12px] shadow-md p-4 sm:p-6 ${className}`}
     >
       {children}
     </div>
@@ -47,11 +47,9 @@ export default function EventDetailPageSkeleton() {
             </nav>
 
             <div className="pt-2">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-                <div className="lg:col-span-2 space-y-3 sm:space-y-6 lg:space-y-8">
-                  <SkeletonCard className="p-1 overflow-hidden">
-                    <Skeleton className="aspect-[16/10] w-full rounded-[12px] bg-off-white/80" />
-                  </SkeletonCard>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+                  <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] rounded-none overflow-hidden border-none bg-off-white/80 animate-pulse" />
 
                   <SkeletonCard className="space-y-3 sm:space-y-5">
                     <div className="space-y-2 sm:space-y-3">
@@ -65,7 +63,7 @@ export default function EventDetailPageSkeleton() {
                       />
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    <div className="flex flex-wrap gap-3">
                       <SkeletonBlock className="h-7 sm:h-8 w-24 sm:w-28 rounded-full" />
                       <SkeletonBlock className="h-7 sm:h-8 w-20 sm:w-24 rounded-full" />
                       <SkeletonBlock className="h-7 sm:h-8 w-24 sm:w-32 rounded-full" />
@@ -133,7 +131,7 @@ export default function EventDetailPageSkeleton() {
                   </SkeletonCard>
                 </div>
 
-                <div className="space-y-3 sm:space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <SkeletonCard className="space-y-3 sm:space-y-4">
                     <SkeletonBlock
                       className="h-5 sm:h-6 w-28 sm:w-36 rounded-xl"
