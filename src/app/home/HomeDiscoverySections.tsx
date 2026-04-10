@@ -9,7 +9,8 @@ import BusinessRowSkeleton from "../components/BusinessRow/BusinessRowSkeleton";
 import CommunityHighlightsSkeleton from "../components/CommunityHighlights/CommunityHighlightsSkeleton";
 import type { Business } from "../components/BusinessCard/BusinessCard";
 import type { FeaturedBusiness } from "../hooks/useFeaturedBusinesses";
-import { H3, P, Muted } from "@/app/components/ui/typography";
+import { P } from "@/app/components/ui/typography";
+import { ArrowRight } from "@/app/lib/icons";
 
 type BusinessRowComponentProps = {
   title: string;
@@ -93,24 +94,28 @@ export function HomeDiscoverySections({
       >
         {!hasUser ? (
           <div className="mx-auto w-full max-w-[2000px] px-2 pt-4 sm:pt-8 md:pt-10">
-            <div className="relative border border-charcoal/10 bg-off-white rounded-[14px] p-6 sm:p-8 md:p-10 text-center space-y-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
-              <H3 className="text-lg sm:text-xl font-extrabold">For You</H3>
-              <Muted className="text-body sm:text-base max-w-[60ch] mx-auto">
+            <div className="bg-off-white border border-sage/20 rounded-[12px] pt-16 pb-6 text-center space-y-3">
+              <h2 className="font-urbanist text-h2 font-semibold text-charcoal">For You</h2>
+              <p
+                className="font-urbanist text-body-sm text-charcoal/60 max-w-[70ch] mx-auto"
+                style={{ fontWeight: 500 }}
+              >
                 Create an account to unlock personalised recommendations.
-              </Muted>
+              </p>
 
-              <div className="pt-2 w-full flex flex-col sm:flex-row items-stretch justify-center gap-3">
+              <div className="pt-2 flex items-center justify-center gap-3">
                 <Link
                   href="/register"
-                  className="mi-tap inline-flex items-center justify-center rounded-full min-h-[48px] px-6 py-3 text-body font-urbanist font-semibold text-white bg-gradient-to-r from-coral to-coral/85 hover:opacity-95 shadow-md w-full sm:w-auto sm:min-w-[180px]"
+                  className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
                 >
-                  Create Account
+                  <span>Create Account</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/onboarding"
-                  className="mi-tap inline-flex items-center justify-center rounded-full min-h-[48px] px-6 py-3 text-body font-urbanist font-semibold text-charcoal border border-charcoal/15 bg-white hover:bg-off-white shadow-sm w-full sm:w-auto sm:min-w-[180px]"
+                  className="mi-tap inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-charcoal/15 bg-white text-charcoal text-sm font-semibold shadow-sm hover:bg-off-white transition"
                 >
-                  Sign In
+                  <span>Sign In</span>
                 </Link>
               </div>
             </div>
@@ -136,12 +141,26 @@ export function HomeDiscoverySections({
               })
             ) : (
               <div className="mx-auto w-full max-w-[2000px] px-2 py-4">
-                <div className="bg-card-bg/10 border border-sage/30 rounded-lg p-6 text-center">
-                  <p className="text-body text-charcoal/70 mb-2">Curated from your interests</p>
-                  <p className="text-body-sm text-charcoal/70">
+                <div className="bg-off-white border border-sage/20 rounded-[12px] pt-16 pb-6 text-center space-y-3">
+                  <h2 className="font-urbanist text-h2 font-semibold text-charcoal">
+                    Curated from your interests
+                  </h2>
+                  <p
+                    className="font-urbanist text-body-sm text-charcoal/60 max-w-[70ch] mx-auto"
+                    style={{ fontWeight: 500 }}
+                  >
                     Based on what you selected, no matches in this section yet. See more on For You
                     or explore Trending.
                   </p>
+                  <div className="pt-2 flex items-center justify-center">
+                    <Link
+                      href="/for-you"
+                      className="mi-tap group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-charcoal text-white text-sm font-semibold shadow-md hover:bg-charcoal/90 transition"
+                    >
+                      <span>Explore For You</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
