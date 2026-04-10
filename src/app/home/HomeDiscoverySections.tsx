@@ -97,7 +97,7 @@ export function HomeDiscoverySections({
             <div className="bg-off-white border border-sage/20 rounded-[12px] pt-16 pb-6 text-center space-y-3">
               <h2 className="font-urbanist text-h2 font-semibold text-charcoal">For You</h2>
               <p
-                className="font-urbanist text-body-sm text-charcoal/60 max-w-[70ch] mx-auto"
+                className="font-urbanist text-body-sm text-charcoal/60 mx-auto max-w-[34ch] sm:max-w-[70ch] px-4 sm:px-0 leading-relaxed break-words text-center"
                 style={{ fontWeight: 500 }}
               >
                 Create an account to unlock personalised recommendations.
