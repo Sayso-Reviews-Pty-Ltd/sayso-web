@@ -10,10 +10,10 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 export default function ReviewerCardSkeleton() {
   return (
     <div
-      className="snap-center snap-always w-full sm:w-[220px] md:w-[300px] flex-shrink-0"
+      className="snap-center snap-always w-full sm:w-[220px] md:w-[300px] flex-shrink-0 h-full"
       aria-hidden
     >
-      <div className="relative bg-card-bg rounded-[12px] overflow-hidden shadow-md border-none">
+      <div className="relative bg-card-bg rounded-[12px] overflow-hidden shadow-md border-none h-full flex flex-col">
         <div className="p-3 flex flex-col gap-2">
           <div className="flex items-center gap-2.5">
             <Skeleton className="w-10 h-10 rounded-full bg-charcoal/8 flex-shrink-0" />

@@ -8,6 +8,7 @@ import {
   HOME_SECTION_CONTAINER_INSET_CLASS,
   HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS,
 } from "../HomeSectionRow/homeSectionLayout";
+import { RAIL_CARD_MEDIA_HEIGHT } from "../HomeSectionRow/cardDimensions";
 
 interface CommunityHighlightsSkeletonProps {
   reviewerCount?: number;
@@ -16,12 +17,12 @@ interface CommunityHighlightsSkeletonProps {
 
 function BusinessOfTheMonthCardSkeleton() {
   return (
-    <div className="snap-center snap-always flex-shrink-0 w-full sm:w-[260px] md:w-[340px] list-none font-urbanist">
+    <div className="snap-center snap-always flex-shrink-0 w-full sm:w-[260px] md:w-[340px] h-full list-none font-urbanist">
       <div
-        className="relative px-1 pt-1 pb-2 sm:pb-0 bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-visible w-full flex flex-col border-none backdrop-blur-xl shadow-md sm:h-auto animate-pulse"
+        className="relative bg-gradient-to-br from-card-bg via-card-bg to-card-bg/95 rounded-[12px] overflow-hidden w-full h-full flex flex-col border-none backdrop-blur-xl shadow-md animate-pulse"
         style={{ maxWidth: "540px" } as React.CSSProperties}
       >
-        <div className="relative overflow-hidden z-10 rounded-t-[12px] h-[200px] sm:h-[220px] md:h-[240px]">
+        <div className={`relative overflow-hidden z-10 rounded-t-[12px] ${RAIL_CARD_MEDIA_HEIGHT}`}>
           <div className="absolute inset-0 bg-gradient-to-br from-off-white/90 via-off-white/80 to-off-white/70" />
         </div>
         <div className="px-3 py-2.5 sm:px-5 sm:pt-1 md:pt-2 lg:pt-3 pb-0 flex-1 relative flex-shrink-0 flex flex-col justify-between bg-card-bg/10 z-10 rounded-b-[12px]">
@@ -47,7 +48,7 @@ export default function CommunityHighlightsSkeleton({
   reviewerCount = 12,
   businessCount = 4,
 }: CommunityHighlightsSkeletonProps) {
-  const reviewerCardClass = `snap-center snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
+  const reviewerCardClass = `snap-center snap-always flex-shrink-0 w-[calc((100vw-37px)/1.5)] sm:w-auto sm:min-w-[25%] md:min-w-[20%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center`;
   const businessCardClass = `snap-center snap-always flex-shrink-0 ${HOME_SECTION_MOBILE_PEEK_CARD_WIDTH_CLASS} sm:w-auto sm:min-w-[25%] md:min-w-[25%] lg:min-w-[20%] xl:min-w-[18%] 2xl:min-w-[16%] list-none flex justify-center business-month-card-full-width`;
 
   const reviewerSlides = Array.from({ length: reviewerCount }, (_, idx) => (
